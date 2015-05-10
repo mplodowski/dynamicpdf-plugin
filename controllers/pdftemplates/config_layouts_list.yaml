@@ -1,0 +1,16 @@
+# ===================================
+#  List Behavior Config
+# ===================================
+
+title: renatio.dynamicpdf::lang.pdftemplates.label
+list: ~/plugins/renatio/dynamicpdf/models/pdflayout/columns.yaml
+modelClass: Renatio\DynamicPDF\Models\PDFLayout
+recordUrl: renatio/dynamicpdf/pdflayouts/update/:id
+noRecordsMessage: backend::lang.list.no_records
+recordsPerPage: 20
+showSetup: true
+
+toolbar:
+    buttons: list_layouts_toolbar
+    search:
+        prompt: backend::lang.list.search_prompt

@@ -1,0 +1,27 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: renatio.dynamicpdf::lang.pdflayout.menu_label
+
+# Model Form Field configuration
+form: $/renatio/dynamicpdf/models/pdflayout/fields.yaml
+
+# Model Class name
+modelClass: Renatio\DynamicPDF\Models\PDFLayout
+
+# Default redirect location
+defaultRedirect: renatio/dynamicpdf/pdftemplates
+
+# Create page
+create:
+    title: renatio.dynamicpdf::lang.pdflayout.create_layout
+    redirect: renatio/dynamicpdf/pdflayouts/update/:id
+    redirectClose: renatio/dynamicpdf/pdftemplates
+
+# Update page
+update:
+    title: renatio.dynamicpdf::lang.pdflayout.edit_layout
+    redirect: renatio/dynamicpdf/pdftemplates
+    redirectClose: renatio/dynamicpdf/pdftemplates

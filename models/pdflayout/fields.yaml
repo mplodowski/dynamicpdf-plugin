@@ -1,0 +1,41 @@
+# ===================================
+#  Field Definitions
+# ===================================
+
+fields:
+
+    code:
+        label: renatio.dynamicpdf::lang.pdftemplates.code
+        comment: renatio.dynamicpdf::lang.pdftemplates.code_comment
+        span: left
+        context: create
+
+    name@create:
+        label: renatio.dynamicpdf::lang.pdftemplates.name
+        span: right
+
+    name@update:
+        label: renatio.dynamicpdf::lang.pdftemplates.name
+
+    background_img:
+        label: renatio.dynamicpdf::lang.pdftemplates.background_img
+        type: fileupload
+        mode: image
+        imageHeight: 260
+        imageWidth: 260
+        comment: renatio.dynamicpdf::lang.pdftemplates.background_img_comment
+
+secondaryTabs:
+    fields:
+
+        content_html:
+            type: codeeditor
+            size: giant
+            tab: renatio.dynamicpdf::lang.pdftemplates.content_html
+            language: html
+
+        content_css:
+            type: codeeditor
+            size: giant
+            tab: renatio.dynamicpdf::lang.pdftemplates.content_css
+            language: css

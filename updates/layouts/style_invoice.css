@@ -1,0 +1,146 @@
+@font-face {
+    font-family: 'Open Sans';
+    src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: bold;
+    src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: bold;
+    src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf');
+}
+
+@page {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+}
+
+#header {
+    position: fixed;
+    top: 3%;
+    left: 30%;
+}
+
+#header .left {
+    color: #373430;
+    font-size: .9em;
+    text-transform: uppercase;
+    width: 60%;
+    display: inline-block;
+}
+
+#header .right {
+    font-size: .7em;
+    color: #545554;
+    line-height: 1em;
+    text-align: right;
+    display: inline-block;
+    width: 30%;
+    padding-top: 1%;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    left: 5%;
+    height: 12%;
+    font-size: .7em;
+    color: #545554;
+    line-height: 1em;
+}
+
+#footer .left {
+    display: inline-block;
+    width: 25%;
+}
+
+#footer .right {
+    display: inline-block;
+    width: 30%;
+    padding-top: 7%;
+}
+
+#content {
+    margin: 12% 0 0 10%;
+}
+
+.small-txt {
+    font-size: .7em;
+}
+
+.company-info {
+    display: inline-block;
+    width: 55%;
+    line-height: 1.1em;
+    font-size: 1.1em;
+}
+
+.customer-info {
+    display: inline-block;
+    width: 45%;
+    font-size: .9em;
+    height: 10%;
+}
+
+#summary {
+    margin: 10% 0 5% 0;
+    border-collapse: collapse;
+    width: 90%;
+}
+
+#summary th {
+    background-color: #BEBEBE;
+    border: 1px solid #000;
+    padding: 5px;
+}
+
+#summary td {
+    padding: 5px 10px;
+    border-right: 1px solid #000;
+}
+
+#summary .col-1 {
+    width: 15%;
+    text-align: center;
+    border-left: 1px solid #000;
+}
+
+#summary .col-2 {
+    width: 50%;
+}
+
+#summary .col-3 {
+    width: 15%;
+    text-align: right;
+}
+
+#summary .col-4 {
+    width: 20%;
+    text-align: right;
+}
+
+#summary .bt {
+    border-top: 1px solid #000;
+}
+
+#summary .sum-price .col-4 {
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+}

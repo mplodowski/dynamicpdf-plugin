@@ -1,0 +1,6 @@
+1.0.1:
+    - Initialize plugin.
+    - create_pdf_layouts_table.php
+    - create_pdf_templates_table.php
+    - seed_pdf_layouts_table.php
+    - seed_pdf_templates_table.php

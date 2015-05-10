@@ -1,0 +1,16 @@
+<div class="control-tabs content-tabs tabs-flush" data-control="tab">
+    <ul class="nav nav-tabs">
+        <li class="active"><a
+                href="#templates"><?php echo e(trans('renatio.dynamicpdf::lang.pdftemplates.templates')) ?></a>
+        </li>
+        <li><a href="#layouts"><?php echo e(trans('renatio.dynamicpdf::lang.pdftemplates.layouts')) ?></a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active">
+            <?php echo $this->listRender('templates') ?>
+        </div>
+        <div class="tab-pane">
+            <?php echo $this->listRender('layouts') ?>
+        </div>
+    </div>
+</div>

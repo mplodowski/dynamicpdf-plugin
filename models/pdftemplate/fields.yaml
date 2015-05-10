@@ -1,0 +1,37 @@
+# ===================================
+#  Field Definitions
+# ===================================
+
+fields:
+
+    layout:
+        label: renatio.dynamicpdf::lang.pdftemplates.layout
+        type: relation
+        emptyOption: renatio.dynamicpdf::lang.pdftemplates.empty_option
+
+    code:
+        label: renatio.dynamicpdf::lang.pdftemplates.code
+        comment: renatio.dynamicpdf::lang.pdftemplates.code_comment
+        span: left
+        context: create
+
+    title@create:
+        label: renatio.dynamicpdf::lang.pdftemplates.title
+        span: right
+
+    title@update:
+        label: renatio.dynamicpdf::lang.pdftemplates.title
+
+    description:
+        label: renatio.dynamicpdf::lang.pdftemplates.description
+        type: textarea
+        size: tiny
+
+secondaryTabs:
+    fields:
+
+        content_html:
+            type: codeeditor
+            size: giant
+            tab: renatio.dynamicpdf::lang.pdftemplates.content_html
+            language: html
