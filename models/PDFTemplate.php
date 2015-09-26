@@ -49,6 +49,7 @@ class PDFTemplate extends Model
     {
         $self = new self;
         $html = $self->getHtmlForPDF($code, $data);
+
         return $self->outputPDF($html);
     }
 
@@ -99,13 +100,16 @@ class PDFTemplate extends Model
      */
     private function outputPDF($html)
     {
-        try {
+        try
+        {
             $pdf = App::make('dompdf.wrapper');
             $pdf->loadHTML($html);
 
             return $pdf->stream();
-        } catch (DOMPDF_Exception $e) {
+        } catch (DOMPDF_Exception $e)
+        {
             Flash::error($e->getMessage());
+
             return Redirect::back();
         }
     }

@@ -4,3 +4,5 @@
     - create_pdf_templates_table.php
     - seed_pdf_layouts_table.php
     - seed_pdf_templates_table.php
+1.0.2:
+    - Minor changes.
