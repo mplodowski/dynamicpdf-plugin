@@ -40,7 +40,7 @@ In order to render PDF template use this example method in your plugin controlle
         {
             // render method may throw exception
             // handle any thrown error here
-            // e.g. Flash::error($ex->getMessage());
+            // e.g. Flash::error($e->getMessage());
         }
     }
 
