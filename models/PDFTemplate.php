@@ -6,6 +6,7 @@ use Redirect;
 use Model;
 use October\Rain\Database\Traits\Validation;
 use Flash;
+use Twig;
 
 /**
  * PDFTemplate Model
@@ -76,13 +77,11 @@ class PDFTemplate extends Model
      */
     private function parsePDFTemplate(PDFTemplate $template, $data)
     {
-        $twig = App::make('twig.string');
-
-        $html = $twig->render($template->content_html, $data);
+        $html = Twig::parse($template->content_html, $data);
 
         if ($template->layout)
         {
-            $html = $twig->render($template->layout->content_html, [
+            $html = Twig::parse($template->layout->content_html, [
                 'content_html'   => $html,
                 'background_img' => $template->layout->background_img ? $template->layout->background_img->getPath() : '',
                 'css'            => $template->layout->content_css

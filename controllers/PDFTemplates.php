@@ -5,6 +5,7 @@ use Backend\Facades\BackendMenu;
 use Exception;
 use Renatio\DynamicPDF\Models\PDFTemplate;
 use System\Classes\SettingsManager;
+use Flash;
 
 /**
  * PDF Templates Back-end Controller
@@ -72,9 +73,9 @@ class PDFTemplates extends Controller
 
             return PDFTemplate::render($model->code);
 
-        } catch (Exception $ex)
+        } catch (Exception $e)
         {
-            Flash::error($ex->getMessage());
+            Flash::error($e->getMessage());
         }
     }
 }

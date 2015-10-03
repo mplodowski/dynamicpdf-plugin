@@ -6,3 +6,6 @@
     - seed_pdf_templates_table.php
 1.0.2:
     - Minor changes.
+1.1.0: !!! Important update
+1.1.1:
+    - Use Twig::parse() facade. Only update for October build 300 and above.
