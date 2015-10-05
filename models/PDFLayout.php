@@ -28,6 +28,11 @@ class PDFLayout extends Model
     ];
 
     /**
+     * @var array Fillable fields
+     */
+    protected $fillable = ['name', 'code', 'content_html', 'content_css'];
+
+    /**
      * @var array
      */
     public $attachOne = [

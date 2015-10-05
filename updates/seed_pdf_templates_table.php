@@ -1,6 +1,6 @@
 <?php namespace Renatio\DynamicPDF\Updates;
 
-use Carbon\Carbon;
+use Renatio\DynamicPDF\Models\PDFLayout;
 use Renatio\DynamicPDF\Models\PDFTemplate;
 use Seeder;
 use File;
@@ -13,15 +13,14 @@ class SeedPdfTemplatesTable extends Seeder
      */
     public function run()
     {
-        PDFTemplate::insert([
-            [
-                'title'        => 'Invoice',
-                'description'  => 'Example Invoice Template',
-                'layout_id'    => '1',
-                'code'         => 'renatio::invoice',
-                'content_html' => File::get(__DIR__ . '/templates/invoice.htm'),
-                'created_at'   => Carbon::now(),
-            ],
+        $layout = PDFLayout::find(1);
+
+        PDFTemplate::create([
+            'title'        => 'Invoice',
+            'description'  => 'Example Invoice Template',
+            'layout'       => $layout,
+            'code'         => 'renatio::invoice',
+            'content_html' => File::get(__DIR__ . '/templates/invoice.htm'),
         ]);
     }
 }

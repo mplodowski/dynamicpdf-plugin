@@ -40,6 +40,11 @@ class PDFTemplate extends Model
     ];
 
     /**
+     * @var array Fillable fields
+     */
+    protected $fillable = ['title', 'description', 'code', 'content_html'];
+
+    /**
      * Render PDF Template
      *
      * @param $code
