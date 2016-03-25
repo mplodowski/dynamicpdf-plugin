@@ -47,16 +47,17 @@ class PDFTemplate extends Model
     /**
      * Render PDF Template
      *
-     * @param $code
-     * @param $data
+     * @param string $code Template code
+     * @param array $data Template data
+     * @param array $params Output parameters
      * @return mixed
      */
-    public static function render($code, $data = [])
+    public static function render($code, $data = [], $params = [])
     {
         $self = new self;
         $html = $self->getHtmlForPDF($code, $data);
 
-        return $self->outputPDF($html);
+        return $self->outputPDF($html, $params);
     }
 
     /**
@@ -99,17 +100,20 @@ class PDFTemplate extends Model
     /**
      * Output pdf to browser
      *
-     * @param $html
+     * @param string $html
+     * @param array $params
      * @return mixed
      */
-    private function outputPDF($html)
+    private function outputPDF($html, $params = [])
     {
         try
         {
             $pdf = App::make('dompdf.wrapper');
             $pdf->loadHTML($html);
+            $filename = isset($params['filename']) ? $params['filename'] : 'document.pdf';
 
-            return $pdf->stream();
+            return $pdf->stream($filename, $params);
+
         } catch (DOMPDF_Exception $e)
         {
             Flash::error($e->getMessage());

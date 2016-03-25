@@ -34,7 +34,13 @@ In order to render PDF template use this example method in your plugin controlle
 
             $data = ['name' => 'John Doe']; // optional data used in template
 
-            return PDFTemplate::render($templateCode, $data);
+            // download PDF as 'attachment', or show in browser as 'inline'            
+            $params = [
+                'filename' => 'Invoice No. 42',
+                'content_disposition' => 'attachment',
+            ];
+
+            return PDFTemplate::render($templateCode, $data, $params);
 
         } catch (Exception $e)
         {
