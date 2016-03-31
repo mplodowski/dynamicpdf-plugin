@@ -139,7 +139,7 @@ class PDF{
      * @param string $encoding Not used yet
      * @return static
      */
-    public function loadView($view, $data = array(), $mergeData = array(), $encoding = null){
+    public function loadView($view, $data = [], $mergeData = [], $encoding = null){
         $html = $this->view->make($view, $data, $mergeData)->render();
         return $this->loadHTML($html, $encoding);
     }
@@ -185,13 +185,16 @@ class PDF{
      * Return a response with the PDF to show in the browser
      *
      * @param string $filename
+     * @param array $params
      * @return \Illuminate\Http\Response
      */
-    public function stream($filename = 'document.pdf' ){
+    public function stream($filename = 'document.pdf', $params = []){
         $output = $this->output();
+        $contentDisposition = isset($params['content_disposition']) ? $params['content_disposition'] : 'inline';
+
         return new Response($output, 200, array(
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' =>  'inline; filename="'.$filename.'"',
+            'Content-Disposition' => $contentDisposition.'; filename="'.$filename.'"',
         ));
     }
 
