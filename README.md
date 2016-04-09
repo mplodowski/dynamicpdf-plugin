@@ -15,10 +15,11 @@ Plugin was build on Laravel Package [barryvdh/laravel-dompdf](https://github.com
 If you like this plugin, give this plugin a Like or Make donation with PayPal.
 
 # Documentation
-## Installation
+## [Installation](#installation) {#installation}
+
 In order to install this plugin you have to click on __Add to project__ or type __Renatio.DynamicPDF__ in Backend *System > Updates > Install Plugin*
 
-## Using PDF templates
+## [Using PDF templates](#using-pdf-templates)  {#using-pdf-templates}
 
 PDF templates reside in the database and can be created in the back-end area via Settings > PDF > PDF Templates. The code specified in the template is a unique identifier and cannot be changed once created.
 
@@ -34,7 +35,7 @@ In order to render PDF template use this example method in your plugin controlle
 
             $data = ['name' => 'John Doe']; // optional data used in template
 
-            // download PDF as 'attachment', or show in browser as 'inline'            
+            // download PDF as 'attachment', or show in browser as 'inline'
             $params = [
                 'filename' => 'Invoice No. 42',
                 'content_disposition' => 'attachment',
@@ -52,27 +53,41 @@ In order to render PDF template use this example method in your plugin controlle
 
 Where `$templateCode` is an unique code specified when creating the template, `$data` is optional array of twig fields which will be replaced in template.
 
-## DOMPDF Config
+## [DOMPDF Config](#dompdf-config) {#dompdf-config}
 
 You can change DOMPDF configuration dynamically.
 
     Config::set('dompdf.orientation', 'landscape');
 
-## Background image
+## [PDF on CMS page](#pdf-on-cms-page) {#pdf-on-cms-page}
+
+To display PDF on CMS page you can use PHP section of the page like so:
+
+    use Renatio\DynamicPDF\Models\PDFTemplate;
+
+    function onStart()
+    {
+        $templateCode = 'renatio::invoice';
+        $data = ['name' => 'John Doe'];
+
+        return PDFTemplate::render($templateCode, $data);
+    }
+
+## [Background image](#background-image) {#background-image}
 
 After adding background image to layout, please add this to your body tag:
 
     <body style="background: url({{ background_img }}) top left no-repeat;">
-    
+
 Background image should be 96 DPI size (793 x 1121 px).
 
-## UTF-8 support
+## [UTF-8 support](#utf-8-support) {#utf-8-support}
 
 In your layout, set the UTF-8 Metatag:
-    
+
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-## Styling PDF
+## [Styling PDF](#styling-pdf) {#styling-pdf}
 
 You can use the CSS page-break-before/page-break-after properties to create a new page.
 
@@ -87,5 +102,6 @@ You can use the CSS page-break-before/page-break-after properties to create a ne
 
 You can style pdf document in CSS layout section. Here you can check CSS support for [DOMPDF](https://code.google.com/p/dompdf/wiki/CSSCompatibility).
 
-## Examples
+## [Examples](#examples) {#examples}
+
 After installation there will an example pdf invoice document.
