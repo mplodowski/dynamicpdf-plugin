@@ -35,6 +35,8 @@
                 class="btn btn-default">
             <?php echo e(trans('backend::lang.form.save_and_close')) ?>
         </button>
+        <a class="btn btn-info" target="_blank"
+           href="<?php echo Backend::url('renatio/dynamicpdf/pdflayouts/preview/' . $formModel->id); ?>"><?php echo trans('renatio.dynamicpdf::lang.pdftemplates.preview'); ?></a>
         <button
                 type="button"
                 class="oc-icon-trash-o btn-icon danger pull-right"
