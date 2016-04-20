@@ -2,7 +2,6 @@
 
 use Backend\Classes\Controller;
 use Backend\Facades\BackendMenu;
-use System\Classes\SettingsManager;
 use Renatio\DynamicPDF\Models\PDFLayout;
 
 /**
@@ -16,13 +15,19 @@ class PDFLayouts extends Controller
      */
     public $implement = [
         'Backend.Behaviors.FormController',
+        'Backend.Behaviors.ListController'
     ];
 
     /**
      * @var string Form config
      */
     public $formConfig = 'config_form.yaml';
-
+    
+    /**
+     * @var array List config
+     */
+    public $listConfig = ['config_list.yaml'];
+    
     /**
      * Constructor
      */
@@ -30,8 +35,7 @@ class PDFLayouts extends Controller
     {
         parent::__construct();
 
-        BackendMenu::setContext('October.System', 'system', 'settings');
-        SettingsManager::setContext('Renatio.DynamicPDF', 'pdftemplates');
+        BackendMenu::setContext('Renatio.DynamicPDF', 'dynamicpdf', 'pdflayouts');
     }
     
     /**
