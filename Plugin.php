@@ -44,7 +44,7 @@ class Plugin extends PluginBase
     public function registerNavigation() {
         return [
             'dynamicpdf' => [
-                'label'       => 'Dynamic PDF',
+                'label'       => 'renatio.dynamicpdf::lang.menu.label',
                 'url'         => Backend::url('renatio/dynamicpdf/pdftemplates'),
                 'icon'        => 'icon-file-pdf-o',
                 'permissions' => ['renatio.dynamicpdf.*'],

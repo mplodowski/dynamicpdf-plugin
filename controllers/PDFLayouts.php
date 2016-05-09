@@ -35,7 +35,7 @@ class PDFLayouts extends Controller
     {
         parent::__construct();
 
-        BackendMenu::setContext('Renatio.DynamicPDF', 'dynamicpdf', 'pdflayouts');
+        BackendMenu::setContext('Renatio.DynamicPDF', 'dynamicpdf', 'layouts');
     }
     
     /**

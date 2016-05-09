@@ -50,4 +50,7 @@ return [
         'label' => 'Správa PDF šablon',
         'tab'   => 'PDF',
     ],
+    'menu'         => [
+        'label' => 'PDFs'
+    ]
 ];

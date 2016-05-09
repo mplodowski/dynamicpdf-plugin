@@ -21,7 +21,7 @@ In order to install this plugin you have to click on __Add to project__ or type 
 
 ## [Using PDF templates](#using-pdf-templates)  {#using-pdf-templates}
 
-PDF templates reside in the database and can be created in the back-end area via Settings > PDF > PDF Templates. The code specified in the template is a unique identifier and cannot be changed once created.
+PDF templates reside in the database and can be created in the back-end area via PDFs > Templates. The code specified in the template is a unique identifier and cannot be changed once created.
 
 You can use Twig in pdf templates.
 

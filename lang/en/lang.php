@@ -50,4 +50,7 @@ return [
         'label' => 'Manage PDF templates',
         'tab'   => 'PDF',
     ],
+    'menu'         => [
+        'label' => 'PDFs'
+    ]
 ];

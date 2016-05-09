@@ -23,7 +23,7 @@ class PDFTemplates extends Controller
     /**
      * @var array Permissions
      */
-    public $requiredPermissions = ['renatio.dynamicpdf.manage_pdf_templates'];
+    public $requiredPermissions = ['renatio.dynamicpdf.access_templates'];
 
     /**
      * @var string Form config
@@ -42,7 +42,7 @@ class PDFTemplates extends Controller
     {
         parent::__construct();
 
-        BackendMenu::setContext('Renatio.DynamicPDF', 'dynamicpdf', 'pdftemplates');
+        BackendMenu::setContext('Renatio.DynamicPDF', 'dynamicpdf', 'templates');
     }
 
     /**
