@@ -32,13 +32,13 @@ body {
     font-size: 14px;
 }
 
-#header {
+.header {
     position: fixed;
     top: 3%;
     left: 30%;
 }
 
-#header .left {
+.header .left {
     color: #373430;
     font-size: .9em;
     text-transform: uppercase;
@@ -46,7 +46,7 @@ body {
     display: inline-block;
 }
 
-#header .right {
+.header .right {
     font-size: .7em;
     color: #545554;
     line-height: 1em;
@@ -56,7 +56,7 @@ body {
     padding-top: 1%;
 }
 
-#footer {
+.footer {
     position: fixed;
     bottom: 0;
     left: 5%;
@@ -66,18 +66,18 @@ body {
     line-height: 1em;
 }
 
-#footer .left {
+.footer .left {
     display: inline-block;
     width: 25%;
 }
 
-#footer .right {
+.footer .right {
     display: inline-block;
     width: 30%;
     padding-top: 7%;
 }
 
-#content {
+.content {
     margin: 12% 0 0 10%;
 }
 
@@ -99,48 +99,48 @@ body {
     height: 10%;
 }
 
-#summary {
+.summary {
     margin: 10% 0 5% 0;
     border-collapse: collapse;
     width: 90%;
 }
 
-#summary th {
+.summary th {
     background-color: #BEBEBE;
     border: 1px solid #000;
     padding: 5px;
 }
 
-#summary td {
+.summary td {
     padding: 5px 10px;
     border-right: 1px solid #000;
 }
 
-#summary .col-1 {
+.summary .col-1 {
     width: 15%;
     text-align: center;
     border-left: 1px solid #000;
 }
 
-#summary .col-2 {
+.summary .col-2 {
     width: 50%;
 }
 
-#summary .col-3 {
+.summary .col-3 {
     width: 15%;
     text-align: right;
 }
 
-#summary .col-4 {
+.summary .col-4 {
     width: 20%;
     text-align: right;
 }
 
-#summary .bt {
+.summary .bt {
     border-top: 1px solid #000;
 }
 
-#summary .sum-price .col-4 {
+.summary .sum-price .col-4 {
     border-top: 1px solid #000;
     border-bottom: 1px solid #000;
 }
