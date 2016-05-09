@@ -41,23 +41,29 @@ class Plugin extends PluginBase
         $this->createFontDirectory();
     }
 
-    /**
-     * Register PDF templates in CMS settings
-     *
-     * @return array
-     */
-    public function registerSettings()
-    {
+    public function registerNavigation() {
         return [
-            'pdftemplates' => [
-                'label'       => 'renatio.dynamicpdf::lang.pdftemplates.label',
-                'description' => 'renatio.dynamicpdf::lang.settings.description',
-                'category'    => 'PDF',
-                'icon'        => 'icon-file-pdf-o',
+            'dynamicpdf' => [
+                'label'       => 'Dynamic PDF',
                 'url'         => Backend::url('renatio/dynamicpdf/pdftemplates'),
+                'icon'        => 'icon-file-pdf-o',
+                'permissions' => ['renatio.dynamicpdf.*'],
                 'order'       => 500,
-                'keywords'    => 'pdf',
-                'permissions' => ['renatio.dynamicpdf.manage_pdf_templates'],
+
+                'sideMenu' => [
+                    'templates' => [
+                        'label'       => 'renatio.dynamicpdf::lang.pdftemplates.templates',
+                        'icon'        => 'icon-file-text-o',
+                        'url'         => Backend::url('renatio/dynamicpdf/pdftemplates'),
+                        'permissions' => ['renatio.dynamicpdf.manage_pdf_templates']
+                    ],
+                    'layouts' => [
+                        'label'       => 'renatio.dynamicpdf::lang.pdftemplates.layouts',
+                        'icon'        => 'icon-th-large',
+                        'url'         => Backend::url('renatio/dynamicpdf/pdflayouts'),
+                        'permissions' => ['renatio.dynamicpdf.manage_pdf_templates']
+                    ]
+                ]
             ]
         ];
     }
@@ -73,7 +79,7 @@ class Plugin extends PluginBase
             'renatio.dynamicpdf.manage_pdf_templates' => [
                 'tab'   => 'renatio.dynamicpdf::lang.permissions.tab',
                 'label' => 'renatio.dynamicpdf::lang.permissions.label'
-            ],
+            ]
         ];
     }
 
