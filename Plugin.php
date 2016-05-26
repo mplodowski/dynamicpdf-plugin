@@ -1,17 +1,16 @@
 <?php namespace Renatio\DynamicPDF;
 
+use System\Classes\PluginBase;
 use Illuminate\Foundation\AliasLoader;
+use Backend;
 use Config;
 use File;
-use System\Classes\PluginBase;
-use Backend;
 
 /**
  * DynamicPDF Plugin Information File
  */
 class Plugin extends PluginBase
 {
-
     /**
      * Returns information about this plugin.
      *
@@ -24,6 +23,7 @@ class Plugin extends PluginBase
             'description' => 'renatio.dynamicpdf::lang.plugin.description',
             'author'      => 'Renatio',
             'icon'        => 'icon-file-pdf-o',
+            'homepage'    => 'https://github.com/mplodowski/DynamicPDF'
         ];
     }
 
@@ -35,13 +35,14 @@ class Plugin extends PluginBase
         $alias->alias('PDF', 'Barryvdh\DomPDF\Facade');
 
         $this->publishes([
-            __DIR__ . '/config/dompdf.php' => config_path('dompdf.php'),
+            __DIR__ . '/config/dompdf.php' => config_path('dompdf.php')
         ]);
 
         $this->createFontDirectory();
     }
 
-    public function registerNavigation() {
+    public function registerNavigation()
+    {
         return [
             'dynamicpdf' => [
                 'label'       => 'renatio.dynamicpdf::lang.menu.label',
@@ -90,10 +91,8 @@ class Plugin extends PluginBase
     {
         $config = Config::get('dompdf.defines');
 
-        if ( ! File::exists($config['DOMPDF_FONT_CACHE']))
-        {
+        if (!File::exists($config['DOMPDF_FONT_CACHE'])) {
             File::makeDirectory($config['DOMPDF_FONT_CACHE']);
         }
     }
-
 }
