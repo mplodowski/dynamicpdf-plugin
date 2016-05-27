@@ -1,5 +1,8 @@
-<?php namespace Renatio\DynamicPDF;
+<?php
 
+namespace Renatio\DynamicPDF;
+
+use App;
 use System\Classes\PluginBase;
 use Illuminate\Foundation\AliasLoader;
 use Backend;
@@ -7,62 +10,61 @@ use Config;
 use File;
 
 /**
- * DynamicPDF Plugin Information File
+ * Class Plugin
+ * @package Renatio\DynamicPDF
  */
 class Plugin extends PluginBase
 {
+
     /**
-     * Returns information about this plugin.
-     *
      * @return array
      */
     public function pluginDetails()
     {
         return [
-            'name'        => 'renatio.dynamicpdf::lang.plugin.name',
+            'name' => 'renatio.dynamicpdf::lang.plugin.name',
             'description' => 'renatio.dynamicpdf::lang.plugin.description',
-            'author'      => 'Renatio',
-            'icon'        => 'icon-file-pdf-o',
-            'homepage'    => 'https://github.com/mplodowski/DynamicPDF'
+            'author' => 'Renatio',
+            'icon' => 'icon-file-pdf-o',
+            'homepage' => 'http://octobercms.com/plugin/renatio-dynamicpdf'
         ];
     }
 
+    /**
+     * @return void
+     */
     public function boot()
     {
-        \App::register('Barryvdh\DomPDF\ServiceProvider');
-
-        $alias = AliasLoader::getInstance();
-        $alias->alias('PDF', 'Barryvdh\DomPDF\Facade');
-
-        $this->publishes([
-            __DIR__ . '/config/dompdf.php' => config_path('dompdf.php')
-        ]);
+        $this->registerPackage();
 
         $this->createFontDirectory();
     }
 
+    /**
+     * @return array
+     */
     public function registerNavigation()
     {
         return [
             'dynamicpdf' => [
-                'label'       => 'renatio.dynamicpdf::lang.menu.label',
-                'url'         => Backend::url('renatio/dynamicpdf/pdftemplates'),
-                'icon'        => 'icon-file-pdf-o',
+                'label' => 'renatio.dynamicpdf::lang.menu.label',
+                'url' => Backend::url('renatio/dynamicpdf/templates'),
+                'icon' => 'icon-file-pdf-o',
                 'permissions' => ['renatio.dynamicpdf.*'],
-                'order'       => 500,
+                'order' => 500,
 
                 'sideMenu' => [
                     'templates' => [
-                        'label'       => 'renatio.dynamicpdf::lang.pdftemplates.templates',
-                        'icon'        => 'icon-file-text-o',
-                        'url'         => Backend::url('renatio/dynamicpdf/pdftemplates'),
-                        'permissions' => ['renatio.dynamicpdf.manage_pdf_templates']
+                        'label' => 'renatio.dynamicpdf::lang.templates.templates',
+                        'icon' => 'icon-file-text-o',
+                        'url' => Backend::url('renatio/dynamicpdf/templates'),
+                        'permissions' => ['renatio.dynamicpdf.manage_templates']
                     ],
                     'layouts' => [
-                        'label'       => 'renatio.dynamicpdf::lang.pdftemplates.layouts',
-                        'icon'        => 'icon-th-large',
-                        'url'         => Backend::url('renatio/dynamicpdf/pdflayouts'),
-                        'permissions' => ['renatio.dynamicpdf.manage_pdf_templates']
+                        'label' => 'renatio.dynamicpdf::lang.templates.layouts',
+                        'icon' => 'icon-th-large',
+                        'url' => Backend::url('renatio/dynamicpdf/layouts'),
+                        'permissions' => ['renatio.dynamicpdf.manage_layouts']
                     ]
                 ]
             ]
@@ -70,29 +72,46 @@ class Plugin extends PluginBase
     }
 
     /**
-     * Register permissions
-     *
      * @return array
      */
     public function registerPermissions()
     {
         return [
-            'renatio.dynamicpdf.manage_pdf_templates' => [
-                'tab'   => 'renatio.dynamicpdf::lang.permissions.tab',
-                'label' => 'renatio.dynamicpdf::lang.permissions.label'
+            'renatio.dynamicpdf.manage_templates' => [
+                'tab' => 'renatio.dynamicpdf::lang.permissions.tab',
+                'label' => 'renatio.dynamicpdf::lang.permissions.manage_templates'
+            ],
+            'renatio.dynamicpdf.manage_layouts' => [
+                'tab' => 'renatio.dynamicpdf::lang.permissions.tab',
+                'label' => 'renatio.dynamicpdf::lang.permissions.manage_layouts'
             ]
         ];
     }
 
     /**
-     * Create directory for cache fonts
+     * @return void
      */
     private function createFontDirectory()
     {
         $config = Config::get('dompdf.defines');
 
-        if (!File::exists($config['DOMPDF_FONT_CACHE'])) {
+        if ( ! File::exists($config['DOMPDF_FONT_CACHE'])) {
             File::makeDirectory($config['DOMPDF_FONT_CACHE']);
         }
     }
+
+    /**
+     * @return void
+     */
+    private function registerPackage()
+    {
+        App::register('Barryvdh\DomPDF\ServiceProvider');
+        App::register('Renatio\DynamicPDF\Classes\ServiceProvider');
+
+        $alias = AliasLoader::getInstance();
+        $alias->alias('PDF', 'Renatio\DynamicPDF\Classes\PDF');
+
+        Config::set('dompdf.config_file', __DIR__ . '/vendor/dompdf/dompdf/dompdf_config.inc.php');
+    }
+
 }

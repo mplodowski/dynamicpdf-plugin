@@ -1,7 +1,8 @@
 <?php Block::put('breadcrumb') ?>
 <ul>
     <li>
-        <a href="<?php echo Backend::url('renatio/dynamicpdf/pdflayouts') ?>"><?php echo trans('renatio.dynamicpdf::lang.pdflayouts.label'); ?></a>
+        <a href="<?php echo Backend::url('renatio/dynamicpdf/templates') ?>">
+            <?php echo trans('renatio.dynamicpdf::lang.templates.label'); ?></a>
     </li>
     <li><?php echo e($this->pageTitle) ?></li>
 </ul>
@@ -17,16 +18,14 @@
 
 <div class="form-buttons">
     <div class="loading-indicator-container">
-        <button
-                type="submit"
+        <button type="submit"
                 data-request="onSave"
                 data-hotkey="ctrl+s, cmd+s"
                 data-load-indicator="<?php echo e(trans('backend::lang.form.creating_name', ['name'=>$formRecordName])) ?>"
                 class="btn btn-primary">
             <?php echo e(trans('backend::lang.form.create')) ?>
         </button>
-        <button
-                type="button"
+        <button type="button"
                 data-request="onSave"
                 data-request-data="close:1"
                 data-hotkey="ctrl+enter, cmd+enter"
@@ -35,8 +34,10 @@
             <?php echo e(trans('backend::lang.form.create_and_close')) ?>
         </button>
                 <span class="btn-text">
-                    <?php echo e(trans('backend::lang.form.or')) ?> <a
-                        href="<?php echo Backend::url('renatio/dynamicpdf/pdflayouts') ?>"><?php echo e(trans('backend::lang.form.cancel')) ?></a>
+                    <?php echo e(trans('backend::lang.form.or')) ?>
+                    <a href="<?php echo Backend::url('renatio/dynamicpdf/templates') ?>">
+                        <?php echo e(trans('backend::lang.form.cancel')) ?>
+                    </a>
                 </span>
     </div>
 </div>
@@ -46,8 +47,8 @@
 <?php else: ?>
 
 <p class="flash-message static error"><?php echo e($this->fatalError) ?></p>
-<p><a href="<?php echo Backend::url('renatio/dynamicpdf/pdflayouts') ?>" class="btn btn-default">
-    <?php echo trans('renatio.dynamicpdf::lang.pdflayouts.return_message'); ?>
+<p><a href="<?php echo Backend::url('renatio/dynamicpdf/templates') ?>" class="btn btn-default">
+    <?php echo trans('renatio.dynamicpdf::lang.templates.return_message'); ?>
 </a></p>
 
 <?php endif ?>

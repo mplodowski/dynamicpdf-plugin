@@ -5,30 +5,30 @@
 fields:
 
     name:
-        label: renatio.dynamicpdf::lang.pdftemplates.name
+        label: renatio.dynamicpdf::lang.templates.name
         span: left
 
     code@create:
-        label: renatio.dynamicpdf::lang.pdftemplates.code
-        comment: renatio.dynamicpdf::lang.pdftemplates.code_comment
+        label: renatio.dynamicpdf::lang.templates.code
+        comment: renatio.dynamicpdf::lang.templates.code_comment
         span: right
         preset: name
 
     background_img:
-        label: renatio.dynamicpdf::lang.pdftemplates.background_img
+        label: renatio.dynamicpdf::lang.templates.background_img
         type: fileupload
         mode: image
         imageHeight: 200
         imageWidth: 200
-        commentAbove: renatio.dynamicpdf::lang.pdftemplates.background_img_comment
+        commentAbove: renatio.dynamicpdf::lang.templates.background_img_comment
 
 secondaryTabs:
     fields:
 
         content_html:
             type: codeeditor
-            size: giant
-            tab: renatio.dynamicpdf::lang.pdftemplates.content_html
+            size: huge
+            tab: renatio.dynamicpdf::lang.templates.content_html
             language: html
             default: |
                         <html>
@@ -44,6 +44,6 @@ secondaryTabs:
 
         content_css:
             type: codeeditor
-            size: giant
-            tab: renatio.dynamicpdf::lang.pdftemplates.content_css
+            size: huge
+            tab: renatio.dynamicpdf::lang.templates.content_css
             language: css

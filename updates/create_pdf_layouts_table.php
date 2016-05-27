@@ -1,15 +1,23 @@
-<?php namespace Renatio\DynamicPDF\Updates;
+<?php
+
+namespace Renatio\DynamicPDF\Updates;
 
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class CreatePDFLayoutsTable extends Migration
+/**
+ * Class CreateLayoutsTable
+ * @package Renatio\DynamicPDF\Updates
+ */
+class CreateLayoutsTable extends Migration
 {
 
+    /**
+     * @return void
+     */
     public function up()
     {
-        Schema::create('renatio_dynamicpdf_pdf_layouts', function ($table)
-        {
+        Schema::create('renatio_dynamicpdf_pdf_layouts', function ($table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('code')->unique();
@@ -20,6 +28,9 @@ class CreatePDFLayoutsTable extends Migration
         });
     }
 
+    /**
+     * @return void
+     */
     public function down()
     {
         Schema::dropIfExists('renatio_dynamicpdf_pdf_layouts');

@@ -1,0 +1,14 @@
+<?php Block::put('breadcrumb') ?>
+<ul>
+    <li>
+        <a href="<?php echo Backend::url('renatio/dynamicpdf/layouts') ?>">
+            <?php echo trans('renatio.dynamicpdf::lang.layouts.label'); ?></a>
+    </li>
+    <li><?php echo e($this->pageTitle) ?></li>
+</ul>
+<?php Block::endPut() ?>
+
+<p class="flash-message static error"><?php echo e($error) ?></p>
+<p><a href="<?php echo Backend::url('renatio/dynamicpdf/layouts') ?>" class="btn btn-default">
+    <?php echo trans('renatio.dynamicpdf::lang.layouts.return_message'); ?>
+</a></p>

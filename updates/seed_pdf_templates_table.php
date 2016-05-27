@@ -1,26 +1,33 @@
-<?php namespace Renatio\DynamicPDF\Updates;
+<?php
 
-use Renatio\DynamicPDF\Models\PDFLayout;
-use Renatio\DynamicPDF\Models\PDFTemplate;
+namespace Renatio\DynamicPDF\Updates;
+
+use Renatio\DynamicPDF\Models\Layout;
+use Renatio\DynamicPDF\Models\Template;
 use Seeder;
 use File;
 
+/**
+ * Class SeedPdfTemplatesTable
+ * @package Renatio\DynamicPDF\Updates
+ */
 class SeedPdfTemplatesTable extends Seeder
 {
 
     /**
-     * Sample pdf templates
+     * @return void
      */
     public function run()
     {
-        $layout = PDFLayout::find(1);
+        $layout = Layout::find(1);
 
-        PDFTemplate::create([
-            'title'        => 'Invoice',
-            'description'  => 'Example Invoice Template',
-            'layout'       => $layout,
-            'code'         => 'renatio::invoice',
+        Template::create([
+            'title' => 'Invoice',
+            'description' => 'Example Invoice Template',
+            'layout' => $layout,
+            'code' => 'renatio::invoice',
             'content_html' => File::get(__DIR__ . '/templates/invoice.htm'),
         ]);
     }
+
 }
