@@ -147,7 +147,10 @@ See all available [methods](#methods).
 
 **From 1.0.2 to 1.1.0.** Plugin requires October build 300 and above.
 
-**From 1.1.5 to 2.0.0.** Major code refactor. `PDFTemplate::render()` method was removed, switch to PDF facade. See example codes in documentation how to. Code base was significantly improved and allow for more flexibility.
+**From 1.1.5 to 2.0.0.** Code base was significantly improved and allow for more flexibility.
+
+1. `PDFTemplate::render()` method was removed, switch to PDF facade. See example codes in documentation how to.
+2. Reupload layout background images or change `attachment_type` column value from `Renatio\DynamicPDF\Models\PDFLayout` to `Renatio\DynamicPDF\Models\Layout` in `system_files` table.
 
 ## [License](#license) {#license}
 
