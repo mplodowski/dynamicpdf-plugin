@@ -143,6 +143,12 @@ To display PDF on CMS page you can use PHP section of the page like so:
 
 See all available [methods](#methods).
 
+## [Upgrade guide](#upgrade-guide) {#upgrade-guide}
+
+**From 1.0.2 to 1.1.0.** Plugin requires October build 300 and above.
+
+**From 1.1.5 to 2.0.0.** Major code refactor. `PDFTemplate::render()` method was removed, switch to PDF facade. See example codes in documentation how to. Code base was significantly improved and allow for more flexibility.
+
 ## [License](#license) {#license}
 
 OctoberCMS DynamicPDF Plugin is open-sourced software licensed under the MIT license.
