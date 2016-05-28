@@ -30,7 +30,7 @@ class PDFWrapper extends LaravelPDF
      * @param null $encoding
      * @return $this
      */
-    public function loadTemplate($code, array $data = array(), $encoding = null)
+    public function loadTemplate($code, array $data = [], $encoding = null)
     {
         $template = Template::whereCode($code)->firstOrFail();
 
@@ -53,7 +53,7 @@ class PDFWrapper extends LaravelPDF
      * @param null $encoding
      * @return $this
      */
-    public function loadLayout($code, array $data = array(), $encoding = null)
+    public function loadLayout($code, array $data = [], $encoding = null)
     {
         $layout = Layout::whereCode($code)->firstOrFail();
 
@@ -83,7 +83,7 @@ class PDFWrapper extends LaravelPDF
      * @param array $mergeData
      * @return mixed
      */
-    public function parseLayout(Layout $layout, array $mergeData = array())
+    public function parseLayout(Layout $layout, array $mergeData = [])
     {
         $data = [
             'background_img' => $layout->background_img ? $layout->background_img->getPath() : '',

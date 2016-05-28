@@ -2,6 +2,10 @@
 
 Plugin adds backed-end layouts and templates pdf management features to [OctoberCMS](http://octobercms.com).
 
+Demo: http://oc.renatio.com/dynamic-pdf
+
+Plugin page: https://octobercms.com/plugin/renatio-dynamicpdf
+
 Plugin was build on Laravel Package [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
 
 ## Features
@@ -19,75 +23,64 @@ If you like this plugin, give this plugin a Like or Make donation with PayPal.
 
 In order to install this plugin you have to click on __Add to project__ or type __Renatio.DynamicPDF__ in Backend *System > Updates > Install Plugin*
 
-## [Using PDF templates](#using-pdf-templates)  {#using-pdf-templates}
+## [Using](#using)  {#using}
 
-PDF templates reside in the database and can be created in the back-end area via PDFs > Templates. The code specified in the template is a unique identifier and cannot be changed once created.
+Plugin will register menu item called **PDF**, which allow you to manage PDF layouts and templates.
 
-You can use Twig in pdf templates.
+Layouts define the pdf scaffold, that is everything that repeats on a pdf, such as a header and footer. Each layout has unique code, optional background image, HTML content and CSS content. Not all CSS properties are supported, so check CSS support for [DOMPDF](https://github.com/dompdf/dompdf/wiki/CSSCompatibility).
 
-In order to render PDF template use this example method in your plugin controller:
+Templates define the actual pdf content parsed from HTML. The code specified in the template is a unique identifier and cannot be changed once created.
 
-    public function pdf()
-    {
-        try
-        {
-            $templateCode = 'renatio::invoice'; // unique code of the template
+You can use Twig in layouts and templates.
 
-            $data = ['name' => 'John Doe']; // optional data used in template
+See [example codes](#examples).
 
-            // download PDF as 'attachment', or show in browser as 'inline'
-            $params = [
-                'filename' => 'Invoice No. 42',
-                'content_disposition' => 'attachment',
-            ];
+## [Configuration](#configuration) {#configuration}
 
-            return PDFTemplate::render($templateCode, $data, $params);
+Use `php artisan vendor:publish` to create a config file located at `config/dompdf.php` which will allow you to define local configurations to change some settings (default paper etc).
 
-        } catch (Exception $e)
-        {
-            // render method may throw exception
-            // handle any thrown error here
-            // e.g. Flash::error($e->getMessage());
-        }
-    }
-
-Where `$templateCode` is an unique code specified when creating the template, `$data` is optional array of twig fields which will be replaced in template.
-
-## [DOMPDF Config](#dompdf-config) {#dompdf-config}
-
-You can change DOMPDF configuration dynamically.
+You can also use your ConfigProvider to set certain keys.
 
     Config::set('dompdf.orientation', 'landscape');
 
-## [PDF on CMS page](#pdf-on-cms-page) {#pdf-on-cms-page}
+## [Methods](#methods) {#methods}
 
-To display PDF on CMS page you can use PHP section of the page like so:
+| Method  | Description  |
+|---|---|
+| loadTemplate($code, array $data = [], $encoding = null)  | Load backend template |
+| loadLayout($code, array $data = [], $encoding = null) | Load backend layout |
+| loadHTML($string, $encoding = null) | Load HTML string |
+| loadFile($file) | Load HTML string from a file |
+| parseTemplate(Template $template, array $data = []) | Parse backend template using Twig |
+| parseLayout(Layout $layout, array $mergeData = []) | Parse backend layout using Twig |
+| getDomPDF() | Get the DomPDF instance |
+| setPaper($paper, $orientation = null) | Set the paper size (default A4) |
+| setOrientation($orientation) | Set the orientation (default portrait) |
+| setWarnings($warnings) | Show or hide warnings |
+| output() | Output the PDF as a string |
+| save($filename) | Save the PDF to a file |
+| download($filename = 'document.pdf') | Make the PDF downloadable by the user |
+| stream($filename = 'document.pdf') | Return a response with the PDF to show in the browser |
 
-    use Renatio\DynamicPDF\Models\PDFTemplate;
+All methods are available through Facade class `\Renatio\DynamicPDF\Classes\PDF`;
 
-    function onStart()
-    {
-        $templateCode = 'renatio::invoice';
-        $data = ['name' => 'John Doe'];
+See [example codes](#examples).
 
-        return PDFTemplate::render($templateCode, $data);
-    }
+## [Tip: Background image](#tip-background-image) {#tip-background-image}
 
-## [Background image](#background-image) {#background-image}
-
-After adding background image to layout, please add this to your body tag:
+When you add background image to layout, add this to your body for display:
 
     <body style="background: url({{ background_img }}) top left no-repeat;">
 
 Background image should be 96 DPI size (793 x 1121 px).
 
-## [UTF-8 support](#utf-8-support) {#utf-8-support}
+## [Tip: UTF-8 support](#utf-8-support) {#utf-8-support}
 
-In your layout, set the UTF-8 Metatag:
+In your layout, set the UTF-8 Metatag in `head` section:
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-## [Styling PDF](#styling-pdf) {#styling-pdf}
+## [Tip: Page breaks](#tip-page-breaks) {#tip-page-breaks}
 
 You can use the CSS page-break-before/page-break-after properties to create a new page.
 
@@ -100,8 +93,56 @@ You can use the CSS page-break-before/page-break-after properties to create a ne
     <div class="page-break"></div>
     <h1>Page 2</h1>
 
-You can style pdf document in CSS layout section. Here you can check CSS support for [DOMPDF](https://code.google.com/p/dompdf/wiki/CSSCompatibility).
-
 ## [Examples](#examples) {#examples}
 
-After installation there will an example pdf invoice document.
+After installation there will an example pdf invoice document, which will show, how you can structure HTML and CSS.
+
+### [Render PDF in browser](#render-pdf-in-browser) {#render-pdf-in-browser}
+
+    use Renatio\DynamicPDF\Classes\PDF; // import facade
+
+    ...
+
+    public function pdf()
+    {
+        $templateCode = 'renatio::invoice'; // unique code of the template
+        $data = ['name' => 'John Doe']; // optional data used in template
+
+        return PDF::loadTemplate($templateCode, $data)->stream();
+    }
+
+Where `$templateCode` is an unique code specified when creating the template, `$data` is optional array of twig fields which will be replaced in template.
+
+### [Download PDF](#download-pdf) {#download-pdf}
+
+    use Renatio\DynamicPDF\Classes\PDF;
+
+    ...
+
+    public function pdf()
+    {
+        return PDF::loadTemplate('renatio::invoice')->download();
+    }
+
+### [Fluent interface](#fluent-interface) {#fluent-interface}
+
+You can chain the methods:
+
+    return PDF::loadTemplate('renatio::invoice')->save('/path-to/my_stored_file.pdf')->stream('download.pdf');
+
+### [PDF on CMS page](#pdf-on-cms-page) {#pdf-on-cms-page}
+
+To display PDF on CMS page you can use PHP section of the page like so:
+
+    use Renatio\DynamicPDF\Classes\PDF;
+
+    function onStart()
+    {
+        return PDF::loadTemplate('renatio::invoice')->stream();
+    }
+
+See all available [methods](#methods).
+
+## [License](#license) {#license}
+
+OctoberCMS DynamicPDF Plugin is open-sourced software licensed under the MIT license.
