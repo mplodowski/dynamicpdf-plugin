@@ -18,3 +18,5 @@
 1.1.5:
     - UI improvements. Thanks to @kocholes.
 2.0.0: !!! This is an important update that contains breaking changes.
+2.0.1:
+    - Add preview HTML buttons.
