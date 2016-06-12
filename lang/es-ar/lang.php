@@ -23,7 +23,7 @@ return [
         'layouts' => 'Diseños',
         'delete_alert' => 'Realmente quiere eliminar ésta plantilla?',
         'background_img' => 'Imagen de fondo',
-        'preview' => 'Previsualizar',
+        'preview_pdf' => 'Previsualizar',
         'created_at' => 'Creado en',
         'updated_at' => 'Modificado en',
         'background_img_comment' => 'Utilize una imagen de 96 DPI para una correcta visualización'

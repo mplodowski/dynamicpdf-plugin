@@ -34,9 +34,12 @@
                 class="btn btn-default">
             <?php echo e(trans('backend::lang.form.save_and_close')) ?>
         </button>
-        <a class="btn btn-info" target="_blank"
+        <a class="btn btn-info"
            href="<?php echo Backend::url('renatio/dynamicpdf/layouts/preview/' . $formModel->id); ?>">
-            <?php echo trans('renatio.dynamicpdf::lang.templates.preview'); ?></a>
+            <?php echo trans('renatio.dynamicpdf::lang.templates.preview_html'); ?></a>
+        <a class="btn btn-info" target="_blank"
+           href="<?php echo Backend::url('renatio/dynamicpdf/layouts/previewpdf/' . $formModel->id); ?>">
+            <?php echo trans('renatio.dynamicpdf::lang.templates.preview_pdf'); ?></a>
         <button type="button"
                 class="oc-icon-trash-o btn-icon danger pull-right"
                 data-request="onDelete"

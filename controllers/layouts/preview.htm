@@ -8,7 +8,23 @@
 </ul>
 <?php Block::endPut() ?>
 
-<p class="flash-message static error"><?php echo e($error) ?></p>
+<?php if (!$this->fatalError): ?>
+
+<div class="form-preview" style="display: flex; justify-content: center;">
+    <iframe src="<?php echo Backend::url('renatio/dynamicpdf/layouts/html/' . $formModel->id) ?>"
+            style="width: 793px; height: 1121px; border: 1px solid #9098a2;"></iframe>
+</div>
+
+<div class="form-buttons">
+    <a class="btn btn-default"
+       href="<?php echo Backend::url('renatio/dynamicpdf/layouts/update/' . $formModel->id) ?>"><?php echo e(trans('backend::lang.form.close')) ?></a>
+</div>
+
+<?php else: ?>
+
+<p class="flash-message static error"><?php echo e($this->fatalError) ?></p>
 <p><a href="<?php echo Backend::url('renatio/dynamicpdf/layouts') ?>" class="btn btn-default">
     <?php echo trans('renatio.dynamicpdf::lang.layouts.return_message'); ?>
 </a></p>
+
+<?php endif ?>

@@ -25,3 +25,7 @@ update:
     title: renatio.dynamicpdf::lang.template.edit_template
     redirect: renatio/dynamicpdf/templates
     redirectClose: renatio/dynamicpdf/templates
+
+# Preview page
+preview:
+    title: renatio.dynamicpdf::lang.templates.preview_html

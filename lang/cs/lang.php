@@ -23,7 +23,7 @@ return [
         'layouts' => 'Layouty',
         'delete_alert' => 'Opravdu chcete smazat tuto PDF šablonu?',
         'background_img' => 'Obrázek pozadí',
-        'preview' => 'Náhled',
+        'preview_pdf' => 'Náhled',
         'created_at' => 'Vytvořeno v',
         'updated_at' => 'Upraveno v',
         'background_img_comment' => 'Pro správné zobrazení použijte obrázek s 96 DPI'

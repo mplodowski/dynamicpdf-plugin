@@ -23,7 +23,8 @@ return [
         'layouts' => 'Layouts',
         'delete_alert' => 'Do you really want to delete this template?',
         'background_img' => 'Background Image',
-        'preview' => 'Preview',
+        'preview_html' => 'Preview HTML',
+        'preview_pdf' => 'Preview PDF',
         'created_at' => 'Created at',
         'updated_at' => 'Updated at',
         'background_img_comment' => 'Use image with 96 DPI for correct display'

@@ -4,6 +4,7 @@ namespace Renatio\DynamicPDF\Models;
 
 use Model;
 use October\Rain\Database\Traits\Validation;
+use Renatio\DynamicPDF\Classes\PDF;
 
 /**
  * Class Layout
@@ -25,6 +26,7 @@ class Layout extends Model
     public $rules = [
         'name' => 'required',
         'code' => 'required|unique:renatio_dynamicpdf_pdf_layouts',
+        'content_html' => 'required',
     ];
 
     /**
@@ -44,7 +46,16 @@ class Layout extends Model
      */
     public $attributeNames = [
         'name' => 'renatio.dynamicpdf::lang.templates.name',
-        'code' => 'renatio.dynamicpdf::lang.templates.code'
+        'code' => 'renatio.dynamicpdf::lang.templates.code',
+        'content_html' => 'renatio.dynamicpdf::lang.templates.content_html'
     ];
+
+    /**
+     * @return mixed
+     */
+    public function getHtmlAttribute()
+    {
+        return PDF::loadLayout($this->code)->getDompdf()->output_html();
+    }
 
 }

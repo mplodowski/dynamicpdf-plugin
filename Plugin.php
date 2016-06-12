@@ -108,8 +108,7 @@ class Plugin extends PluginBase
         App::register('Barryvdh\DomPDF\ServiceProvider');
         App::register('Renatio\DynamicPDF\Classes\ServiceProvider');
 
-        $alias = AliasLoader::getInstance();
-        $alias->alias('PDF', 'Renatio\DynamicPDF\Classes\PDF');
+        AliasLoader::getInstance()->alias('PDF', 'Renatio\DynamicPDF\Classes\PDF');
 
         Config::set('dompdf.config_file', __DIR__ . '/vendor/dompdf/dompdf/dompdf_config.inc.php');
     }
