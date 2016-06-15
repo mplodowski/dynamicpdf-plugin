@@ -37,7 +37,7 @@ class PDFWrapper extends LaravelPDF
         $html = $this->parseTemplate($template, $data);
 
         if ($template->layout) {
-            $html = $this->parseLayout($template->layout, ['content_html' => $html]);
+            $html = $this->parseLayout($template->layout, array_merge(['content_html' => $html], $data));
         }
 
         $this->loadHTML($html, $encoding);
