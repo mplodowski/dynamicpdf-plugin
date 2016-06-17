@@ -2,7 +2,6 @@
 
 namespace Renatio\DynamicPDF\Tests\Models;
 
-use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Tests\TestCase;
 
 /**
@@ -15,7 +14,7 @@ class LayoutTest extends TestCase
     /** @test */
     public function it_creates_layout()
     {
-        $layout = factory(Layout::class)->create();
+        $layout = factory('Renatio\DynamicPDF\Models\Layout')->create();
 
         $this->assertEquals(2, $layout->id);
     }
@@ -26,7 +25,7 @@ class LayoutTest extends TestCase
      */
     public function it_validate_name_is_required()
     {
-        factory(Layout::class)->create(['name' => '']);
+        factory('Renatio\DynamicPDF\Models\Layout')->create(['name' => '']);
     }
 
     /**
@@ -35,7 +34,7 @@ class LayoutTest extends TestCase
      */
     public function it_validate_code_is_required()
     {
-        factory(Layout::class)->create(['code' => '']);
+        factory('Renatio\DynamicPDF\Models\Layout')->create(['code' => '']);
     }
 
     /**
@@ -44,8 +43,8 @@ class LayoutTest extends TestCase
      */
     public function it_validate_code_is_unique()
     {
-        factory(Layout::class)->create(['code' => 'test']);
-        factory(Layout::class)->create(['code' => 'test']);
+        factory('Renatio\DynamicPDF\Models\Layout')->create(['code' => 'test']);
+        factory('Renatio\DynamicPDF\Models\Layout')->create(['code' => 'test']);
     }
 
     /**
@@ -54,13 +53,13 @@ class LayoutTest extends TestCase
      */
     public function it_validate_content_html_is_required()
     {
-        factory(Layout::class)->create(['content_html' => '']);
+        factory('Renatio\DynamicPDF\Models\Layout')->create(['content_html' => '']);
     }
 
     /** @test */
     public function it_has_html_attribute_property()
     {
-        $layout = factory(Layout::class)->create(['content_html' => '<p>test</p>']);
+        $layout = factory('Renatio\DynamicPDF\Models\Layout')->create(['content_html' => '<p>test</p>']);
 
         $this->assertContains('<p>test</p>', $layout->html);
     }

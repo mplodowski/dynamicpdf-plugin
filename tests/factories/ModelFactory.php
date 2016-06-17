@@ -1,9 +1,6 @@
 <?php
 
-use Renatio\DynamicPDF\Models\Layout;
-use Renatio\DynamicPDF\Models\Template;
-
-$factory->define(Template::class, function (Faker\Generator $faker) {
+$factory->define('Renatio\DynamicPDF\Models\Template', function (Faker\Generator $faker) {
     return [
         'title' => $faker->sentence,
         'code' => $faker->word,
@@ -11,7 +8,7 @@ $factory->define(Template::class, function (Faker\Generator $faker) {
     ];
 });
 
-$factory->define(Layout::class, function (Faker\Generator $faker) {
+$factory->define('Renatio\DynamicPDF\Models\Layout', function (Faker\Generator $faker) {
     return [
         'name' => $faker->sentence,
         'code' => $faker->word,
