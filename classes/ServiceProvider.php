@@ -18,8 +18,8 @@ class ServiceProvider extends OctoberServiceProvider
      */
     public function register()
     {
-        $this->app->bind('dynamicpdf', function () {
-            return new PDFWrapper;
+        $this->app->bind('dynamicpdf', function ($app) {
+            return new PDFWrapper($app['dompdf'], $app['config'], $app['files'], $app['view']);
         });
     }
 

@@ -2,7 +2,6 @@
 
 namespace Renatio\DynamicPDF\Classes;
 
-use App;
 use Barryvdh\DomPDF\PDF as LaravelPDF;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
@@ -14,13 +13,6 @@ use Twig;
  */
 class PDFWrapper extends LaravelPDF
 {
-
-    public function __construct()
-    {
-        $pdf = App::make('dompdf.wrapper');
-
-        parent::__construct($pdf->dompdf, $pdf->config, $pdf->files, $pdf->view);
-    }
 
     /**
      * Load template HTML
