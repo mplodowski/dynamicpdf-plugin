@@ -1,18 +1,24 @@
 <?php Block::put('breadcrumb') ?>
-<ul>
-    <li>
-        <a href="<?php echo Backend::url('renatio/dynamicpdf/layouts') ?>">
-            <?php echo trans('renatio.dynamicpdf::lang.layouts.label'); ?></a>
-    </li>
-    <li><?php echo e($this->pageTitle) ?></li>
-</ul>
+
+    <ul>
+        <li>
+            <a href="<?= Backend::url('renatio/dynamicpdf/layouts') ?>">
+                <?= e(trans('renatio.dynamicpdf::lang.layouts.label')) ?>
+            </a>
+        </li>
+        <li><?= e($this->pageTitle) ?></li>
+    </ul>
+
 <?php Block::endPut() ?>
 
 <?php if ($this->fatalError): ?>
 
-<p class="flash-message static error"><?php echo e($this->fatalError) ?></p>
-<p><a href="<?php echo Backend::url('renatio/dynamicpdf/layouts') ?>" class="btn btn-default">
-    <?php echo trans('renatio.dynamicpdf::lang.layouts.return_message'); ?>
-</a></p>
+    <p class="flash-message static error"><?= e($this->fatalError) ?></p>
+    <p>
+        <a href="<?= Backend::url('renatio/dynamicpdf/layouts') ?>"
+           class="btn btn-default">
+            <?= e(trans('renatio.dynamicpdf::lang.layouts.return')) ?>
+        </a>
+    </p>
 
-<?php endif ?>
+<?php endif; ?>

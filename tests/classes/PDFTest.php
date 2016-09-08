@@ -3,6 +3,8 @@
 namespace Renatio\DynamicPDF\Tests\Classes;
 
 use Renatio\DynamicPDF\Classes\PDF;
+use Renatio\DynamicPDF\Models\Layout;
+use Renatio\DynamicPDF\Models\Template;
 use Renatio\DynamicPDF\Tests\TestCase;
 
 /**
@@ -13,23 +15,53 @@ class PDFTest extends TestCase
 {
 
     /** @test */
+    public function it_loads_html_from_template()
+    {
+        $template = factory(Template::class)->create();
+
+        $pdf = PDF::loadTemplate($template->code, $this->data());
+
+        $this->assertNotNull($pdf->getDomPDF()->get_dom());
+    }
+
+    /** @test */
+    public function it_loads_html_from_layout()
+    {
+        $layout = factory(Layout::class)->create();
+
+        $pdf = PDF::loadLayout($layout->code, $this->data());
+
+        $this->assertNotNull($pdf->getDomPDF()->get_dom());
+    }
+
+    /** @test */
     public function it_parses_html_from_template()
     {
-        $template = factory('Renatio\DynamicPDF\Models\Template')->create(['content_html' => '{{ field }}']);
+        $template = factory(Template::class)->create();
 
-        $output = PDF::parseTemplate($template, ['field' => 'test']);
+        $output = PDF::parseTemplate($template, $this->data());
 
-        $this->assertContains('test', $output);
+        $this->assertContains('John', $output);
+        $this->assertContains('color: #fff', $output);
     }
 
     /** @test */
     public function it_parses_html_from_layout()
     {
-        $layout = factory('Renatio\DynamicPDF\Models\Layout')->create(['content_html' => '{{ field }}']);
+        $layout = factory(Layout::class)->create();
 
-        $output = PDF::parseLayout($layout, ['field' => 'test']);
+        $output = PDF::parseLayout($layout, $this->data());
 
-        $this->assertContains('test', $output);
+        $this->assertContains('John', $output);
+        $this->assertContains('color: #fff', $output);
+    }
+
+    /**
+     * @return array
+     */
+    protected function data()
+    {
+        return ['name' => 'John'];
     }
 
 }

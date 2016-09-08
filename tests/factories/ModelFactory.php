@@ -1,17 +1,43 @@
 <?php
 
-$factory->define('Renatio\DynamicPDF\Models\Template', function (Faker\Generator $faker) {
+use Backend\Models\User;
+use Renatio\DynamicPDF\Models\Layout;
+use Renatio\DynamicPDF\Models\Template;
+
+/*
+ * User
+ */
+$factory->define(User::class, function ($faker) {
     return [
-        'title' => $faker->sentence,
-        'code' => $faker->word,
-        'content_html' => $faker->paragraph(5),
+        'email' => $faker->email,
+        'first_name' => $faker->firstName,
+        'last_name' => $faker->lastName,
+        'login' => $faker->email,
+        'password' => $password = $faker->password,
+        'password_confirmation' => $password,
     ];
 });
 
-$factory->define('Renatio\DynamicPDF\Models\Layout', function (Faker\Generator $faker) {
+/*
+ * Layout
+ */
+$factory->define(Layout::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->sentence,
         'code' => $faker->word,
-        'content_html' => $faker->paragraph(5),
+        'content_html' => File::get(__DIR__ . '/../fixtures/layout.htm'),
+        'content_css' => File::get(__DIR__ . '/../fixtures/style.css'),
+    ];
+});
+
+/*
+ * Template
+ */
+$factory->define(Template::class, function (Faker\Generator $faker) {
+    return [
+        'title' => $faker->sentence,
+        'code' => $faker->word,
+        'content_html' => File::get(__DIR__ . '/../fixtures/template.htm'),
+        'layout' => factory(Layout::class)->create(),
     ];
 });

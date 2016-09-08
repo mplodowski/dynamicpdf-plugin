@@ -4,8 +4,8 @@ namespace Renatio\DynamicPDF\Controllers;
 
 use Backend\Classes\Controller;
 use Backend\Facades\BackendMenu;
+use October\Rain\Exception\ApplicationException;
 use Renatio\DynamicPDF\Classes\PDF;
-use Exception;
 
 /**
  * Class Layouts
@@ -55,12 +55,14 @@ class Layouts extends Controller
             $model = $this->formFindModelObject($id);
 
             return PDF::loadLayout($model->code)->stream();
-        } catch (Exception $e) {
+        } catch (ApplicationException $e) {
             $this->handleError($e);
         }
     }
 
     /**
+     * Renders HTML for given layout ID
+     *
      * @param $id
      * @return mixed
      */

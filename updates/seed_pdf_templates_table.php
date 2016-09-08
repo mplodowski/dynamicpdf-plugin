@@ -2,10 +2,10 @@
 
 namespace Renatio\DynamicPDF\Updates;
 
+use File;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Seeder;
-use File;
 
 /**
  * Class SeedPdfTemplatesTable

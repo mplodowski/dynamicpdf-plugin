@@ -24,15 +24,15 @@ class Template extends Model
      * @var array
      */
     public $belongsTo = [
-        'layout' => 'Renatio\DynamicPDF\Models\Layout'
+        'layout' => Layout::class,
     ];
 
     /**
      * @var array
      */
     public $rules = [
-        'title' => 'required',
-        'code' => 'required|unique:renatio_dynamicpdf_pdf_templates',
+        'title' => 'required|max:100',
+        'code' => 'required|max:50|unique:renatio_dynamicpdf_pdf_templates',
         'content_html' => 'required',
     ];
 
@@ -56,6 +56,17 @@ class Template extends Model
     public function getHtmlAttribute()
     {
         return PDF::loadTemplate($this->code)->getDompdf()->output_html();
+    }
+
+    /**
+     * Find template by code
+     *
+     * @param $code
+     * @return mixed
+     */
+    public static function byCode($code)
+    {
+        return static::whereCode($code)->firstOrFail();
     }
 
 }

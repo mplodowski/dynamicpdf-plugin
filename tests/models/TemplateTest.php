@@ -2,6 +2,8 @@
 
 namespace Renatio\DynamicPDF\Tests\Models;
 
+use Renatio\DynamicPDF\Models\Layout;
+use Renatio\DynamicPDF\Models\Template;
 use Renatio\DynamicPDF\Tests\TestCase;
 
 /**
@@ -14,65 +16,63 @@ class TemplateTest extends TestCase
     /** @test */
     public function it_creates_template()
     {
-        $template = factory('Renatio\DynamicPDF\Models\Template')->create();
+        $template = factory(Template::class)->create();
 
         $this->assertEquals(2, $template->id);
     }
 
-    /**
-     * @test
-     * @expectedException \October\Rain\Database\ModelException
-     */
-    public function it_validate_title_is_required()
+    /** @test */
+    public function it_validates_title()
     {
-        factory('Renatio\DynamicPDF\Models\Template')->create(['title' => '']);
+        $template = factory(Template::class)->make();
+
+        $this->assertArrayHasKey('title', $template->rules);
+        $this->assertEquals('required|max:100', $template->rules['title']);
     }
 
-    /**
-     * @test
-     * @expectedException \October\Rain\Database\ModelException
-     */
-    public function it_validate_code_is_required()
+    /** @test */
+    public function it_validates_code()
     {
-        factory('Renatio\DynamicPDF\Models\Template')->create(['code' => '']);
+        $template = factory(Template::class)->make();
+
+        $this->assertArrayHasKey('code', $template->rules);
+        $this->assertEquals('required|max:50|unique:renatio_dynamicpdf_pdf_templates', $template->rules['code']);
     }
 
-    /**
-     * @test
-     * @expectedException \October\Rain\Database\ModelException
-     */
-    public function it_validate_code_is_unique()
+    /** @test */
+    public function it_validates_content_html()
     {
-        factory('Renatio\DynamicPDF\Models\Template')->create(['code' => 'test']);
-        factory('Renatio\DynamicPDF\Models\Template')->create(['code' => 'test']);
-    }
+        $template = factory(Template::class)->make();
 
-    /**
-     * @test
-     * @expectedException \October\Rain\Database\ModelException
-     */
-    public function it_validate_content_html_is_required()
-    {
-        factory('Renatio\DynamicPDF\Models\Template')->create(['content_html' => '']);
+        $this->assertArrayHasKey('content_html', $template->rules);
+        $this->assertEquals('required', $template->rules['content_html']);
     }
 
     /** @test */
     public function it_belongs_to_layout()
     {
-        $template = factory('Renatio\DynamicPDF\Models\Template')->create();
+        $template = new Template;
 
-        $template->layout()->associate(factory('Renatio\DynamicPDF\Models\Layout')->create());
-
-        $this->assertEquals(2, $template->layout->id);
-        $this->isInstanceOf('Renatio\DynamicPDF\Models\Layout', $template->layout);
+        $this->assertArrayHasKey('layout', $template->belongsTo);
+        $this->assertContains(Layout::class, $template->belongsTo['layout']);
     }
 
     /** @test */
-    public function it_has_html_attribute_property()
+    public function it_has_html_accessor()
     {
-        $template = factory('Renatio\DynamicPDF\Models\Template')->create(['content_html' => '<p>test</p>']);
+        $template = factory(Template::class)->create(['content_html' => '<p>test</p>']);
 
         $this->assertContains('<p>test</p>', $template->html);
+    }
+
+    /** @test */
+    public function it_finds_template_by_code()
+    {
+        factory(Template::class)->create(['code' => 'test']);
+
+        $template = Template::byCode('test');
+
+        $this->assertEquals('test', $template->code);
     }
 
 }

@@ -2,7 +2,9 @@
 
 namespace Renatio\DynamicPDF\Tests\Models;
 
+use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Tests\TestCase;
+use System\Models\File;
 
 /**
  * Class LayoutTest
@@ -14,54 +16,63 @@ class LayoutTest extends TestCase
     /** @test */
     public function it_creates_layout()
     {
-        $layout = factory('Renatio\DynamicPDF\Models\Layout')->create();
+        $layout = factory(Layout::class)->create();
 
         $this->assertEquals(2, $layout->id);
     }
 
-    /**
-     * @test
-     * @expectedException \October\Rain\Database\ModelException
-     */
-    public function it_validate_name_is_required()
+    /** @test */
+    public function it_validates_name()
     {
-        factory('Renatio\DynamicPDF\Models\Layout')->create(['name' => '']);
-    }
+        $layout = factory(Layout::class)->make();
 
-    /**
-     * @test
-     * @expectedException \October\Rain\Database\ModelException
-     */
-    public function it_validate_code_is_required()
-    {
-        factory('Renatio\DynamicPDF\Models\Layout')->create(['code' => '']);
-    }
-
-    /**
-     * @test
-     * @expectedException \October\Rain\Database\ModelException
-     */
-    public function it_validate_code_is_unique()
-    {
-        factory('Renatio\DynamicPDF\Models\Layout')->create(['code' => 'test']);
-        factory('Renatio\DynamicPDF\Models\Layout')->create(['code' => 'test']);
-    }
-
-    /**
-     * @test
-     * @expectedException \October\Rain\Database\ModelException
-     */
-    public function it_validate_content_html_is_required()
-    {
-        factory('Renatio\DynamicPDF\Models\Layout')->create(['content_html' => '']);
+        $this->assertArrayHasKey('name', $layout->rules);
+        $this->assertEquals('required|max:100', $layout->rules['name']);
     }
 
     /** @test */
-    public function it_has_html_attribute_property()
+    public function it_validates_code()
     {
-        $layout = factory('Renatio\DynamicPDF\Models\Layout')->create(['content_html' => '<p>test</p>']);
+        $layout = factory(Layout::class)->make();
+
+        $this->assertArrayHasKey('code', $layout->rules);
+        $this->assertEquals('required|max:50|unique:renatio_dynamicpdf_pdf_layouts', $layout->rules['code']);
+    }
+
+    /** @test */
+    public function it_validates_content_html()
+    {
+        $layout = factory(Layout::class)->make();
+
+        $this->assertArrayHasKey('content_html', $layout->rules);
+        $this->assertEquals('required', $layout->rules['content_html']);
+    }
+
+    /** @test */
+    public function it_attaches_one_background_img()
+    {
+        $layout = new Layout;
+
+        $this->assertArrayHasKey('background_img', $layout->attachOne);
+        $this->assertContains(File::class, $layout->attachOne['background_img']);
+    }
+
+    /** @test */
+    public function it_has_html_accessor()
+    {
+        $layout = factory(Layout::class)->create(['content_html' => '<p>test</p>']);
 
         $this->assertContains('<p>test</p>', $layout->html);
+    }
+
+    /** @test */
+    public function it_finds_layout_by_code()
+    {
+        factory(Layout::class)->create(['code' => 'test']);
+
+        $layout = Layout::byCode('test');
+
+        $this->assertEquals('test', $layout->code);
     }
 
 }

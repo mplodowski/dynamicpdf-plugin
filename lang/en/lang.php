@@ -16,7 +16,7 @@ return [
         'content_html' => 'HTML',
         'content_css' => 'CSS',
         'name' => 'Name',
-        'return_message' => 'Return to pdf templates list',
+        'return' => 'Return to pdf templates list',
         'new_template' => 'New Template',
         'new_layout' => 'New Layout',
         'templates' => 'Templates',
@@ -36,7 +36,7 @@ return [
     ],
     'layouts' => [
         'label' => 'Layouts',
-        'return_message' => 'Return to layouts list',
+        'return' => 'Return to layouts list',
         'delete_alert' => 'Do you really want to delete this layout?',
     ],
     'layout' => [

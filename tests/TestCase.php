@@ -2,9 +2,10 @@
 
 namespace Renatio\DynamicPDF\Tests;
 
+use Faker\Generator;
 use Illuminate\Database\Eloquent\Factory;
 use PluginTestCase;
-use Illuminate\Foundation\AliasLoader;
+use Renatio\DynamicPDF\Classes\ServiceProvider;
 
 /**
  * Class TestCase
@@ -22,19 +23,16 @@ class TestCase extends PluginTestCase
 
         $this->changeDefaultFactoriesPath();
 
-        $this->app->register('Barryvdh\DomPDF\ServiceProvider');
-        $this->app->register('Renatio\DynamicPDF\Classes\ServiceProvider');
-
-        AliasLoader::getInstance()->alias('PDF', 'Renatio\DynamicPDF\Classes\PDF');
+        $this->app->register(ServiceProvider::class);
     }
 
     /**
      * @return void
      */
-    private function changeDefaultFactoriesPath()
+    protected function changeDefaultFactoriesPath()
     {
-        $this->app->singleton('Illuminate\Database\Eloquent\Factory', function () {
-            $faker = $this->app->make('Faker\Generator');
+        $this->app->singleton(Factory::class, function () {
+            $faker = $this->app->make(Generator::class);
 
             return Factory::construct($faker, base_path('plugins/renatio/dynamicpdf/tests/factories'));
         });

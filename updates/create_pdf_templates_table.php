@@ -2,8 +2,8 @@
 
 namespace Renatio\DynamicPDF\Updates;
 
-use Schema;
 use October\Rain\Database\Updates\Migration;
+use Schema;
 
 /**
  * Class CreateTemplatesTable
@@ -21,8 +21,8 @@ class CreateTemplatesTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('layout_id')->unsigned()->index()->nullable();
-            $table->string('code')->unique();
-            $table->string('title');
+            $table->string('code', 50)->unique();
+            $table->string('title', 100);
             $table->text('description')->nullable();
             $table->text('content_html')->nullable();
             $table->timestamps();

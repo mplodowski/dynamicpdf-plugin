@@ -22,17 +22,12 @@ class PDFWrapper extends LaravelPDF
      * @param null $encoding
      * @return $this
      */
-    public function loadTemplate($code, array $data = [], $encoding = null)
+    public function loadTemplate($code, $data = [], $encoding = null)
     {
-        $template = Template::whereCode($code)->firstOrFail();
-
-        $html = $this->parseTemplate($template, $data);
-
-        if ($template->layout) {
-            $html = $this->parseLayout($template->layout, array_merge(['content_html' => $html], $data));
-        }
-
-        $this->loadHTML($html, $encoding);
+        $this->loadHTML(
+            $this->parseTemplate(Template::byCode($code), $data),
+            $encoding
+        );
 
         return $this;
     }
@@ -45,13 +40,12 @@ class PDFWrapper extends LaravelPDF
      * @param null $encoding
      * @return $this
      */
-    public function loadLayout($code, array $data = [], $encoding = null)
+    public function loadLayout($code, $data = [], $encoding = null)
     {
-        $layout = Layout::whereCode($code)->firstOrFail();
-
-        $html = $this->parseLayout($layout, $data);
-
-        $this->loadHTML($html, $encoding);
+        $this->loadHTML(
+            $this->parseLayout(Layout::byCode($code), $data),
+            $encoding
+        );
 
         return $this;
     }
@@ -59,30 +53,53 @@ class PDFWrapper extends LaravelPDF
     /**
      * Get parsed HTML from template
      *
-     * @param Template $template
+     * @param $template
      * @param array $data
      * @return mixed
      */
-    public function parseTemplate(Template $template, array $data = [])
+    public function parseTemplate($template, $data = [])
     {
-        return Twig::parse($template->content_html, $data);
+        $html = Twig::parse($template->content_html, $data);
+
+        if ( ! $template->layout) {
+            return $html;
+        }
+
+        return $this->parseLayout(
+            $template->layout,
+            array_merge(['content_html' => $html], $data)
+        );
     }
 
     /**
      * Get parsed HTML from layout
      *
-     * @param Layout $layout
+     * @param $layout
      * @param array $mergeData
      * @return mixed
      */
-    public function parseLayout(Layout $layout, array $mergeData = [])
+    public function parseLayout($layout, $mergeData = [])
     {
-        $data = [
-            'background_img' => $layout->background_img ? $layout->background_img->getPath() : '',
-            'css' => $layout->content_css
-        ];
+        return Twig::parse(
+            $layout->content_html,
+            $this->layoutData($layout, $mergeData)
+        );
+    }
 
-        return Twig::parse($layout->content_html, array_merge($data, $mergeData));
+    /**
+     * @param $layout
+     * @param $mergeData
+     * @return array
+     */
+    protected function layoutData($layout, $mergeData)
+    {
+        return array_merge(
+            [
+                'background_img' => $layout->background_img ? $layout->background_img->getPath() : null,
+                'css' => $layout->content_css
+            ],
+            $mergeData
+        );
     }
 
 }

@@ -4,8 +4,8 @@ namespace Renatio\DynamicPDF\Controllers;
 
 use Backend\Classes\Controller;
 use Backend\Facades\BackendMenu;
+use October\Rain\Exception\ApplicationException;
 use Renatio\DynamicPDF\Classes\PDF;
-use Exception;
 
 /**
  * Class Templates
@@ -55,12 +55,14 @@ class Templates extends Controller
             $model = $this->formFindModelObject($id);
 
             return PDF::loadTemplate($model->code)->stream();
-        } catch (Exception $e) {
+        } catch (ApplicationException $e) {
             $this->handleError($e);
         }
     }
 
     /**
+     * Renders HTML for given template ID
+     *
      * @param $id
      * @return mixed
      */

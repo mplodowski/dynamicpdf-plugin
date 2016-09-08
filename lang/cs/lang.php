@@ -16,7 +16,7 @@ return [
         'content_html' => 'HTML',
         'content_css' => 'CSS',
         'name' => 'Jméno',
-        'return_message' => 'Zpět na seznam šablon',
+        'return' => 'Zpět na seznam šablon',
         'new_template' => 'Nová šablona',
         'new_layout' => 'Nový layout',
         'templates' => 'Šablony',
@@ -35,7 +35,7 @@ return [
     ],
     'layouts' => [
         'label' => 'PDF Layouty',
-        'return_message' => 'Zpět na seznam PDF layoutů',
+        'return' => 'Zpět na seznam PDF layoutů',
         'delete_alert' => 'Opravdu chcete smazat tento PDF layout?',
     ],
     'layout' => [

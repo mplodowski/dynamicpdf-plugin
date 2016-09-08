@@ -16,7 +16,7 @@ return [
         'content_html' => 'HTML',
         'content_css' => 'CSS',
         'name' => 'Nombre',
-        'return_message' => 'Volver a la lista de plantillas PDF',
+        'return' => 'Volver a la lista de plantillas PDF',
         'new_template' => 'Nueva Plantilla',
         'new_layout' => 'Nuevo Diseño',
         'templates' => 'Plantillas',
@@ -35,7 +35,7 @@ return [
     ],
     'layouts' => [
         'label' => 'Diseños PDF',
-        'return_message' => 'Volver la la lista de diseños PDF',
+        'return' => 'Volver la la lista de diseños PDF',
         'delete_alert' => 'Realmente quiere eliminar éste diseño?',
     ],
     'layout' => [

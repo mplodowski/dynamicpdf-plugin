@@ -8,12 +8,20 @@ Plugin page: https://octobercms.com/plugin/renatio-dynamicpdf
 
 Plugin was build on Laravel Package [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
 
+> This plugin requires **Stable** version of OctoberCMS.
+
 ## Features
 * Manage PDF Templates and Layouts in OctoberCMS backend
 * Example Invoice.pdf template with background image, custom header and footer, custom Open Sans font embedding
 * Simple function for rendering PDF documents inside OctoberCMS using DOMPDF library
 * Twig support in templates
 * Style templates using pure CSS
+
+## Support
+
+Please use [GitHub Issues Page](https://github.com/mplodowski/DynamicPDF/issues) to report any issues with plugin.
+
+> Reviews should not be used for getting support, if you need support please use the Plugin support link.
 
 ## Like this plugin?
 If you like this plugin, give this plugin a Like or Make donation with PayPal.
@@ -145,9 +153,13 @@ See all available [methods](#methods).
 
 ## [Upgrade guide](#upgrade-guide) {#upgrade-guide}
 
-**From 1.0.2 to 1.1.0.** Plugin requires October build 300 and above.
+**From 1.1.5 to 2.0.0.** 
 
-**From 1.1.5 to 2.0.0.** Major code refactor. `PDFTemplate::render()` method was removed, switch to PDF facade. See example codes in documentation how to. Code base was significantly improved and allow for more flexibility.
+Major code refactor. `PDFTemplate::render()` method was removed, switch to PDF facade. See example codes in documentation how to. Code base was significantly improved and allow for more flexibility.
+
+**From 1.0.2 to 1.1.0.** 
+
+Plugin requires October build 300 and above.
 
 ## [License](#license) {#license}
 

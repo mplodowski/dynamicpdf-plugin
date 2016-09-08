@@ -2,12 +2,9 @@
 
 namespace Renatio\DynamicPDF;
 
-use App;
+use Backend\Facades\Backend;
+use Renatio\DynamicPDF\Classes\ServiceProvider;
 use System\Classes\PluginBase;
-use Illuminate\Foundation\AliasLoader;
-use Backend;
-use Config;
-use File;
 
 /**
  * Class Plugin
@@ -35,9 +32,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
-        $this->registerPackage();
-
-        $this->createFontDirectory();
+        $this->app->register(ServiceProvider::class);
     }
 
     /**
@@ -52,7 +47,6 @@ class Plugin extends PluginBase
                 'icon' => 'icon-file-pdf-o',
                 'permissions' => ['renatio.dynamicpdf.*'],
                 'order' => 500,
-
                 'sideMenu' => [
                     'templates' => [
                         'label' => 'renatio.dynamicpdf::lang.templates.templates',
@@ -86,31 +80,6 @@ class Plugin extends PluginBase
                 'label' => 'renatio.dynamicpdf::lang.permissions.manage_layouts'
             ]
         ];
-    }
-
-    /**
-     * @return void
-     */
-    private function createFontDirectory()
-    {
-        $config = Config::get('dompdf.defines');
-
-        if ( ! File::exists($config['DOMPDF_FONT_CACHE'])) {
-            File::makeDirectory($config['DOMPDF_FONT_CACHE']);
-        }
-    }
-
-    /**
-     * @return void
-     */
-    private function registerPackage()
-    {
-        App::register('Barryvdh\DomPDF\ServiceProvider');
-        App::register('Renatio\DynamicPDF\Classes\ServiceProvider');
-
-        AliasLoader::getInstance()->alias('PDF', 'Renatio\DynamicPDF\Classes\PDF');
-
-        Config::set('dompdf.config_file', __DIR__ . '/vendor/dompdf/dompdf/dompdf_config.inc.php');
     }
 
 }

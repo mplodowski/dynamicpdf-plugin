@@ -5,6 +5,7 @@ namespace Renatio\DynamicPDF\Models;
 use Model;
 use October\Rain\Database\Traits\Validation;
 use Renatio\DynamicPDF\Classes\PDF;
+use System\Models\File;
 
 /**
  * Class Layout
@@ -24,8 +25,8 @@ class Layout extends Model
      * @var array
      */
     public $rules = [
-        'name' => 'required',
-        'code' => 'required|unique:renatio_dynamicpdf_pdf_layouts',
+        'name' => 'required|max:100',
+        'code' => 'required|max:50|unique:renatio_dynamicpdf_pdf_layouts',
         'content_html' => 'required',
     ];
 
@@ -38,7 +39,7 @@ class Layout extends Model
      * @var array
      */
     public $attachOne = [
-        'background_img' => 'System\Models\File'
+        'background_img' => File::class,
     ];
 
     /**
@@ -56,6 +57,17 @@ class Layout extends Model
     public function getHtmlAttribute()
     {
         return PDF::loadLayout($this->code)->getDompdf()->output_html();
+    }
+
+    /**
+     * Find layout by code
+     *
+     * @param $code
+     * @return mixed
+     */
+    public static function byCode($code)
+    {
+        return static::whereCode($code)->firstOrFail();
     }
 
 }
