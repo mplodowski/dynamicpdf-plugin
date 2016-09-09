@@ -45,11 +45,7 @@ See [example codes](#examples).
 
 ## [Configuration](#configuration) {#configuration}
 
-Use `php artisan vendor:publish` to create a config file located at `config/dompdf.php` which will allow you to define local configurations to change some settings (default paper etc).
-
-You can also use your ConfigProvider to set certain keys.
-
-    Config::set('dompdf.orientation', 'landscape');
+Use `php artisan vendor:publish` to create a config file located at `config/dompdf.php` which will allow you to define local configurations to change some settings.
 
 ## [Methods](#methods) {#methods}
 
@@ -62,8 +58,7 @@ You can also use your ConfigProvider to set certain keys.
 | parseTemplate(Template $template, array $data = []) | Parse backend template using Twig |
 | parseLayout(Layout $layout, array $mergeData = []) | Parse backend layout using Twig |
 | getDomPDF() | Get the DomPDF instance |
-| setPaper($paper, $orientation = null) | Set the paper size (default A4) |
-| setOrientation($orientation) | Set the orientation (default portrait) |
+| setPaper($paper, $orientation = 'portrait') | Set the paper size and orientation (default A4/portrait) |
 | setWarnings($warnings) | Show or hide warnings |
 | output() | Output the PDF as a string |
 | save($filename) | Save the PDF to a file |
@@ -152,6 +147,14 @@ To display PDF on CMS page you can use PHP section of the page like so:
 See all available [methods](#methods).
 
 ## [Upgrade guide](#upgrade-guide) {#upgrade-guide}
+
+**From 2.1.0 to 2.1.1.** 
+
+Method `setOrientation` was removed. Use `setPaper` instead.
+
+**From 2.0.1 to 2.1.0.** 
+
+Plugin requires **Stable Release** of OctoberCMS. As a consequence it needs PHP 5.5.9 and Laravel 5.1.
 
 **From 1.1.5 to 2.0.0.** 
 
