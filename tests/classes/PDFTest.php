@@ -145,14 +145,6 @@ class PDFTest extends TestCase
     }
 
     /**
-     * @param $pdf
-     */
-    protected function assertNotEmptyPDF($pdf)
-    {
-        $this->assertNotNull($pdf->getDomPDF()->get_dom());
-    }
-
-    /**
      * @param $search
      * @param $pdf
      */
