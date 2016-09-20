@@ -14,20 +14,12 @@ fields:
         span: right
         preset: name
 
-    background_img:
-        label: renatio.dynamicpdf::lang.templates.background_img
-        type: fileupload
-        mode: image
-        imageHeight: 200
-        imageWidth: 200
-        commentAbove: renatio.dynamicpdf::lang.templates.background_img_comment
-
-secondaryTabs:
+tabs:
     fields:
 
         content_html:
             type: codeeditor
-            size: huge
+            size: giant
             tab: renatio.dynamicpdf::lang.templates.content_html
             language: html
             default: |
@@ -44,6 +36,17 @@ secondaryTabs:
 
         content_css:
             type: codeeditor
-            size: huge
+            size: giant
             tab: renatio.dynamicpdf::lang.templates.content_css
             language: css
+
+secondaryTabs:
+    fields:
+
+        background_img:
+            label: renatio.dynamicpdf::lang.templates.background_img
+            type: fileupload
+            mode: image
+            imageHeight: 200
+            imageWidth: 200
+            commentAbove: renatio.dynamicpdf::lang.templates.background_img_comment
