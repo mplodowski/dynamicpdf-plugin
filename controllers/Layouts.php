@@ -13,7 +13,6 @@ use Renatio\DynamicPDF\Classes\PDF;
  */
 class Layouts extends Controller
 {
-
     /**
      * @var array
      */
@@ -26,6 +25,11 @@ class Layouts extends Controller
      * @var array
      */
     public $requiredPermissions = ['renatio.dynamicpdf.manage_layouts'];
+
+    /**
+     * @var string
+     */
+    public $bodyClass = 'compact-container';
 
     /**
      * @var string
@@ -72,5 +76,4 @@ class Layouts extends Controller
 
         return response($model->html);
     }
-
 }
