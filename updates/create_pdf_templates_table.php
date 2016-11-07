@@ -11,7 +11,6 @@ use Schema;
  */
 class CreateTemplatesTable extends Migration
 {
-
     /**
      * @return void
      */
@@ -36,5 +35,4 @@ class CreateTemplatesTable extends Migration
     {
         Schema::dropIfExists('renatio_dynamicpdf_pdf_templates');
     }
-
 }

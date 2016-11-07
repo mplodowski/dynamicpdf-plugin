@@ -11,7 +11,6 @@ use Schema;
  */
 class CreateLayoutsTable extends Migration
 {
-
     /**
      * @return void
      */
@@ -35,5 +34,4 @@ class CreateLayoutsTable extends Migration
     {
         Schema::dropIfExists('renatio_dynamicpdf_pdf_layouts');
     }
-
 }

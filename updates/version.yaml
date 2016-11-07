@@ -15,3 +15,6 @@
 2.0.1: Add preview HTML buttons.
 2.1.0: !!! This is an important update that contains breaking changes.
 2.1.1: Upgrade to DomPDF 0.7.
+2.1.2:
+    - Database maintenance. Updated all timestamp columns to be nullable.
+    - update_timestamp_nullable.php
