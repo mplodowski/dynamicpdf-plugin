@@ -1,6 +1,6 @@
 {
   "require": {
-    "barryvdh/laravel-dompdf": "0.7.*",
+    "barryvdh/laravel-dompdf": "0.8.*",
     "illuminate/contracts" : "5.1.*",
     "illuminate/support" : "5.1.*"
   }
