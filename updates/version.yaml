@@ -19,3 +19,4 @@
     - Database maintenance. Updated all timestamp columns to be nullable.
     - update_timestamp_nullable.php
 2.1.3: Upgrade to DomPDF 0.8.
+2.1.4: German language. Thanks to @TimFoerster
