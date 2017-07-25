@@ -29,7 +29,7 @@ If you like this plugin, give this plugin a Like or Make donation with PayPal.
 # Documentation
 ## [Installation](#installation) {#installation}
 
-In order to install this plugin you have to click on __Add to project__ or type __Renatio.DynamicPDF__ in Backend *System > Updates > Install Plugin*
+In order to install this plugin you have to click on __Add to project__ or type __Renatio.DynamicPDF__ in Backend *Settings > System > Updates & Plugins > Install plugins*
 
 ## [Using](#using)  {#using}
 
