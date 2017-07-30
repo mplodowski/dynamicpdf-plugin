@@ -21,3 +21,4 @@
 2.1.3: Upgrade to DomPDF 0.8.
 2.1.4: German language. Thanks to @TimFoerster.
 2.1.5: Fix open_basedir restriction on some hostings. Set isRemoteEnabled flag to allow absolute paths.
+2.1.6: Allow Laravel 5.5.
