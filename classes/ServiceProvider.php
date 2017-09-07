@@ -3,7 +3,6 @@
 namespace Renatio\DynamicPDF\Classes;
 
 use Barryvdh\DomPDF\ServiceProvider as LaravelPdfServiceProvider;
-use File;
 use October\Rain\Support\ServiceProvider as OctoberServiceProvider;
 
 /**
@@ -30,10 +29,10 @@ class ServiceProvider extends OctoberServiceProvider
      */
     protected function createFontDirectory()
     {
-        $fontDir = config('dompdf.defines')['DOMPDF_FONT_CACHE'];
+        $fontDir = config('dompdf.defines')['DOMPDF_FONT_DIR'];
 
-        if ( ! File::exists($fontDir)) {
-            File::makeDirectory($fontDir);
+        if ( ! $this->app->files->exists($fontDir)) {
+            $this->app->files->makeDirectory($fontDir);
         }
     }
 

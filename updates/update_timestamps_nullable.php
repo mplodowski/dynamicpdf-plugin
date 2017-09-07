@@ -3,10 +3,18 @@
 namespace Renatio\DynamicPDF\Updates;
 
 use October\Rain\Database\Updates\Migration;
-use DbDongle;
+use October\Rain\Support\Facades\DbDongle;
 
+/**
+ * Class UpdateTimestampsNullable
+ * @package Renatio\DynamicPDF\Updates
+ */
 class UpdateTimestampsNullable extends Migration
 {
+
+    /**
+     * @return void
+     */
     public function up()
     {
         DbDongle::disableStrictMode();
@@ -15,8 +23,12 @@ class UpdateTimestampsNullable extends Migration
         DbDongle::convertTimestamps('renatio_dynamicpdf_pdf_templates');
     }
 
+    /**
+     * @return void
+     */
     public function down()
     {
-        // ...
+        //
     }
+
 }

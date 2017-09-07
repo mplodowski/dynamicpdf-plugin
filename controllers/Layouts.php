@@ -19,7 +19,7 @@ class Layouts extends Controller
      */
     public $implement = [
         'Backend.Behaviors.FormController',
-        'Backend.Behaviors.ListController'
+        'Backend.Behaviors.ListController',
     ];
 
     /**
@@ -63,8 +63,7 @@ class Layouts extends Controller
                 ->setOptions([
                     'logOutputFile' => storage_path('temp/log.htm'),
                     'isRemoteEnabled' => true,
-                ])
-                ->stream();
+                ])->stream();
         } catch (ApplicationException $e) {
             $this->handleError($e);
         }
@@ -82,4 +81,5 @@ class Layouts extends Controller
 
         return response($model->html);
     }
+
 }

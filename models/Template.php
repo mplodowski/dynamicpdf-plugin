@@ -2,7 +2,7 @@
 
 namespace Renatio\DynamicPDF\Models;
 
-use Model;
+use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 use Renatio\DynamicPDF\Classes\PDF;
 
@@ -47,7 +47,7 @@ class Template extends Model
     public $attributeNames = [
         'title' => 'renatio.dynamicpdf::lang.templates.title',
         'code' => 'renatio.dynamicpdf::lang.templates.code',
-        'content_html' => 'renatio.dynamicpdf::lang.templates.content_html'
+        'content_html' => 'renatio.dynamicpdf::lang.templates.content_html',
     ];
 
     /**

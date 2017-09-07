@@ -3,9 +3,9 @@
 namespace Renatio\DynamicPDF\Classes;
 
 use Barryvdh\DomPDF\PDF as LaravelPDF;
+use October\Rain\Support\Facades\Twig;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
-use Twig;
 
 /**
  * Class PDFWrapper

@@ -19,7 +19,7 @@ class Templates extends Controller
      */
     public $implement = [
         'Backend.Behaviors.FormController',
-        'Backend.Behaviors.ListController'
+        'Backend.Behaviors.ListController',
     ];
 
     /**
@@ -58,8 +58,7 @@ class Templates extends Controller
                 ->setOptions([
                     'logOutputFile' => storage_path('temp/log.htm'),
                     'isRemoteEnabled' => true,
-                ])
-                ->stream();
+                ])->stream();
         } catch (ApplicationException $e) {
             $this->handleError($e);
         }

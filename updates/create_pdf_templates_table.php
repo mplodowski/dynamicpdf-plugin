@@ -3,7 +3,7 @@
 namespace Renatio\DynamicPDF\Updates;
 
 use October\Rain\Database\Updates\Migration;
-use Schema;
+use October\Rain\Support\Facades\Schema;
 
 /**
  * Class CreateTemplatesTable
@@ -11,6 +11,7 @@ use Schema;
  */
 class CreateTemplatesTable extends Migration
 {
+
     /**
      * @return void
      */
@@ -35,4 +36,5 @@ class CreateTemplatesTable extends Migration
     {
         Schema::dropIfExists('renatio_dynamicpdf_pdf_templates');
     }
+
 }

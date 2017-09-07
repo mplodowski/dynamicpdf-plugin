@@ -2,7 +2,7 @@
 
 namespace Renatio\DynamicPDF\Models;
 
-use Model;
+use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 use Renatio\DynamicPDF\Classes\PDF;
 use System\Models\File;
@@ -48,7 +48,7 @@ class Layout extends Model
     public $attributeNames = [
         'name' => 'renatio.dynamicpdf::lang.templates.name',
         'code' => 'renatio.dynamicpdf::lang.templates.code',
-        'content_html' => 'renatio.dynamicpdf::lang.templates.content_html'
+        'content_html' => 'renatio.dynamicpdf::lang.templates.content_html',
     ];
 
     /**

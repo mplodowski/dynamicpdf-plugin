@@ -2,9 +2,9 @@
 
 namespace Renatio\DynamicPDF\Updates;
 
-use File;
+use Illuminate\Support\Facades\File;
+use October\Rain\Database\Updates\Seeder;
 use Renatio\DynamicPDF\Models\Layout;
-use Seeder;
 use System\Models\File as FileModel;
 
 /**
