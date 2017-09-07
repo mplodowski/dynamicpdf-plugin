@@ -1,41 +1,36 @@
 # Dynamic PDF plugin
 
-Plugin adds backed-end layouts and templates pdf management features to [OctoberCMS](http://octobercms.com).
+October HTML to PDF converter using [dompdf](https://github.com/dompdf/dompdf) library.
 
-Demo: http://oc.renatio.com/dynamic-pdf
-
-Plugin page: https://octobercms.com/plugin/renatio-dynamicpdf
-
-Plugin uses [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
-
-> This plugin requires **Stable** version of OctoberCMS.
+Plugin uses dompdf wrapper for Laravel [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
 
 ## Features
-* Manage PDF Templates and Layouts in OctoberCMS backend
-* Example Invoice.pdf template with background image, custom header and footer, custom Open Sans font embedding
-* Simple function for rendering PDF documents inside OctoberCMS using DOMPDF library
-* Twig support in templates
-* Style templates using pure CSS
 
-## Support
+* Handles most CSS 2.1 and a few CSS3 properties, including @import, @media & @page rules
+* Supports most presentational HTML 4.0 attributes
+* Supports external stylesheets, either local or through http/ftp (via fopen-wrappers)
+* Supports complex tables, including row & column spans, separate & collapsed border models, individual cell styling
+* Image support (gif, png (8, 24 and 32 bit with alpha channel), bmp & jpeg)
+* No dependencies on external PDF libraries, thanks to the R&OS PDF class
+* Inline PHP support
+* Basic SVG support
 
-Please use [GitHub Issues Page](https://github.com/mplodowski/DynamicPDF/issues) to report any issues with plugin.
+## Installation
 
-> Reviews should not be used for getting support, if you need support please use the Plugin support link.
+There are couple ways to install this plugin.
 
-## Like this plugin?
-If you like this plugin, give this plugin a Like or Make donation with PayPal.
+1. Use October [Marketplace](http://octobercms.com/help/site/marketplace) and __Add to project__ button. 
+2. Use October backend area *Settings > System > Updates & Plugins > Install Plugins* and type __Renatio.DynamicPDF__.
+3. Use `php artisan plugin:install Renatio.DynamicPDF` command.
+4. Use `composer require renatio/dynamicpdf-plugin` in project root. When you use this option you must run `php artisan october:up` after installation.
 
-# Documentation
-## [Installation](#installation) {#installation}
-
-In order to install this plugin you have to click on __Add to project__ or type __Renatio.DynamicPDF__ in Backend *System > Updates > Install Plugin*
+> Fourth option should be used only for advanced users.
 
 ## [Using](#using)  {#using}
 
 Plugin will register menu item called **PDF**, which allow you to manage PDF layouts and templates.
 
-Layouts define the pdf scaffold, that is everything that repeats on a pdf, such as a header and footer. Each layout has unique code, optional background image, HTML content and CSS content. Not all CSS properties are supported, so check CSS support for [DOMPDF](https://github.com/dompdf/dompdf/wiki/CSSCompatibility).
+Layouts define the pdf scaffold, that is everything that repeats on a pdf, such as a header and footer. Each layout has unique code, optional background image, HTML content and CSS content. Not all CSS properties are supported, so check [CSSCompatibility](https://github.com/dompdf/dompdf/wiki/CSSCompatibility).
 
 Templates define the actual pdf content parsed from HTML. The code specified in the template is a unique identifier and cannot be changed once created.
 
@@ -145,3 +140,13 @@ To display PDF on CMS page you can use PHP section of the page like so:
     }
 
 See all available [methods](#methods).
+
+## Support
+
+Please use [GitHub Issues Page](https://github.com/mplodowski/dynamicpdf-plugin/issues) to report any issues with plugin.
+
+> Reviews should not be used for getting support or reporting bugs, if you need support please use the Plugin support link.
+
+## Like this plugin?
+
+If you like this plugin, give this plugin a Like or Make donation with [PayPal](https://www.paypal.me/mplodowski).
