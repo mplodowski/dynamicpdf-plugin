@@ -45,6 +45,7 @@ class Plugin extends PluginBase
                 'label' => 'renatio.dynamicpdf::lang.menu.label',
                 'url' => Backend::url('renatio/dynamicpdf/templates'),
                 'icon' => 'icon-file-pdf-o',
+                'iconSvg' => 'plugins/renatio/dynamicpdf/assets/images/icon.svg',
                 'permissions' => ['renatio.dynamicpdf.*'],
                 'order' => 500,
                 'sideMenu' => [
