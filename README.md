@@ -26,23 +26,60 @@ There are couple ways to install this plugin.
 
 > Fourth option should be used only for advanced users.
 
-## [Using](#using)  {#using}
+## Using
 
 Plugin will register menu item called **PDF**, which allow you to manage PDF layouts and templates.
 
-Layouts define the pdf scaffold, that is everything that repeats on a pdf, such as a header and footer. Each layout has unique code, optional background image, HTML content and CSS content. Not all CSS properties are supported, so check [CSSCompatibility](https://github.com/dompdf/dompdf/wiki/CSSCompatibility).
+Layouts define the PDF scaffold, that is everything that repeats on a PDF, such as a header and footer. Each layout has unique code, optional background image, HTML content and CSS content. Not all CSS properties are supported, so check [CSSCompatibility](https://github.com/dompdf/dompdf/wiki/CSSCompatibility).
 
-Templates define the actual pdf content parsed from HTML. The code specified in the template is a unique identifier and cannot be changed once created.
+Templates define the actual PDF content parsed from HTML. The code specified in the template is a unique identifier and cannot be changed once created.
 
 You can use Twig in layouts and templates.
 
-See [example codes](#examples).
 
-## [Configuration](#configuration) {#configuration}
+## Configuration
 
-Use `php artisan vendor:publish` to create a config file located at `config/dompdf.php` which will allow you to define local configurations to change some settings.
+The defaults configuration settings are set in `config/dompdf.php`. Copy this file to your own config directory to modify the values. You can publish the config using this command:
 
-## [Methods](#methods) {#methods}
+    php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
+
+You can still alter the dompdf options in your code before generating the PDF using this command:
+
+    PDF::loadTemplate('renatio::invoice')
+        ->setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif'])
+        ->stream();
+    
+Available options and their defaults:
+* __rootDir__: "{app_directory}/vendor/dompdf/dompdf"
+* __tempDir__: "/tmp" _(available in config/dompdf.php)_
+* __fontDir__: "{app_directory}/storage/fonts/" _(available in config/dompdf.php)_
+* __fontCache__: "{app_directory}/storage/fonts/" _(available in config/dompdf.php)_
+* __chroot__: "{app_directory}" _(available in config/dompdf.php)_
+* __logOutputFile__: "/tmp/log.htm"
+* __defaultMediaType__: "screen" _(available in config/dompdf.php)_
+* __defaultPaperSize__: "a4" _(available in config/dompdf.php)_
+* __defaultFont__: "serif" _(available in config/dompdf.php)_
+* __dpi__: 96 _(available in config/dompdf.php)_
+* __fontHeightRatio__: 1.1 _(available in config/dompdf.php)_
+* __isPhpEnabled__: false _(available in config/dompdf.php)_
+* __isRemoteEnabled__: true _(available in config/dompdf.php)_
+* __isJavascriptEnabled__: true _(available in config/dompdf.php)_
+* __isHtml5ParserEnabled__: false _(available in config/dompdf.php)_
+* __isFontSubsettingEnabled__: false _(available in config/dompdf.php)_
+* __debugPng__: false
+* __debugKeepTemp__: false
+* __debugCss__: false
+* __debugLayout__: false
+* __debugLayoutLines__: true
+* __debugLayoutBlocks__: true
+* __debugLayoutInline__: true
+* __debugLayoutPaddingBox__: true
+* __pdfBackend__: "CPDF" _(available in config/dompdf.php)_
+* __pdflibLicense__: ""
+* __adminUsername__: "user"
+* __adminPassword__: "password"
+
+## Methods
 
 | Method  | Description  |
 |---|---|
@@ -60,25 +97,23 @@ Use `php artisan vendor:publish` to create a config file located at `config/domp
 | download($filename = 'document.pdf') | Make the PDF downloadable by the user |
 | stream($filename = 'document.pdf') | Return a response with the PDF to show in the browser |
 
-All methods are available through Facade class `\Renatio\DynamicPDF\Classes\PDF`;
+All methods are available through Facade class `Renatio\DynamicPDF\Classes\PDF`.
 
-See [example codes](#examples).
+## Tip: Background image
 
-## [Tip: Background image](#tip-background-image) {#tip-background-image}
-
-When you add background image to layout, add this to your body for display:
+To display background image added in layout use following code:
 
     <body style="background: url({{ background_img }}) top left no-repeat;">
 
 Background image should be 96 DPI size (793 x 1121 px).
 
-## [Tip: UTF-8 support](#utf-8-support) {#utf-8-support}
+## Tip: UTF-8 support
 
-In your layout, set the UTF-8 Metatag in `head` section:
+In your layout, set the UTF-8 meta tag in `head` section:
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-## [Tip: Page breaks](#tip-page-breaks) {#tip-page-breaks}
+## Tip: Page breaks
 
 You can use the CSS page-break-before/page-break-after properties to create a new page.
 
@@ -91,11 +126,51 @@ You can use the CSS page-break-before/page-break-after properties to create a ne
     <div class="page-break"></div>
     <h1>Page 2</h1>
 
-## [Examples](#examples) {#examples}
+## Tip: Open_basedir restriction error
 
-After installation there will an example pdf invoice document, which will show, how you can structure HTML and CSS.
+On some hosting providers there were reports about `open_basedir` restriction problems with log file. You can change default log file destination like so:
 
-### [Render PDF in browser](#render-pdf-in-browser) {#render-pdf-in-browser}
+    return PDF::loadTemplate('renatio::invoice')
+        ->setOptions(['logOutputFile' => storage_path('temp/log.htm')])
+        ->stream();
+
+## Tip: Embed image inside PDF template
+
+You can use absolute path for image eg. `http://app.dev/path_to_your_image`.
+
+For this to work you must set `isRemoteEnabled` option.
+
+    return PDF::loadTemplate('renatio::invoice', ['file' => $file])
+        ->setOptions(['isRemoteEnabled' => true])
+        ->stream();
+
+I assume that `$file` is instance of `October\Rain\Database\Attach\File`. 
+
+Then in the template you can use following example code:
+
+```
+{{ file.getPath }}
+
+{{ file.getLocalPath }}
+
+{{ file.getThumb(200, 200, {'crop' => true}) }}
+```
+
+> For retrieving stylesheets or images via http following PHP setting must be enabled `allow_url_fopen`.
+
+When `allow_url_fopen` is disabled on server try to use relative path. You can use October `getLocalPath` function on the file object to retrieve it.
+
+## Tip: Download PDF via Ajax response
+
+OctoberCMS ajax framework cannot handle this type of response.
+
+Recommended approach is to save PDF file locally and return redirect to PDF file.
+
+## Examples
+
+After installation there will an example PDF invoice document, which will show, how you can structure HTML and CSS.
+
+### Render PDF in browser
 
     use Renatio\DynamicPDF\Classes\PDF; // import facade
 
@@ -106,12 +181,14 @@ After installation there will an example pdf invoice document, which will show, 
         $templateCode = 'renatio::invoice'; // unique code of the template
         $data = ['name' => 'John Doe']; // optional data used in template
 
-        return PDF::loadTemplate($templateCode, $data)->stream();
+        return PDF::loadTemplate($templateCode, $data)->stream('download.pdf');
     }
 
 Where `$templateCode` is an unique code specified when creating the template, `$data` is optional array of twig fields which will be replaced in template.
 
-### [Download PDF](#download-pdf) {#download-pdf}
+In HTML template you can use `{{ name }}` to output `John Doe`.
+
+### Download PDF
 
     use Renatio\DynamicPDF\Classes\PDF;
 
@@ -119,16 +196,26 @@ Where `$templateCode` is an unique code specified when creating the template, `$
 
     public function pdf()
     {
-        return PDF::loadTemplate('renatio::invoice')->download();
+        return PDF::loadTemplate('renatio::invoice')->download('download.pdf');
     }
 
-### [Fluent interface](#fluent-interface) {#fluent-interface}
+### Fluent interface
 
 You can chain the methods:
 
-    return PDF::loadTemplate('renatio::invoice')->save('/path-to/my_stored_file.pdf')->stream('download.pdf');
+    return PDF::loadTemplate('renatio::invoice')
+        ->save('/path-to/my_stored_file.pdf')
+        ->stream();
+    
+### Change orientation and paper size
 
-### [PDF on CMS page](#pdf-on-cms-page) {#pdf-on-cms-page}
+    return PDF::loadTemplate('renatio::invoice')
+        ->setPaper('a4', 'landscape')
+        ->stream();
+    
+Available [paper sizes](https://github.com/dompdf/dompdf/blob/master/src/Adapter/CPDF.php#L40).
+
+### PDF on CMS page
 
 To display PDF on CMS page you can use PHP section of the page like so:
 
@@ -138,8 +225,6 @@ To display PDF on CMS page you can use PHP section of the page like so:
     {
         return PDF::loadTemplate('renatio::invoice')->stream();
     }
-
-See all available [methods](#methods).
 
 ## Support
 
