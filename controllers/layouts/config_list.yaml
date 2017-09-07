@@ -9,7 +9,7 @@ list: $/renatio/dynamicpdf/models/layout/columns.yaml
 modelClass: Renatio\DynamicPDF\Models\Layout
 
 # List Title
-title: renatio.dynamicpdf::lang.templates.label
+title: renatio.dynamicpdf::lang.layouts.label
 
 # Link URL for each record
 recordUrl: renatio/dynamicpdf/layouts/update/:id
