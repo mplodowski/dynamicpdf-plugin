@@ -11,7 +11,7 @@
 
 <?php Block::endPut() ?>
 
-<?php if ( ! $this->fatalError): ?>
+<?php if ( ! $this->fatalError) : ?>
 
     <?php Block::put('form-contents') ?>
 
@@ -69,17 +69,17 @@
             </div>
         </div>
 
-    <?php Block::endPut() ?>
+    <?php Block::endBlock() ?>
 
     <?php Block::put('form-sidebar') ?>
         <div class="hide-tabs"><?= $this->formRenderSecondaryTabs() ?></div>
-    <?php Block::endPut() ?>
+    <?php Block::endBlock() ?>
 
     <?php Block::put('body') ?>
-        <?= Form::open(['class'=>'layout stretch']) ?>
+        <?= Form::open(['class' => 'layout stretch']) ?>
             <?= $this->makeLayout('form-with-sidebar') ?>
         <?= Form::close() ?>
-    <?php Block::endPut() ?>
+    <?php Block::endBlock() ?>
 
 <?php else: ?>
 

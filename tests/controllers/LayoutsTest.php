@@ -16,16 +16,16 @@ class LayoutsTest extends ControllerTestCase
     {
         $layout = factory(Layout::class)->create();
 
-        $this->visit('backend/renatio/dynamicpdf/layouts')
-            ->see($layout->name)
-            ->assertResponseOk();
+        $this->get('backend/renatio/dynamicpdf/layouts')
+            ->assertSee($layout->name)
+            ->assertSuccessful();
     }
 
     /** @test */
     public function it_displays_create_layout_page()
     {
-        $this->visit('backend/renatio/dynamicpdf/layouts/create')
-            ->assertResponseOk();
+        $this->get('backend/renatio/dynamicpdf/layouts/create')
+            ->assertSuccessful();
     }
 
     /** @test */
@@ -33,8 +33,8 @@ class LayoutsTest extends ControllerTestCase
     {
         $layout = factory(Layout::class)->create();
 
-        $this->visit('backend/renatio/dynamicpdf/layouts/update/' . $layout->id)
-            ->assertResponseOk();
+        $this->get('backend/renatio/dynamicpdf/layouts/update/' . $layout->id)
+            ->assertSuccessful();
     }
 
     /** @test */
@@ -42,9 +42,9 @@ class LayoutsTest extends ControllerTestCase
     {
         $layout = factory(Layout::class)->create();
 
-        $this->visit('backend/renatio/dynamicpdf/layouts/previewpdf/' . $layout->id)
-            ->seeHeader('content-type', 'application/pdf')
-            ->assertResponseOk();
+        $this->get('backend/renatio/dynamicpdf/layouts/previewpdf/' . $layout->id)
+            ->assertHeader('content-type', 'application/pdf')
+            ->assertSuccessful();
     }
 
     /** @test */
@@ -52,8 +52,8 @@ class LayoutsTest extends ControllerTestCase
     {
         $layout = factory(Layout::class)->create();
 
-        $this->visit('backend/renatio/dynamicpdf/layouts/preview/' . $layout->id)
-            ->assertResponseOk();
+        $this->get('backend/renatio/dynamicpdf/layouts/preview/' . $layout->id)
+            ->assertSuccessful();
     }
 
 }

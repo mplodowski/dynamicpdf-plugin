@@ -11,7 +11,7 @@
 
 <?php Block::endPut() ?>
 
-<?php if ( ! $this->fatalError): ?>
+<?php if ( ! $this->fatalError) : ?>
 
     <div class="form-preview" style="display: flex; justify-content: center;">
         <iframe src="<?= Backend::url('renatio/dynamicpdf/templates/html/' . $formModel->id) ?>"

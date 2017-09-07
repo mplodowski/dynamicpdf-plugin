@@ -16,16 +16,16 @@ class TemplatesTest extends ControllerTestCase
     {
         $template = factory(Template::class)->create();
 
-        $this->visit('backend/renatio/dynamicpdf/templates')
-            ->see($template->name)
-            ->assertResponseOk();
+        $this->get('backend/renatio/dynamicpdf/templates')
+            ->assertSee($template->title)
+            ->assertSuccessful();
     }
 
     /** @test */
     public function it_displays_create_template_page()
     {
-        $this->visit('backend/renatio/dynamicpdf/templates/create')
-            ->assertResponseOk();
+        $this->get('backend/renatio/dynamicpdf/templates/create')
+            ->assertSuccessful();
     }
 
     /** @test */
@@ -33,8 +33,8 @@ class TemplatesTest extends ControllerTestCase
     {
         $template = factory(Template::class)->create();
 
-        $this->visit('backend/renatio/dynamicpdf/templates/update/' . $template->id)
-            ->assertResponseOk();
+        $this->get('backend/renatio/dynamicpdf/templates/update/' . $template->id)
+            ->assertSuccessful();
     }
 
     /** @test */
@@ -42,9 +42,9 @@ class TemplatesTest extends ControllerTestCase
     {
         $template = factory(Template::class)->create();
 
-        $this->visit('backend/renatio/dynamicpdf/templates/previewpdf/' . $template->id)
-            ->seeHeader('content-type', 'application/pdf')
-            ->assertResponseOk();
+        $this->get('backend/renatio/dynamicpdf/templates/previewpdf/' . $template->id)
+            ->assertHeader('content-type', 'application/pdf')
+            ->assertSuccessful();
     }
 
     /** @test */
@@ -52,8 +52,8 @@ class TemplatesTest extends ControllerTestCase
     {
         $template = factory(Template::class)->create();
 
-        $this->visit('backend/renatio/dynamicpdf/templates/preview/' . $template->id)
-            ->assertResponseOk();
+        $this->get('backend/renatio/dynamicpdf/templates/preview/' . $template->id)
+            ->assertSuccessful();
     }
 
 }

@@ -20,11 +20,6 @@ class ControllerTestCase extends TestCase
     protected $user;
 
     /**
-     * @var string
-     */
-    protected $baseUrl = 'http://dynamicpdf.app';
-
-    /**
      * @return void
      */
     public function setUp()
