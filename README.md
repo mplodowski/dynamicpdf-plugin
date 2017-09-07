@@ -6,7 +6,7 @@ Demo: http://oc.renatio.com/dynamic-pdf
 
 Plugin page: https://octobercms.com/plugin/renatio-dynamicpdf
 
-Plugin was build on Laravel Package [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
+Plugin uses [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
 
 > This plugin requires **Stable** version of OctoberCMS.
 
@@ -145,25 +145,3 @@ To display PDF on CMS page you can use PHP section of the page like so:
     }
 
 See all available [methods](#methods).
-
-## [Upgrade guide](#upgrade-guide) {#upgrade-guide}
-
-**From 2.1.0 to 2.1.1.** 
-
-Method `setOrientation` was removed. Use `setPaper` instead.
-
-**From 2.0.1 to 2.1.0.** 
-
-Plugin requires **Stable Release** of OctoberCMS. As a consequence it needs PHP 5.5.9 and Laravel 5.1.
-
-**From 1.1.5 to 2.0.0.** 
-
-Major code refactor. `PDFTemplate::render()` method was removed, switch to PDF facade. See example codes in documentation how to. Code base was significantly improved and allow for more flexibility.
-
-**From 1.0.2 to 1.1.0.** 
-
-Plugin requires October build 300 and above.
-
-## [License](#license) {#license}
-
-OctoberCMS DynamicPDF Plugin is open-sourced software licensed under the MIT license.
