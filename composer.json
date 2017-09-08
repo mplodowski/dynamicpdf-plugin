@@ -1,9 +1,9 @@
 {
   "name": "renatio/dynamicpdf-plugin",
   "type": "october-plugin",
-  "description": "October HTML to PDF converter using dompdf library",
+  "description": "October HTML to PDF converter using dompdf library.",
   "homepage": "https://octobercms.com/plugin/renatio-dynamicpdf",
-  "keywords": ["october", "octobercms", "pdf", "dompdf"],
+  "keywords": ["octobercms-plugin", "octobercms", "php", "laravel", "pdf", "dompdf"],
   "license": "MIT",
   "authors": [
     {
