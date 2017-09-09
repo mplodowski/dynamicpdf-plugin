@@ -5,6 +5,7 @@ namespace Renatio\DynamicPDF;
 use Backend\Facades\Backend;
 use Renatio\DynamicPDF\Classes\ServiceProvider;
 use System\Classes\PluginBase;
+use System\Classes\PluginManager;
 
 /**
  * Class Plugin
@@ -78,6 +79,23 @@ class Plugin extends PluginBase
             'renatio.dynamicpdf.manage_layouts' => [
                 'tab' => 'renatio.dynamicpdf::lang.permissions.tab',
                 'label' => 'renatio.dynamicpdf::lang.permissions.manage_layouts',
+            ]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function registerMarkupTags()
+    {
+        if (PluginManager::instance()->exists('RainLab.Translate')) {
+            return [];
+        }
+
+        return [
+            'filters' => [
+                '_' => ['Lang', 'get'],
+                '__' => ['Lang', 'choice'],
             ]
         ];
     }

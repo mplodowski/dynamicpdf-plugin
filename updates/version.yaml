@@ -23,3 +23,4 @@
 2.1.5: Fix open_basedir restriction on some hostings. Set isRemoteEnabled flag to allow absolute paths.
 2.1.6: Allow Laravel 5.5.
 3.0.0: !!! Add support for Laravel 5.5.
+3.0.1: Add support for RainLab.Translate plugin

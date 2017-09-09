@@ -4,8 +4,11 @@ namespace Renatio\DynamicPDF\Classes;
 
 use Barryvdh\DomPDF\PDF as LaravelPDF;
 use October\Rain\Support\Facades\Twig;
+use RainLab\Translate\Classes\Translator;
+use RainLab\Translate\Models\Message;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use System\Classes\PluginManager;
 
 /**
  * Class PDFWrapper
@@ -59,6 +62,8 @@ class PDFWrapper extends LaravelPDF
      */
     public function parseTemplate($template, $data = [])
     {
+        $this->setLocale();
+
         $html = Twig::parse($template->content_html, $data);
 
         if ( ! $template->layout) {
@@ -80,10 +85,24 @@ class PDFWrapper extends LaravelPDF
      */
     public function parseLayout($layout, $mergeData = [])
     {
+        $this->setLocale();
+
         return Twig::parse(
             $layout->content_html,
             $this->layoutData($layout, $mergeData)
         );
+    }
+
+    /**
+     * @return void
+     */
+    protected function setLocale()
+    {
+        if ( ! PluginManager::instance()->exists('RainLab.Translate')) {
+            return;
+        }
+
+        Message::$locale = Translator::instance()->getLocale();
     }
 
     /**
