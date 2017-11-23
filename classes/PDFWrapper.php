@@ -87,10 +87,12 @@ class PDFWrapper extends LaravelPDF
     {
         $this->setLocale();
 
-        return Twig::parse(
+        $html = Twig::parse(
             $layout->content_html,
             $this->layoutData($layout, $mergeData)
         );
+
+        return preg_replace('/>\s+</', '><', $html);
     }
 
     /**
