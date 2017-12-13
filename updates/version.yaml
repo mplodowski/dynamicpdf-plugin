@@ -24,3 +24,4 @@
 2.1.6: Allow Laravel 5.5.
 3.0.0: !!! Add support for Laravel 5.5.
 3.0.1: Add support for RainLab.Translate plugin
+3.0.2: Fix creating fonts directory

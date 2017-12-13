@@ -29,7 +29,7 @@ class ServiceProvider extends OctoberServiceProvider
      */
     protected function createFontDirectory()
     {
-        $fontDir = config('dompdf.defines')['DOMPDF_FONT_DIR'];
+        $fontDir = config('dompdf.defines.font_dir') ?? config('dompdf.defines.DOMPDF_FONT_DIR');
 
         if ( ! $this->app->files->exists($fontDir)) {
             $this->app->files->makeDirectory($fontDir);
