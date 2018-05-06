@@ -3,7 +3,7 @@
 namespace Renatio\DynamicPDF\Classes;
 
 use Barryvdh\DomPDF\PDF as LaravelPDF;
-use October\Rain\Support\Facades\Twig;
+use Cms\Classes\Controller;
 use RainLab\Translate\Classes\Translator;
 use RainLab\Translate\Models\Message;
 use Renatio\DynamicPDF\Models\Layout;
@@ -64,7 +64,7 @@ class PDFWrapper extends LaravelPDF
     {
         $this->setLocale();
 
-        $html = Twig::parse($template->content_html, $data);
+        $html = $this->parseMarkup($template->content_html, $data);
 
         if ( ! $template->layout) {
             return $html;
@@ -80,16 +80,16 @@ class PDFWrapper extends LaravelPDF
      * Get parsed HTML from layout
      *
      * @param $layout
-     * @param array $mergeData
+     * @param array $data
      * @return mixed
      */
-    public function parseLayout($layout, $mergeData = [])
+    public function parseLayout($layout, $data = [])
     {
         $this->setLocale();
 
-        return Twig::parse(
+        return $this->parseMarkup(
             $layout->content_html,
-            $this->layoutData($layout, $mergeData)
+            $this->layoutData($layout, $data)
         );
     }
 
@@ -107,18 +107,31 @@ class PDFWrapper extends LaravelPDF
 
     /**
      * @param $layout
-     * @param $mergeData
+     * @param $data
      * @return array
      */
-    protected function layoutData($layout, $mergeData)
+    protected function layoutData($layout, $data)
     {
-        return array_merge(
-            [
-                'background_img' => $layout->background_img ? $layout->background_img->getPath() : null,
-                'css' => $layout->content_css
-            ],
-            $mergeData
-        );
+        return array_merge([
+            'background_img' => $layout->background_img ? $layout->background_img->getPath() : null,
+            'css' => $layout->content_css,
+        ], $data);
+    }
+
+    /**
+     * Parse markup using CMS Twig
+     *
+     * @param $markup
+     * @param $data
+     * @return string
+     */
+    protected function parseMarkup($markup, $data)
+    {
+        $twig = (new Controller)->getTwig();
+
+        $template = $twig->createTemplate($markup);
+
+        return $template->render($data);
     }
 
 }

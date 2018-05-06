@@ -36,6 +36,7 @@ Templates define the actual PDF content parsed from HTML. The code specified in 
 
 You can use Twig in layouts and templates.
 
+Plugin supports using [CMS partials](https://octobercms.com/docs/cms/partials) and filters inside template and layout markup.
 
 ## Configuration
 
