@@ -1,0 +1,21 @@
+language: php
+
+php:
+  - 7.0
+  - 7.1
+  - 7.2
+  - nightly
+
+matrix:
+  allow_failures:
+    - php: nightly
+
+sudo: false
+
+install:
+  - composer self-update
+  - travis_retry composer create-project october/october october
+  - cd october
+  - travis_retry composer require renatio/dynamicpdf-plugin
+
+script: ./october/../../../vendor/bin/phpunit
