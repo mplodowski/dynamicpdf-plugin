@@ -24,3 +24,6 @@
 3.0.1: Add support for RainLab.Translate plugin.
 3.0.2: Fix creating fonts directory.
 3.0.3: Allow to use CMS partials and filters.
+3.0.4:
+    - Add paper size and orientation configuration.
+    - add_paper_configuration_to_templates_table.php

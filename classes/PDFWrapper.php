@@ -27,10 +27,16 @@ class PDFWrapper extends LaravelPDF
      */
     public function loadTemplate($code, $data = [], $encoding = null)
     {
+        $template = Template::byCode($code);
+
         $this->loadHTML(
-            $this->parseTemplate(Template::byCode($code), $data),
+            $this->parseTemplate($template, $data),
             $encoding
         );
+
+        if ($template->size) {
+            $this->setPaper($template->size, $template->orientation ?? 'portrait');
+        }
 
         return $this;
     }

@@ -27,7 +27,9 @@ return [
         'preview_pdf' => 'Preview PDF',
         'created_at' => 'Created at',
         'updated_at' => 'Updated at',
-        'background_img_comment' => 'Use image with 96 DPI for correct display'
+        'background_img_comment' => 'Use image with 96 DPI for correct display',
+        'size' => 'Paper size',
+        'orientation' => 'Paper orientation',
     ],
     'template' => [
         'menu_label' => 'Template',
@@ -53,6 +55,13 @@ return [
         'tab' => 'PDF',
     ],
     'menu' => [
-        'label' => 'PDF'
-    ]
+        'label' => 'PDF',
+    ],
+    'orientation' => [
+        'portrait' => 'Portrait',
+        'landscape' => 'Landscape',
+    ],
+    'options' => [
+        'empty' => '-- choose --',
+    ],
 ];

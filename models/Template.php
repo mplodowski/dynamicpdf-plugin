@@ -2,6 +2,7 @@
 
 namespace Renatio\DynamicPDF\Models;
 
+use Dompdf\Adapter\CPDF;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 use Renatio\DynamicPDF\Classes\PDF;
@@ -67,6 +68,27 @@ class Template extends Model
     public static function byCode($code)
     {
         return static::whereCode($code)->firstOrFail();
+    }
+
+    /**
+     * @return array
+     */
+    public static function getSizeOptions()
+    {
+        $sizes = array_keys(CPDF::$PAPER_SIZES);
+
+        return array_combine($sizes, $sizes);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getOrientationOptions()
+    {
+        return [
+            'portrait' => e(trans('renatio.dynamicpdf::lang.orientation.portrait')),
+            'landscape' => e(trans('renatio.dynamicpdf::lang.orientation.landscape')),
+        ];
     }
 
 }
