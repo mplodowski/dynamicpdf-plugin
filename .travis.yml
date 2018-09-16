@@ -18,4 +18,6 @@ install:
   - cd october
   - travis_retry composer require renatio/dynamicpdf-plugin
 
-script: ./october/../../../vendor/bin/phpunit
+before_script: cd plugins/renatio/dynamicpdf
+
+script: ./../../../vendor/bin/phpunit
