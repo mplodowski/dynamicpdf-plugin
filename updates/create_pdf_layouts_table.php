@@ -18,10 +18,9 @@ class CreateLayoutsTable extends Migration
     public function up()
     {
         Schema::create('renatio_dynamicpdf_pdf_layouts', function ($table) {
-            $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->string('code', 50)->unique();
-            $table->string('name', 100);
+            $table->string('code')->index();
+            $table->string('name');
             $table->text('content_html')->nullable();
             $table->text('content_css')->nullable();
             $table->timestamps();

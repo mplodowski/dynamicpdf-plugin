@@ -15,9 +15,7 @@
 2.0.1: Add preview HTML buttons.
 2.1.0: !!! This is an important update that contains breaking changes.
 2.1.1: Upgrade to DomPDF 0.7.
-2.1.2:
-    - Database maintenance. Updated all timestamp columns to be nullable.
-    - update_timestamps_nullable.php
+2.1.2: Database maintenance. Updated all timestamp columns to be nullable.
 2.1.3: Upgrade to DomPDF 0.8.
 2.1.4: German language. Thanks to @TimFoerster.
 2.1.5: Fix open_basedir restriction on some hostings. Set isRemoteEnabled flag to allow absolute paths.

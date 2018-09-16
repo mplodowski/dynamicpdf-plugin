@@ -18,11 +18,10 @@ class CreateTemplatesTable extends Migration
     public function up()
     {
         Schema::create('renatio_dynamicpdf_pdf_templates', function ($table) {
-            $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->integer('layout_id')->unsigned()->index()->nullable();
-            $table->string('code', 50)->unique();
-            $table->string('title', 100);
+            $table->unsignedInteger('layout_id')->index()->nullable();
+            $table->string('code')->index();
+            $table->string('title');
             $table->text('description')->nullable();
             $table->text('content_html')->nullable();
             $table->timestamps();
