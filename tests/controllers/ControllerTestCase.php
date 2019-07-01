@@ -20,6 +20,11 @@ class ControllerTestCase extends TestCase
     protected $user;
 
     /**
+     * @var
+     */
+    public $backendUri;
+
+    /**
      * @return void
      */
     public function setUp()
@@ -29,6 +34,8 @@ class ControllerTestCase extends TestCase
         $this->registerFormWidgets();
 
         $this->loginUser();
+
+        $this->backendUri = config('cms.backendUri', 'backend');
     }
 
     /**
