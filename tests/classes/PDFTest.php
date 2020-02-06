@@ -3,6 +3,7 @@
 namespace Renatio\DynamicPDF\Tests\Classes;
 
 use Dompdf\Dompdf;
+use ReflectionException;
 use ReflectionProperty;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Models\Layout;
@@ -69,7 +70,7 @@ class PDFTest extends TestCase
     /** @test */
     public function it_loads_html_from_file()
     {
-        $pdf = PDF::loadFile(__DIR__ . '/../fixtures/template.htm');
+        $pdf = PDF::loadFile(__DIR__.'/../fixtures/template.htm');
 
         $this->assertPdfContains('{{ name }}', $pdf);
     }
@@ -80,15 +81,6 @@ class PDFTest extends TestCase
         $domPDF = PDF::getDomPDF();
 
         $this->assertInstanceOf(Dompdf::class, $domPDF);
-    }
-
-    /** @test */
-    public function it_sets_paper_and_orientation()
-    {
-        $pdf = PDF::setPaper('a3', 'landscape');
-
-        $this->assertPdfPropertyEquals('a3', $pdf, 'paper');
-        $this->assertPdfPropertyEquals('landscape', $pdf, 'orientation');
     }
 
     /** @test */
@@ -110,7 +102,7 @@ class PDFTest extends TestCase
     /** @test */
     public function it_saves_pdf_to_file()
     {
-        $filePath = __DIR__ . '/../fixtures/test.pdf';
+        $filePath = __DIR__.'/../fixtures/test.pdf';
 
         PDF::loadHTML('<p>Test</p>')->save($filePath);
 
@@ -157,6 +149,7 @@ class PDFTest extends TestCase
      * @param $expected
      * @param $pdf
      * @param $property
+     * @throws ReflectionException
      */
     protected function assertPdfPropertyEquals($expected, $pdf, $property)
     {
@@ -169,6 +162,7 @@ class PDFTest extends TestCase
      * @param $object
      * @param $property
      * @return mixed
+     * @throws ReflectionException
      */
     protected function getPrivate($object, $property)
     {
@@ -177,5 +171,4 @@ class PDFTest extends TestCase
 
         return $reflector->getValue($object);
     }
-
 }

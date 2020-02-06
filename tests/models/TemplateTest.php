@@ -18,7 +18,7 @@ class TemplateTest extends TestCase
     {
         $template = factory(Template::class)->create();
 
-        $this->assertEquals(2, $template->id);
+        $this->assertEquals(1, $template->id);
     }
 
     /** @test */
@@ -27,7 +27,7 @@ class TemplateTest extends TestCase
         $template = factory(Template::class)->make();
 
         $this->assertArrayHasKey('title', $template->rules);
-        $this->assertEquals('required|max:100', $template->rules['title']);
+        $this->assertEquals('required', $template->rules['title']);
     }
 
     /** @test */
@@ -36,7 +36,7 @@ class TemplateTest extends TestCase
         $template = factory(Template::class)->make();
 
         $this->assertArrayHasKey('code', $template->rules);
-        $this->assertEquals('required|max:50|unique:renatio_dynamicpdf_pdf_templates', $template->rules['code']);
+        $this->assertEquals('required|unique:renatio_dynamicpdf_pdf_templates', $template->rules['code']);
     }
 
     /** @test */
@@ -74,5 +74,4 @@ class TemplateTest extends TestCase
 
         $this->assertEquals('test', $template->code);
     }
-
 }

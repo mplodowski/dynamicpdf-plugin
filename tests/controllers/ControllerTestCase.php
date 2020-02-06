@@ -46,15 +46,15 @@ class ControllerTestCase extends TestCase
         WidgetManager::instance()->registerFormWidgets(function ($manager) {
             $manager->registerFormWidget('Backend\FormWidgets\CodeEditor', [
                 'label' => 'Code editor',
-                'code' => 'codeeditor'
+                'code' => 'codeeditor',
             ]);
             $manager->registerFormWidget('Backend\FormWidgets\Relation', [
                 'label' => 'Relationship',
-                'code' => 'relation'
+                'code' => 'relation',
             ]);
             $manager->registerFormWidget('Backend\FormWidgets\FileUpload', [
                 'label' => 'File uploader',
-                'code' => 'fileupload'
+                'code' => 'fileupload',
             ]);
         });
     }
@@ -66,12 +66,13 @@ class ControllerTestCase extends TestCase
     {
         $this->user = factory(User::class)->create();
 
-        $this->user->setPermissionsAttribute(json_encode([
-            'renatio.dynamicpdf.manage_templates' => 1,
-            'renatio.dynamicpdf.manage_layouts' => 1,
-        ]));
+        $this->user->setPermissionsAttribute(
+            json_encode([
+                'renatio.dynamicpdf.manage_templates' => 1,
+                'renatio.dynamicpdf.manage_layouts' => 1,
+            ])
+        );
 
         BackendAuth::login($this->user);
     }
-
 }

@@ -36,18 +36,9 @@ class PluginTest extends PluginTestCase
     }
 
     /** @test */
-    public function it_registers_navigation()
+    public function it_registers_settings()
     {
-        $this->assertArrayHasKey('dynamicpdf', $this->plugin->registerNavigation());
-    }
-
-    /** @test */
-    public function it_registers_side_menu_navigation()
-    {
-        $sideMenu = $this->plugin->registerNavigation()['dynamicpdf']['sideMenu'];
-
-        $this->assertArrayHasKey('templates', $sideMenu);
-        $this->assertArrayHasKey('layouts', $sideMenu);
+        $this->assertArrayHasKey('templates', $this->plugin->registerSettings());
     }
 
     /** @test */
@@ -62,11 +53,10 @@ class PluginTest extends PluginTestCase
     {
         $filters = $this->plugin->registerMarkupTags();
 
-        if ( ! PluginManager::instance()->exists('RainLab.Translate')) {
+        if (!PluginManager::instance()->exists('RainLab.Translate')) {
             $this->assertArrayHasKey('filters', $filters);
         } else {
             $this->assertArrayNotHasKey('filters', $filters);
         }
     }
-
 }

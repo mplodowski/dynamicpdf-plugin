@@ -37,5 +37,4 @@ class TestCase extends PluginTestCase
             return Factory::construct($faker, base_path('plugins/renatio/dynamicpdf/tests/factories'));
         });
     }
-
 }

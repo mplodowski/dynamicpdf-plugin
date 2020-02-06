@@ -18,7 +18,7 @@ class LayoutTest extends TestCase
     {
         $layout = factory(Layout::class)->create();
 
-        $this->assertEquals(2, $layout->id);
+        $this->assertEquals(1, $layout->id);
     }
 
     /** @test */
@@ -27,7 +27,7 @@ class LayoutTest extends TestCase
         $layout = factory(Layout::class)->make();
 
         $this->assertArrayHasKey('name', $layout->rules);
-        $this->assertEquals('required|max:100', $layout->rules['name']);
+        $this->assertEquals('required', $layout->rules['name']);
     }
 
     /** @test */
@@ -36,7 +36,7 @@ class LayoutTest extends TestCase
         $layout = factory(Layout::class)->make();
 
         $this->assertArrayHasKey('code', $layout->rules);
-        $this->assertEquals('required|max:50|unique:renatio_dynamicpdf_pdf_layouts', $layout->rules['code']);
+        $this->assertEquals('required|unique:renatio_dynamicpdf_pdf_layouts', $layout->rules['code']);
     }
 
     /** @test */
@@ -74,5 +74,4 @@ class LayoutTest extends TestCase
 
         $this->assertEquals('test', $layout->code);
     }
-
 }
