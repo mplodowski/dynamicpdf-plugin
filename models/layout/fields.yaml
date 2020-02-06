@@ -23,16 +23,19 @@ tabs:
             tab: renatio.dynamicpdf::lang.templates.content_html
             language: html
             default: |
-                        <html>
-                            <head>
-                                <style type="text/css" media="screen">
-                                    {{ css|raw }}
-                                </style>
-                            </head>
-                            <body>
-                                {{ content_html|raw }}
-                            </body>
-                        </html>
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                        <title>Document</title>
+                        <style type="text/css" media="screen">
+                            {{ css|raw }}
+                        </style>
+                    </head>
+                    <body>
+                        {{ content_html|raw }}
+                    </body>
+                </html>
 
         content_css:
             tab: renatio.dynamicpdf::lang.templates.content_css

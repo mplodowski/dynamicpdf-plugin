@@ -1,5 +1,7 @@
 # Dynamic PDF plugin
 
+> Plugin requires PHP >=7.1. Please see update guide for version 4.0.0.
+
 October HTML to PDF converter using [dompdf](https://github.com/dompdf/dompdf) library.
 
 Plugin uses dompdf wrapper for Laravel [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
