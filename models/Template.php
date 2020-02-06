@@ -32,23 +32,9 @@ class Template extends Model
      * @var array
      */
     public $rules = [
-        'title' => 'required|max:100',
-        'code' => 'required|max:50|unique:renatio_dynamicpdf_pdf_templates',
+        'title' => 'required',
+        'code' => 'required|unique:renatio_dynamicpdf_pdf_templates',
         'content_html' => 'required',
-    ];
-
-    /**
-     * @var array
-     */
-    protected $fillable = ['title', 'description', 'code', 'content_html', 'layout'];
-
-    /**
-     * @var array
-     */
-    public $attributeNames = [
-        'title' => 'renatio.dynamicpdf::lang.templates.title',
-        'code' => 'renatio.dynamicpdf::lang.templates.code',
-        'content_html' => 'renatio.dynamicpdf::lang.templates.content_html',
     ];
 
     /**
@@ -86,9 +72,8 @@ class Template extends Model
     public static function getOrientationOptions()
     {
         return [
-            'portrait' => e(trans('renatio.dynamicpdf::lang.orientation.portrait')),
-            'landscape' => e(trans('renatio.dynamicpdf::lang.orientation.landscape')),
+            'portrait' => 'renatio.dynamicpdf::lang.orientation.portrait',
+            'landscape' => 'renatio.dynamicpdf::lang.orientation.landscape',
         ];
     }
-
 }

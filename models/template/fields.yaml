@@ -11,8 +11,8 @@ fields:
     code@create:
         label: renatio.dynamicpdf::lang.templates.code
         comment: renatio.dynamicpdf::lang.templates.code_comment
-        span: right
         preset: title
+        span: right
 
     layout:
         label: renatio.dynamicpdf::lang.templates.layout

@@ -27,8 +27,8 @@ class Layout extends Model
      * @var array
      */
     public $rules = [
-        'name' => 'required|max:100',
-        'code' => 'required|max:50|unique:renatio_dynamicpdf_pdf_layouts',
+        'name' => 'required',
+        'code' => 'required|unique:renatio_dynamicpdf_pdf_layouts',
         'content_html' => 'required',
     ];
 

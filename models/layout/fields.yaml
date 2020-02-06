@@ -11,8 +11,8 @@ fields:
     code@create:
         label: renatio.dynamicpdf::lang.templates.code
         comment: renatio.dynamicpdf::lang.templates.code_comment
-        span: right
         preset: name
+        span: right
 
 tabs:
     fields:
@@ -35,9 +35,9 @@ tabs:
                         </html>
 
         content_css:
+            tab: renatio.dynamicpdf::lang.templates.content_css
             type: codeeditor
             size: giant
-            tab: renatio.dynamicpdf::lang.templates.content_css
             language: css
 
 secondaryTabs:
@@ -50,3 +50,4 @@ secondaryTabs:
             imageHeight: 200
             imageWidth: 200
             commentAbove: renatio.dynamicpdf::lang.templates.background_img_comment
+            attachOnUpload: true

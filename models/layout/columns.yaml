@@ -18,5 +18,4 @@ columns:
 
     updated_at:
         label: renatio.dynamicpdf::lang.templates.updated_at
-        invisible: true
         type: datetime
