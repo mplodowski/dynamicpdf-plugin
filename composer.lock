@@ -1,29 +1,29 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "20e25e689a898a3d8c65bcbd71ea055e",
+    "content-hash": "b40459774ffa33259f936bd8af643740",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
-            "version": "dev-master",
+            "version": "v0.8.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barryvdh/laravel-dompdf.git",
-                "reference": "3425ced8428ae419a2760ed4e82696e85ab52206"
+                "reference": "7393732b2f3a3ee357974cbb0c46c9b65b84dad1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barryvdh/laravel-dompdf/zipball/3425ced8428ae419a2760ed4e82696e85ab52206",
-                "reference": "3425ced8428ae419a2760ed4e82696e85ab52206",
+                "url": "https://api.github.com/repos/barryvdh/laravel-dompdf/zipball/7393732b2f3a3ee357974cbb0c46c9b65b84dad1",
+                "reference": "7393732b2f3a3ee357974cbb0c46c9b65b84dad1",
                 "shasum": ""
             },
             "require": {
                 "dompdf/dompdf": "^0.8",
-                "illuminate/support": "5.1.x|5.2.x|5.3.x|5.4.x|5.5.x",
-                "php": ">=5.5.9"
+                "illuminate/support": "^5.5|^6",
+                "php": ">=7"
             },
             "type": "library",
             "extra": {
@@ -60,20 +60,20 @@
                 "laravel",
                 "pdf"
             ],
-            "time": "2017-10-04T07:19:27+00:00"
+            "time": "2019-08-23T14:30:33+00:00"
         },
         {
             "name": "composer/installers",
-            "version": "v1.4.0",
+            "version": "v1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b"
+                "reference": "141b272484481432cda342727a427dc1e206bfa0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b",
-                "reference": "9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b",
+                "url": "https://api.github.com/repos/composer/installers/zipball/141b272484481432cda342727a427dc1e206bfa0",
+                "reference": "141b272484481432cda342727a427dc1e206bfa0",
                 "shasum": ""
             },
             "require": {
@@ -85,7 +85,7 @@
             },
             "require-dev": {
                 "composer/composer": "1.0.*@dev",
-                "phpunit/phpunit": "4.1.*"
+                "phpunit/phpunit": "^4.8.36"
             },
             "type": "composer-plugin",
             "extra": {
@@ -129,6 +129,7 @@
                 "RadPHP",
                 "SMF",
                 "Thelia",
+                "Whmcs",
                 "WolfCMS",
                 "agl",
                 "aimeos",
@@ -151,20 +152,24 @@
                 "installer",
                 "itop",
                 "joomla",
+                "known",
                 "kohana",
                 "laravel",
                 "lavalite",
                 "lithium",
                 "magento",
+                "majima",
                 "mako",
                 "mediawiki",
                 "modulework",
+                "modx",
                 "moodle",
                 "osclass",
                 "phpbb",
                 "piwik",
                 "ppi",
                 "puppet",
+                "pxcms",
                 "reindex",
                 "roundcube",
                 "shopware",
@@ -177,20 +182,20 @@
                 "zend",
                 "zikula"
             ],
-            "time": "2017-08-09T07:53:48+00:00"
+            "time": "2019-08-12T15:00:31+00:00"
         },
         {
             "name": "doctrine/inflector",
-            "version": "dev-master",
+            "version": "1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
-                "reference": "40daa067a3e5fb95572236a346a8290e4445778f"
+                "reference": "ec3a55242203ffa6a4b27c58176da97ff0a7aec1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/40daa067a3e5fb95572236a346a8290e4445778f",
-                "reference": "40daa067a3e5fb95572236a346a8290e4445778f",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/ec3a55242203ffa6a4b27c58176da97ff0a7aec1",
+                "reference": "ec3a55242203ffa6a4b27c58176da97ff0a7aec1",
                 "shasum": ""
             },
             "require": {
@@ -216,16 +221,16 @@
             ],
             "authors": [
                 {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
+                },
+                {
                     "name": "Roman Borschel",
                     "email": "roman@code-factory.org"
                 },
                 {
                     "name": "Benjamin Eberlei",
                     "email": "kontakt@beberlei.de"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com"
                 },
                 {
                     "name": "Jonathan Wage",
@@ -244,33 +249,37 @@
                 "singularize",
                 "string"
             ],
-            "time": "2017-10-04T05:38:52+00:00"
+            "time": "2019-10-30T19:59:35+00:00"
         },
         {
             "name": "dompdf/dompdf",
-            "version": "v0.8.2",
+            "version": "v0.8.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dompdf/dompdf.git",
-                "reference": "5113accd9ae5d466077cce5208dcf3fb871bf8f6"
+                "reference": "8f49b3b01693f51037dd50da81090beba1b5c005"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/5113accd9ae5d466077cce5208dcf3fb871bf8f6",
-                "reference": "5113accd9ae5d466077cce5208dcf3fb871bf8f6",
+                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/8f49b3b01693f51037dd50da81090beba1b5c005",
+                "reference": "8f49b3b01693f51037dd50da81090beba1b5c005",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
-                "ext-gd": "*",
                 "ext-mbstring": "*",
-                "phenx/php-font-lib": "0.5.*",
-                "phenx/php-svg-lib": "0.3.*",
-                "php": ">=5.4.0"
+                "phenx/php-font-lib": "^0.5.1",
+                "phenx/php-svg-lib": "^0.3.3",
+                "php": "^7.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "4.8.*",
-                "squizlabs/php_codesniffer": "2.*"
+                "phpunit/phpunit": "^7.5",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "suggest": {
+                "ext-gd": "Needed to process images",
+                "ext-gmagick": "Improves image processing performance",
+                "ext-imagick": "Improves image processing performance"
             },
             "type": "library",
             "extra": {
@@ -306,20 +315,20 @@
             ],
             "description": "DOMPDF is a CSS 2.1 compliant HTML to PDF converter",
             "homepage": "https://github.com/dompdf/dompdf",
-            "time": "2017-11-26T14:49:08+00:00"
+            "time": "2020-01-20T17:00:46+00:00"
         },
         {
             "name": "illuminate/contracts",
-            "version": "5.5.x-dev",
+            "version": "v5.5.44",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
-                "reference": "03e9014d2091a30b025c895aa6d39c2755576ea5"
+                "reference": "b2a62b4a85485fca9cf5fa61a933ad64006ff528"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/contracts/zipball/03e9014d2091a30b025c895aa6d39c2755576ea5",
-                "reference": "03e9014d2091a30b025c895aa6d39c2755576ea5",
+                "url": "https://api.github.com/repos/illuminate/contracts/zipball/b2a62b4a85485fca9cf5fa61a933ad64006ff528",
+                "reference": "b2a62b4a85485fca9cf5fa61a933ad64006ff528",
                 "shasum": ""
             },
             "require": {
@@ -350,34 +359,34 @@
             ],
             "description": "The Illuminate Contracts package.",
             "homepage": "https://laravel.com",
-            "time": "2017-11-22T19:01:14+00:00"
+            "time": "2018-03-20T15:34:35+00:00"
         },
         {
             "name": "illuminate/support",
-            "version": "5.5.x-dev",
+            "version": "v5.5.44",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "a38b2cc4a7464be8cd977eea130da8733ea1360a"
+                "reference": "5c405512d75dcaf5d37791badce02d86ed8e4bc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/a38b2cc4a7464be8cd977eea130da8733ea1360a",
-                "reference": "a38b2cc4a7464be8cd977eea130da8733ea1360a",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/5c405512d75dcaf5d37791badce02d86ed8e4bc4",
+                "reference": "5c405512d75dcaf5d37791badce02d86ed8e4bc4",
                 "shasum": ""
             },
             "require": {
                 "doctrine/inflector": "~1.1",
                 "ext-mbstring": "*",
                 "illuminate/contracts": "5.5.*",
-                "nesbot/carbon": "^1.20",
+                "nesbot/carbon": "^1.24.1",
                 "php": ">=7.0"
             },
             "replace": {
-                "tightenco/collect": "self.version"
+                "tightenco/collect": "<5.5.33"
             },
             "suggest": {
-                "illuminate/filesystem": "Required to use the composer class (5.2.*).",
+                "illuminate/filesystem": "Required to use the composer class (5.5.*).",
                 "symfony/process": "Required to use the composer class (~3.3).",
                 "symfony/var-dumper": "Required to use the dd function (~3.3)."
             },
@@ -407,39 +416,92 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "https://laravel.com",
-            "time": "2017-12-08T13:54:14+00:00"
+            "time": "2018-08-10T19:40:01+00:00"
         },
         {
-            "name": "nesbot/carbon",
-            "version": "dev-master",
+            "name": "kylekatarnls/update-helper",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "926aee5ab38c2868816aa760f862a85ad01cb61a"
+                "url": "https://github.com/kylekatarnls/update-helper.git",
+                "reference": "5786fa188e0361b9adf9e8199d7280d1b2db165e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/926aee5ab38c2868816aa760f862a85ad01cb61a",
-                "reference": "926aee5ab38c2868816aa760f862a85ad01cb61a",
+                "url": "https://api.github.com/repos/kylekatarnls/update-helper/zipball/5786fa188e0361b9adf9e8199d7280d1b2db165e",
+                "reference": "5786fa188e0361b9adf9e8199d7280d1b2db165e",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0",
-                "symfony/translation": "~2.6 || ~3.0"
+                "composer-plugin-api": "^1.1.0 || ^2.0.0",
+                "php": ">=5.3.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "~2",
-                "phpunit/phpunit": "~4.0 || ~5.0"
+                "codeclimate/php-test-reporter": "dev-master",
+                "composer/composer": "2.0.x-dev || ^2.0.0-dev",
+                "phpunit/phpunit": ">=4.8.35 <6.0"
             },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "UpdateHelper\\ComposerPlugin"
+            },
+            "autoload": {
+                "psr-0": {
+                    "UpdateHelper\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kyle",
+                    "email": "kylekatarnls@gmail.com"
+                }
+            ],
+            "description": "Update helper",
+            "time": "2019-07-29T11:03:54+00:00"
+        },
+        {
+            "name": "nesbot/carbon",
+            "version": "1.39.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/briannesbitt/Carbon.git",
+                "reference": "4be0c005164249208ce1b5ca633cd57bdd42ff33"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/4be0c005164249208ce1b5ca633cd57bdd42ff33",
+                "reference": "4be0c005164249208ce1b5ca633cd57bdd42ff33",
+                "shasum": ""
+            },
+            "require": {
+                "kylekatarnls/update-helper": "^1.1",
+                "php": ">=5.3.9",
+                "symfony/translation": "~2.6 || ~3.0 || ~4.0"
+            },
+            "require-dev": {
+                "composer/composer": "^1.2",
+                "friendsofphp/php-cs-fixer": "~2",
+                "phpunit/phpunit": "^4.8.35 || ^5.7"
+            },
+            "bin": [
+                "bin/upgrade-carbon"
+            ],
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "1.23-dev"
+                "update-helper": "Carbon\\Upgrade",
+                "laravel": {
+                    "providers": [
+                        "Carbon\\Laravel\\ServiceProvider"
+                    ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Carbon\\": "src/Carbon/"
+                    "": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -460,7 +522,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2017-02-06T22:02:47+00:00"
+            "time": "2019-10-14T05:51:36+00:00"
         },
         {
             "name": "phenx/php-font-lib",
@@ -501,28 +563,28 @@
         },
         {
             "name": "phenx/php-svg-lib",
-            "version": "v0.3",
+            "version": "v0.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PhenX/php-svg-lib.git",
-                "reference": "a85f7fe9fe08d093a4a8583cdd306b553ff918aa"
+                "reference": "5fa61b65e612ce1ae15f69b3d223cb14ecc60e32"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PhenX/php-svg-lib/zipball/a85f7fe9fe08d093a4a8583cdd306b553ff918aa",
-                "reference": "a85f7fe9fe08d093a4a8583cdd306b553ff918aa",
+                "url": "https://api.github.com/repos/PhenX/php-svg-lib/zipball/5fa61b65e612ce1ae15f69b3d223cb14ecc60e32",
+                "reference": "5fa61b65e612ce1ae15f69b3d223cb14ecc60e32",
                 "shasum": ""
             },
             "require": {
-                "sabberworm/php-css-parser": "8.1.*"
+                "sabberworm/php-css-parser": "^8.3"
             },
             "require-dev": {
-                "phpunit/phpunit": "~5.0"
+                "phpunit/phpunit": "^5.5|^6.5"
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "Svg\\": "src/"
+                "psr-4": {
+                    "Svg\\": "src/Svg"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -537,20 +599,20 @@
             ],
             "description": "A library to read, parse and export to PDF SVG files.",
             "homepage": "https://github.com/PhenX/php-svg-lib",
-            "time": "2017-05-24T10:07:27+00:00"
+            "time": "2019-09-11T20:02:13+00:00"
         },
         {
             "name": "psr/container",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/container.git",
-                "reference": "2cc4a01788191489dc7459446ba832fa79a216a7"
+                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/container/zipball/2cc4a01788191489dc7459446ba832fa79a216a7",
-                "reference": "2cc4a01788191489dc7459446ba832fa79a216a7",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
                 "shasum": ""
             },
             "require": {
@@ -586,11 +648,11 @@
                 "container-interop",
                 "psr"
             ],
-            "time": "2017-06-28T15:35:32+00:00"
+            "time": "2017-02-14T16:28:37+00:00"
         },
         {
             "name": "psr/simple-cache",
-            "version": "dev-master",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/simple-cache.git",
@@ -638,23 +700,24 @@
         },
         {
             "name": "sabberworm/php-css-parser",
-            "version": "8.1.0",
+            "version": "8.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sabberworm/PHP-CSS-Parser.git",
-                "reference": "850cbbcbe7fbb155387a151ea562897a67e242ef"
+                "reference": "91bcc3e3fdb7386c9a2e0e0aa09ca75cc43f121f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sabberworm/PHP-CSS-Parser/zipball/850cbbcbe7fbb155387a151ea562897a67e242ef",
-                "reference": "850cbbcbe7fbb155387a151ea562897a67e242ef",
+                "url": "https://api.github.com/repos/sabberworm/PHP-CSS-Parser/zipball/91bcc3e3fdb7386c9a2e0e0aa09ca75cc43f121f",
+                "reference": "91bcc3e3fdb7386c9a2e0e0aa09ca75cc43f121f",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "*"
+                "codacy/coverage": "^1.4",
+                "phpunit/phpunit": "~4.8"
             },
             "type": "library",
             "autoload": {
@@ -678,20 +741,20 @@
                 "parser",
                 "stylesheet"
             ],
-            "time": "2016-07-19T19:14:21+00:00"
+            "time": "2019-02-22T07:42:52+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "dev-master",
+            "version": "v1.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "2ec8b39c38cb16674bbf3fea2b6ce5bf117e1296"
+                "reference": "7b4aab9743c30be783b73de055d24a39cf4b954f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/2ec8b39c38cb16674bbf3fea2b6ce5bf117e1296",
-                "reference": "2ec8b39c38cb16674bbf3fea2b6ce5bf117e1296",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/7b4aab9743c30be783b73de055d24a39cf4b954f",
+                "reference": "7b4aab9743c30be783b73de055d24a39cf4b954f",
                 "shasum": ""
             },
             "require": {
@@ -703,7 +766,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.6-dev"
+                    "dev-master": "1.13-dev"
                 }
             },
             "autoload": {
@@ -737,48 +800,56 @@
                 "portable",
                 "shim"
             ],
-            "time": "2017-10-11T12:05:26+00:00"
+            "time": "2019-11-27T14:18:11+00:00"
         },
         {
             "name": "symfony/translation",
-            "version": "3.4.x-dev",
+            "version": "v4.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
-                "reference": "4c5d5582baf2829751a5207659329c1f52eedeb6"
+                "reference": "f5d2ac46930238b30a9c2f1b17c905f3697d808c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation/zipball/4c5d5582baf2829751a5207659329c1f52eedeb6",
-                "reference": "4c5d5582baf2829751a5207659329c1f52eedeb6",
+                "url": "https://api.github.com/repos/symfony/translation/zipball/f5d2ac46930238b30a9c2f1b17c905f3697d808c",
+                "reference": "f5d2ac46930238b30a9c2f1b17c905f3697d808c",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5.9|>=7.0.8",
-                "symfony/polyfill-mbstring": "~1.0"
+                "php": "^7.1.3",
+                "symfony/polyfill-mbstring": "~1.0",
+                "symfony/translation-contracts": "^1.1.6|^2"
             },
             "conflict": {
-                "symfony/config": "<2.8",
+                "symfony/config": "<3.4",
                 "symfony/dependency-injection": "<3.4",
+                "symfony/http-kernel": "<4.4",
                 "symfony/yaml": "<3.4"
+            },
+            "provide": {
+                "symfony/translation-implementation": "1.0"
             },
             "require-dev": {
                 "psr/log": "~1.0",
-                "symfony/config": "~2.8|~3.0|~4.0",
-                "symfony/dependency-injection": "~3.4|~4.0",
-                "symfony/finder": "~2.8|~3.0|~4.0",
-                "symfony/intl": "^2.8.18|^3.2.5|~4.0",
-                "symfony/yaml": "~3.4|~4.0"
+                "symfony/config": "^3.4|^4.0|^5.0",
+                "symfony/console": "^3.4|^4.0|^5.0",
+                "symfony/dependency-injection": "^3.4|^4.0|^5.0",
+                "symfony/finder": "~2.8|~3.0|~4.0|^5.0",
+                "symfony/http-kernel": "^4.4",
+                "symfony/intl": "^3.4|^4.0|^5.0",
+                "symfony/service-contracts": "^1.1.2|^2",
+                "symfony/yaml": "^3.4|^4.0|^5.0"
             },
             "suggest": {
-                "psr/log": "To use logging capability in translator",
+                "psr/log-implementation": "To use logging capability in translator",
                 "symfony/config": "",
                 "symfony/yaml": ""
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.4-dev"
+                    "dev-master": "4.4-dev"
                 }
             },
             "autoload": {
@@ -805,17 +876,72 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
-            "time": "2017-12-12T08:27:14+00:00"
+            "time": "2020-01-15T13:29:06+00:00"
+        },
+        {
+            "name": "symfony/translation-contracts",
+            "version": "v2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/translation-contracts.git",
+                "reference": "8cc682ac458d75557203b2f2f14b0b92e1c744ed"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/translation-contracts/zipball/8cc682ac458d75557203b2f2f14b0b92e1c744ed",
+                "reference": "8cc682ac458d75557203b2f2f14b0b92e1c744ed",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2.5"
+            },
+            "suggest": {
+                "symfony/translation-implementation": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Contracts\\Translation\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Generic abstractions related to translation",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "abstractions",
+                "contracts",
+                "decoupling",
+                "interfaces",
+                "interoperability",
+                "standards"
+            ],
+            "time": "2019-11-18T17:27:11+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {
-        "php": ">=7.0"
-    },
+    "platform": [],
     "platform-dev": []
 }

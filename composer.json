@@ -3,7 +3,14 @@
   "type": "october-plugin",
   "description": "October HTML to PDF converter using dompdf library.",
   "homepage": "https://octobercms.com/plugin/renatio-dynamicpdf",
-  "keywords": ["octobercms-plugin", "octobercms", "php", "laravel", "pdf", "dompdf"],
+  "keywords": [
+    "octobercms-plugin",
+    "octobercms",
+    "php",
+    "laravel",
+    "pdf",
+    "dompdf"
+  ],
   "license": "MIT",
   "authors": [
     {
@@ -12,9 +19,8 @@
     }
   ],
   "require": {
-    "php": ">=7.0",
-    "barryvdh/laravel-dompdf": "0.8.*",
+    "barryvdh/laravel-dompdf": "^0.8",
+    "illuminate/support": "5.5.*",
     "composer/installers": "~1.0"
-  },
-  "minimum-stability": "dev"
+  }
 }
