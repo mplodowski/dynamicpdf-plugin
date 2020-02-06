@@ -6,6 +6,7 @@ use Backend\Classes\Controller;
 use Backend\Facades\BackendMenu;
 use October\Rain\Exception\ApplicationException;
 use Renatio\DynamicPDF\Classes\PDF;
+use System\Classes\SettingsManager;
 
 /**
  * Class Templates
@@ -35,13 +36,26 @@ class Templates extends Controller
     /**
      * @var string
      */
-    public $listConfig = 'config_list.yaml';
+    //public $listConfig = 'config_list.yaml';
+
+    public $listConfig = [
+        'templates' => 'config_list.yaml',
+        'layouts' => '$/renatio/dynamicpdf/controllers/layouts/config_list.yaml',
+    ];
 
     public function __construct()
     {
         parent::__construct();
 
-        BackendMenu::setContext('Renatio.DynamicPDF', 'dynamicpdf', 'templates');
+        BackendMenu::setContext('October.System', 'system', 'settings');
+        SettingsManager::setContext('Renatio.DynamicPDF', 'templates');
+    }
+
+    public function index($tab = null)
+    {
+        $this->asExtension('ListController')->index();
+        $this->bodyClass = 'compact-container';
+        $this->vars['activeTab'] = $tab ?: 'templates';
     }
 
     /**

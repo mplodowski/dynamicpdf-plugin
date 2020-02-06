@@ -6,6 +6,7 @@ use Backend\Classes\Controller;
 use Backend\Facades\BackendMenu;
 use October\Rain\Exception\ApplicationException;
 use Renatio\DynamicPDF\Classes\PDF;
+use System\Classes\SettingsManager;
 
 /**
  * Class Layouts
@@ -46,7 +47,8 @@ class Layouts extends Controller
     {
         parent::__construct();
 
-        BackendMenu::setContext('Renatio.DynamicPDF', 'dynamicpdf', 'layouts');
+        BackendMenu::setContext('October.System', 'system', 'settings');
+        SettingsManager::setContext('Renatio.DynamicPDF', 'layouts');
     }
 
     /**
