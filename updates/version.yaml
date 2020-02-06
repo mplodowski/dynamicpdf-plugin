@@ -27,3 +27,6 @@
 3.0.4:
     - Add paper size and orientation configuration.
     - add_paper_configuration_to_templates_table.php
+3.0.5:
+    - Support LESS in layouts css
+    - add_content_less_field_to_layouts_table.php
