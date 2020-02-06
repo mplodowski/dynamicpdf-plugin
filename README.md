@@ -171,8 +171,6 @@ Recommended approach is to save PDF file locally and return redirect to PDF file
 
 ## Examples
 
-After installation there will an example PDF invoice document, which will show, how you can structure HTML and CSS.
-
 ### Render PDF in browser
 
     use Renatio\DynamicPDF\Classes\PDF; // import facade
@@ -251,6 +249,41 @@ To display PDF on CMS page you can use PHP section of the page like so:
   </main>
 </body>
 </html>
+```
+
+### Using custom fonts
+
+Plugin provides "Open Sans" font, which can be imported in Layout CSS section.
+
+```
+@font-face {
+    font-family: 'Open Sans';
+    src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: bold;
+    src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf');
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: bold;
+    src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf');
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+}
 ```
 
 ## Support
