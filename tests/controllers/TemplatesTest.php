@@ -16,7 +16,7 @@ class TemplatesTest extends ControllerTestCase
     {
         $template = factory(Template::class)->create();
 
-        $this->get('backend/renatio/dynamicpdf/templates')
+        $this->get($this->backendUri . '/renatio/dynamicpdf/templates')
             ->assertSee($template->title)
             ->assertSuccessful();
     }
@@ -24,7 +24,7 @@ class TemplatesTest extends ControllerTestCase
     /** @test */
     public function it_displays_create_template_page()
     {
-        $this->get('backend/renatio/dynamicpdf/templates/create')
+        $this->get($this->backendUri . '/renatio/dynamicpdf/templates/create')
             ->assertSuccessful();
     }
 
@@ -33,7 +33,7 @@ class TemplatesTest extends ControllerTestCase
     {
         $template = factory(Template::class)->create();
 
-        $this->get('backend/renatio/dynamicpdf/templates/update/' . $template->id)
+        $this->get($this->backendUri . '/renatio/dynamicpdf/templates/update/' . $template->id)
             ->assertSuccessful();
     }
 
@@ -42,7 +42,7 @@ class TemplatesTest extends ControllerTestCase
     {
         $template = factory(Template::class)->create();
 
-        $this->get('backend/renatio/dynamicpdf/templates/previewpdf/' . $template->id)
+        $this->get($this->backendUri . '/renatio/dynamicpdf/templates/previewpdf/' . $template->id)
             ->assertHeader('content-type', 'application/pdf')
             ->assertSuccessful();
     }
@@ -52,7 +52,7 @@ class TemplatesTest extends ControllerTestCase
     {
         $template = factory(Template::class)->create();
 
-        $this->get('backend/renatio/dynamicpdf/templates/preview/' . $template->id)
+        $this->get($this->backendUri . '/renatio/dynamicpdf/templates/preview/' . $template->id)
             ->assertSuccessful();
     }
 
