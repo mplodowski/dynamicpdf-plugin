@@ -45,5 +45,4 @@ class ServiceProvider extends OctoberServiceProvider
             return new PDFWrapper($app['dompdf'], $app['config'], $app['files'], $app['view']);
         });
     }
-
 }
