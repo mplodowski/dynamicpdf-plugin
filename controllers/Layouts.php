@@ -2,6 +2,7 @@
 
 namespace Renatio\DynamicPDF\Controllers;
 
+use Backend\Behaviors\FormController;
 use Backend\Classes\Controller;
 use Backend\Facades\BackendMenu;
 use October\Rain\Exception\ApplicationException;
@@ -18,20 +19,14 @@ class Layouts extends Controller
     /**
      * @var array
      */
-    public $implement = [
-        'Backend.Behaviors.FormController',
-        'Backend.Behaviors.ListController',
-    ];
+    public $requiredPermissions = ['renatio.dynamicpdf.manage_layouts'];
 
     /**
      * @var array
      */
-    public $requiredPermissions = ['renatio.dynamicpdf.manage_layouts'];
-
-    /**
-     * @var string
-     */
-    public $bodyClass = 'compact-container';
+    public $implement = [
+        FormController::class,
+    ];
 
     /**
      * @var string
@@ -41,14 +36,14 @@ class Layouts extends Controller
     /**
      * @var string
      */
-    public $listConfig = 'config_list.yaml';
+    public $bodyClass = 'compact-container';
 
     public function __construct()
     {
         parent::__construct();
 
         BackendMenu::setContext('October.System', 'system', 'settings');
-        SettingsManager::setContext('Renatio.DynamicPDF', 'layouts');
+        SettingsManager::setContext('Renatio.DynamicPDF', 'templates');
     }
 
     /**
@@ -57,18 +52,32 @@ class Layouts extends Controller
      */
     public function previewPdf($id)
     {
-        try {
-            $this->pageTitle = trans('renatio.dynamicpdf::lang.templates.preview_pdf');
-            $model = $this->formFindModelObject($id);
+        $this->pageTitle = trans('renatio.dynamicpdf::lang.templates.preview_pdf');
+        $this->bodyClass = null;
 
-            return PDF::loadLayout($model->code)
-                ->setOptions([
-                    'logOutputFile' => storage_path('temp/log.htm'),
-                    'isRemoteEnabled' => true,
-                ])->stream();
+        try {
+            $model = $this->formFindModelObject($id);
         } catch (ApplicationException $e) {
-            $this->handleError($e);
+            return $this->handleError($e);
         }
+
+        return PDF::loadLayout($model->code)
+            ->setOptions([
+                'logOutputFile' => storage_path('temp/log.htm'),
+                'isRemoteEnabled' => true,
+            ])
+            ->stream();
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function preview($id)
+    {
+        $this->bodyClass = null;
+
+        return $this->asExtension('FormController')->preview($id);
     }
 
     /**
@@ -83,5 +92,4 @@ class Layouts extends Controller
 
         return response($model->html);
     }
-
 }

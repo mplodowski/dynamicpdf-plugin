@@ -12,19 +12,19 @@ form: $/renatio/dynamicpdf/models/layout/fields.yaml
 modelClass: Renatio\DynamicPDF\Models\Layout
 
 # Default redirect location
-defaultRedirect: renatio/dynamicpdf/index/layouts
+defaultRedirect: renatio/dynamicpdf/templates/index/layouts
 
 # Create page
 create:
     title: renatio.dynamicpdf::lang.layout.create_layout
     redirect: renatio/dynamicpdf/layouts/update/:id
-    redirectClose: renatio/dynamicpdf/index/layouts
+    redirectClose: renatio/dynamicpdf/templates/index/layouts
 
 # Update page
 update:
     title: renatio.dynamicpdf::lang.layout.edit_layout
-    redirect: renatio/dynamicpdf/index/layouts
-    redirectClose: renatio/dynamicpdf/index/layouts
+    redirect: renatio/dynamicpdf/templates/index/layouts
+    redirectClose: renatio/dynamicpdf/templates/index/layouts
 
 # Preview page
 preview:

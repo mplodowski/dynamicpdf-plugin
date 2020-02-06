@@ -29,7 +29,7 @@ tabs:
                                     {{ css|raw }}
                                 </style>
                             </head>
-                            <body style="background: url({{ background_img }}) top left no-repeat;">
+                            <body>
                                 {{ content_html|raw }}
                             </body>
                         </html>

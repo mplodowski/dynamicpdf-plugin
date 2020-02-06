@@ -1,12 +1,12 @@
 <div class="control-tabs content-tabs tabs-flush" data-control="tab">
     <ul class="nav nav-tabs">
         <li class="<?= $activeTab == 'templates' ? 'active' : '' ?>">
-            <a href="#templates" data-tab-url="<?= Backend::url('renatio/dynamicpdf/index/templates') ?>">
+            <a href="#templates" data-tab-url="<?= Backend::url('renatio/dynamicpdf/templates/index/templates') ?>">
                 <?= e(trans('renatio.dynamicpdf::lang.templates.templates')) ?>
             </a>
         </li>
         <li class="<?= $activeTab == 'layouts' ? 'active' : '' ?>">
-            <a href="#layouts" data-tab-url="<?= Backend::url('renatio/dynamicpdf/index/layouts') ?>">
+            <a href="#layouts" data-tab-url="<?= Backend::url('renatio/dynamicpdf/templates/index/layouts') ?>">
                 <?= e(trans('renatio.dynamicpdf::lang.templates.layouts')) ?>
             </a>
         </li>

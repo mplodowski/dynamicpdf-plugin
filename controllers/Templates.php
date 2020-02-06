@@ -2,6 +2,8 @@
 
 namespace Renatio\DynamicPDF\Controllers;
 
+use Backend\Behaviors\FormController;
+use Backend\Behaviors\ListController;
 use Backend\Classes\Controller;
 use Backend\Facades\BackendMenu;
 use October\Rain\Exception\ApplicationException;
@@ -18,30 +20,28 @@ class Templates extends Controller
     /**
      * @var array
      */
+    public $requiredPermissions = ['renatio.dynamicpdf.manage_templates'];
+
+    /**
+     * @var array
+     */
     public $implement = [
-        'Backend.Behaviors.FormController',
-        'Backend.Behaviors.ListController',
+        ListController::class,
+        FormController::class,
     ];
 
     /**
      * @var array
      */
-    public $requiredPermissions = ['renatio.dynamicpdf.manage_templates'];
+    public $listConfig = [
+        'templates' => 'config_templates_list.yaml',
+        'layouts' => 'config_layouts_list.yaml',
+    ];
 
     /**
      * @var string
      */
     public $formConfig = 'config_form.yaml';
-
-    /**
-     * @var string
-     */
-    //public $listConfig = 'config_list.yaml';
-
-    public $listConfig = [
-        'templates' => 'config_list.yaml',
-        'layouts' => '$/renatio/dynamicpdf/controllers/layouts/config_list.yaml',
-    ];
 
     public function __construct()
     {
@@ -51,9 +51,13 @@ class Templates extends Controller
         SettingsManager::setContext('Renatio.DynamicPDF', 'templates');
     }
 
+    /**
+     * @param  null  $tab
+     */
     public function index($tab = null)
     {
         $this->asExtension('ListController')->index();
+
         $this->bodyClass = 'compact-container';
         $this->vars['activeTab'] = $tab ?: 'templates';
     }
@@ -64,18 +68,20 @@ class Templates extends Controller
      */
     public function previewPdf($id)
     {
-        try {
-            $this->pageTitle = trans('renatio.dynamicpdf::lang.templates.preview_pdf');
-            $model = $this->formFindModelObject($id);
+        $this->pageTitle = trans('renatio.dynamicpdf::lang.templates.preview_pdf');
 
-            return PDF::loadTemplate($model->code)
-                ->setOptions([
-                    'logOutputFile' => storage_path('temp/log.htm'),
-                    'isRemoteEnabled' => true,
-                ])->stream();
+        try {
+            $model = $this->formFindModelObject($id);
         } catch (ApplicationException $e) {
-            $this->handleError($e);
+            return $this->handleError($e);
         }
+
+        return PDF::loadTemplate($model->code)
+            ->setOptions([
+                'logOutputFile' => storage_path('temp/log.htm'),
+                'isRemoteEnabled' => true,
+            ])
+            ->stream();
     }
 
     /**
@@ -90,5 +96,4 @@ class Templates extends Controller
 
         return response($model->html);
     }
-
 }

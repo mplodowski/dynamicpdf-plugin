@@ -16,7 +16,7 @@ return [
         'content_html' => 'HTML',
         'content_css' => 'CSS/LESS',
         'name' => 'Name',
-        'return' => 'Return to pdf templates list',
+        'return' => 'Return to templates list',
         'new_template' => 'New Template',
         'new_layout' => 'New Layout',
         'templates' => 'Templates',
