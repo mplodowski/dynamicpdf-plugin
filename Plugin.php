@@ -43,13 +43,13 @@ class Plugin extends PluginBase
     {
         return [
             'renatio.dynamicpdf.manage_templates' => [
-                'tab' => 'renatio.dynamicpdf::lang.permissions.tab',
                 'label' => 'renatio.dynamicpdf::lang.permissions.manage_templates',
+                'tab' => 'renatio.dynamicpdf::lang.permissions.tab',
             ],
             'renatio.dynamicpdf.manage_layouts' => [
-                'tab' => 'renatio.dynamicpdf::lang.permissions.tab',
                 'label' => 'renatio.dynamicpdf::lang.permissions.manage_layouts',
-            ]
+                'tab' => 'renatio.dynamicpdf::lang.permissions.tab',
+            ],
         ];
     }
 
@@ -66,7 +66,7 @@ class Plugin extends PluginBase
             'filters' => [
                 '_' => ['Lang', 'get'],
                 '__' => ['Lang', 'choice'],
-            ]
+            ],
         ];
     }
 
@@ -77,14 +77,13 @@ class Plugin extends PluginBase
     {
         return [
             'templates' => [
-                'category' => 'renatio.dynamicpdf::lang.menu.label',
-                'label' => 'renatio.dynamicpdf::lang.templates.templates',
-                'icon' => 'icon-file-text-o',
+                'label' => 'renatio.dynamicpdf::lang.menu.label',
+                'category' => 'renatio.dynamicpdf::lang.menu.category',
+                'icon' => 'icon-file-pdf-o',
                 'url' => Backend::url('renatio/dynamicpdf/templates'),
-                'description' => '',
+                'description' => 'renatio.dynamicpdf::lang.menu.description',
                 'permissions' => ['renatio.dynamicpdf.manage_templates'],
             ],
         ];
     }
-
 }

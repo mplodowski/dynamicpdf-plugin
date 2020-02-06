@@ -55,7 +55,9 @@ return [
         'tab' => 'PDF',
     ],
     'menu' => [
-        'label' => 'PDF',
+        'label' => 'PDF Templates',
+        'category' => 'PDF',
+        'description' => 'Modify the PDF templates and manage PDF layouts.',
     ],
     'orientation' => [
         'portrait' => 'Portrait',
