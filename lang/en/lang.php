@@ -14,7 +14,7 @@ return [
         'empty_option' => '-- No layout --',
         'code_comment' => 'Unique code used to refer to this template',
         'content_html' => 'HTML',
-        'content_css' => 'CSS',
+        'content_css' => 'CSS/LESS',
         'name' => 'Name',
         'return' => 'Return to pdf templates list',
         'new_template' => 'New Template',

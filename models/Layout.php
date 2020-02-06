@@ -2,11 +2,12 @@
 
 namespace Renatio\DynamicPDF\Models;
 
+use Exception;
+use Less_Parser;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 use Renatio\DynamicPDF\Classes\PDF;
 use System\Models\File;
-use Less_Parser;
 
 /**
  * Class Layout
@@ -34,22 +35,8 @@ class Layout extends Model
     /**
      * @var array
      */
-    protected $fillable = ['name', 'code', 'content_html', 'content_css', 'content_less'];
-
-    /**
-     * @var array
-     */
     public $attachOne = [
         'background_img' => File::class,
-    ];
-
-    /**
-     * @var array
-     */
-    public $attributeNames = [
-        'name' => 'renatio.dynamicpdf::lang.templates.name',
-        'code' => 'renatio.dynamicpdf::lang.templates.code',
-        'content_html' => 'renatio.dynamicpdf::lang.templates.content_html',
     ];
 
     /**
@@ -71,29 +58,14 @@ class Layout extends Model
         return static::whereCode($code)->firstOrFail();
     }
 
-
-    public function compileLessToCss()
+    /**
+     * @return string
+     * @throws Exception
+     */
+    public function getCSS()
     {
-        if (empty($this->content_less)) return null;
+        $parser = new Less_Parser;
 
-        $parser = new Less_Parser([
-            'compress' => false
-        ]);
-
-        $parser->parse($this->content_less);
-        $css = $parser->getCss();
-        return $css;
+        return $parser->parse($this->content_css)->getCss();
     }
-
-    public function beforeSave()
-    {
-
-        // backwards compatibility - copy css to less column when content_less is empty
-        if (empty($this->content_less) && $this->content_css) {
-            $this->content_less = $this->content_css;
-        }
-
-        $this->content_css = $this->compileLessToCss(); // we save less to css column to cache it
-    }
-
 }

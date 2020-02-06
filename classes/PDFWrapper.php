@@ -120,7 +120,7 @@ class PDFWrapper extends LaravelPDF
     {
         return array_merge([
             'background_img' => $layout->background_img ? $layout->background_img->getPath() : null,
-            'css' => $layout->content_css,
+            'css' => $layout->getCSS(),
         ], $data);
     }
 
