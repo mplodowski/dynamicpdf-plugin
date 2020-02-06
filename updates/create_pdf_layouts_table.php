@@ -2,6 +2,7 @@
 
 namespace Renatio\DynamicPDF\Updates;
 
+use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
 use October\Rain\Support\Facades\Schema;
 
@@ -17,7 +18,7 @@ class CreateLayoutsTable extends Migration
      */
     public function up()
     {
-        Schema::create('renatio_dynamicpdf_pdf_layouts', function ($table) {
+        Schema::create('renatio_dynamicpdf_pdf_layouts', function (Blueprint $table) {
             $table->increments('id');
             $table->string('code')->index();
             $table->string('name');
@@ -34,5 +35,4 @@ class CreateLayoutsTable extends Migration
     {
         Schema::dropIfExists('renatio_dynamicpdf_pdf_layouts');
     }
-
 }

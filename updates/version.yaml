@@ -2,8 +2,6 @@
     - Initialize plugin.
     - create_pdf_layouts_table.php
     - create_pdf_templates_table.php
-    - seed_pdf_layouts_table.php
-    - seed_pdf_templates_table.php
 1.0.2: Minor changes.
 1.1.0: !!! Important update.
 1.1.1: Use Twig::parse() facade. Only update for October build 300 and above.
@@ -27,7 +25,5 @@
 3.0.4:
     - Add paper size and orientation configuration.
     - add_paper_configuration_to_templates_table.php
-3.0.5:
-    - Support LESS in layouts css
-    - add_content_less_field_to_layouts_table.php
+3.0.5: Support LESS in PDF layouts.
 4.0.0: !!! Require PHP 7.1. Please see upgrade guide before update.

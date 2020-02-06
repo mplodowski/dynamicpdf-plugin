@@ -2,6 +2,7 @@
 
 namespace Renatio\DynamicPDF\Updates;
 
+use October\Rain\Database\Schema\Blueprint;
 use October\Rain\Database\Updates\Migration;
 use October\Rain\Support\Facades\Schema;
 
@@ -17,7 +18,7 @@ class AddPaperConfigurationToTemplatesTable extends Migration
      */
     public function up()
     {
-        Schema::table('renatio_dynamicpdf_pdf_templates', function ($table) {
+        Schema::table('renatio_dynamicpdf_pdf_templates', function (Blueprint $table) {
             $table->string('size')->nullable();
             $table->string('orientation')->nullable();
         });
@@ -28,9 +29,8 @@ class AddPaperConfigurationToTemplatesTable extends Migration
      */
     public function down()
     {
-        Schema::table('renatio_dynamicpdf_pdf_templates', function ($table) {
+        Schema::table('renatio_dynamicpdf_pdf_templates', function (Blueprint $table) {
             $table->dropColumn(['size', 'orientation']);
         });
     }
-
 }
