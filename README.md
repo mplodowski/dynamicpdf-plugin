@@ -17,6 +17,16 @@ Plugin uses dompdf wrapper for Laravel [barryvdh/laravel-dompdf](https://github.
 * Inline PHP support
 * Basic SVG support
 
+## Support
+
+Please use [GitHub Issues Page](https://github.com/mplodowski/dynamicpdf-plugin/issues) to report any issues with plugin.
+
+> Reviews should not be used for getting support or reporting bugs, if you need support please use the Plugin support link.
+
+## Like this plugin?
+
+If you like this plugin, give this plugin a Like or Make donation with [PayPal](https://www.paypal.me/mplodowski).
+
 ## Installation
 
 There are couple ways to install this plugin.
@@ -319,13 +329,3 @@ body {
     font-size: 16px;
 }
 ```
-
-## Support
-
-Please use [GitHub Issues Page](https://github.com/mplodowski/dynamicpdf-plugin/issues) to report any issues with plugin.
-
-> Reviews should not be used for getting support or reporting bugs, if you need support please use the Plugin support link.
-
-## Like this plugin?
-
-If you like this plugin, give this plugin a Like or Make donation with [PayPal](https://www.paypal.me/mplodowski).
