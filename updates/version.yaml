@@ -26,6 +26,5 @@
     - Add paper size and orientation configuration.
     - add_paper_configuration_to_templates_table.php
 3.0.5: Support LESS in PDF layouts.
-3.0.6: Move navigation to Settings.
 4.0.0: !!! Require PHP 7.1. Please see upgrade guide before update.
 4.0.1: Fix error when active theme is not set.
