@@ -3,15 +3,14 @@
 namespace Renatio\DynamicPDF\Classes;
 
 use Barryvdh\DomPDF\PDF as LaravelPDF;
-use Cms\Classes\CmsException;
 use Cms\Classes\Controller;
+use Exception;
+use October\Rain\Support\Facades\Twig;
 use RainLab\Translate\Classes\Translator;
 use RainLab\Translate\Models\Message;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\PluginManager;
-use Twig\Error\LoaderError;
-use Twig\Error\SyntaxError;
 
 /**
  * Class PDFWrapper
@@ -27,9 +26,6 @@ class PDFWrapper extends LaravelPDF
      * @param  array  $data
      * @param  null  $encoding
      * @return $this
-     * @throws CmsException
-     * @throws LoaderError
-     * @throws SyntaxError
      */
     public function loadTemplate($code, $data = [], $encoding = null)
     {
@@ -54,9 +50,6 @@ class PDFWrapper extends LaravelPDF
      * @param  array  $data
      * @param  null  $encoding
      * @return $this
-     * @throws CmsException
-     * @throws LoaderError
-     * @throws SyntaxError
      */
     public function loadLayout($code, $data = [], $encoding = null)
     {
@@ -74,9 +67,6 @@ class PDFWrapper extends LaravelPDF
      * @param $template
      * @param  array  $data
      * @return mixed
-     * @throws CmsException
-     * @throws LoaderError
-     * @throws SyntaxError
      */
     public function parseTemplate($template, $data = [])
     {
@@ -100,9 +90,6 @@ class PDFWrapper extends LaravelPDF
      * @param $layout
      * @param  array  $data
      * @return mixed
-     * @throws CmsException
-     * @throws LoaderError
-     * @throws SyntaxError
      */
     public function parseLayout($layout, $data = [])
     {
@@ -145,16 +132,16 @@ class PDFWrapper extends LaravelPDF
      * @param $markup
      * @param $data
      * @return string
-     * @throws CmsException
-     * @throws LoaderError
-     * @throws SyntaxError
      */
     protected function parseMarkup($markup, $data)
     {
-        $twig = (new Controller)->getTwig();
+        try {
+            $twig = (new Controller)->getTwig();
+            $template = $twig->createTemplate($markup);
 
-        $template = $twig->createTemplate($markup);
-
-        return $template->render($data);
+            return $template->render($data);
+        } catch (Exception $e) {
+            return Twig::parse($markup, $data);
+        }
     }
 }
