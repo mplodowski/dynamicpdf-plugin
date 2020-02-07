@@ -20,7 +20,7 @@ Plugin requires OctoberCMS build 420+ with Laravel 5.5 and PHP >=7.0.
 
 ## Upgrading To 4.0.0
 
-Plugin requires PHP >=7.1.
+Plugin requires PHP >=7.1 to work with the latest version of [dompdf](https://github.com/dompdf/dompdf) library.
 
 You must manually update project composer.json file to use at least PHP 7.1:
 
