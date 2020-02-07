@@ -1,6 +1,6 @@
 # Dynamic PDF plugin
 
-> Plugin requires PHP >=7.1. Please see update guide for version 4.0.0.
+> Plugin requires PHP >=7.1 to work with the latest version of [dompdf](https://github.com/dompdf/dompdf) library. Please see update guide for version 4.0.0.
 
 October HTML to PDF converter using [dompdf](https://github.com/dompdf/dompdf) library.
 
