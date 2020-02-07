@@ -44,14 +44,18 @@ Plugin supports using [CMS partials](https://octobercms.com/docs/cms/partials) a
 
 The defaults configuration settings are set in `config/dompdf.php`. Copy this file to your own config directory to modify the values. You can publish the config using this command:
 
-    php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
+```
+php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
+```
 
 You can still alter the dompdf options in your code before generating the PDF using this command:
 
-    PDF::loadTemplate('renatio::invoice')
-        ->setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif'])
-        ->stream();
-    
+```
+PDF::loadTemplate('renatio::invoice')
+    ->setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif'])
+    ->stream();
+```
+
 Available options and their defaults:
 * __rootDir__: "{app_directory}/vendor/dompdf/dompdf"
 * __tempDir__: "/tmp" _(available in config/dompdf.php)_
@@ -106,36 +110,54 @@ All methods are available through Facade class `Renatio\DynamicPDF\Classes\PDF`.
 
 To display background image added in layout use following code:
 
-    <body style="background: url({{ background_img }}) top left no-repeat;">
+```
+<body style="background: url({{ background_img }}) top left no-repeat;">
+```
 
 Background image should be 96 DPI size (793 x 1121 px).
+
+If you want to use better quality image like 300 DPI (2480 x 3508 px) than you need to change template options like so:
+
+```
+return PDF::loadTemplate($model->code)
+    ->setOptions(['dpi' => 300])
+    ->stream();
+```
 
 ## Tip: UTF-8 support
 
 In your layout, set the UTF-8 meta tag in `head` section:
 
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+```
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+```
+
+If you have problems with foreign characters than try to use **DejaVu Sans** font family.
 
 ## Tip: Page breaks
 
 You can use the CSS page-break-before/page-break-after properties to create a new page.
 
-    <style>
-    .page-break {
-        page-break-after: always;
-    }
-    </style>
-    <h1>Page 1</h1>
-    <div class="page-break"></div>
-    <h1>Page 2</h1>
+```
+<style>
+.page-break {
+    page-break-after: always;
+}
+</style>
+<h1>Page 1</h1>
+<div class="page-break"></div>
+<h1>Page 2</h1>
+```
 
 ## Tip: Open_basedir restriction error
 
 On some hosting providers there were reports about `open_basedir` restriction problems with log file. You can change default log file destination like so:
 
-    return PDF::loadTemplate('renatio::invoice')
-        ->setOptions(['logOutputFile' => storage_path('temp/log.htm')])
-        ->stream();
+```
+return PDF::loadTemplate('renatio::invoice')
+    ->setOptions(['logOutputFile' => storage_path('temp/log.htm')])
+    ->stream();
+```
 
 ## Tip: Embed image inside PDF template
 
@@ -143,9 +165,11 @@ You can use absolute path for image eg. `http://app.dev/path_to_your_image`.
 
 For this to work you must set `isRemoteEnabled` option.
 
-    return PDF::loadTemplate('renatio::invoice', ['file' => $file])
-        ->setOptions(['isRemoteEnabled' => true])
-        ->stream();
+```
+return PDF::loadTemplate('renatio::invoice', ['file' => $file])
+    ->setOptions(['isRemoteEnabled' => true])
+    ->stream();
+```
 
 I assume that `$file` is instance of `October\Rain\Database\Attach\File`. 
 
@@ -173,17 +197,19 @@ Recommended approach is to save PDF file locally and return redirect to PDF file
 
 ### Render PDF in browser
 
-    use Renatio\DynamicPDF\Classes\PDF; // import facade
+```
+use Renatio\DynamicPDF\Classes\PDF; // import facade
 
-    ...
+...
 
-    public function pdf()
-    {
-        $templateCode = 'renatio::invoice'; // unique code of the template
-        $data = ['name' => 'John Doe']; // optional data used in template
+public function pdf()
+{
+    $templateCode = 'renatio::invoice'; // unique code of the template
+    $data = ['name' => 'John Doe']; // optional data used in template
 
-        return PDF::loadTemplate($templateCode, $data)->stream('download.pdf');
-    }
+    return PDF::loadTemplate($templateCode, $data)->stream('download.pdf');
+}
+```
 
 Where `$templateCode` is an unique code specified when creating the template, `$data` is optional array of twig fields which will be replaced in template.
 
@@ -191,28 +217,34 @@ In HTML template you can use `{{ name }}` to output `John Doe`.
 
 ### Download PDF
 
-    use Renatio\DynamicPDF\Classes\PDF;
-
-    ...
-
-    public function pdf()
-    {
-        return PDF::loadTemplate('renatio::invoice')->download('download.pdf');
-    }
+```
+use Renatio\DynamicPDF\Classes\PDF;
+ 
+ ...
+ 
+ public function pdf()
+ {
+     return PDF::loadTemplate('renatio::invoice')->download('download.pdf');
+ }
+```
 
 ### Fluent interface
 
 You can chain the methods:
 
-    return PDF::loadTemplate('renatio::invoice')
-        ->save('/path-to/my_stored_file.pdf')
-        ->stream();
+```
+return PDF::loadTemplate('renatio::invoice')
+    ->save('/path-to/my_stored_file.pdf')
+    ->stream();
+```
     
 ### Change orientation and paper size
 
-    return PDF::loadTemplate('renatio::invoice')
-        ->setPaper('a4', 'landscape')
-        ->stream();
+```
+return PDF::loadTemplate('renatio::invoice')
+    ->setPaper('a4', 'landscape')
+    ->stream();
+```
     
 Available [paper sizes](https://github.com/dompdf/dompdf/blob/master/src/Adapter/CPDF.php#L40).
 
@@ -220,12 +252,14 @@ Available [paper sizes](https://github.com/dompdf/dompdf/blob/master/src/Adapter
 
 To display PDF on CMS page you can use PHP section of the page like so:
 
-    use Renatio\DynamicPDF\Classes\PDF;
+```
+use Renatio\DynamicPDF\Classes\PDF;
 
-    function onStart()
-    {
-        return PDF::loadTemplate('renatio::invoice')->stream();
-    }
+function onStart()
+{
+    return PDF::loadTemplate('renatio::invoice')->stream();
+}
+```
     
 ### Header and Footer on every page
 
