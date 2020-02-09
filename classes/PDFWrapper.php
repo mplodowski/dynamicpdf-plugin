@@ -19,6 +19,24 @@ use System\Classes\PluginManager;
 class PDFWrapper extends LaravelPDF
 {
 
+   /**
+     * Load Template from file
+     *
+     * @param string $filePath
+     * @param array $data
+     * @param null $encoding
+     * @return $this
+     */
+    public function loadFile($filePath, $data = [], $encoding = null)
+    {
+        $this->loadHTML(
+            $this->parseMarkup(File::get($filePath), $data),
+            $encoding
+        );
+
+        return $this;
+    }
+
     /**
      * Load template HTML
      *
