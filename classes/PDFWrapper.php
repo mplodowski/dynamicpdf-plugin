@@ -11,6 +11,7 @@ use RainLab\Translate\Models\Message;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\PluginManager;
+use Illuminate\Support\Facades\File;
 
 /**
  * Class PDFWrapper
