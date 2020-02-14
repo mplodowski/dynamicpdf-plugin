@@ -5,7 +5,9 @@ namespace Renatio\DynamicPDF\Controllers;
 use Backend\Behaviors\FormController;
 use Backend\Classes\Controller;
 use Backend\Facades\BackendMenu;
+use Illuminate\Http\RedirectResponse;
 use October\Rain\Exception\ApplicationException;
+use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
 use System\Classes\SettingsManager;
 
@@ -76,7 +78,10 @@ class Layouts extends Controller
         return response($model->html);
     }
 
-    // todo reset
+    /**
+     * @param $recordId
+     * @return RedirectResponse
+     */
     public function update_onResetDefault($recordId)
     {
         $model = $this->formFindModelObject($recordId);
@@ -84,7 +89,7 @@ class Layouts extends Controller
         $model->fillFromCode();
         $model->save();
 
-        Flash::success(Lang::get('backend::lang.form.reset_success'));
+        Flash::success(e(trans('backend::lang.form.reset_success')));
 
         return redirect()->refresh();
     }

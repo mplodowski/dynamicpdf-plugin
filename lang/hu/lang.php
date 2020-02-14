@@ -21,7 +21,6 @@ return [
         'new_layout' => 'Új elrendezés',
         'templates' => 'Sablonok',
         'layouts' => 'Elrendezések',
-        'delete_alert' => 'Valóban törölni akarja a sablont?',
         'background_img' => 'Háttérkép',
         'preview_html' => 'HTML előnézet',
         'preview_pdf' => 'PDF előnézet',
@@ -39,7 +38,6 @@ return [
     'layouts' => [
         'label' => 'Elrendezések',
         'return' => 'Vissza az elrendezésekhez',
-        'delete_alert' => 'Valóban törölni akarja az elrendezést?',
     ],
     'layout' => [
         'menu_label' => 'Elrendezés',

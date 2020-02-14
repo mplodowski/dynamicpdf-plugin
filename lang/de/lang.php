@@ -21,7 +21,6 @@ return [
         'new_layout' => 'Neues Layout',
         'templates' => 'Vorlagen',
         'layouts' => 'Layouts',
-        'delete_alert' => 'Möchten Sie wirklich diese Vorlage löschen?',
         'background_img' => 'Hintergrundbild',
         'preview_html' => 'HTML Vorschau',
         'preview_pdf' => 'PDF Vorschau',
@@ -37,7 +36,6 @@ return [
     'layouts' => [
         'label' => 'Layouts',
         'return' => 'Zurük zu den Layouts',
-        'delete_alert' => 'Möchten Sie wirklich dieses Layout löschen?',
     ],
     'layout' => [
         'menu_label' => 'Layout',

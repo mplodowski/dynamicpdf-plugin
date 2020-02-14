@@ -21,7 +21,6 @@ return [
         'new_layout' => 'New Layout',
         'templates' => 'Templates',
         'layouts' => 'Layouts',
-        'delete_alert' => 'Do you really want to delete this template?',
         'background_img' => 'Background Image',
         'preview_html' => 'Preview HTML',
         'preview_pdf' => 'Preview PDF',
@@ -39,7 +38,6 @@ return [
     'layouts' => [
         'label' => 'Layouts',
         'return' => 'Return to layouts list',
-        'delete_alert' => 'Do you really want to delete this layout?',
     ],
     'layout' => [
         'menu_label' => 'Layout',

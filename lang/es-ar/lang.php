@@ -21,7 +21,6 @@ return [
         'new_layout' => 'Nuevo Diseño',
         'templates' => 'Plantillas',
         'layouts' => 'Diseños',
-        'delete_alert' => 'Realmente quiere eliminar ésta plantilla?',
         'background_img' => 'Imagen de fondo',
         'preview_pdf' => 'Previsualizar',
         'created_at' => 'Creado en',
@@ -36,7 +35,6 @@ return [
     'layouts' => [
         'label' => 'Diseños PDF',
         'return' => 'Volver la la lista de diseños PDF',
-        'delete_alert' => 'Realmente quiere eliminar éste diseño?',
     ],
     'layout' => [
         'menu_label' => 'Diseño PDF',

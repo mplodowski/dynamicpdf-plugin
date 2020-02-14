@@ -21,7 +21,6 @@ return [
         'new_layout' => 'Nový layout',
         'templates' => 'Šablony',
         'layouts' => 'Layouty',
-        'delete_alert' => 'Opravdu chcete smazat tuto PDF šablonu?',
         'background_img' => 'Obrázek pozadí',
         'preview_pdf' => 'Náhled',
         'created_at' => 'Vytvořeno v',
@@ -36,7 +35,6 @@ return [
     'layouts' => [
         'label' => 'PDF Layouty',
         'return' => 'Zpět na seznam PDF layoutů',
-        'delete_alert' => 'Opravdu chcete smazat tento PDF layout?',
     ],
     'layout' => [
         'menu_label' => 'PDF Layouty',
