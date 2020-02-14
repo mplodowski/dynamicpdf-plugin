@@ -20,6 +20,12 @@ fields:
         emptyOption: renatio.dynamicpdf::lang.templates.empty_option
         span: auto
 
+    description:
+        label: renatio.dynamicpdf::lang.templates.description
+        tab: renatio.dynamicpdf::lang.tab.options
+        type: textarea
+        size: tiny
+
 secondaryTabs:
 
     fields:
@@ -44,9 +50,3 @@ secondaryTabs:
             type: dropdown
             emptyOption: renatio.dynamicpdf::lang.options.empty
             span: right
-
-        description:
-            label: renatio.dynamicpdf::lang.templates.description
-            tab: renatio.dynamicpdf::lang.tab.options
-            type: textarea
-            size: tiny

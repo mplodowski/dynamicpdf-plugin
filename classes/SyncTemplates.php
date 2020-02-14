@@ -24,6 +24,11 @@ class SyncTemplates
         $this->createLayouts();
 
         $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
+
+        if (!$registeredTemplates) {
+            return;
+        }
+
         $dbTemplates = Template::lists('is_custom', 'code');
 
         $this->clearNonCustomizedTemplates($dbTemplates, $registeredTemplates);
@@ -39,8 +44,13 @@ class SyncTemplates
      */
     protected function createLayouts()
     {
-        $dbLayouts = Layout::lists('code', 'code');
         $registeredLayouts = PDFManager::instance()->listRegisteredLayouts();
+
+        if (!$registeredLayouts) {
+            return;
+        }
+
+        $dbLayouts = Layout::lists('code', 'code');
 
         foreach ($registeredLayouts as $code) {
             if (array_key_exists($code, $dbLayouts)) {

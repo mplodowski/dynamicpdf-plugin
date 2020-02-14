@@ -4,9 +4,13 @@
 
 fields:
 
-    name:
+    name@create:
         label: renatio.dynamicpdf::lang.templates.name
-        span: auto
+        span: left
+
+    name@update:
+        label: renatio.dynamicpdf::lang.templates.name
+        span: full
 
     code@create:
         label: renatio.dynamicpdf::lang.templates.code
