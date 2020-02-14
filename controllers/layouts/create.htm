@@ -11,54 +11,41 @@
 
 <?php if ( ! $this->fatalError) : ?>
 
-    <?php Block::put('form-contents') ?>
+    <?= Form::open(['class' => 'layout']) ?>
 
-        <div class="layout-row min-size">
-            <?= $this->formRenderOutsideFields() ?>
+    <div class="layout-row">
+        <?= $this->formRender() ?>
+    </div>
+
+    <div class="form-buttons p-t">
+        <div class="loading-indicator-container">
+            <button type="submit"
+                    data-request="onSave"
+                    data-hotkey="ctrl+s, cmd+s"
+                    data-load-indicator="<?= e(trans('backend::lang.form.creating_name', ['name' => $formRecordName])) ?>"
+                    class="btn btn-primary">
+                <?= e(trans('backend::lang.form.create')) ?>
+            </button>
+
+            <button type="button"
+                    data-request="onSave"
+                    data-request-data="close:1"
+                    data-hotkey="ctrl+enter, cmd+enter"
+                    data-load-indicator="<?= e(trans('backend::lang.form.creating_name', ['name' => $formRecordName])) ?>"
+                    class="btn btn-default">
+                <?= e(trans('backend::lang.form.create_and_close')) ?>
+            </button>
+
+            <span class="btn-text">
+                <?= e(trans('backend::lang.form.or')) ?>
+                <a href="<?= Backend::url('renatio/dynamicpdf/templates/index/layouts') ?>">
+                    <?= e(trans('backend::lang.form.cancel')) ?>
+                </a>
+            </span>
         </div>
-        <div class="layout-row">
-            <?= $this->formRenderPrimaryTabs() ?>
-        </div>
+    </div>
 
-        <div class="form-buttons">
-            <div class="loading-indicator-container">
-                <button type="submit"
-                        data-request="onSave"
-                        data-hotkey="ctrl+s, cmd+s"
-                        data-load-indicator="<?= e(trans('backend::lang.form.creating_name', ['name' => $formRecordName])) ?>"
-                        class="btn btn-primary">
-                    <?= e(trans('backend::lang.form.create')) ?>
-                </button>
-
-                <button type="button"
-                        data-request="onSave"
-                        data-request-data="close:1"
-                        data-hotkey="ctrl+enter, cmd+enter"
-                        data-load-indicator="<?= e(trans('backend::lang.form.creating_name', ['name' => $formRecordName])) ?>"
-                        class="btn btn-default">
-                    <?= e(trans('backend::lang.form.create_and_close')) ?>
-                </button>
-
-                <span class="btn-text">
-                    <?= e(trans('backend::lang.form.or')) ?>
-                    <a href="<?= Backend::url('renatio/dynamicpdf/templates/index/layouts') ?>">
-                        <?= e(trans('backend::lang.form.cancel')) ?>
-                    </a>
-                </span>
-            </div>
-        </div>
-
-    <?php Block::endBlock() ?>
-
-    <?php Block::put('form-sidebar') ?>
-        <div class="hide-tabs"><?= $this->formRenderSecondaryTabs() ?></div>
-    <?php Block::endBlock() ?>
-
-    <?php Block::put('body') ?>
-        <?= Form::open(['class' => 'layout stretch']) ?>
-            <?= $this->makeLayout('form-with-sidebar') ?>
-        <?= Form::close() ?>
-    <?php Block::endBlock() ?>
+    <?= Form::close() ?>
 
 <?php else: ?>
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>

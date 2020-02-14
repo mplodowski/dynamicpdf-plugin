@@ -2,6 +2,10 @@
 
 namespace Renatio\DynamicPDF\Classes;
 
+use File;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use View;
+
 /**
  * Class PDFParser
  * @package Renatio\DynamicPDF\Classes
@@ -56,5 +60,15 @@ class PDFParser
         }
 
         return $result;
+    }
+
+    /**
+     * @param $path
+     * @return array
+     * @throws FileNotFoundException
+     */
+    public static function sections($path)
+    {
+        return PDFParser::parse(File::get(View::make($path)->getPath()));
     }
 }

@@ -27,7 +27,7 @@ return [
         'preview_pdf' => 'Preview PDF',
         'created_at' => 'Created at',
         'updated_at' => 'Updated at',
-        'background_img_comment' => 'Use image with 96 DPI for correct display',
+        'background_img_comment' => 'Use image with at least 96 DPI for correct display. Recommended 300 DPI.',
         'size' => 'Paper size',
         'orientation' => 'Paper orientation',
     ],
@@ -65,5 +65,8 @@ return [
     ],
     'options' => [
         'empty' => '-- choose --',
+    ],
+    'tab' => [
+        'options' => 'Options',
     ],
 ];

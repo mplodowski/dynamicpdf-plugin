@@ -33,11 +33,6 @@ class Layouts extends Controller
      */
     public $formConfig = 'config_form.yaml';
 
-    /**
-     * @var string
-     */
-    public $bodyClass = 'compact-container';
-
     public function __construct()
     {
         parent::__construct();
@@ -53,7 +48,6 @@ class Layouts extends Controller
     public function previewPdf($id)
     {
         $this->pageTitle = trans('renatio.dynamicpdf::lang.templates.preview_pdf');
-        $this->bodyClass = null;
 
         try {
             $model = $this->formFindModelObject($id);
@@ -70,17 +64,6 @@ class Layouts extends Controller
     }
 
     /**
-     * @param $id
-     * @return mixed
-     */
-    public function preview($id)
-    {
-        $this->bodyClass = null;
-
-        return $this->asExtension('FormController')->preview($id);
-    }
-
-    /**
      * Renders HTML for given layout ID
      *
      * @param $id
@@ -91,5 +74,18 @@ class Layouts extends Controller
         $model = $this->formFindModelObject($id);
 
         return response($model->html);
+    }
+
+    // todo reset
+    public function update_onResetDefault($recordId)
+    {
+        $model = $this->formFindModelObject($recordId);
+
+        $model->fillFromCode();
+        $model->save();
+
+        Flash::success(Lang::get('backend::lang.form.reset_success'));
+
+        return redirect()->refresh();
     }
 }

@@ -28,3 +28,7 @@
 3.0.5: Support LESS in PDF layouts.
 4.0.0: !!! Require PHP 7.1. Please see upgrade guide before update.
 4.0.1: Fix error when active theme is not set.
+4.0.2:
+    - Allow to register mail templates and layouts.
+    - add_is_custom_to_templates_table.php
+    - add_is_locked_to_layouts_table.php

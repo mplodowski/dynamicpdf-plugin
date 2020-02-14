@@ -6,7 +6,7 @@ fields:
 
     name:
         label: renatio.dynamicpdf::lang.templates.name
-        span: left
+        span: auto
 
     code@create:
         label: renatio.dynamicpdf::lang.templates.code
@@ -14,7 +14,8 @@ fields:
         preset: name
         span: right
 
-tabs:
+secondaryTabs:
+
     fields:
 
         content_html:
@@ -22,6 +23,7 @@ tabs:
             size: giant
             tab: renatio.dynamicpdf::lang.templates.content_html
             language: html
+            stretch: true
             default: |
                 <!DOCTYPE html>
                 <html>
@@ -42,15 +44,13 @@ tabs:
             type: codeeditor
             size: giant
             language: css
-
-secondaryTabs:
-    fields:
+            stretch: true
 
         background_img:
             label: renatio.dynamicpdf::lang.templates.background_img
+            tab: renatio.dynamicpdf::lang.tab.options
             type: fileupload
             mode: image
-            imageHeight: 200
-            imageWidth: 200
-            commentAbove: renatio.dynamicpdf::lang.templates.background_img_comment
+            comment: renatio.dynamicpdf::lang.templates.background_img_comment
             attachOnUpload: true
+            span: left

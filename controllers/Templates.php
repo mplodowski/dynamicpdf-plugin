@@ -6,8 +6,10 @@ use Backend\Behaviors\FormController;
 use Backend\Behaviors\ListController;
 use Backend\Classes\Controller;
 use Backend\Facades\BackendMenu;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use October\Rain\Exception\ApplicationException;
 use Renatio\DynamicPDF\Classes\PDF;
+use Renatio\DynamicPDF\Classes\SyncTemplates;
 use System\Classes\SettingsManager;
 
 /**
@@ -53,13 +55,24 @@ class Templates extends Controller
 
     /**
      * @param  null  $tab
+     * @throws FileNotFoundException
      */
     public function index($tab = null)
     {
+        (new SyncTemplates)->handle();
+
         $this->asExtension('ListController')->index();
 
         $this->bodyClass = 'compact-container';
         $this->vars['activeTab'] = $tab ?: 'templates';
+    }
+
+    /**
+     * @param $model
+     */
+    public function formBeforeSave($model)
+    {
+        $model->is_custom = 1;
     }
 
     /**
