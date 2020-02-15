@@ -89,17 +89,9 @@ class SyncTemplates
     protected function createTemplates($templates)
     {
         foreach ($templates as $code) {
-            $sections = PDFParser::sections($code);
-
-            Template::forceCreate([
-                'title' => array_get($sections, 'settings.title', '???'),
-                'code' => $code,
-                'layout' => Layout::whereCode(array_get($sections, 'settings.layout'))->first(),
-                'size' => array_get($sections, 'settings.size'),
-                'orientation' => array_get($sections, 'settings.orientation'),
-                'description' => array_get($sections, 'settings.description'),
-                'content_html' => array_get($sections, 'html'),
-            ]);
+            $template = new Template;
+            $template->fillFromView($code);
+            $template->forceSave();
         }
     }
 }
