@@ -1,33 +1,29 @@
-# Dynamic PDF plugin
+- [Installation](#installation)
+- [PDF content](#pdf-content)
+    - [PDF layouts views](#pdf-layouts-views)
+    - [PDF templates views](#pdf-templates-views)
+    - [Registering PDF templates and layouts](#registering-pdf-templates-and-layouts)
+- [Using](#using)
+- [Configuration](#configuration)
+- [Methods](#methods)
+- [Tips](#tips)
+    - [Background image](#background-image)
+    - [UTF-8 support](#utf-8-support)
+    - [Page breaks](#page-breaks)
+    - [Open basedir restriction error](#open-basedir-restriction-error)
+    - [Embed image inside PDF template](#embed-image-inside-pdf-template)
+    - [Download PDF via Ajax response](#download-pdf-via-ajax-response)
+- [Examples](#examples)
+    - [Render PDF in browser](#render-pdf-in-browser)
+    - [Download PDF](#download-pdf)
+    - [Fluent interface](#fluent-interface)
+    - [Change paper size and orientation](#change-paper-size-and-orientation)
+    - [PDF on CMS page](#pdf-on-cms-page)
+    - [Header and footer on every page](#header-and-footer-on-every-page)
+    - [Using custom fonts](#using-custom-fonts)
 
-> Plugin requires PHP >=7.1 to work with the latest version of [dompdf](https://github.com/dompdf/dompdf) library. Please see update guide for version 4.0.0.
-
-October HTML to PDF converter using [dompdf](https://github.com/dompdf/dompdf) library.
-
-Plugin uses dompdf wrapper for Laravel [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
-
-## Features
-
-* Handles most CSS 2.1 and a few CSS3 properties, including @import, @media & @page rules
-* Supports most presentational HTML 4.0 attributes
-* Supports external stylesheets, either local or through http/ftp (via fopen-wrappers)
-* Supports complex tables, including row & column spans, separate & collapsed border models, individual cell styling
-* Image support (gif, png (8, 24 and 32 bit with alpha channel), bmp & jpeg)
-* No dependencies on external PDF libraries, thanks to the R&OS PDF class
-* Inline PHP support
-* Basic SVG support
-
-## Support
-
-Please use [GitHub Issues Page](https://github.com/mplodowski/dynamicpdf-plugin/issues) to report any issues with plugin.
-
-> Reviews should not be used for getting support or reporting bugs, if you need support please use the Plugin support link.
-
-## Like this plugin?
-
-If you like this plugin, give this plugin a Like or Make donation with [PayPal](https://www.paypal.me/mplodowski).
-
-## Installation
+<a name="installation"></a>
+# Installation
 
 There are couple ways to install this plugin.
 
@@ -38,33 +34,170 @@ There are couple ways to install this plugin.
 
 > Fourth option should be used only for advanced users.
 
-## Using
+<a name="pdf-content"></a>
+# PDF content
 
-Plugin will register menu item called **PDF**, which allow you to manage PDF layouts and templates.
+PDF can be created in October using either PDF views or PDF templates. A PDF view is supplied by plugin in the file system in the **/views** directory. Whereas a PDF template is managed using the back-end interface via *Settings > PDF > PDF Templates*. All PDFs templates support using Twig for markup.
 
-Layouts define the PDF scaffold, that is everything that repeats on a PDF, such as a header and footer. Each layout has unique code, optional background image, HTML content and CSS content. Not all CSS properties are supported, so check [CSSCompatibility](https://github.com/dompdf/dompdf/wiki/CSSCompatibility).
+PDF views must be [registered in the Plugin registration file](#pdf-registration) with the `registerPDFTemplates` and `registerPDFLayouts` method. This will automatically generate a PDF template and layout and allows them to be customized using the back-end interface.
 
-Templates define the actual PDF content parsed from HTML. The code specified in the template is a unique identifier and cannot be changed once created.
+<a name="pdf-layouts-views"></a>
+## PDF layouts views
 
-You can use Twig in layouts and templates.
+PDF layouts views reside in the file system and the code used represents the path to the view file. For example PDF layout with the code **author.plugin::pdf.layouts.default** would use the content in following file:
 
-Plugin supports using [CMS partials](https://octobercms.com/docs/cms/partials) and filters inside template and layout markup.
+    plugins/                 <=== Plugins directory
+      author/                <=== "author" segment
+        plugin/              <=== "plugin" segment
+          views/             <=== View directory
+            pdf/             <=== "pdf" segment
+              layouts/       <=== "layouts" segment
+                default.htm  <=== "default" segment
 
-## Configuration
+The content inside a PDF view file can include up to 3 sections: **configuration**, **CSS/LESS**, and **HTML markup**. Sections are separated with the `==` sequence. For example:
 
-The defaults configuration settings are set in `config/dompdf.php`. Copy this file to your own config directory to modify the values. You can publish the config using this command:
+    name = "Default PDF layout"
+    ==
+    body {
+        font-size: 16px;
+    }
+    ==
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+            <title>Document</title>
+            <style type="text/css" media="screen">
+                {{ css|raw }}
+            </style>
+        </head>
+        <body>
+            {{ content_html|raw }}
+        </body>
+    </html>
 
-```
-php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
-```
+> **Note:** Basic Twig tags and expressions are supported in PDF views.
+
+The **CSS/LESS** section is optional and a view can contain only the configuration and HTML markup sections.
+
+    name = "Default PDF layout"
+    ==
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+            <title>Document</title>
+            <style type="text/css" media="screen">
+                {{ css|raw }}
+            </style>
+        </head>
+        <body>
+            {{ content_html|raw }}
+        </body>
+    </html>
+
+### Configuration section
+
+The configuration section sets the PDF view parameters. The following configuration parameters are supported:
+
+Parameter | Description
+------------- | -------------
+**name** | the layout name, required.
+
+### Using PDF layouts
+
+PDF layouts reside in the database and can be created by selecting *Settings > PDF > PDF Templates* and clicking the *Layouts* tab. These behave just like CMS layouts, they contain the scaffold for the PDF. PDF views and templates support the use of PDF layouts. The **code** specified in the layout is a unique identifier and cannot be changed once created.
+
+<a name="pdf-templates-views"></a>
+## PDF templates views
+
+PDF templates reside in the file system and the code used represents the path to the view file. For example PDF template with the code **author.plugin::pdf.invoice** would use the content in following file:
+
+    plugins/                 <=== Plugins directory
+      author/                <=== "author" segment
+        plugin/              <=== "plugin" segment
+          views/             <=== View directory
+            pdf/             <=== "pdf" segment
+              invoice.htm    <=== "invoice" segment
+
+The content inside a PDF view file can include up to 2 sections: **configuration** and **HTML markup**. Sections are separated with the `==` sequence. For example:
+
+    title = "Invoice"
+    layout = "renatio.demo::pdf.layouts.default"
+    description = "Invoice template"
+    size = "a4"
+    orientation = "portrait"
+    ==
+    <h1>Invoice</h1>
+
+> **Note:** Basic Twig tags and expressions are supported in PDF views.
+
+### Configuration section
+
+The configuration section sets the PDF view parameters. The following configuration parameters are supported:
+
+Parameter | Description
+------------- | -------------
+**title** | the template title, required.
+**layout** | the layout code, optional.
+**description** | the template description, optional.
+**size** | the template paper size, optional, default `a4`.
+**orientation** | the template paper orientation, optional, default `portrait`.
+
+### Using PDF templates
+
+PDF templates reside in the database and can be created in the back-end area via *Settings > PDF > PDF Templates*. The **code** specified in the template is a unique identifier and cannot be changed once created.
+
+> **Note:** If the PDF template does not exist in the system, this code will attempt to find a PDF view with the same code.
+
+<a name="registering-pdf-templates-and-layouts"></a>
+## Registering PDF templates and layouts
+
+PDF views can be registered as templates that are automatically generated in the back-end ready for customization. PDF templates can be customized via the *Settings > PDF Templates* menu. The templates can be registered by adding the `registerPDFTemplates` method of the Plugin registration class (`Plugin.php`).
+
+    public function registerPDFTemplates()
+    {
+        return [
+            'renatio.demo::pdf.invoice',
+            'renatio.demo::pdf.resume',
+        ];
+    }
+
+The method should return an array of [pdf view names](#pdf-templates-views).
+
+Like templates, PDF layouts can be registered by adding the `registerPDFLayouts` method of the Plugin registration class (`Plugin.php`).
+
+    public function registerPDFLayouts()
+    {
+        return [
+            'renatio.demo::pdf.layouts.invoice',
+            'renatio.demo::pdf.layouts.resume',
+        ];
+    }
+
+The method should return an array of [pdf view names](#pdf-layouts-views).
+
+<a name="using"></a>
+# Using
+
+PDF templates and layouts can be accessed in the back-end area via *Settings > PDF > PDF Templates*.
+
+Layouts define the PDF scaffold, that is everything that repeats on a PDF, such as a header and footer. Each layout has unique code, optional background image, HTML content and CSS/LESS content. Not all CSS properties are supported, so check [CSSCompatibility](https://github.com/dompdf/dompdf/wiki/CSSCompatibility).
+
+Templates define the actual PDF content parsed from HTML.
+
+<a name="configuration"></a>
+# Configuration
+
+The default configuration settings are set in `config/dompdf.php`. Copy this file to your own config directory to modify the values. You can publish the config using this command:
+
+    php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
 
 You can still alter the dompdf options in your code before generating the PDF using this command:
 
-```
-PDF::loadTemplate('renatio::invoice')
-    ->setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif'])
-    ->stream();
-```
+    PDF::loadTemplate('renatio::invoice')
+        ->setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif'])
+        ->stream();
 
 Available options and their defaults:
 * __rootDir__: "{app_directory}/vendor/dompdf/dompdf"
@@ -96,7 +229,8 @@ Available options and their defaults:
 * __adminUsername__: "user"
 * __adminPassword__: "password"
 
-## Methods
+<a name="methods"></a>
+# Methods
 
 | Method  | Description  |
 |---|---|
@@ -116,216 +250,201 @@ Available options and their defaults:
 
 All methods are available through Facade class `Renatio\DynamicPDF\Classes\PDF`.
 
-## Tip: Background image
+<a name="tips"></a>
+# Tips
+
+<a name="background-image"></a>
+## Background image
 
 To display background image added in layout use following code:
 
-```
-<body style="background: url({{ background_img }}) top left no-repeat;">
-```
+    <body style="background: url({{ background_img }}) top left no-repeat;">
 
-Background image should be 96 DPI size (793 x 1121 px).
+Background image should be at least 96 DPI size (793 x 1121 px).
 
 If you want to use better quality image like 300 DPI (2480 x 3508 px) than you need to change template options like so:
 
-```
-return PDF::loadTemplate($model->code)
-    ->setOptions(['dpi' => 300])
-    ->stream();
-```
+    return PDF::loadTemplate($model->code)
+        ->setOptions(['dpi' => 300])
+        ->stream();
 
-## Tip: UTF-8 support
+<a name="utf-8-support"></a>
+## UTF-8 support
 
 In your layout, set the UTF-8 meta tag in `head` section:
 
-```
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-```
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
 If you have problems with foreign characters than try to use **DejaVu Sans** font family.
 
-## Tip: Page breaks
+<a name="page-breaks"></a>
+## Page breaks
 
 You can use the CSS page-break-before/page-break-after properties to create a new page.
 
-```
-<style>
-.page-break {
-    page-break-after: always;
-}
-</style>
-<h1>Page 1</h1>
-<div class="page-break"></div>
-<h1>Page 2</h1>
-```
+    <style>
+    .page-break {
+        page-break-after: always;
+    }
+    </style>
+    <h1>Page 1</h1>
+    <div class="page-break"></div>
+    <h1>Page 2</h1>
 
-## Tip: Open_basedir restriction error
+<a name="open-basedir-restriction-error"></a>
+## Open basedir restriction error
 
 On some hosting providers there were reports about `open_basedir` restriction problems with log file. You can change default log file destination like so:
 
-```
-return PDF::loadTemplate('renatio::invoice')
-    ->setOptions(['logOutputFile' => storage_path('temp/log.htm')])
-    ->stream();
-```
+    return PDF::loadTemplate('renatio::invoice')
+        ->setOptions(['logOutputFile' => storage_path('temp/log.htm')])
+        ->stream();
 
-## Tip: Embed image inside PDF template
+<a name="embed-image-inside-pdf-template"></a>
+## Embed image inside PDF template
 
-You can use absolute path for image eg. `http://app.dev/path_to_your_image`.
+You can use absolute path for image eg. `https://app.dev/path_to_your_image`.
 
 For this to work you must set `isRemoteEnabled` option.
 
-```
-return PDF::loadTemplate('renatio::invoice', ['file' => $file])
-    ->setOptions(['isRemoteEnabled' => true])
-    ->stream();
-```
+    return PDF::loadTemplate('renatio::invoice', ['file' => $file])
+        ->setOptions(['isRemoteEnabled' => true])
+        ->stream();
 
 I assume that `$file` is instance of `October\Rain\Database\Attach\File`. 
 
 Then in the template you can use following example code:
 
-```
-{{ file.getPath }}
-
-{{ file.getLocalPath }}
-
-{{ file.getThumb(200, 200, {'crop' => true}) }}
-```
+    {{ file.getPath }}
+    
+    {{ file.getLocalPath }}
+    
+    {{ file.getThumb(200, 200, {'crop' => true}) }}
 
 > For retrieving stylesheets or images via http following PHP setting must be enabled `allow_url_fopen`.
 
 When `allow_url_fopen` is disabled on server try to use relative path. You can use October `getLocalPath` function on the file object to retrieve it.
 
-## Tip: Download PDF via Ajax response
+<a name="download-pdf-via-ajax-response"></a>
+## Download PDF via Ajax response
 
 OctoberCMS ajax framework cannot handle this type of response.
 
 Recommended approach is to save PDF file locally and return redirect to PDF file.
 
-## Examples
+<a name="examples"></a>
+# Examples
 
-### Render PDF in browser
+<a name="render-pdf-in-browser"></a>
+## Render PDF in browser
 
-```
-use Renatio\DynamicPDF\Classes\PDF; // import facade
-
-...
-
-public function pdf()
-{
-    $templateCode = 'renatio::invoice'; // unique code of the template
-    $data = ['name' => 'John Doe']; // optional data used in template
-
-    return PDF::loadTemplate($templateCode, $data)->stream('download.pdf');
-}
-```
+    use Renatio\DynamicPDF\Classes\PDF; // import facade
+    
+    public function pdf()
+    {
+        $templateCode = 'renatio::invoice'; // unique code of the template
+        $data = ['name' => 'John Doe']; // optional data used in template
+    
+        return PDF::loadTemplate($templateCode, $data)->stream('download.pdf');
+    }
 
 Where `$templateCode` is an unique code specified when creating the template, `$data` is optional array of twig fields which will be replaced in template.
 
 In HTML template you can use `{{ name }}` to output `John Doe`.
 
-### Download PDF
+<a name="download-pdf"></a>
+## Download PDF
 
-```
-use Renatio\DynamicPDF\Classes\PDF;
- 
- ...
- 
- public function pdf()
- {
+    use Renatio\DynamicPDF\Classes\PDF;
+     
+    public function pdf()
+    {
      return PDF::loadTemplate('renatio::invoice')->download('download.pdf');
- }
-```
+    }
 
-### Fluent interface
+<a name="fluent-interface"></a>
+## Fluent interface
 
 You can chain the methods:
 
-```
-return PDF::loadTemplate('renatio::invoice')
-    ->save('/path-to/my_stored_file.pdf')
-    ->stream();
-```
-    
-### Change orientation and paper size
+    return PDF::loadTemplate('renatio::invoice')
+        ->save('/path-to/my_stored_file.pdf')
+        ->stream();
+ 
+<a name="change-paper-size-and-orientation"></a>
+## Change paper size and orientation
 
-```
-return PDF::loadTemplate('renatio::invoice')
-    ->setPaper('a4', 'landscape')
-    ->stream();
-```
+    return PDF::loadTemplate('renatio::invoice')
+        ->setPaper('a4', 'landscape')
+        ->stream();
     
 Available [paper sizes](https://github.com/dompdf/dompdf/blob/master/src/Adapter/CPDF.php#L40).
 
-### PDF on CMS page
+<a name="pdf-on-cms-page"></a>
+## PDF on CMS page
 
 To display PDF on CMS page you can use PHP section of the page like so:
 
-```
-use Renatio\DynamicPDF\Classes\PDF;
-
-function onStart()
-{
-    return PDF::loadTemplate('renatio::invoice')->stream();
-}
-```
+    use Renatio\DynamicPDF\Classes\PDF;
     
-### Header and Footer on every page
+    function onStart()
+    {
+        return PDF::loadTemplate('renatio::invoice')->stream();
+    }
 
-```
-<html>
-<head>
-  <style>
-    @page { margin: 100px 25px; }
-    header { position: fixed; top: -60px; left: 0px; right: 0px; background-color: lightblue; height: 50px; }
-    footer { position: fixed; bottom: -60px; left: 0px; right: 0px; background-color: lightblue; height: 50px; }
-    p { page-break-after: always; }
-    p:last-child { page-break-after: never; }
-  </style>
-</head>
-<body>
-  <header>header on each page</header>
-  <footer>footer on each page</footer>
-  <main>
-    <p>page1</p>
-    <p>page2</p>
-  </main>
-</body>
-</html>
-```
+<a name="header-and-footer-on-every-page"></a>
+## Header and footer on every page
 
-### Using custom fonts
+    <html>
+    <head>
+      <style>
+        @page { margin: 100px 25px; }
+        header { position: fixed; top: -60px; left: 0px; right: 0px; background-color: lightblue; height: 50px; }
+        footer { position: fixed; bottom: -60px; left: 0px; right: 0px; background-color: lightblue; height: 50px; }
+        p { page-break-after: always; }
+        p:last-child { page-break-after: never; }
+      </style>
+    </head>
+    <body>
+      <header>header on each page</header>
+      <footer>footer on each page</footer>
+      <main>
+        <p>page1</p>
+        <p>page2</p>
+      </main>
+    </body>
+    </html>
+
+<a name="using-custom-fonts"></a>
+## Using custom fonts
 
 Plugin provides "Open Sans" font, which can be imported in Layout CSS section.
 
-```
-@font-face {
-    font-family: 'Open Sans';
-    src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf');
-}
-
-@font-face {
-    font-family: 'Open Sans';
-    font-weight: bold;
-    src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf');
-}
-
-@font-face {
-    font-family: 'Open Sans';
-    font-style: italic;
-    src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf');
-}
-
-@font-face {
-    font-family: 'Open Sans';
-    font-style: italic;
-    font-weight: bold;
-    src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf');
-}
-
-body {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
-}
-```
+    @font-face {
+        font-family: 'Open Sans';
+        src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf');
+    }
+    
+    @font-face {
+        font-family: 'Open Sans';
+        font-weight: bold;
+        src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf');
+    }
+    
+    @font-face {
+        font-family: 'Open Sans';
+        font-style: italic;
+        src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf');
+    }
+    
+    @font-face {
+        font-family: 'Open Sans';
+        font-style: italic;
+        font-weight: bold;
+        src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf');
+    }
+    
+    body {
+        font-family: 'Open Sans', sans-serif;
+        font-size: 16px;
+    }
