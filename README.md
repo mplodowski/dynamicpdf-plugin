@@ -22,8 +22,7 @@
     - [Header and footer on every page](#header-and-footer-on-every-page)
     - [Using custom fonts](#using-custom-fonts)
 
-<a name="installation"></a>
-# Installation
+# Installation {#installation}
 
 There are couple ways to install this plugin.
 
@@ -34,15 +33,13 @@ There are couple ways to install this plugin.
 
 > Fourth option should be used only for advanced users.
 
-<a name="pdf-content"></a>
-# PDF content
+# PDF content {#pdf-content}
 
 PDF can be created in October using either PDF views or PDF templates. A PDF view is supplied by plugin in the file system in the **/views** directory. Whereas a PDF template is managed using the back-end interface via *Settings > PDF > PDF Templates*. All PDFs templates support using Twig for markup.
 
 PDF views must be [registered in the Plugin registration file](#pdf-registration) with the `registerPDFTemplates` and `registerPDFLayouts` method. This will automatically generate a PDF template and layout and allows them to be customized using the back-end interface.
 
-<a name="pdf-layouts-views"></a>
-## PDF layouts views
+## PDF layouts views {#pdf-layouts-views}
 
 PDF layouts views reside in the file system and the code used represents the path to the view file. For example PDF layout with the code **author.plugin::pdf.layouts.default** would use the content in following file:
 
@@ -108,8 +105,7 @@ Parameter | Description
 
 PDF layouts reside in the database and can be created by selecting *Settings > PDF > PDF Templates* and clicking the *Layouts* tab. These behave just like CMS layouts, they contain the scaffold for the PDF. PDF views and templates support the use of PDF layouts. The **code** specified in the layout is a unique identifier and cannot be changed once created.
 
-<a name="pdf-templates-views"></a>
-## PDF templates views
+## PDF templates views {#pdf-templates-views}
 
 PDF templates reside in the file system and the code used represents the path to the view file. For example PDF template with the code **author.plugin::pdf.invoice** would use the content in following file:
 
@@ -150,8 +146,7 @@ PDF templates reside in the database and can be created in the back-end area via
 
 > **Note:** If the PDF template does not exist in the system, this code will attempt to find a PDF view with the same code.
 
-<a name="registering-pdf-templates-and-layouts"></a>
-## Registering PDF templates and layouts
+## Registering PDF templates and layouts {#registering-pdf-templates-and-layouts}
 
 PDF views can be registered as templates that are automatically generated in the back-end ready for customization. PDF templates can be customized via the *Settings > PDF Templates* menu. The templates can be registered by adding the `registerPDFTemplates` method of the Plugin registration class (`Plugin.php`).
 
@@ -177,8 +172,7 @@ Like templates, PDF layouts can be registered by adding the `registerPDFLayouts`
 
 The method should return an array of [pdf view names](#pdf-layouts-views).
 
-<a name="using"></a>
-# Using
+# Using {#using}
 
 PDF templates and layouts can be accessed in the back-end area via *Settings > PDF > PDF Templates*.
 
@@ -186,8 +180,7 @@ Layouts define the PDF scaffold, that is everything that repeats on a PDF, such 
 
 Templates define the actual PDF content parsed from HTML.
 
-<a name="configuration"></a>
-# Configuration
+# Configuration {#configuration}
 
 The default configuration settings are set in `config/dompdf.php`. Copy this file to your own config directory to modify the values. You can publish the config using this command:
 
@@ -229,8 +222,7 @@ Available options and their defaults:
 * __adminUsername__: "user"
 * __adminPassword__: "password"
 
-<a name="methods"></a>
-# Methods
+# Methods {#methods}
 
 | Method  | Description  |
 |---|---|
@@ -250,11 +242,9 @@ Available options and their defaults:
 
 All methods are available through Facade class `Renatio\DynamicPDF\Classes\PDF`.
 
-<a name="tips"></a>
-# Tips
+# Tips {#tips}
 
-<a name="background-image"></a>
-## Background image
+## Background image {#background-image}
 
 To display background image added in layout use following code:
 
@@ -268,8 +258,7 @@ If you want to use better quality image like 300 DPI (2480 x 3508 px) than you n
         ->setOptions(['dpi' => 300])
         ->stream();
 
-<a name="utf-8-support"></a>
-## UTF-8 support
+## UTF-8 support {#utf-8-support}
 
 In your layout, set the UTF-8 meta tag in `head` section:
 
@@ -277,8 +266,7 @@ In your layout, set the UTF-8 meta tag in `head` section:
 
 If you have problems with foreign characters than try to use **DejaVu Sans** font family.
 
-<a name="page-breaks"></a>
-## Page breaks
+## Page breaks {#page-breaks}
 
 You can use the CSS page-break-before/page-break-after properties to create a new page.
 
@@ -291,8 +279,7 @@ You can use the CSS page-break-before/page-break-after properties to create a ne
     <div class="page-break"></div>
     <h1>Page 2</h1>
 
-<a name="open-basedir-restriction-error"></a>
-## Open basedir restriction error
+## Open basedir restriction error {#open-basedir-restriction-error}
 
 On some hosting providers there were reports about `open_basedir` restriction problems with log file. You can change default log file destination like so:
 
@@ -300,8 +287,7 @@ On some hosting providers there were reports about `open_basedir` restriction pr
         ->setOptions(['logOutputFile' => storage_path('temp/log.htm')])
         ->stream();
 
-<a name="embed-image-inside-pdf-template"></a>
-## Embed image inside PDF template
+## Embed image inside PDF template {#embed-image-inside-pdf-template}
 
 You can use absolute path for image eg. `https://app.dev/path_to_your_image`.
 
@@ -325,18 +311,15 @@ Then in the template you can use following example code:
 
 When `allow_url_fopen` is disabled on server try to use relative path. You can use October `getLocalPath` function on the file object to retrieve it.
 
-<a name="download-pdf-via-ajax-response"></a>
-## Download PDF via Ajax response
+## Download PDF via Ajax response {#download-pdf-via-ajax-response}
 
 OctoberCMS ajax framework cannot handle this type of response.
 
 Recommended approach is to save PDF file locally and return redirect to PDF file.
 
-<a name="examples"></a>
-# Examples
+# Examples {#examples}
 
-<a name="render-pdf-in-browser"></a>
-## Render PDF in browser
+## Render PDF in browser {#render-pdf-in-browser}
 
     use Renatio\DynamicPDF\Classes\PDF; // import facade
     
@@ -352,8 +335,7 @@ Where `$templateCode` is an unique code specified when creating the template, `$
 
 In HTML template you can use `{{ name }}` to output `John Doe`.
 
-<a name="download-pdf"></a>
-## Download PDF
+## Download PDF {#download-pdf}
 
     use Renatio\DynamicPDF\Classes\PDF;
      
@@ -362,8 +344,7 @@ In HTML template you can use `{{ name }}` to output `John Doe`.
      return PDF::loadTemplate('renatio::invoice')->download('download.pdf');
     }
 
-<a name="fluent-interface"></a>
-## Fluent interface
+## Fluent interface {#fluent-interface}
 
 You can chain the methods:
 
@@ -371,8 +352,7 @@ You can chain the methods:
         ->save('/path-to/my_stored_file.pdf')
         ->stream();
  
-<a name="change-paper-size-and-orientation"></a>
-## Change paper size and orientation
+## Change paper size and orientation {#change-paper-size-and-orientation}
 
     return PDF::loadTemplate('renatio::invoice')
         ->setPaper('a4', 'landscape')
@@ -380,8 +360,7 @@ You can chain the methods:
     
 Available [paper sizes](https://github.com/dompdf/dompdf/blob/master/src/Adapter/CPDF.php#L40).
 
-<a name="pdf-on-cms-page"></a>
-## PDF on CMS page
+## PDF on CMS page {#pdf-on-cms-page}
 
 To display PDF on CMS page you can use PHP section of the page like so:
 
@@ -392,8 +371,7 @@ To display PDF on CMS page you can use PHP section of the page like so:
         return PDF::loadTemplate('renatio::invoice')->stream();
     }
 
-<a name="header-and-footer-on-every-page"></a>
-## Header and footer on every page
+## Header and footer on every page {#header-and-footer-on-every-page}
 
     <html>
     <head>
@@ -415,8 +393,7 @@ To display PDF on CMS page you can use PHP section of the page like so:
     </body>
     </html>
 
-<a name="using-custom-fonts"></a>
-## Using custom fonts
+## Using custom fonts {#using-custom-fonts}
 
 Plugin provides "Open Sans" font, which can be imported in Layout CSS section.
 
