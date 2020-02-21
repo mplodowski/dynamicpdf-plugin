@@ -32,3 +32,6 @@
     - Allow to register mail templates and layouts.
     - add_is_custom_to_templates_table.php
     - add_is_locked_to_layouts_table.php
+4.0.3:
+    - Fix custom templates error.
+    - fix_custom_templates_error.php
