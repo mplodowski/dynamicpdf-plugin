@@ -20,7 +20,6 @@
   ],
   "require": {
     "barryvdh/laravel-dompdf": "^0.8",
-    "illuminate/support": "5.5.*",
     "composer/installers": "~1.0"
   }
 }
