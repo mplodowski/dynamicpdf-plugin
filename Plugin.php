@@ -4,6 +4,7 @@ namespace Renatio\DynamicPDF;
 
 use Backend\Facades\Backend;
 use Renatio\DynamicPDF\Classes\ServiceProvider;
+use Renatio\DynamicPDF\Classes\SyncTemplates;
 use System\Classes\PluginBase;
 use System\Classes\PluginManager;
 
@@ -34,6 +35,8 @@ class Plugin extends PluginBase
     public function boot()
     {
         $this->app->register(ServiceProvider::class);
+
+        (new SyncTemplates)->handle();
     }
 
     /**

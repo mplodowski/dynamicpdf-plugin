@@ -2,46 +2,36 @@
 
 namespace Renatio\DynamicPDF\Classes;
 
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Exception;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 
-/**
- * Class SyncTemplates
- * @package Renatio\DynamicPDF\Classes
- */
 class SyncTemplates
 {
 
-    /**
-     * Synchronize registered PDF templates
-     *
-     * @return void
-     * @throws FileNotFoundException
-     */
     public function handle()
     {
-        $this->createLayouts();
+        try {
+            $this->createLayouts();
 
-        $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
+            $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
 
-        if (!$registeredTemplates) {
-            return;
+            if (!$registeredTemplates) {
+                return;
+            }
+
+            $dbTemplates = Template::lists('is_custom', 'code');
+
+            $this->clearNonCustomizedTemplates($dbTemplates, $registeredTemplates);
+
+            $newTemplates = array_diff_key($registeredTemplates, $dbTemplates);
+
+            $this->createTemplates($newTemplates);
+        } catch (Exception $e) {
+            //
         }
-
-        $dbTemplates = Template::lists('is_custom', 'code');
-
-        $this->clearNonCustomizedTemplates($dbTemplates, $registeredTemplates);
-
-        $newTemplates = array_diff_key($registeredTemplates, $dbTemplates);
-
-        $this->createTemplates($newTemplates);
     }
 
-    /**
-     * @return void
-     * @throws FileNotFoundException
-     */
     protected function createLayouts()
     {
         $registeredLayouts = PDFManager::instance()->listRegisteredLayouts();
@@ -65,10 +55,6 @@ class SyncTemplates
         }
     }
 
-    /**
-     * @param $dbTemplates
-     * @param $registeredTemplates
-     */
     protected function clearNonCustomizedTemplates($dbTemplates, $registeredTemplates)
     {
         foreach ($dbTemplates as $code => $isCustom) {
@@ -82,10 +68,6 @@ class SyncTemplates
         }
     }
 
-    /**
-     * @param $templates
-     * @throws FileNotFoundException
-     */
     protected function createTemplates($templates)
     {
         foreach ($templates as $code) {

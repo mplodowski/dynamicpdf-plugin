@@ -55,12 +55,9 @@ class Templates extends Controller
 
     /**
      * @param  null  $tab
-     * @throws FileNotFoundException
      */
     public function index($tab = null)
     {
-        (new SyncTemplates)->handle();
-
         $this->asExtension('ListController')->index();
 
         $this->bodyClass = 'compact-container';
