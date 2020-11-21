@@ -4,10 +4,6 @@ namespace Renatio\DynamicPDF\Tests\Controllers;
 
 use Renatio\DynamicPDF\Models\Layout;
 
-/**
- * Class LayoutsTest
- * @package Renatio\DynamicPDF\Tests\Controllers
- */
 class LayoutsTest extends ControllerTestCase
 {
 

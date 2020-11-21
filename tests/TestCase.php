@@ -2,21 +2,15 @@
 
 namespace Renatio\DynamicPDF\Tests;
 
+use Barryvdh\DomPDF\ServiceProvider;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\Factory;
 use PluginTestCase;
-use Renatio\DynamicPDF\Classes\ServiceProvider;
+use Renatio\DynamicPDF\Classes\PDFWrapper;
 
-/**
- * Class TestCase
- * @package Renatio\DynamicPDF\Tests
- */
 class TestCase extends PluginTestCase
 {
 
-    /**
-     * @return void
-     */
     public function setUp()
     {
         parent::setUp();
@@ -24,11 +18,12 @@ class TestCase extends PluginTestCase
         $this->changeDefaultFactoriesPath();
 
         $this->app->register(ServiceProvider::class);
+
+        $this->app->bind('dynamicpdf', function ($app) {
+            return new PDFWrapper($app['dompdf'], $app['config'], $app['files'], $app['view']);
+        });
     }
 
-    /**
-     * @return void
-     */
     protected function changeDefaultFactoriesPath()
     {
         $this->app->singleton(Factory::class, function () {

@@ -6,10 +6,6 @@ use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Tests\TestCase;
 use System\Models\File;
 
-/**
- * Class LayoutTest
- * @package Renatio\DynamicPDF\Tests\Models
- */
 class LayoutTest extends TestCase
 {
 

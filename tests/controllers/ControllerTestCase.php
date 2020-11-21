@@ -7,26 +7,13 @@ use Backend\Facades\BackendAuth;
 use Backend\Models\User;
 use Renatio\DynamicPDF\Tests\TestCase;
 
-/**
- * Class ControllerTestCase
- * @package Renatio\DynamicPDF\Tests\Controllers
- */
 class ControllerTestCase extends TestCase
 {
 
-    /**
-     * @var
-     */
     protected $user;
 
-    /**
-     * @var
-     */
     public $backendUri;
 
-    /**
-     * @return void
-     */
     public function setUp()
     {
         parent::setUp();
@@ -38,9 +25,6 @@ class ControllerTestCase extends TestCase
         $this->backendUri = config('cms.backendUri', 'backend');
     }
 
-    /**
-     * @return void
-     */
     protected function registerFormWidgets()
     {
         WidgetManager::instance()->registerFormWidgets(function ($manager) {
@@ -59,9 +43,6 @@ class ControllerTestCase extends TestCase
         });
     }
 
-    /**
-     * @return void
-     */
     protected function loginUser()
     {
         $this->user = factory(User::class)->create();

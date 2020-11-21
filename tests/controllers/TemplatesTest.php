@@ -4,10 +4,6 @@ namespace Renatio\DynamicPDF\Tests\Controllers;
 
 use Renatio\DynamicPDF\Models\Template;
 
-/**
- * Class TemplatesTest
- * @package Renatio\DynamicPDF\Tests\Controllers
- */
 class TemplatesTest extends ControllerTestCase
 {
 

@@ -6,21 +6,11 @@ use PluginTestCase;
 use Renatio\DynamicPDF\Plugin;
 use System\Classes\PluginManager;
 
-/**
- * Class PluginTest
- * @package Renatio\DynamicPDF\Tests
- */
 class PluginTest extends PluginTestCase
 {
 
-    /**
-     * @var
-     */
     protected $plugin;
 
-    /**
-     * @return void
-     */
     public function setUp()
     {
         parent::setUp();
