@@ -5,28 +5,15 @@ namespace Renatio\DynamicPDF\Classes;
 use October\Rain\Support\Traits\Singleton;
 use System\Classes\PluginManager;
 
-/**
- * Class PDFManager
- * @package Renatio\DynamicPDF\Classes
- */
 class PDFManager
 {
 
     use Singleton;
 
-    /**
-     * @var array
-     */
     protected $registeredTemplates;
 
-    /**
-     * @var array
-     */
     protected $registeredLayouts;
 
-    /**
-     * @return void
-     */
     public function loadRegisteredTemplates()
     {
         $plugins = PluginManager::instance()->getPlugins();
@@ -50,9 +37,6 @@ class PDFManager
         }
     }
 
-    /**
-     * @return array|null
-     */
     public function listRegisteredLayouts()
     {
         if ($this->registeredLayouts === null) {
@@ -62,9 +46,6 @@ class PDFManager
         return $this->registeredLayouts;
     }
 
-    /**
-     * @return array|null
-     */
     public function listRegisteredTemplates()
     {
         if ($this->registeredTemplates === null) {
@@ -74,9 +55,6 @@ class PDFManager
         return $this->registeredTemplates;
     }
 
-    /**
-     * @param  array  $definitions
-     */
     public function registerLayouts(array $definitions)
     {
         if (!$this->registeredLayouts) {
@@ -88,9 +66,6 @@ class PDFManager
         $this->registeredLayouts = $definitions + $this->registeredLayouts;
     }
 
-    /**
-     * @param  array  $definitions
-     */
     public function registerTemplates(array $definitions)
     {
         if (!$this->registeredTemplates) {

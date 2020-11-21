@@ -3,21 +3,15 @@
 namespace Renatio\DynamicPDF;
 
 use Backend\Facades\Backend;
-use Renatio\DynamicPDF\Classes\ServiceProvider;
+use Barryvdh\DomPDF\ServiceProvider;
+use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use System\Classes\PluginBase;
 use System\Classes\PluginManager;
 
-/**
- * Class Plugin
- * @package Renatio\DynamicPDF
- */
 class Plugin extends PluginBase
 {
 
-    /**
-     * @return array
-     */
     public function pluginDetails()
     {
         return [
@@ -25,23 +19,21 @@ class Plugin extends PluginBase
             'description' => 'renatio.dynamicpdf::lang.plugin.description',
             'author' => 'Renatio',
             'icon' => 'icon-file-pdf-o',
-            'homepage' => 'http://octobercms.com/plugin/renatio-dynamicpdf',
+            'homepage' => 'https://octobercms.com/plugin/renatio-dynamicpdf',
         ];
     }
 
-    /**
-     * @return void
-     */
     public function boot()
     {
         $this->app->register(ServiceProvider::class);
 
+        $this->app->bind('dynamicpdf', function ($app) {
+            return new PDFWrapper($app['dompdf'], $app['config'], $app['files'], $app['view']);
+        });
+
         (new SyncTemplates)->handle();
     }
 
-    /**
-     * @return array
-     */
     public function registerPermissions()
     {
         return [
@@ -56,9 +48,6 @@ class Plugin extends PluginBase
         ];
     }
 
-    /**
-     * @return array
-     */
     public function registerMarkupTags()
     {
         if (PluginManager::instance()->exists('RainLab.Translate')) {
@@ -73,9 +62,6 @@ class Plugin extends PluginBase
         ];
     }
 
-    /**
-     * @return array
-     */
     public function registerSettings()
     {
         return [
