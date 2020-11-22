@@ -37,3 +37,5 @@
     - fix_custom_templates_error.php
 4.0.4: Fix composer installation.
 4.0.5: Fix custom template error.
+4.0.6: Allow to reset view template to default.
+4.0.7: Add Polish translation.
