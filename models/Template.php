@@ -5,7 +5,9 @@ namespace Renatio\DynamicPDF\Models;
 use Dompdf\Adapter\CPDF;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
+use October\Rain\Exception\ApplicationException;
 use Renatio\DynamicPDF\Classes\PDF;
+use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 
 class Template extends Model
@@ -30,6 +32,21 @@ class Template extends Model
         if (!$this->is_custom) {
             $this->fillFromView($this->code);
         }
+    }
+
+    public function fillFromCode($code = null)
+    {
+        $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
+
+        if ($code === null) {
+            $code = $this->code;
+        }
+
+        if (!$path = array_get($registeredTemplates, $code)) {
+            throw new ApplicationException('Unable to find a registered layout with code: '.$code);
+        }
+
+        $this->fillFromView($path);
     }
 
     public function fillFromView($path)

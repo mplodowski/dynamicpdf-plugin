@@ -7,6 +7,7 @@ use Backend\Behaviors\ListController;
 use Backend\Classes\Controller;
 use Backend\Facades\BackendMenu;
 use October\Rain\Exception\ApplicationException;
+use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
 use System\Classes\SettingsManager;
 
@@ -71,5 +72,17 @@ class Templates extends Controller
         $model = $this->formFindModelObject($id);
 
         return response($model->html);
+    }
+
+    public function update_onResetDefault($recordId)
+    {
+        $model = $this->formFindModelObject($recordId);
+
+        $model->fillFromCode();
+        $model->save();
+
+        Flash::success(e(trans('backend::lang.form.reset_success')));
+
+        return redirect()->refresh();
     }
 }
