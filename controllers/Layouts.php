@@ -40,10 +40,8 @@ class Layouts extends Controller
         }
 
         return PDF::loadLayout($model->code)
-            ->setOptions([
-                'logOutputFile' => storage_path('temp/log.htm'),
-                'isRemoteEnabled' => true,
-            ])
+            ->setLogOutputFile(storage_path('temp/log.htm'))
+            ->setIsRemoteEnabled(true)
             ->stream();
     }
 

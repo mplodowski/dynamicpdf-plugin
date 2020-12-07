@@ -34,3 +34,9 @@ For October composer based installation you must manually update project compose
 ```
 
 After this change run `composer update` command.
+
+## Upgrading To 4.0.8
+
+Using `setOptions` method to change dompdf options is no longer recommended. This will cause to override all laravel dompdf configuration and use only specified by method argument and dompdf defaults for rest options not set by a developer.
+
+Instead of using this method, please use dynamic method call for option you would like to change. Please read more in [documentation](https://github.com/mplodowski/dynamicpdf-plugin/blob/master/README.md#configuration-configuration).

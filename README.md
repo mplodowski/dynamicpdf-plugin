@@ -186,10 +186,11 @@ The default configuration settings are set in `config/dompdf.php`. Copy this fil
 
     php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
 
-You can still alter the dompdf options in your code before generating the PDF using this command:
+You can still alter the dompdf options in your code before generating the PDF using dynamic methods for all options like so:
 
     PDF::loadTemplate('renatio::invoice')
-        ->setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif'])
+        ->setDpi(300)
+        ->setDefaultFont('sans-serif')
         ->stream();
 
 Available options and their defaults:
@@ -221,6 +222,8 @@ Available options and their defaults:
 * __pdflibLicense__: ""
 * __adminUsername__: "user"
 * __adminPassword__: "password"
+
+See [Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php) for a list of available options.
 
 # Methods {#methods}
 
@@ -255,7 +258,7 @@ Background image should be at least 96 DPI size (793 x 1121 px).
 If you want to use better quality image like 300 DPI (2480 x 3508 px) than you need to change template options like so:
 
     return PDF::loadTemplate($model->code)
-        ->setOptions(['dpi' => 300])
+        ->setDpi(300)
         ->stream();
 
 ## UTF-8 support {#utf-8-support}
@@ -284,7 +287,7 @@ You can use the CSS page-break-before/page-break-after properties to create a ne
 On some hosting providers there were reports about `open_basedir` restriction problems with log file. You can change default log file destination like so:
 
     return PDF::loadTemplate('renatio::invoice')
-        ->setOptions(['logOutputFile' => storage_path('temp/log.htm')])
+        ->setLogOutputFile(storage_path('temp/log.htm'))
         ->stream();
 
 ## Embed image inside PDF template {#embed-image-inside-pdf-template}
@@ -294,7 +297,7 @@ You can use absolute path for image eg. `https://app.dev/path_to_your_image`.
 For this to work you must set `isRemoteEnabled` option.
 
     return PDF::loadTemplate('renatio::invoice', ['file' => $file])
-        ->setOptions(['isRemoteEnabled' => true])
+        ->setIsRemoteEnabled(true)
         ->stream();
 
 I assume that `$file` is instance of `October\Rain\Database\Attach\File`. 

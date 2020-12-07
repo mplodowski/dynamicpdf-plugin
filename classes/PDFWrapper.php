@@ -15,6 +15,17 @@ use System\Classes\PluginManager;
 class PDFWrapper extends PDF
 {
 
+    public function __call($method, $args)
+    {
+        $options = $this->getDomPDF()->getOptions();
+
+        if (method_exists($options, $method)) {
+            call_user_func_array([$options, $method], $args);
+        }
+
+        return $this;
+    }
+
     public function loadTemplate($code, $data = [], $encoding = null)
     {
         $template = Template::byCode($code);
