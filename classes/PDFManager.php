@@ -7,7 +7,6 @@ use System\Classes\PluginManager;
 
 class PDFManager
 {
-
     use Singleton;
 
     protected $registeredTemplates;
@@ -57,7 +56,7 @@ class PDFManager
 
     public function registerLayouts(array $definitions)
     {
-        if (!$this->registeredLayouts) {
+        if (! $this->registeredLayouts) {
             $this->registeredLayouts = [];
         }
 
@@ -68,7 +67,7 @@ class PDFManager
 
     public function registerTemplates(array $definitions)
     {
-        if (!$this->registeredTemplates) {
+        if (! $this->registeredTemplates) {
             $this->registeredTemplates = [];
         }
 

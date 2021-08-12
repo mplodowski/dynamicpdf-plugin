@@ -9,12 +9,11 @@ use Renatio\DynamicPDF\Tests\TestCase;
 
 class ControllerTestCase extends TestCase
 {
-
     protected $user;
 
     public $backendUri;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

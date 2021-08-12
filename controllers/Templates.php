@@ -13,7 +13,6 @@ use System\Classes\SettingsManager;
 
 class Templates extends Controller
 {
-
     public $requiredPermissions = ['renatio.dynamicpdf.manage_templates'];
 
     public $implement = [

@@ -9,7 +9,6 @@ use Renatio\DynamicPDF\Tests\TestCase;
 
 class PDFTest extends TestCase
 {
-
     /** @test */
     public function it_loads_html_from_template()
     {
@@ -37,8 +36,8 @@ class PDFTest extends TestCase
 
         $output = PDF::parseTemplate($template, $this->data());
 
-        $this->assertContains('John', $output);
-        $this->assertContains('color: #fff', $output);
+        $this->assertStringContainsString('John', $output);
+        $this->assertStringContainsString('color: #fff', $output);
     }
 
     /** @test */
@@ -48,8 +47,8 @@ class PDFTest extends TestCase
 
         $output = PDF::parseLayout($layout, $this->data());
 
-        $this->assertContains('John', $output);
-        $this->assertContains('color: #fff', $output);
+        $this->assertStringContainsString('John', $output);
+        $this->assertStringContainsString('color: #fff', $output);
     }
 
     protected function data()
@@ -59,6 +58,6 @@ class PDFTest extends TestCase
 
     protected function assertPdfContains($search, $pdf)
     {
-        $this->assertContains($search, $pdf->getDomPDF()->outputHtml());
+        $this->assertStringContainsString($search, $pdf->getDomPDF()->outputHtml());
     }
 }

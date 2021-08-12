@@ -8,10 +8,9 @@ use System\Classes\PluginManager;
 
 class PluginTest extends PluginTestCase
 {
-
     protected $plugin;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -43,7 +42,7 @@ class PluginTest extends PluginTestCase
     {
         $filters = $this->plugin->registerMarkupTags();
 
-        if (!PluginManager::instance()->exists('RainLab.Translate')) {
+        if (! PluginManager::instance()->exists('RainLab.Translate')) {
             $this->assertArrayHasKey('filters', $filters);
         } else {
             $this->assertArrayNotHasKey('filters', $filters);

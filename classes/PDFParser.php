@@ -7,7 +7,6 @@ use View;
 
 class PDFParser
 {
-
     const SECTION_SEPARATOR = '==';
 
     public static function parse($content)

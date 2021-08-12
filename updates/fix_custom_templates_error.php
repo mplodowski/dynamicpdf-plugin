@@ -7,7 +7,6 @@ use October\Rain\Database\Updates\Migration;
 
 class FixCustomTemplatesError extends Migration
 {
-
     public function up()
     {
         DB::table('renatio_dynamicpdf_pdf_templates')

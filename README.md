@@ -26,12 +26,8 @@
 
 There are couple ways to install this plugin.
 
-1. Use October [Marketplace](http://octobercms.com/help/site/marketplace) and __Add to project__ button. 
-2. Use October backend area *Settings > System > Updates & Plugins > Install Plugins* and type __Renatio.DynamicPDF__.
-3. Use `php artisan plugin:install Renatio.DynamicPDF` command.
-4. Use `composer require renatio/dynamicpdf-plugin` in project root. When you use this option you must run `php artisan october:up` after installation.
-
-> Fourth option should be used only for advanced users.
+1. Use `php artisan plugin:install Renatio.DynamicPDF` command.
+2. Use `composer require renatio/dynamicpdf-plugin` in project root. When you use this option you must run `php artisan october:migrate` after installation.
 
 # PDF content {#pdf-content}
 

@@ -12,7 +12,6 @@ use System\Classes\SettingsManager;
 
 class Layouts extends Controller
 {
-
     public $requiredPermissions = ['renatio.dynamicpdf.manage_layouts'];
 
     public $implement = [

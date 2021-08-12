@@ -14,7 +14,6 @@ use System\Classes\PluginManager;
 
 class PDFWrapper extends PDF
 {
-
     public function __call($method, $args)
     {
         $options = $this->getDomPDF()->getOptions();
@@ -58,7 +57,7 @@ class PDFWrapper extends PDF
 
         $html = $this->parseMarkup($template->content_html, $data);
 
-        if (!$template->layout) {
+        if (! $template->layout) {
             return $html;
         }
 
@@ -80,7 +79,7 @@ class PDFWrapper extends PDF
 
     protected function setLocale()
     {
-        if (!PluginManager::instance()->exists('RainLab.Translate')) {
+        if (! PluginManager::instance()->exists('RainLab.Translate')) {
             return;
         }
 

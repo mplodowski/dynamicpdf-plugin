@@ -3,15 +3,14 @@
 namespace Renatio\DynamicPDF\Tests;
 
 use Barryvdh\DomPDF\ServiceProvider;
-use Faker\Generator;
+use Faker\Generator as Faker;
 use Illuminate\Database\Eloquent\Factory;
 use PluginTestCase;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 
 class TestCase extends PluginTestCase
 {
-
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -27,7 +26,7 @@ class TestCase extends PluginTestCase
     protected function changeDefaultFactoriesPath()
     {
         $this->app->singleton(Factory::class, function () {
-            $faker = $this->app->make(Generator::class);
+            $faker = $this->app->make(Faker::class);
 
             return Factory::construct($faker, base_path('plugins/renatio/dynamicpdf/tests/factories'));
         });

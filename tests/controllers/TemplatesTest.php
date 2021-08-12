@@ -6,7 +6,6 @@ use Renatio\DynamicPDF\Models\Template;
 
 class TemplatesTest extends ControllerTestCase
 {
-
     /** @test */
     public function it_displays_index_template_page()
     {

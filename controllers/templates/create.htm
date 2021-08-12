@@ -9,7 +9,7 @@
     </ul>
 <?php Block::endPut() ?>
 
-<?php if ( ! $this->fatalError) : ?>
+<?php if (! $this->fatalError) : ?>
     <?= Form::open(['class' => 'layout']) ?>
 
     <div class="layout-row">
@@ -45,7 +45,6 @@
     </div>
 
     <?= Form::close() ?>
-
 <?php else: ?>
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>
     <p>

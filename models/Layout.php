@@ -13,15 +13,14 @@ use System\Models\File;
 
 class Layout extends Model
 {
-
     use Validation;
 
     public $table = 'renatio_dynamicpdf_pdf_layouts';
 
     public $rules = [
-        'name' => 'required',
-        'code' => 'required|unique:renatio_dynamicpdf_pdf_layouts',
-        'content_html' => 'required',
+        'name' => ['required'],
+        'code' => ['required', 'unique:renatio_dynamicpdf_pdf_layouts'],
+        'content_html' => ['required'],
     ];
 
     public $attachOne = [
@@ -53,7 +52,7 @@ class Layout extends Model
             $code = $this->code;
         }
 
-        if (!$path = array_get($registeredLayouts, $code)) {
+        if (! $path = array_get($registeredLayouts, $code)) {
             throw new ApplicationException('Unable to find a registered layout with code: '.$code);
         }
 

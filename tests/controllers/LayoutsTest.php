@@ -6,7 +6,6 @@ use Renatio\DynamicPDF\Models\Layout;
 
 class LayoutsTest extends ControllerTestCase
 {
-
     /** @test */
     public function it_displays_index_layout_page()
     {

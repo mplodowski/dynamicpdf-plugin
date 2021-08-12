@@ -8,7 +8,6 @@ use October\Rain\Support\Facades\Schema;
 
 class CreateLayoutsTable extends Migration
 {
-
     public function up()
     {
         Schema::create('renatio_dynamicpdf_pdf_layouts', function (Blueprint $table) {

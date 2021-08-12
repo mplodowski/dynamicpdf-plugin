@@ -8,7 +8,6 @@ use October\Rain\Support\Facades\Schema;
 
 class AddIsLockedToLayoutsTable extends Migration
 {
-
     public function up()
     {
         Schema::table('renatio_dynamicpdf_pdf_layouts', function (Blueprint $table) {

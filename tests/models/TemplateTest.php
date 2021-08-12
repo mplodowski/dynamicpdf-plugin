@@ -8,7 +8,6 @@ use Renatio\DynamicPDF\Tests\TestCase;
 
 class TemplateTest extends TestCase
 {
-
     /** @test */
     public function it_creates_template()
     {
@@ -23,7 +22,7 @@ class TemplateTest extends TestCase
         $template = factory(Template::class)->make();
 
         $this->assertArrayHasKey('title', $template->rules);
-        $this->assertEquals('required', $template->rules['title']);
+        $this->assertContains('required', $template->rules['title']);
     }
 
     /** @test */
@@ -32,7 +31,8 @@ class TemplateTest extends TestCase
         $template = factory(Template::class)->make();
 
         $this->assertArrayHasKey('code', $template->rules);
-        $this->assertEquals('required|unique:renatio_dynamicpdf_pdf_templates', $template->rules['code']);
+        $this->assertContains('required', $template->rules['code']);
+        $this->assertContains('unique:renatio_dynamicpdf_pdf_templates', $template->rules['code']);
     }
 
     /** @test */
@@ -41,7 +41,7 @@ class TemplateTest extends TestCase
         $template = factory(Template::class)->make();
 
         $this->assertArrayHasKey('content_html', $template->rules);
-        $this->assertEquals('required', $template->rules['content_html']);
+        $this->assertContains('required', $template->rules['content_html']);
     }
 
     /** @test */
@@ -50,7 +50,7 @@ class TemplateTest extends TestCase
         $template = new Template;
 
         $this->assertArrayHasKey('layout', $template->belongsTo);
-        $this->assertContains(Layout::class, $template->belongsTo['layout']);
+        $this->assertStringContainsString(Layout::class, $template->belongsTo['layout']);
     }
 
     /** @test */
@@ -58,7 +58,7 @@ class TemplateTest extends TestCase
     {
         $template = factory(Template::class)->create(['content_html' => '<p>test</p>']);
 
-        $this->assertContains('<p>test</p>', $template->html);
+        $this->assertStringContainsString('<p>test</p>', $template->html);
     }
 
     /** @test */

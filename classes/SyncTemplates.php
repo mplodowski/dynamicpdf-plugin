@@ -8,7 +8,6 @@ use Renatio\DynamicPDF\Models\Template;
 
 class SyncTemplates
 {
-
     public function handle()
     {
         try {
@@ -16,7 +15,7 @@ class SyncTemplates
 
             $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
 
-            if (!$registeredTemplates) {
+            if (! $registeredTemplates) {
                 return;
             }
 
@@ -36,7 +35,7 @@ class SyncTemplates
     {
         $registeredLayouts = PDFManager::instance()->listRegisteredLayouts();
 
-        if (!$registeredLayouts) {
+        if (! $registeredLayouts) {
             return;
         }
 
@@ -62,7 +61,7 @@ class SyncTemplates
                 continue;
             }
 
-            if (!array_key_exists($code, $registeredTemplates)) {
+            if (! array_key_exists($code, $registeredTemplates)) {
                 Template::whereCode($code)->delete();
             }
         }

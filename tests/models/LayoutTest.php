@@ -8,7 +8,6 @@ use System\Models\File;
 
 class LayoutTest extends TestCase
 {
-
     /** @test */
     public function it_creates_layout()
     {
@@ -23,7 +22,7 @@ class LayoutTest extends TestCase
         $layout = factory(Layout::class)->make();
 
         $this->assertArrayHasKey('name', $layout->rules);
-        $this->assertEquals('required', $layout->rules['name']);
+        $this->assertContains('required', $layout->rules['name']);
     }
 
     /** @test */
@@ -32,7 +31,8 @@ class LayoutTest extends TestCase
         $layout = factory(Layout::class)->make();
 
         $this->assertArrayHasKey('code', $layout->rules);
-        $this->assertEquals('required|unique:renatio_dynamicpdf_pdf_layouts', $layout->rules['code']);
+        $this->assertContains('required', $layout->rules['code']);
+        $this->assertContains('unique:renatio_dynamicpdf_pdf_layouts', $layout->rules['code']);
     }
 
     /** @test */
@@ -41,7 +41,7 @@ class LayoutTest extends TestCase
         $layout = factory(Layout::class)->make();
 
         $this->assertArrayHasKey('content_html', $layout->rules);
-        $this->assertEquals('required', $layout->rules['content_html']);
+        $this->assertContains('required', $layout->rules['content_html']);
     }
 
     /** @test */
@@ -50,7 +50,7 @@ class LayoutTest extends TestCase
         $layout = new Layout;
 
         $this->assertArrayHasKey('background_img', $layout->attachOne);
-        $this->assertContains(File::class, $layout->attachOne['background_img']);
+        $this->assertStringContainsString(File::class, $layout->attachOne['background_img']);
     }
 
     /** @test */
@@ -58,7 +58,7 @@ class LayoutTest extends TestCase
     {
         $layout = factory(Layout::class)->create(['content_html' => '<p>test</p>']);
 
-        $this->assertContains('<p>test</p>', $layout->html);
+        $this->assertStringContainsString('<p>test</p>', $layout->html);
     }
 
     /** @test */

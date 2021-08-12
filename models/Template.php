@@ -12,7 +12,6 @@ use Renatio\DynamicPDF\Classes\PDFParser;
 
 class Template extends Model
 {
-
     use Validation;
 
     public $table = 'renatio_dynamicpdf_pdf_templates';
@@ -22,14 +21,14 @@ class Template extends Model
     ];
 
     public $rules = [
-        'title' => 'required',
-        'code' => 'required|unique:renatio_dynamicpdf_pdf_templates',
-        'content_html' => 'required',
+        'title' => ['required'],
+        'code' => ['required', 'unique:renatio_dynamicpdf_pdf_templates'],
+        'content_html' => ['required'],
     ];
 
     public function afterFetch()
     {
-        if (!$this->is_custom) {
+        if (! $this->is_custom) {
             $this->fillFromView($this->code);
         }
     }
@@ -42,7 +41,7 @@ class Template extends Model
             $code = $this->code;
         }
 
-        if (!$path = array_get($registeredTemplates, $code)) {
+        if (! $path = array_get($registeredTemplates, $code)) {
             throw new ApplicationException('Unable to find a registered layout with code: '.$code);
         }
 

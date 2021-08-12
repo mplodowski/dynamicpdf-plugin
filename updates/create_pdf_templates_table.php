@@ -8,7 +8,6 @@ use October\Rain\Support\Facades\Schema;
 
 class CreateTemplatesTable extends Migration
 {
-
     public function up()
     {
         Schema::create('renatio_dynamicpdf_pdf_templates', function (Blueprint $table) {
