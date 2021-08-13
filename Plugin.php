@@ -4,7 +4,6 @@ namespace Renatio\DynamicPDF;
 
 use Backend\Facades\Backend;
 use Barryvdh\DomPDF\ServiceProvider;
-use Config;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use System\Classes\PluginBase;
@@ -30,8 +29,6 @@ class Plugin extends PluginBase
         $this->app->bind('dynamicpdf', function ($app) {
             return new PDFWrapper($app['dompdf'], $app['config'], $app['files'], $app['view']);
         });
-
-        Config::set('dompdf', Config::get('renatio.dynamicpdf::dompdf'));
 
         (new SyncTemplates)->handle();
     }
