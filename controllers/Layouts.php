@@ -30,7 +30,7 @@ class Layouts extends Controller
 
     public function previewPdf($id)
     {
-        $this->pageTitle = trans('renatio.dynamicpdf::lang.templates.preview_pdf');
+        $this->pageTitle = e(trans('renatio.dynamicpdf::lang.templates.preview_pdf'));
 
         try {
             $model = $this->formFindModelObject($id);
