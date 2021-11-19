@@ -296,14 +296,14 @@ For this to work you must set `isRemoteEnabled` option.
         ->setIsRemoteEnabled(true)
         ->stream();
 
-I assume that `$file` is instance of `October\Rain\Database\Attach\File`. 
+I assume that `$file` is instance of `October\Rain\Database\Attach\File`.
 
 Then in the template you can use following example code:
 
     {{ file.getPath }}
-    
+
     {{ file.getLocalPath }}
-    
+
     {{ file.getThumb(200, 200, {'crop' => true}) }}
 
 > For retrieving stylesheets or images via http following PHP setting must be enabled `allow_url_fopen`.
@@ -321,12 +321,12 @@ Recommended approach is to save PDF file locally and return redirect to PDF file
 ## Render PDF in browser {#render-pdf-in-browser}
 
     use Renatio\DynamicPDF\Classes\PDF; // import facade
-    
+
     public function pdf()
     {
         $templateCode = 'renatio::invoice'; // unique code of the template
         $data = ['name' => 'John Doe']; // optional data used in template
-    
+
         return PDF::loadTemplate($templateCode, $data)->stream('download.pdf');
     }
 
@@ -337,7 +337,7 @@ In HTML template you can use `{{ name }}` to output `John Doe`.
 ## Download PDF {#download-pdf}
 
     use Renatio\DynamicPDF\Classes\PDF;
-     
+
     public function pdf()
     {
      return PDF::loadTemplate('renatio::invoice')->download('download.pdf');
@@ -350,13 +350,13 @@ You can chain the methods:
     return PDF::loadTemplate('renatio::invoice')
         ->save('/path-to/my_stored_file.pdf')
         ->stream();
- 
+
 ## Change paper size and orientation {#change-paper-size-and-orientation}
 
     return PDF::loadTemplate('renatio::invoice')
         ->setPaper('a4', 'landscape')
         ->stream();
-    
+
 Available [paper sizes](https://github.com/dompdf/dompdf/blob/master/src/Adapter/CPDF.php#L40).
 
 ## PDF on CMS page {#pdf-on-cms-page}
@@ -364,7 +364,7 @@ Available [paper sizes](https://github.com/dompdf/dompdf/blob/master/src/Adapter
 To display PDF on CMS page you can use PHP section of the page like so:
 
     use Renatio\DynamicPDF\Classes\PDF;
-    
+
     function onStart()
     {
         return PDF::loadTemplate('renatio::invoice')->stream();
@@ -398,28 +398,28 @@ Plugin provides "Open Sans" font, which can be imported in Layout CSS section.
 
     @font-face {
         font-family: 'Open Sans';
-        src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf');
+        src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf'|app }});
     }
-    
+
     @font-face {
         font-family: 'Open Sans';
         font-weight: bold;
-        src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf');
+        src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf'|app }});
     }
-    
+
     @font-face {
         font-family: 'Open Sans';
         font-style: italic;
-        src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf');
+        src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf'|app }});
     }
-    
+
     @font-face {
         font-family: 'Open Sans';
         font-style: italic;
         font-weight: bold;
-        src: url('plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf');
+        src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf'|app }});
     }
-    
+
     body {
         font-family: 'Open Sans', sans-serif;
         font-size: 16px;

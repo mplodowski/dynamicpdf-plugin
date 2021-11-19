@@ -1,0 +1,102 @@
+title = "Invoice"
+description = "Invoice"
+layout = "renatio.dynamicpdf::pdf.layouts.invoice"
+==
+<div class="text-sm text-gray-700 leading-none">
+    <h2 class="text-3xl font-bold leading-none">TablePlus</h2>
+
+    <p class="text-gray-400">via Paddle.com</p>
+
+    <div class="my-8">
+        <h1 class="text-4xl font-bold leading-none">Invoice</h1>
+    </div>
+
+    <div class="float-left w-1/2">
+        <h4 class="mb-4 text-lg font-bold leading-none">Invoice to</h4>
+
+        <p class="mb-2 font-bold">John Doe</p>
+
+        <p class="mb-2">
+            Example street 16<br>
+            Warszawa, 50-100<br>
+            Poland
+        </p>
+
+        <p>VAT Number: PL2332213309</p>
+    </div>
+
+    <div class="float-right w-1/2 text-right">
+        <h4 class="mb-4 text-lg font-bold leading-none">Invoice from</h4>
+
+        <p class="mb-2 font-bold">Paddle.com Market Ltd</p>
+
+        <p class="mb-2">
+            Judd House 18-29 Mora Street<br>
+            London, EC1V 8BT<br>
+            United Kingdom
+        </p>
+
+        <p class="mb-2">VAT Number: EU372017215</p>
+
+        <p>Company Number: 08172165</p>
+    </div>
+
+    <div class="clear-both"></div>
+
+    <h4 class="mt-8 mb-4 text-lg font-bold leading-none">Your order</h4>
+
+    <div class="float-left w-1/2">
+        <p>Customer: <span class="font-bold">michal.plodowski@gmail.com</span></p>
+        <p>Order Number / Invoice: <span class="font-bold">#28542217</span></p>
+        <p>Billing date: <span class="font-bold">01 Sep 2020</span></p>
+    </div>
+
+    <div class="float-right text-right">
+        <p>Payment method: <span class="font-bold">Visa card ending 2222</span></p>
+        <p>Currency: <span class="font-bold">USD</span></p>
+    </div>
+
+    <div class="clear-both"></div>
+
+    <table class="mt-8 w-full">
+        <thead>
+            <tr class="border-b border-solid border-gray-700">
+                <th class="text-left font-normal border-b border-solid border-gray-700 pb-1">Product</th>
+                <th class="text-left font-normal border-b border-solid border-gray-700 pb-1">Quantity</th>
+                <th class="text-right font-normal border-b border-solid border-gray-700 pb-1">Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="font-bold border-b border-solid border-gray-700 py-4">TablePlus License Renewal</td>
+                <td class="border-b border-solid border-gray-700 py-4">1</td>
+                <td class="text-right border-b border-solid border-gray-700 py-4">US$39.00</td>
+            </tr>
+
+            <tr>
+                <td class="py-2">VAT (0%)</td>
+                <td colspan="2" class="text-right py-2">US$0.00</td>
+            </tr>
+
+            <tr>
+                <td class="font-bold">YOUR ORDER</td>
+                <td colspan="2" class="text-right font-bold text-xl leading-none">US$39.00</td>
+            </tr>
+
+            <tr>
+                <td colspan="3" class="text-right border-b border-solid border-gray-700 pb-4">
+                    No VAT - Supply may be subject to reverse charge in the country of receipt
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p class="mt-8 text-center">
+        The US$39.00 payment will appear on your bank/card statement as:
+        PADDLE.NET* TABLEPLUS
+    </p>
+
+    <p class="mt-4 text-center">
+        If you have a problem with your order (e.g. don’t recognise the charge, suspect a fraudulent transaction), please visit paddle.net.
+    </p>
+</div>

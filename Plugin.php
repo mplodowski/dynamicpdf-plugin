@@ -6,8 +6,10 @@ use Backend\Facades\Backend;
 use Barryvdh\DomPDF\ServiceProvider;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
+use Renatio\DynamicPDF\Console\Demo;
 use System\Classes\PluginBase;
 use System\Classes\PluginManager;
+use System\Models\Parameter;
 
 class Plugin extends PluginBase
 {
@@ -31,6 +33,11 @@ class Plugin extends PluginBase
         });
 
         (new SyncTemplates)->handle();
+    }
+
+    public function register()
+    {
+        $this->registerConsoleCommand('dynamicpdf:demo', Demo::class);
     }
 
     public function registerPermissions()
@@ -72,6 +79,28 @@ class Plugin extends PluginBase
                 'description' => 'renatio.dynamicpdf::lang.menu.description',
                 'permissions' => ['renatio.dynamicpdf.manage_templates'],
             ],
+        ];
+    }
+
+    public function registerPDFTemplates()
+    {
+        if (! Parameter::get('renatio::dynamicpdf.demo')) {
+            return [];
+        }
+
+        return [
+            'renatio.dynamicpdf::pdf.invoice',
+        ];
+    }
+
+    public function registerPDFLayouts()
+    {
+        if (! Parameter::get('renatio::dynamicpdf.demo')) {
+            return [];
+        }
+
+        return [
+            'renatio.dynamicpdf::pdf.layouts.invoice',
         ];
     }
 }
