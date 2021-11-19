@@ -91,7 +91,7 @@ module.exports = {
         gridTemplateRows: false,
         height: [],
         hueRotate: false,
-        inset: false,
+        inset: [],
         invert: false,
         isolation: false,
         justifyContent: false,

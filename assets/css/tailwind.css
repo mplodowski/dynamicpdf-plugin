@@ -539,6 +539,18 @@ video {
   border-color: #e5e7eb;
 }
 
+.fixed {
+  position: fixed;
+}
+
+.top-0 {
+  top: 0px;
+}
+
+.bottom-0 {
+  bottom: 0px;
+}
+
 .float-right {
   float: right;
 }
@@ -564,6 +576,10 @@ video {
   margin-top: 2rem;
 }
 
+.mt-24 {
+  margin-top: 6rem;
+}
+
 .mb-2 {
   margin-bottom: 0.5rem;
 }
@@ -574,6 +590,10 @@ video {
 
 .table {
   display: table;
+}
+
+.h-12 {
+  height: 3rem;
 }
 
 .w-1\/2 {
@@ -610,6 +630,11 @@ video {
   padding-bottom: 1rem;
 }
 
+.py-12 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
 .pb-1 {
   padding-bottom: 0.25rem;
 }
@@ -643,6 +668,11 @@ video {
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
 }
 
 .text-3xl {

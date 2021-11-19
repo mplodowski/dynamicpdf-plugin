@@ -1,10 +1,10 @@
-name = "Invoice Layout"
+name = "Header and Footer"
 ==
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title>Invoice</title>
+        <title>Header and Footer</title>
         <link href="{{ 'plugins/renatio/dynamicpdf/assets/css/tailwind.css'|app }}" rel="stylesheet">
         <style>
             @font-face {
@@ -36,12 +36,24 @@ name = "Invoice Layout"
                 padding: 0;
             }
 
+            .page-break {
+                page-break-before: always;
+            }
+
             body {
                 font-family: "Open Sans", sans-serif;
             }
         </style>
     </head>
-    <body class="p-16">
+    <body class="py-12">
+        <div class="h-12 fixed top-0 w-full text-center">
+            This is example header
+        </div>
+
+        <div class="h-12 fixed bottom-0 w-full text-center">
+            This is example footer
+        </div>
+
         {{ content_html|raw }}
     </body>
 </html>

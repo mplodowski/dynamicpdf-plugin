@@ -1,0 +1,47 @@
+name = "Default Layout"
+==
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>Default</title>
+        <link href="{{ 'plugins/renatio/dynamicpdf/assets/css/tailwind.css'|app }}" rel="stylesheet">
+        <style>
+            @font-face {
+                font-family: 'Open Sans';
+                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf'|app }});
+            }
+
+            @font-face {
+                font-family: 'Open Sans';
+                font-weight: bold;
+                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf'|app }});
+            }
+
+            @font-face {
+                font-family: 'Open Sans';
+                font-style: italic;
+                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf'|app }});
+            }
+
+            @font-face {
+                font-family: 'Open Sans';
+                font-style: italic;
+                font-weight: bold;
+                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf'|app }});
+            }
+
+            @page {
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: "Open Sans", sans-serif;
+            }
+        </style>
+    </head>
+    <body class="p-16">
+        {{ content_html|raw }}
+    </body>
+</html>
