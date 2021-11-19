@@ -11,6 +11,8 @@ class SyncTemplates
     public function handle()
     {
         try {
+            $this->checkFontsDir();
+
             $this->createLayouts();
 
             $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
@@ -73,6 +75,13 @@ class SyncTemplates
             $template = new Template;
             $template->fillFromView($code);
             $template->forceSave();
+        }
+    }
+
+    protected function checkFontsDir()
+    {
+        if (! file_exists(config('dompdf.defines.font_dir'))) {
+            mkdir(config('dompdf.defines.font_dir'), 0755, true);
         }
     }
 }
