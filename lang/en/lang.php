@@ -44,6 +44,7 @@ return [
         'menu_label' => 'Layout',
         'create_layout' => 'Create Layout',
         'edit_layout' => 'Edit Layout',
+        'not_found' => 'Unable to find a registered layout with code',
     ],
     'settings' => [
         'description' => 'Manage templates and layouts.',
