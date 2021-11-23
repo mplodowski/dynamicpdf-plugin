@@ -12,6 +12,10 @@ columns:
         label: renatio.dynamicpdf::lang.templates.code
         searchable: true
 
+    description:
+        label: renatio.dynamicpdf::lang.templates.description
+        searchable: true
+
     layout:
         label: renatio.dynamicpdf::lang.templates.layout
         relation: layout
