@@ -27,7 +27,7 @@ class Demo extends Command
     {
         Parameter::set('renatio::dynamicpdf.demo', 1);
 
-        $this->info('Demo is enabled. Please refresh PDF templates list.');
+        $this->info(e(trans('renatio.dynamicpdf::lang.demo.enabled')));
     }
 
     protected function disableDemo()
@@ -44,6 +44,6 @@ class Demo extends Command
 
         Parameter::set('renatio::dynamicpdf.demo', 0);
 
-        $this->info('Demo is disable. Please refresh PDF templates list.');
+        $this->info(e(trans('renatio.dynamicpdf::lang.demo.disabled')));
     }
 }

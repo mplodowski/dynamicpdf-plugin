@@ -68,4 +68,8 @@ return [
     'tab' => [
         'options' => 'Options',
     ],
+    'demo' => [
+        'enabled' => 'Demo is enabled. Please refresh PDF templates list.',
+        'disabled' => 'Demo is disabled. Please refresh PDF templates list.',
+    ],
 ];
