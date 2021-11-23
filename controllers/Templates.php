@@ -76,6 +76,7 @@ class Templates extends Controller
         $model = $this->formFindModelObject($recordId);
 
         $model->fillFromCode();
+        $model->is_custom = 0;
         $model->save();
 
         Flash::success(e(trans('backend::lang.form.reset_success')));
