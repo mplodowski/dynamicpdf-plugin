@@ -47,7 +47,7 @@
                 <?= e(trans('renatio.dynamicpdf::lang.templates.preview_pdf')) ?>
             </a>
 
-            <?php if ($formModel->is_custom): ?>
+            <?php if ($formModel->getView()): ?>
                 <button type="button"
                         class="btn btn-danger pull-right"
                         data-request="onResetDefault"

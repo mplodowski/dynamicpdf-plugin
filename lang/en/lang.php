@@ -34,6 +34,7 @@ return [
         'menu_label' => 'Template',
         'create_template' => 'Create Template',
         'edit_template' => 'Edit Template',
+        'not_found' => 'Unable to find a registered template with code',
     ],
     'layouts' => [
         'label' => 'Layouts',
