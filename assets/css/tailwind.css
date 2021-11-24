@@ -213,7 +213,8 @@ select {
 Correct the inability to style clickable types in iOS and Safari.
 */
 
-button {
+button,
+[type='button'] {
   -webkit-appearance: button;
 }
 
@@ -576,8 +577,8 @@ video {
   margin-top: 2rem;
 }
 
-.mt-24 {
-  margin-top: 6rem;
+.mt-20 {
+  margin-top: 5rem;
 }
 
 .mb-2 {
@@ -592,8 +593,16 @@ video {
   display: table;
 }
 
-.h-12 {
-  height: 3rem;
+.h-24 {
+  height: 6rem;
+}
+
+.h-32 {
+  height: 8rem;
+}
+
+.w-16 {
+  width: 4rem;
 }
 
 .w-1\/2 {
@@ -602,6 +611,10 @@ video {
 
 .w-full {
   width: 100%;
+}
+
+.border-2 {
+  border-width: 2px;
 }
 
 .border-b {
@@ -616,8 +629,25 @@ video {
   border-color: #374151;
 }
 
+.border-gray-800 {
+  border-color: #1f2937;
+}
+
+.bg-left-top {
+  background-position: left top;
+}
+
+.bg-no-repeat {
+  background-repeat: no-repeat;
+}
+
 .p-16 {
   padding: 4rem;
+}
+
+.px-12 {
+  padding-left: 3rem;
+  padding-right: 3rem;
 }
 
 .py-2 {
@@ -630,9 +660,8 @@ video {
   padding-bottom: 1rem;
 }
 
-.py-12 {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
+.pt-36 {
+  padding-top: 9rem;
 }
 
 .pb-1 {
@@ -641,6 +670,10 @@ video {
 
 .pb-4 {
   padding-bottom: 1rem;
+}
+
+.pb-20 {
+  padding-bottom: 5rem;
 }
 
 .text-left {
@@ -693,6 +726,10 @@ video {
   font-weight: 700;
 }
 
+.uppercase {
+  text-transform: uppercase;
+}
+
 .leading-none {
   line-height: 1;
 }
@@ -701,8 +738,16 @@ video {
   color: #9ca3af;
 }
 
+.text-gray-500 {
+  color: #6b7280;
+}
+
 .text-gray-700 {
   color: #374151;
+}
+
+.text-gray-800 {
+  color: #1f2937;
 }
 
 @media (min-width: 640px) {

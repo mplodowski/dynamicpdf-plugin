@@ -1,5 +1,5 @@
 title = "Invoice"
-description = "Example invoice"
+description = "Example invoice with custom font and image embed"
 layout = "renatio.dynamicpdf::pdf.layouts.default"
 ==
 <div class="text-sm text-gray-700 leading-none">
@@ -99,4 +99,6 @@ layout = "renatio.dynamicpdf::pdf.layouts.default"
     <p class="mt-4 text-center">
         If you have a problem with your order (e.g. don’t recognise the charge, suspect a fraudulent transaction), please visit paddle.net.
     </p>
+
+    <p class="text-center mt-8"><img class="w-16" src="{{ 'plugins/renatio/dynamicpdf/assets/img/october.png'|app }}"></p>
 </div>
