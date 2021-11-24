@@ -42,3 +42,4 @@
 4.0.8: Allow to set dompdf option with dynamic method.
 5.0.1: Support October v2.0 and upgrade to DOMPDF 1.0.
 5.0.2: Add demo console command.
+5.0.3: Update documentation.
