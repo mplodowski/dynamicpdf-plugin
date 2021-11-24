@@ -375,7 +375,66 @@ OctoberCMS ajax framework cannot handle this type of response.
 
 Recommended approach is to save PDF file locally and return redirect to PDF file.
 
+### Page numbers
+
+Page numbers can be generated using PHP. Inline PHP is disabled by default, because it can be a security risk. You can enable inline PHP using `setIsPhpEnabled` method.
+
+```
+return PDF::loadTemplate('renatio::invoice')
+    ->setIsRemoteEnabled(true)
+    ->setIsPhpEnabled(true)
+    ->stream();
+```
+
+After that you must place following code after `<body>` tag of the layout file.
+
+```
+<script type="text/php">
+    if (isset($pdf)) {
+        $size = 9;
+        $color = [0,0,0];
+
+        $font = $fontMetrics->getFont('Open Sans');
+        $textHeight = $fontMetrics->getFontHeight($font, $size);
+        $width = $fontMetrics->getTextWidth('Page 1 of 2', $font, $size);
+
+        $foot = $pdf->open_object();
+
+        $w = $pdf->get_width();
+        $h = $pdf->get_height();
+
+        $y = $h - $textHeight - 13;
+
+        $pdf->close_object();
+        $pdf->add_object($foot, 'all');
+
+        $text = "Page {PAGE_NUM} of {PAGE_COUNT}";
+
+        // Center the text
+        $pdf->page_text($w / 2 - $width / 2, $y, $text, $font, $size, $color);
+    }
+</script>
+```
+
 ## Examples
+
+### Demo examples
+
+There is a console command that will enable demo templates and layouts.
+
+```
+php artisan dynamicpdf:demo
+```
+
+To disable demo run following command:
+
+```
+php artisan dynamicpdf:demo --disable
+```
+
+The first example shows invoice with custom font and image embed.
+
+The second example shows usage of header & footer, page break, page numbers and full background image.
 
 ### Render PDF in browser
 
