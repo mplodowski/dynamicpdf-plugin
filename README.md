@@ -1,5 +1,9 @@
 # Dynamic PDF Plugin
 
+**Demo URL:** https://october-demo.renatio.com/backend/backend/auth/signin  
+**Login:** dynamicpdf  
+**Password:** dynamicpdf
+
 This plugin allows developers to create and edit PDF templates with a simple user interface.
 
 HTML to PDF converter uses [dompdf](https://github.com/dompdf/dompdf) library.
