@@ -12,10 +12,6 @@ HTML to PDF converter uses [dompdf](https://github.com/dompdf/dompdf) library.
 
 Plugin uses dompdf wrapper for Laravel [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
 
-> This plugin is fully compatible with the latest version of OctoberCMS 2.x from version 5.0.1.
-
-> The latest version that supports OctoberCMS 1.x is version 4.0.8.
-
 ## Like this plugin?
 
 If you like this plugin, give this plugin a Like or Make donation with [PayPal](https://www.paypal.me/mplodowski).
