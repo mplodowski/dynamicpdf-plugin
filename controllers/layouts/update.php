@@ -1,8 +1,8 @@
 <?php Block::put('breadcrumb') ?>
     <ul>
         <li>
-            <a href="<?= Backend::url('renatio/dynamicpdf/templates') ?>">
-                <?= e(trans('renatio.dynamicpdf::lang.templates.label')) ?>
+            <a href="<?= Backend::url('renatio/dynamicpdf/templates/index/layouts') ?>">
+                <?= e(trans('renatio.dynamicpdf::lang.layouts.label')) ?>
             </a>
         </li>
         <li><?= e($this->pageTitle) ?></li>
@@ -16,7 +16,7 @@
         <?= $this->formRender() ?>
     </div>
 
-    <div class="form-buttons p-t">
+    <div class="form-buttons pt-4">
         <div class="loading-indicator-container">
             <button type="submit"
                     data-request="onSave"
@@ -37,17 +37,17 @@
             </button>
 
             <a class="btn btn-info"
-               href="<?= Backend::url('renatio/dynamicpdf/templates/preview/' . $formModel->id) ?>">
+               href="<?= Backend::url('renatio/dynamicpdf/layouts/preview/'.$formModel->id) ?>">
                 <?= e(trans('renatio.dynamicpdf::lang.templates.preview_html')) ?>
             </a>
 
             <a class="btn btn-info"
                target="_blank"
-               href="<?= Backend::url('renatio/dynamicpdf/templates/previewpdf/' . $formModel->id) ?>">
+               href="<?= Backend::url('renatio/dynamicpdf/layouts/previewpdf/'.$formModel->id) ?>">
                 <?= e(trans('renatio.dynamicpdf::lang.templates.preview_pdf')) ?>
             </a>
 
-            <?php if ($formModel->getView()): ?>
+            <?php if ($formModel->is_locked): ?>
                 <button type="button"
                         class="btn btn-danger pull-right"
                         data-request="onResetDefault"
@@ -59,14 +59,15 @@
                 <button type="button"
                         class="oc-icon-trash-o btn-icon danger pull-right"
                         data-request="onDelete"
-                        data-load-indicator="<?= e(trans('backend::lang.form.deleting_name', ['name' => $formRecordName])) ?>"
+                        data-load-indicator="<?= e(trans('backend::lang.form.deleting_name',
+                            ['name' => $formRecordName])) ?>"
                         data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>">
                 </button>
             <?php endif ?>
 
             <span class="btn-text">
                 <?= e(trans('backend::lang.form.or')) ?>
-                <a href="<?= Backend::url('renatio/dynamicpdf/templates') ?>">
+                <a href="<?= Backend::url('renatio/dynamicpdf/templates/index/layouts') ?>">
                     <?= e(trans('backend::lang.form.cancel')) ?>
                 </a>
             </span>
@@ -77,9 +78,9 @@
 <?php else: ?>
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>
     <p>
-        <a href="<?= Backend::url('renatio/dynamicpdf/templates') ?>"
+        <a href="<?= Backend::url('renatio/dynamicpdf/templates/index/layouts') ?>"
            class="btn btn-default">
-            <?= e(trans('renatio.dynamicpdf::lang.templates.return')) ?>
+            <?= e(trans('renatio.dynamicpdf::lang.layouts.return')) ?>
         </a>
     </p>
 <?php endif ?>

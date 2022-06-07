@@ -51,3 +51,9 @@ in [documentation](https://github.com/mplodowski/dynamicpdf-plugin/blob/master/R
 ## Upgrading To 5.0.1
 
 Plugin requires OctoberCMS v2.1.x with Laravel 6 and PHP >=7.2.
+
+## Upgrading To 6.0.0
+
+Plugin requires October CMS version 3.0 or higher, Laravel 9.0 or higher and PHP >=8.0.
+
+Drop support for October CMS version 2.x.

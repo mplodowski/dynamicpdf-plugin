@@ -13,6 +13,8 @@ class SyncTemplates
         try {
             $this->checkFontsDir();
 
+            $this->checkPublicDir();
+
             $this->createLayouts();
 
             $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
@@ -82,6 +84,13 @@ class SyncTemplates
     {
         if (! file_exists(config('dompdf.defines.font_dir'))) {
             mkdir(config('dompdf.defines.font_dir'), 0755, true);
+        }
+    }
+
+    protected function checkPublicDir()
+    {
+        if (! file_exists('public')) {
+            mkdir('public', 0755, true);
         }
     }
 }

@@ -1,7 +1,9 @@
 # Dynamic PDF Plugin
 
-**Demo URL:** https://october-demo.renatio.com/backend/backend/auth/signin  
-**Login:** dynamicpdf  
+**Demo URL:** https://october-demo.renatio.com/backend/backend/auth/signin
+
+**Login:** dynamicpdf
+
 **Password:** dynamicpdf
 
 This plugin allows developers to create and edit PDF templates with a simple user interface.
@@ -27,9 +29,11 @@ Please check my other [plugins](https://octobercms.com/author/Renatio).
 Please use [GitHub Issues Page](https://github.com/mplodowski/dynamicpdf-plugin/issues) to report any issues with
 plugin.
 
-> Reviews should not be used for getting support or reporting bugs, if you need support please use the Plugin support link.
+> Reviews should not be used for getting support or reporting bugs, if you need support please use the Plugin support
+> link.
 
-Icon made by [Darius Dan](https://www.flaticon.com/authors/darius-dan) from [www.flaticon.com](https://www.flaticon.com/).
+Icon made by [Darius Dan](https://www.flaticon.com/authors/darius-dan)
+from [www.flaticon.com](https://www.flaticon.com/).
 
 # Documentation
 
@@ -117,9 +121,9 @@ name = "Default PDF layout"
 
 The configuration section sets the PDF view parameters. The following configuration parameters are supported:
 
-Parameter | Description
-------------- | -------------
-**name** | the layout name, required.
+| Parameter | Description                |
+|-----------|----------------------------|
+| **name**  | the layout name, required. |
 
 ### Using PDF layouts
 
@@ -160,20 +164,21 @@ orientation = "portrait"
 
 The configuration section sets the PDF view parameters. The following configuration parameters are supported:
 
-Parameter | Description
-------------- | -------------
-**title** | the template title, required.
-**layout** | the layout code, optional.
-**description** | the template description, optional.
-**size** | the template paper size, optional, default `a4`.
-**orientation** | the template paper orientation, optional, default `portrait`.
+| Parameter       | Description                                                   |
+|-----------------|---------------------------------------------------------------|
+| **title**       | the template title, required.                                 |
+| **layout**      | the layout code, optional.                                    |
+| **description** | the template description, optional.                           |
+| **size**        | the template paper size, optional, default `a4`.              |
+| **orientation** | the template paper orientation, optional, default `portrait`. |
 
 ### Using PDF templates
 
 PDF templates reside in the database and can be created in the back-end area via *Settings > PDF > PDF Templates*.
 The **code** specified in the template is a unique identifier and cannot be changed once created.
 
-> **Note:** If the PDF template does not exist in the system, this code will attempt to find a PDF view with the same code.
+> **Note:** If the PDF template does not exist in the system, this code will attempt to find a PDF view with the same
+> code.
 
 ## Registering PDF templates and layouts
 
@@ -272,21 +277,21 @@ See [Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.ph
 
 ## Methods
 
-| Method  | Description  |
-|---|---|
-| loadTemplate($code, array $data = [], $encoding = null)  | Load backend template |
-| loadLayout($code, array $data = [], $encoding = null) | Load backend layout |
-| loadHTML($string, $encoding = null) | Load HTML string |
-| loadFile($file) | Load HTML string from a file |
-| parseTemplate(Template $template, array $data = []) | Parse backend template using Twig |
-| parseLayout(Layout $layout, array $mergeData = []) | Parse backend layout using Twig |
-| getDomPDF() | Get the DomPDF instance |
-| setPaper($paper, $orientation = 'portrait') | Set the paper size and orientation (default A4/portrait) |
-| setWarnings($warnings) | Show or hide warnings |
-| output() | Output the PDF as a string |
-| save($filename) | Save the PDF to a file |
-| download($filename = 'document.pdf') | Make the PDF downloadable by the user |
-| stream($filename = 'document.pdf') | Return a response with the PDF to show in the browser |
+| Method                                                  | Description                                              |
+|---------------------------------------------------------|----------------------------------------------------------|
+| loadTemplate($code, array $data = [], $encoding = null) | Load backend template                                    |
+| loadLayout($code, array $data = [], $encoding = null)   | Load backend layout                                      |
+| loadHTML($string, $encoding = null)                     | Load HTML string                                         |
+| loadFile($file)                                         | Load HTML string from a file                             |
+| parseTemplate(Template $template, array $data = [])     | Parse backend template using Twig                        |
+| parseLayout(Layout $layout, array $mergeData = [])      | Parse backend layout using Twig                          |
+| getDomPDF()                                             | Get the DomPDF instance                                  |
+| setPaper($paper, $orientation = 'portrait')             | Set the paper size and orientation (default A4/portrait) |
+| setWarnings($warnings)                                  | Show or hide warnings                                    |
+| output()                                                | Output the PDF as a string                               |
+| save($filename)                                         | Save the PDF to a file                                   |
+| download($filename = 'document.pdf')                    | Make the PDF downloadable by the user                    |
+| stream($filename = 'document.pdf')                      | Return a response with the PDF to show in the browser    |
 
 All methods are available through Facade class `Renatio\DynamicPDF\Classes\PDF`.
 
@@ -383,7 +388,8 @@ Recommended approach is to save PDF file locally and return redirect to PDF file
 
 ### Page numbers
 
-Page numbers can be generated using PHP. Inline PHP is disabled by default, because it can be a security risk. You can enable inline PHP using `setIsPhpEnabled` method.
+Page numbers can be generated using PHP. Inline PHP is disabled by default, because it can be a security risk. You can
+enable inline PHP using `setIsPhpEnabled` method.
 
 ```
 return PDF::loadTemplate('renatio::invoice')

@@ -19,7 +19,7 @@ class Plugin extends PluginBase
             'name' => 'renatio.dynamicpdf::lang.plugin.name',
             'description' => 'renatio.dynamicpdf::lang.plugin.description',
             'author' => 'Renatio',
-            'icon' => 'icon-file-pdf-o',
+            'icon' => 'octo-icon-file-pdf-o',
             'homepage' => 'https://octobercms.com/plugin/renatio-dynamicpdf',
         ];
     }
@@ -74,7 +74,7 @@ class Plugin extends PluginBase
             'templates' => [
                 'label' => 'renatio.dynamicpdf::lang.menu.label',
                 'category' => 'renatio.dynamicpdf::lang.menu.category',
-                'icon' => 'icon-file-pdf-o',
+                'icon' => 'octo-icon-file-pdf-o',
                 'url' => Backend::url('renatio/dynamicpdf/templates'),
                 'description' => 'renatio.dynamicpdf::lang.menu.description',
                 'permissions' => ['renatio.dynamicpdf.manage_templates'],
