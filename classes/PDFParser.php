@@ -7,8 +7,6 @@ use View;
 
 class PDFParser
 {
-    const SECTION_SEPARATOR = '==';
-
     public static function parse($content)
     {
         $sections = preg_split('/^={2,}\s*/m', $content, -1);
