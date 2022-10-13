@@ -47,3 +47,4 @@ v5.0.4: Fix preview pdf layout.
 v5.0.5: Brazilian portuguese language. Thanks to @gcairesdev.
 v6.0.0: Require October CMS 3.0.
 v6.0.1: Minor update.
+v7.0.0: Update to Laravel Dompdf v2.0.

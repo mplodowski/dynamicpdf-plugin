@@ -238,6 +238,14 @@ PDF::loadTemplate('renatio::invoice')
     ->stream();
 ```
 
+or you can use `setOption` method before generating the pdf using this command:
+
+```
+PDF::loadTemplate('renatio::invoice')
+    ->setOption(['dpi' => 300, 'defaultFont' => 'sans-serif'])
+    ->stream();
+```
+
 Available options and their defaults:
 
 * __rootDir__: "{app_directory}/vendor/dompdf/dompdf"

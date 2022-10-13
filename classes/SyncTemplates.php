@@ -3,6 +3,9 @@
 namespace Renatio\DynamicPDF\Classes;
 
 use Exception;
+use October\Rain\Support\Facades\Event;
+use RainLab\Translate\Classes\ThemeScanner;
+use RainLab\Translate\Models\Message;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 
@@ -30,6 +33,8 @@ class SyncTemplates
             $newTemplates = array_diff_key($registeredTemplates, $dbTemplates);
 
             $this->createTemplates($newTemplates);
+
+            $this->scanTranslatedMessages();
         } catch (Exception $e) {
             //
         }
@@ -82,8 +87,8 @@ class SyncTemplates
 
     protected function checkFontsDir()
     {
-        if (! file_exists(config('dompdf.defines.font_dir'))) {
-            mkdir(config('dompdf.defines.font_dir'), 0755, true);
+        if (! file_exists(config('dompdf.options.font_dir'))) {
+            mkdir(config('dompdf.options.font_dir'), 0755, true);
         }
     }
 
@@ -92,5 +97,22 @@ class SyncTemplates
         if (! file_exists('public')) {
             mkdir('public', 0755, true);
         }
+    }
+
+    protected function scanTranslatedMessages()
+    {
+        Event::listen('rainlab.translate.themeScanner.afterScan', function (ThemeScanner $scanner) {
+            $messages = [];
+
+            foreach (Layout::all() as $layout) {
+                $messages = array_merge($messages, $scanner->parseContent($layout->content_html));
+            }
+
+            foreach (Template::all() as $template) {
+                $messages = array_merge($messages, $scanner->parseContent($template->content_html));
+            }
+
+            Message::importMessages($messages);
+        });
     }
 }
