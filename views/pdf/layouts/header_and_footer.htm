@@ -47,6 +47,16 @@ name = "Header and Footer"
     </head>
     <body style="background-image: url({{ 'plugins/renatio/dynamicpdf/assets/img/bg.jpg'|app }});"
           class="bg-left-top bg-no-repeat pt-36">
+        <div class="h-32 fixed top-0 px-12 mt-20 w-full text-gray-500">
+            This is example header text
+        </div>
+
+        <div class="h-24 fixed bottom-0 px-12 w-full text-gray-500">
+            This is example footer text
+        </div>
+
+        {{ content_html|raw }}
+
         <script type="text/php">
             if (isset($pdf)) {
                 $size = 9;
@@ -72,15 +82,5 @@ name = "Header and Footer"
                 $pdf->page_text($w / 2 - $width / 2, $y, $text, $font, $size, $color);
             }
         </script>
-
-        <div class="h-32 fixed top-0 px-12 mt-20 w-full text-gray-500">
-            This is example header text
-        </div>
-
-        <div class="h-24 fixed bottom-0 px-12 w-full text-gray-500">
-            This is example footer text
-        </div>
-
-        {{ content_html|raw }}
     </body>
 </html>

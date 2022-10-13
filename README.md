@@ -402,7 +402,7 @@ return PDF::loadTemplate('renatio::invoice')
     ->stream();
 ```
 
-After that you must place following code after `<body>` tag of the layout file.
+After that you must place following code before closing `</body>` tag of the layout file.
 
 ```
 <script type="text/php">
