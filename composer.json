@@ -19,7 +19,6 @@
         }
     ],
     "require": {
-        "php": ">=8.0.2",
         "october/rain": "^3.0",
         "composer/installers": "~1.0",
         "barryvdh/laravel-dompdf": "^2.0"
