@@ -5,7 +5,6 @@ namespace Renatio\DynamicPDF\Classes;
 use Exception;
 use October\Rain\Support\Facades\Event;
 use RainLab\Translate\Classes\ThemeScanner;
-use RainLab\Translate\Models\Message;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 
@@ -15,8 +14,6 @@ class SyncTemplates
     {
         try {
             $this->checkFontsDir();
-
-            $this->checkPublicDir();
 
             $this->createLayouts();
 
@@ -92,13 +89,6 @@ class SyncTemplates
         }
     }
 
-    protected function checkPublicDir()
-    {
-        if (! file_exists('public')) {
-            mkdir('public', 0755, true);
-        }
-    }
-
     protected function scanTranslatedMessages()
     {
         Event::listen('rainlab.translate.themeScanner.afterScan', function (ThemeScanner $scanner) {
@@ -112,7 +102,7 @@ class SyncTemplates
                 $messages = array_merge($messages, $scanner->parseContent($template->content_html));
             }
 
-            Message::importMessages($messages);
+            $scanner->importMessages($messages);
         });
     }
 }

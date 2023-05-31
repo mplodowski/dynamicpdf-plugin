@@ -49,3 +49,4 @@ v6.0.0: Require October CMS 3.0.
 v6.0.1: Minor update.
 v7.0.0: Update to Laravel Dompdf v2.0.
 v7.0.1: Fix page numbers demo.
+v7.1.0: Fix creating public directory.
