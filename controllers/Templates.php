@@ -62,7 +62,7 @@ class Templates extends Controller
             ->setLogOutputFile(storage_path('temp/log.htm'))
             ->setIsRemoteEnabled(true)
             ->setDpi(300)
-            ->setIsPhpEnabled(true)
+            ->setIsPhpEnabled(! config('cms.safe_mode'))
             ->stream();
     }
 
