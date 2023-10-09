@@ -23,7 +23,6 @@
         "composer/installers": "~1.0",
         "barryvdh/laravel-dompdf": "^2.0"
     },
-    "minimum-stability": "dev",
     "config": {
         "allow-plugins": {
             "composer/installers": true
