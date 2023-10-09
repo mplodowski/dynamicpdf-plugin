@@ -32,6 +32,10 @@ class Plugin extends PluginBase
             return new PDFWrapper($app['dompdf'], $app['config'], $app['files'], $app['view']);
         });
 
+        if (config('dompdf.public_path') === null) {
+            config(['dompdf.public_path' => public_path()]);
+        }
+
         (new SyncTemplates)->handle();
     }
 
