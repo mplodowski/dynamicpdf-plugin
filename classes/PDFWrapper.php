@@ -45,6 +45,8 @@ class PDFWrapper extends PDF
             $this->setPaper($template->size, $template->orientation ?? 'portrait');
         }
 
+        $this->allowSelfSignedCertificates();
+
         return $this;
     }
 
@@ -54,6 +56,8 @@ class PDFWrapper extends PDF
             $this->parseLayout(Layout::byCode($code), $data),
             $encoding
         );
+
+        $this->allowSelfSignedCertificates();
 
         return $this;
     }
@@ -98,5 +102,22 @@ class PDFWrapper extends PDF
         } catch (Exception $e) {
             return Twig::parse($markup, $data);
         }
+    }
+
+    protected function allowSelfSignedCertificates()
+    {
+        if (app()->environment('production')) {
+            return;
+        }
+
+        $context = stream_context_create([
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true,
+            ],
+        ]);
+
+        $this->dompdf->setHttpContext($context);
     }
 }
