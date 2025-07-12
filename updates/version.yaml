@@ -53,3 +53,4 @@ v7.1.0: Fix creating public directory.
 v7.1.1: Minor fix.
 v7.1.2: Allow self signed certificates on development environment.
 v8.0.1: Support October 4.
+v8.0.2: Update dependencies.
