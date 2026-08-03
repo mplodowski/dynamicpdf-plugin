@@ -43,8 +43,8 @@ After this change run `composer update` command.
 
 This is the latest version with support for October 1.x.
 
-Using `setOptions` method to change dompdf options is no longer recommended. This will cause to override all laravel
-dompdf configuration and use only specified by method argument and dompdf defaults for rest options not set by a
+Using `setOptions` method to change dompdf options is no longer recommended. This will override all Laravel
+dompdf configuration and use only options specified by method argument and dompdf defaults for options not set by the
 developer.
 
 Instead of using this method, please use dynamic method call for option you would like to change. Please read more

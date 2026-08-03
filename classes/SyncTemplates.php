@@ -10,11 +10,10 @@ use Renatio\DynamicPDF\Models\Template;
 
 class SyncTemplates
 {
-    public function handle()
+    public function handle(): void
     {
         try {
             $this->checkFontsDir();
-
             $this->createLayouts();
 
             $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
@@ -30,21 +29,22 @@ class SyncTemplates
             $newTemplates = array_diff_key($registeredTemplates, $dbTemplates);
 
             $this->createTemplates($newTemplates);
-
             $this->scanTranslatedMessages();
-        } catch (Exception $e) {
-            //
+        } catch (Exception) {
+            // Silently fail during boot to prevent application errors
         }
     }
 
-    protected function checkFontsDir()
+    protected function checkFontsDir(): void
     {
-        if (! file_exists(config('dompdf.options.font_dir'))) {
-            mkdir(config('dompdf.options.font_dir'), 0755, true);
+        $fontDir = config('dompdf.options.font_dir');
+
+        if ($fontDir && ! file_exists($fontDir)) {
+            mkdir($fontDir, 0755, true);
         }
     }
 
-    protected function createLayouts()
+    protected function createLayouts(): void
     {
         $registeredLayouts = PDFManager::instance()->listRegisteredLayouts();
 
@@ -67,7 +67,11 @@ class SyncTemplates
         }
     }
 
-    protected function clearNonCustomizedTemplates($dbTemplates, $registeredTemplates)
+    /**
+     * @param  array<string, bool>  $dbTemplates
+     * @param  array<string, string>  $registeredTemplates
+     */
+    protected function clearNonCustomizedTemplates(array $dbTemplates, array $registeredTemplates): void
     {
         foreach ($dbTemplates as $code => $isCustom) {
             if ($isCustom) {
@@ -80,7 +84,10 @@ class SyncTemplates
         }
     }
 
-    protected function createTemplates($templates)
+    /**
+     * @param  array<string, string>  $templates
+     */
+    protected function createTemplates(array $templates): void
     {
         foreach ($templates as $code) {
             $template = new Template;
@@ -89,9 +96,9 @@ class SyncTemplates
         }
     }
 
-    protected function scanTranslatedMessages()
+    protected function scanTranslatedMessages(): void
     {
-        Event::listen('rainlab.translate.themeScanner.afterScan', function (ThemeScanner $scanner) {
+        Event::listen('rainlab.translate.themeScanner.afterScan', function (ThemeScanner $scanner): void {
             $messages = [];
 
             foreach (Layout::all() as $layout) {

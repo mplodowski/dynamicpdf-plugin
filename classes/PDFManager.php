@@ -9,11 +9,13 @@ class PDFManager
 {
     use Singleton;
 
-    protected $registeredTemplates;
+    /** @var array<string, string>|null */
+    protected ?array $registeredTemplates = null;
 
-    protected $registeredLayouts;
+    /** @var array<string, string>|null */
+    protected ?array $registeredLayouts = null;
 
-    public function loadRegisteredTemplates()
+    public function loadRegisteredTemplates(): void
     {
         $plugins = PluginManager::instance()->getPlugins();
 
@@ -36,7 +38,10 @@ class PDFManager
         }
     }
 
-    public function listRegisteredLayouts()
+    /**
+     * @return array<string, string>|null
+     */
+    public function listRegisteredLayouts(): ?array
     {
         if ($this->registeredLayouts === null) {
             $this->loadRegisteredTemplates();
@@ -45,7 +50,10 @@ class PDFManager
         return $this->registeredLayouts;
     }
 
-    public function listRegisteredTemplates()
+    /**
+     * @return array<string, string>|null
+     */
+    public function listRegisteredTemplates(): ?array
     {
         if ($this->registeredTemplates === null) {
             $this->loadRegisteredTemplates();
@@ -54,22 +62,24 @@ class PDFManager
         return $this->registeredTemplates;
     }
 
-    public function registerLayouts(array $definitions)
+    /**
+     * @param  array<string>  $definitions
+     */
+    public function registerLayouts(array $definitions): void
     {
-        if (! $this->registeredLayouts) {
-            $this->registeredLayouts = [];
-        }
+        $this->registeredLayouts ??= [];
 
         $definitions = array_combine($definitions, $definitions);
 
         $this->registeredLayouts = $definitions + $this->registeredLayouts;
     }
 
-    public function registerTemplates(array $definitions)
+    /**
+     * @param  array<string>  $definitions
+     */
+    public function registerTemplates(array $definitions): void
     {
-        if (! $this->registeredTemplates) {
-            $this->registeredTemplates = [];
-        }
+        $this->registeredTemplates ??= [];
 
         $definitions = array_combine($definitions, $definitions);
 

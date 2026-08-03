@@ -16,33 +16,37 @@ class Template extends Model
 
     public $table = 'renatio_dynamicpdf_pdf_templates';
 
+    /** @var array<string, class-string> */
     public $belongsTo = [
         'layout' => Layout::class,
     ];
 
+    /** @var array<string, array<string>> */
     public $rules = [
         'title' => ['required'],
         'code' => ['required', 'unique:renatio_dynamicpdf_pdf_templates'],
         'content_html' => ['required'],
     ];
 
-    public function afterFetch()
+    public function afterFetch(): void
     {
         if (! $this->is_custom) {
             $this->fillFromView($this->code);
         }
     }
 
-    public function fillFromCode()
+    public function fillFromCode(): void
     {
-        if (! ($path = $this->getView())) {
-            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.template.not_found')).': '.$this->code);
+        $path = $this->getView();
+
+        if (! $path) {
+            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.template.not_found')) . ': ' . $this->code);
         }
 
         $this->fillFromView($path);
     }
 
-    public function fillFromView($path)
+    public function fillFromView(string $path): void
     {
         $sections = PDFParser::sections($path);
 
@@ -55,24 +59,30 @@ class Template extends Model
         $this->content_html = array_get($sections, 'html');
     }
 
-    public function getHtmlAttribute()
+    public function getHtmlAttribute(): string
     {
         return PDF::loadTemplate($this->code)->getDompdf()->output_html();
     }
 
-    public static function byCode($code)
+    public static function byCode(string $code): self
     {
         return static::whereCode($code)->firstOrFail();
     }
 
-    public static function getSizeOptions()
+    /**
+     * @return array<string, string>
+     */
+    public static function getSizeOptions(): array
     {
         $sizes = array_keys(CPDF::$PAPER_SIZES);
 
         return array_combine($sizes, $sizes);
     }
 
-    public static function getOrientationOptions()
+    /**
+     * @return array<string, string>
+     */
+    public static function getOrientationOptions(): array
     {
         return [
             'portrait' => 'renatio.dynamicpdf::lang.orientation.portrait',
@@ -80,7 +90,7 @@ class Template extends Model
         ];
     }
 
-    public function getView()
+    public function getView(): ?string
     {
         return array_get(PDFManager::instance()->listRegisteredTemplates(), $this->code);
     }

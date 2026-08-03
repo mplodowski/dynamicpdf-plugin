@@ -35,7 +35,7 @@ from [www.flaticon.com](https://www.flaticon.com/).
 
 ## Installation
 
-There are couple ways to install this plugin.
+There are a couple of ways to install this plugin.
 
 1. Use `php artisan plugin:install Renatio.DynamicPDF` command.
 2. Use `composer require renatio/dynamicpdf-plugin` in project root. When you use this option you must
@@ -327,7 +327,7 @@ In your layout, set the UTF-8 meta tag in `head` section:
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 ```
 
-If you have problems with foreign characters than try to use **DejaVu Sans** font family.
+If you have problems with foreign characters then try to use **DejaVu Sans** font family.
 
 ### Page breaks
 
@@ -394,6 +394,8 @@ Recommended approach is to save PDF file locally and return redirect to PDF file
 
 Page numbers can be generated using PHP. Inline PHP is disabled by default, because it can be a security risk. You can
 enable inline PHP using `setIsPhpEnabled` method.
+
+> **Security warning:** only enable `setIsPhpEnabled(true)` when the template content is fully trusted. Any `<script type="text/php">` block in the HTML will be executed on the server, so enabling this on templates that can be edited by backend users (or any other untrusted source) allows remote code execution. Never enable it in preview flows that render user-editable content.
 
 ```
 return PDF::loadTemplate('renatio::invoice')

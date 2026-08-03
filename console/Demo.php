@@ -14,7 +14,7 @@ class Demo extends Command
 
     protected $description = 'Enable/Disable PDF demo templates.';
 
-    public function handle()
+    public function handle(): void
     {
         if ($this->option('disable')) {
             $this->disableDemo();
@@ -23,14 +23,14 @@ class Demo extends Command
         }
     }
 
-    protected function enableDemo()
+    protected function enableDemo(): void
     {
         Parameter::set('renatio::dynamicpdf.demo', 1);
 
         $this->info(e(trans('renatio.dynamicpdf::lang.demo.enabled')));
     }
 
-    protected function disableDemo()
+    protected function disableDemo(): void
     {
         $plugin = PluginManager::instance()->findByNamespace('Renatio.DynamicPDF');
 

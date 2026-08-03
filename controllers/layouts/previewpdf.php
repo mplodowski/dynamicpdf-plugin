@@ -9,7 +9,7 @@
     </ul>
 <?php Block::endPut() ?>
 
-<?php if ($this->fatalError) : ?>
+<?php if ($this->fatalError) { ?>
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>
     <p>
         <a href="<?= Backend::url('renatio/dynamicpdf/templates/index/layouts') ?>"
@@ -17,4 +17,4 @@
             <?= e(trans('renatio.dynamicpdf::lang.layouts.return')) ?>
         </a>
     </p>
-<?php endif ?>
+<?php } ?>

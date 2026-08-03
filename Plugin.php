@@ -4,6 +4,7 @@ namespace Renatio\DynamicPDF;
 
 use Backend\Facades\Backend;
 use Barryvdh\DomPDF\ServiceProvider;
+use Illuminate\Contracts\Foundation\Application;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Console\Demo;
@@ -13,7 +14,10 @@ use System\Models\Parameter;
 
 class Plugin extends PluginBase
 {
-    public function pluginDetails()
+    /**
+     * @return array{name: string, description: string, author: string, icon: string, homepage: string}
+     */
+    public function pluginDetails(): array
     {
         return [
             'name' => 'renatio.dynamicpdf::lang.plugin.name',
@@ -24,13 +28,16 @@ class Plugin extends PluginBase
         ];
     }
 
-    public function boot()
+    public function boot(): void
     {
         $this->app->register(ServiceProvider::class);
 
-        $this->app->bind('dynamicpdf', function ($app) {
-            return new PDFWrapper($app['dompdf'], $app['config'], $app['files'], $app['view']);
-        });
+        $this->app->bind('dynamicpdf', fn (Application $app): PDFWrapper => new PDFWrapper(
+            $app['dompdf'],
+            $app['config'],
+            $app['files'],
+            $app['view'],
+        ));
 
         if (config('dompdf.public_path') === null) {
             config(['dompdf.public_path' => public_path()]);
@@ -39,12 +46,15 @@ class Plugin extends PluginBase
         (new SyncTemplates)->handle();
     }
 
-    public function register()
+    public function register(): void
     {
         $this->registerConsoleCommand('dynamicpdf:demo', Demo::class);
     }
 
-    public function registerPermissions()
+    /**
+     * @return array<string, array{label: string, tab: string}>
+     */
+    public function registerPermissions(): array
     {
         return [
             'renatio.dynamicpdf.manage_templates' => [
@@ -58,7 +68,10 @@ class Plugin extends PluginBase
         ];
     }
 
-    public function registerMarkupTags()
+    /**
+     * @return array{filters?: array<string, array{0: string, 1: string}>}
+     */
+    public function registerMarkupTags(): array
     {
         if (PluginManager::instance()->exists('RainLab.Translate')) {
             return [];
@@ -72,7 +85,10 @@ class Plugin extends PluginBase
         ];
     }
 
-    public function registerSettings()
+    /**
+     * @return array<string, array{label: string, category: string, icon: string, url: string, description: string, permissions: array<string>}>
+     */
+    public function registerSettings(): array
     {
         return [
             'templates' => [
@@ -86,7 +102,10 @@ class Plugin extends PluginBase
         ];
     }
 
-    public function registerPDFTemplates()
+    /**
+     * @return array<string>
+     */
+    public function registerPDFTemplates(): array
     {
         if (! Parameter::get('renatio::dynamicpdf.demo')) {
             return [];
@@ -98,7 +117,10 @@ class Plugin extends PluginBase
         ];
     }
 
-    public function registerPDFLayouts()
+    /**
+     * @return array<string>
+     */
+    public function registerPDFLayouts(): array
     {
         if (! Parameter::get('renatio::dynamicpdf.demo')) {
             return [];

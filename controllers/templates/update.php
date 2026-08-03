@@ -9,7 +9,7 @@
 </ul>
 <?php Block::endPut() ?>
 
-<?php if (! $this->fatalError) : ?>
+<?php if (! $this->fatalError) { ?>
     <?= Form::open(['class' => 'layout']) ?>
 
     <div class="layout-row">
@@ -37,17 +37,17 @@
             </button>
 
             <a class="btn btn-info"
-               href="<?= Backend::url('renatio/dynamicpdf/templates/preview/'.$formModel->id) ?>">
+               href="<?= Backend::url('renatio/dynamicpdf/templates/preview/' . $formModel->id) ?>">
                 <?= e(trans('renatio.dynamicpdf::lang.templates.preview_html')) ?>
             </a>
 
             <a class="btn btn-info"
                target="_blank"
-               href="<?= Backend::url('renatio/dynamicpdf/templates/previewpdf/'.$formModel->id) ?>">
+               href="<?= Backend::url('renatio/dynamicpdf/templates/previewpdf/' . $formModel->id) ?>">
                 <?= e(trans('renatio.dynamicpdf::lang.templates.preview_pdf')) ?>
             </a>
 
-            <?php if ($formModel->getView()): ?>
+            <?php if ($formModel->getView()) { ?>
                 <button type="button"
                         class="btn btn-danger pull-right"
                         data-request="onResetDefault"
@@ -55,7 +55,7 @@
                         data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>">
                     <?= e(trans('backend::lang.form.reset_default')) ?>
                 </button>
-            <?php else : ?>
+            <?php } else { ?>
                 <button type="button"
                         class="oc-icon-trash-o btn-icon danger pull-right"
                         data-request="onDelete"
@@ -63,7 +63,7 @@
                             ['name' => $formRecordName])) ?>"
                         data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>">
                 </button>
-            <?php endif ?>
+            <?php } ?>
 
             <span class="btn-text">
                 <?= e(trans('backend::lang.form.or')) ?>
@@ -75,7 +75,7 @@
     </div>
 
     <?= Form::close() ?>
-<?php else: ?>
+<?php } else { ?>
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>
     <p>
         <a href="<?= Backend::url('renatio/dynamicpdf/templates') ?>"
@@ -83,4 +83,4 @@
             <?= e(trans('renatio.dynamicpdf::lang.templates.return')) ?>
         </a>
     </p>
-<?php endif ?>
+<?php } ?>
