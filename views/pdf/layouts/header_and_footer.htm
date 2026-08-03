@@ -56,31 +56,5 @@ name = "Header and Footer"
         </div>
 
         {{ content_html|raw }}
-
-        <script type="text/php">
-            if (isset($pdf)) {
-                $size = 9;
-                $color = [0,0,0];
-
-                $font = $fontMetrics->getFont('Open Sans');
-                $textHeight = $fontMetrics->getFontHeight($font, $size);
-                $width = $fontMetrics->getTextWidth('Page 1 of 2', $font, $size);
-
-                $foot = $pdf->open_object();
-
-                $w = $pdf->get_width();
-                $h = $pdf->get_height();
-
-                $y = $h - $textHeight - 13;
-
-                $pdf->close_object();
-                $pdf->add_object($foot, 'all');
-
-                $text = "Page {PAGE_NUM} of {PAGE_COUNT}";
-
-                // Center the text
-                $pdf->page_text($w / 2 - $width / 2, $y, $text, $font, $size, $color);
-            }
-        </script>
     </body>
 </html>
