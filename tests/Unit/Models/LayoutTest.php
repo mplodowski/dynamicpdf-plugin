@@ -126,5 +126,12 @@ describe('Layout Model', function () {
 
             expect($css)->toContain('color');
         });
+
+        it('getCSS returns empty string when content_css is null', function () {
+            $layout = $this->createLayout();
+            $layout->content_css = null;
+
+            expect($layout->getCSS())->toBe('');
+        });
     });
 });

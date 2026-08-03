@@ -71,4 +71,34 @@ describe('PDFWrapper Class', function () {
             expect($method->isProtected())->toBeTrue();
         });
     });
+
+    describe('Rendering', function () {
+        it('parses a template into HTML', function () {
+            $layout = $this->createLayout([
+                'content_html' => '<html><body>{{ content_html|raw }}</body></html>',
+            ]);
+            $template = $this->createTemplate([
+                'content_html' => '<p>Hello {{ name }}</p>',
+                'layout_id' => $layout->id,
+            ]);
+
+            $html = app('dynamicpdf')->parseTemplate($template, ['name' => 'World']);
+
+            expect($html)->toContain('Hello World');
+        });
+
+        it('parses a template with null content_html', function () {
+            $template = $this->createTemplate();
+            $template->content_html = null;
+
+            expect(app('dynamicpdf')->parseTemplate($template))->toBe('');
+        });
+
+        it('parses a layout with null content_html', function () {
+            $layout = $this->createLayout();
+            $layout->content_html = null;
+
+            expect(app('dynamicpdf')->parseLayout($layout))->toBe('');
+        });
+    });
 });

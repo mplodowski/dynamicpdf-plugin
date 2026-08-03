@@ -41,6 +41,10 @@ class Layout extends Model
 
     public function getCSS(): string
     {
+        if (! $this->content_css) {
+            return '';
+        }
+
         $parser = new Less_Parser;
 
         return $parser->parse($this->content_css)->getCss();

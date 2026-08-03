@@ -111,8 +111,12 @@ class PDFWrapper extends PDF
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function parseMarkup(string $markup, array $data): string
+    protected function parseMarkup(?string $markup, array $data): string
     {
+        if ($markup === null || $markup === '') {
+            return '';
+        }
+
         try {
             $twig = (new Controller)->getTwig();
             $template = $twig->createTemplate($markup);
