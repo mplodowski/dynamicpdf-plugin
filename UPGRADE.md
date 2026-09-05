@@ -1,5 +1,7 @@
 # Upgrade guide
 
+Versions not listed here need no action. Back up the database before upgrading.
+
 ## Upgrading To 1.1.0
 
 Plugin requires October build 300+.
