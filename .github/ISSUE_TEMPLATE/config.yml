@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Plugin page on the October CMS marketplace
+    url: https://octobercms.com/plugin/renatio-dynamicpdf
+    about: Documentation, changelog and purchase.

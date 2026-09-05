@@ -1,8 +1,8 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Something does not work as described in the README
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
@@ -10,24 +10,22 @@ assignees: ''
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**To Reproduce**
+**To reproduce**
 Steps to reproduce the behavior:
 1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+2. Click on '...'
+3. See error
 
 **Expected behavior**
-A clear and concise description of what you expected to happen.
+What you expected to happen instead.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Environment**
+- Plugin version (from the marketplace or `updates/version.yaml`):
+- October CMS version:
+- PHP version:
 
-**October version**
-Add October version here.
+**Logs**
+Relevant lines from `storage/logs/system.log` or the browser console, if any. Remove secrets before pasting.
 
-**Plugin version**
-Add plugin version here.
-
-**Additional context**
-Add any other context about the problem here.
+**Screenshots and additional context**
+Add screenshots or anything else that helps explain the problem.
