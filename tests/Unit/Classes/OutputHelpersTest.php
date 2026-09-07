@@ -29,6 +29,16 @@ describe('Output helpers', function () {
             ->and(file_get_contents($stored[0]->getPathname()))->toStartWith('%PDF');
     });
 
+    it('stores a protected file where a protected relation expects it', function () {
+        $wrapper = app('dynamicpdf');
+        $wrapper->loadHTML('<p>Hello</p>');
+
+        $file = $wrapper->toFile('hello.pdf', public: false);
+
+        expect($file->getAttribute('is_public'))->toBeFalsy()
+            ->and(File::allFiles($this->uploads . '/protected'))->toHaveCount(1);
+    });
+
     it('encrypts the document and stays chainable', function () {
         $wrapper = app('dynamicpdf');
         $wrapper->loadHTML('<p>Secret</p>');

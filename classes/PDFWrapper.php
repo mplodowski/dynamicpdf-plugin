@@ -136,18 +136,25 @@ class PDFWrapper extends PDF
     }
 
     /**
-     * The rendered document as a file record ready to be attached to a model.
+     * The rendered document as a file record ready to be attached to a model. The bytes are
+     * written to the uploads disk right away, so attach and save the record or delete it.
+     * $public must match the relation's public flag, or the row points at the wrong directory.
      */
-    public function toFile(string $filename = 'document.pdf'): File
+    public function toFile(string $filename = 'document.pdf', bool $public = true): File
     {
         $file = new File;
+        $file->setAttribute('is_public', $public);
         $file->fromData($this->output(), $filename);
 
         return $file;
     }
 
     /**
-     * @param  array<int, string>  $permissions  dompdf permission names, for example ['print']
+     * Renders the document, so call it last, right before output(), stream(), download(),
+     * save() or toFile(); a later loadHTML() or setPaper() rebuilds the canvas unencrypted.
+     * Permissions are opt-in: print, modify, copy, add.
+     *
+     * @param  array<int, string>  $permissions
      */
     public function encrypt(string $password, string $ownerPassword = '', array $permissions = []): self
     {

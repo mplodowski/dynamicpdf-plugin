@@ -299,7 +299,7 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 | setPaper($paper, $orientation = 'portrait')             | Set the paper size and orientation (default A4/portrait) |
 | setWarnings($warnings)                                  | Show or hide warnings                                    |
 | output()                                                | Output the PDF as a string                               |
-| toFile($filename = 'document.pdf')                      | Return the PDF as a System\Models\File to attach to a model |
+| toFile($filename = 'document.pdf', $public = true)      | Return the PDF as a System\Models\File to attach to a model |
 | encrypt($password, $ownerPassword = '', $permissions = []) | Password-protect the PDF (CPDF backend)               |
 | addInfo(array $info)                                    | Set PDF metadata such as Title or Author                 |
 | save($filename, $disk = null)                           | Save the PDF to a file, optionally on a storage disk     |
@@ -404,9 +404,13 @@ the file object to retrieve it.
 `attachOne` / `attachMany` relations instead of being written to disk by hand:
 
 ```
-$order->invoice = PDF::loadTemplate('renatio::invoice', ['order' => $order])->toFile('invoice.pdf');
+$order->invoice = PDF::loadTemplate('renatio::invoice', ['order' => $order])->toFile('invoice.pdf', public: false);
 $order->save();
 ```
+
+Pass `public: false` for a relation declared with `'public' => false`, otherwise the record points at the wrong
+directory. The file is written to the uploads disk as soon as `toFile()` returns, so attach and save it, or call
+`$file->delete()` when you abandon it.
 
 ### Save to a storage disk and set metadata
 
@@ -421,6 +425,9 @@ PDF::loadTemplate('renatio::invoice')
 ```
 return PDF::loadTemplate('renatio::invoice')->encrypt('reader-password', 'owner-password', ['print'])->stream();
 ```
+
+`encrypt()` renders the document, so call it last, right before the output method. Permissions are opt-in: without
+`['print', 'copy', ...]` the reader cannot print or copy. Requires the CPDF backend.
 
 ### Download PDF via Ajax response
 
