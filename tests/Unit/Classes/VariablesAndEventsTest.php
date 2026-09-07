@@ -36,6 +36,22 @@ describe('Global variables and events', function () {
         expect(app('dynamicpdf')->parseTemplate($template))->toBe('<p>COPY</p><!-- audited -->');
     });
 
+    it('keeps plugin registrations when a variable was registered before the plugins were read', function () {
+        PDFManager::instance()->registerVariables(['company' => 'Acme']);
+
+        expect(PDFManager::instance()->listRegisteredVariables())->toHaveKey('company')
+            ->and(PDFManager::instance()->listRegisteredTemplates())->toBeArray();
+    });
+
+    it('ignores reserved names coming from variables and listeners', function () {
+        PDFManager::instance()->registerVariables(['content_html' => 'hijacked', 'css' => 'hijacked']);
+        Event::listen(Events::BEFORE_RENDER, fn (): array => ['content_html' => 'hijacked']);
+        $layout = $this->createLayout(['content_html' => '<html><body>{{ content_html|raw }}</body></html>']);
+        $template = $this->createTemplate(['content_html' => '<p>real</p>', 'layout_id' => $layout->id]);
+
+        expect(app('dynamicpdf')->parseTemplate($template))->toBe('<html><body><p>real</p></body></html>');
+    });
+
     it('fires the events for a layout loaded on its own', function () {
         Event::listen(Events::BEFORE_RENDER, fn (): array => ['stamp' => 'LAYOUT']);
         $this->createLayout(['code' => 'acme::pdf.layouts.stamp', 'content_html' => '<html><body>{{ stamp }}</body></html>']);

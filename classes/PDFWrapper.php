@@ -225,7 +225,7 @@ class PDFWrapper extends PDF
         $data = $this->withLocaleVariable($data, $locale);
 
         $this->loadHTML(
-            $this->inLocale($locale, fn (): string => $this->renderWithEvents($layout, $data, fn (array $data): string => $this->parseLayout($layout, $data))),
+            $this->inLocale($locale, fn (): string => $this->parseLayout($layout, $data)),
             $encoding,
         );
 
@@ -244,7 +244,7 @@ class PDFWrapper extends PDF
                 return $html;
             }
 
-            return $this->parseLayout(
+            return $this->renderLayout(
                 $template->layout,
                 array_merge(['content_html' => $html], $data),
             );
@@ -252,19 +252,26 @@ class PDFWrapper extends PDF
     }
 
     /**
+     * Keys the wrapper sets itself; a registered variable or listener cannot take them over.
+     */
+    public const RESERVED_VARIABLES = ['content_html', 'css', 'background_img', 'locale'];
+
+    /**
      * Registered variables sit under the render data, a beforeRender listener may return
      * data to merge on top, and an afterRender listener may return the HTML to use instead.
+     * Fires once per document: parseTemplate() renders the layout without going through
+     * parseLayout(), which fires for a layout rendered on its own.
      *
      * @param  array<string, mixed>  $data
      * @param  callable(array<string, mixed>): string  $render
      */
     protected function renderWithEvents(Template|Layout $model, array $data, callable $render): string
     {
-        $data = array_merge($this->registeredVariables(), $data);
+        $data = array_merge($this->withoutReserved($this->registeredVariables()), $data);
 
         foreach (Event::fire(Events::BEFORE_RENDER, [$this, $model, $data]) ?? [] as $extra) {
             if (is_array($extra)) {
-                $data = array_merge($data, $extra);
+                $data = array_merge($data, $this->withoutReserved($extra));
             }
         }
 
@@ -277,6 +284,15 @@ class PDFWrapper extends PDF
         }
 
         return $html;
+    }
+
+    /**
+     * @param  array<string, mixed>  $variables
+     * @return array<string, mixed>
+     */
+    protected function withoutReserved(array $variables): array
+    {
+        return array_diff_key($variables, array_flip(self::RESERVED_VARIABLES));
     }
 
     /**
@@ -294,6 +310,14 @@ class PDFWrapper extends PDF
      * @param  array<string, mixed>  $data
      */
     public function parseLayout(Layout $layout, array $data = []): string
+    {
+        return $this->renderWithEvents($layout, $data, fn (array $data): string => $this->renderLayout($layout, $data));
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    protected function renderLayout(Layout $layout, array $data): string
     {
         return $this->parseMarkup(
             $layout->content_html,

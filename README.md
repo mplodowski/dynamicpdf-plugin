@@ -243,7 +243,9 @@ public function registerPDFVariables()
 }
 ```
 
-Data passed to `loadTemplate()`, `loadLayout()` or `parseTemplate()` takes precedence over a registered variable.
+Data passed to `loadTemplate()`, `loadLayout()` or `parseTemplate()` takes precedence over a registered variable. The
+names `content_html`, `css`, `background_img` and `locale` are reserved for the wrapper and ignored when registered.
+Every closure is resolved on every render, whether or not the template uses it, so keep them cheap.
 
 ## Events
 
@@ -258,7 +260,10 @@ Event::listen('renatio.dynamicpdf.beforeRender', function ($pdf, $model, array $
 });
 ```
 
-Both events fire once per document: for a template together with its layout, or for a layout loaded on its own.
+Both events fire once per document: for a template together with its layout (`loadTemplate()`, `parseTemplate()`),
+or for a layout rendered on its own (`loadLayout()`, `parseLayout()`). They also fire for the backend HTML and PDF
+preview, so keep side effects such as counters or audit entries out of the listeners or check `$pdf` for the preview
+context yourself. A listener that returns `false` stops the remaining listeners, as with every October event.
 
 ## Usage
 
