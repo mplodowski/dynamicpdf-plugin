@@ -8,6 +8,7 @@ use Exception;
 use October\Rain\Support\Facades\Twig;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use UnexpectedValueException;
 
 /**
  * @method self setDpi(int $dpi)
@@ -31,9 +32,11 @@ class PDFWrapper extends PDF
 
         $options = $this->dompdf->getOptions();
 
-        if (method_exists($options, $method)) {
-            $options->$method(...$parameters);
+        if (! method_exists($options, $method)) {
+            throw new UnexpectedValueException("Method [{$method}] does not exist on PDF instance.");
         }
+
+        $options->$method(...$parameters);
 
         return $this;
     }

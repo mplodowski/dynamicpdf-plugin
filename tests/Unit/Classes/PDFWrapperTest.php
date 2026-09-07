@@ -1,6 +1,17 @@
 <?php
 
 describe('PDFWrapper', function () {
+    it('forwards option setters to dompdf', function () {
+        $wrapper = app('dynamicpdf');
+
+        expect($wrapper->setDpi(300))->toBe($wrapper)
+            ->and($wrapper->getDomPDF()->getOptions()->getDpi())->toBe(300);
+    });
+
+    it('throws on an unknown method instead of ignoring it', function () {
+        expect(fn () => app('dynamicpdf')->setDPI(300))->toThrow(UnexpectedValueException::class);
+    });
+
     it('renders a template inside its layout with Twig data', function () {
         $layout = $this->createLayout([
             'content_html' => '<html><body>{{ content_html|raw }}</body></html>',
