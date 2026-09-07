@@ -38,8 +38,8 @@ class Check extends Command
 
         $this->remote(config('dompdf.options.enable_remote'), config('dompdf.options.allowed_remote_hosts'));
 
-        $this->views('Registered layouts', PDFManager::instance()->listRegisteredLayouts() ?? []);
-        $this->views('Registered templates', PDFManager::instance()->listRegisteredTemplates() ?? []);
+        $this->views('Registered layouts', PDFManager::instance()->listRegisteredLayouts());
+        $this->views('Registered templates', PDFManager::instance()->listRegisteredTemplates());
 
         $this->newLine();
 

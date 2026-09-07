@@ -68,7 +68,7 @@ class Layout extends Model
             return $layout;
         }
 
-        if (! array_key_exists($code, PDFManager::instance()->listRegisteredLayouts() ?? [])) {
+        if (! array_key_exists($code, PDFManager::instance()->listRegisteredLayouts())) {
             throw (new ModelNotFoundException)->setModel(static::class, [$code]);
         }
 

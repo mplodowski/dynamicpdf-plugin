@@ -3,6 +3,7 @@
 namespace Renatio\DynamicPDF\Classes;
 
 use Barryvdh\DomPDF\PDF;
+use Closure;
 use Cms\Classes\Controller;
 use Cms\Classes\Theme;
 use Dompdf\Dompdf;
@@ -10,6 +11,7 @@ use Exception;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Renatio\DynamicPDF\Models\Layout;
@@ -235,15 +237,72 @@ class PDFWrapper extends PDF
      */
     public function parseTemplate(Template $template, array $data = []): string
     {
-        $html = $this->parseMarkup($template->content_html, $data);
+        return $this->renderWithEvents($template, $data, function (array $data) use ($template): string {
+            $html = $this->parseMarkup($template->content_html, $data);
 
-        if (! $template->layout) {
-            return $html;
+            if (! $template->layout) {
+                return $html;
+            }
+
+            return $this->renderLayout(
+                $template->layout,
+                array_merge(['content_html' => $html], $data),
+            );
+        });
+    }
+
+    /**
+     * Keys the wrapper sets itself; a registered variable or listener cannot take them over.
+     */
+    public const RESERVED_VARIABLES = ['content_html', 'css', 'background_img', 'locale'];
+
+    /**
+     * Registered variables sit under the render data, a beforeRender listener may return
+     * data to merge on top, and an afterRender listener may return the HTML to use instead.
+     * Fires once per document: parseTemplate() renders the layout without going through
+     * parseLayout(), which fires for a layout rendered on its own.
+     *
+     * @param  array<string, mixed>  $data
+     * @param  callable(array<string, mixed>): string  $render
+     */
+    protected function renderWithEvents(Template|Layout $model, array $data, callable $render): string
+    {
+        $data = array_merge($this->withoutReserved($this->registeredVariables()), $data);
+
+        foreach (Event::fire(Events::BEFORE_RENDER, [$this, $model, $data]) ?? [] as $extra) {
+            if (is_array($extra)) {
+                $data = array_merge($data, $this->withoutReserved($extra));
+            }
         }
 
-        return $this->parseLayout(
-            $template->layout,
-            array_merge(['content_html' => $html], $data),
+        $html = $render($data);
+
+        foreach (Event::fire(Events::AFTER_RENDER, [$this, $model, $html]) ?? [] as $replacement) {
+            if (is_string($replacement)) {
+                $html = $replacement;
+            }
+        }
+
+        return $html;
+    }
+
+    /**
+     * @param  array<string, mixed>  $variables
+     * @return array<string, mixed>
+     */
+    protected function withoutReserved(array $variables): array
+    {
+        return array_diff_key($variables, array_flip(self::RESERVED_VARIABLES));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function registeredVariables(): array
+    {
+        return array_map(
+            fn (mixed $value): mixed => $value instanceof Closure ? $value() : $value,
+            PDFManager::instance()->listRegisteredVariables(),
         );
     }
 
@@ -251,6 +310,14 @@ class PDFWrapper extends PDF
      * @param  array<string, mixed>  $data
      */
     public function parseLayout(Layout $layout, array $data = []): string
+    {
+        return $this->renderWithEvents($layout, $data, fn (array $data): string => $this->renderLayout($layout, $data));
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    protected function renderLayout(Layout $layout, array $data): string
     {
         return $this->parseMarkup(
             $layout->content_html,

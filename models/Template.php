@@ -162,7 +162,7 @@ class Template extends Model
             return $template;
         }
 
-        if (! array_key_exists($code, PDFManager::instance()->listRegisteredTemplates() ?? [])) {
+        if (! array_key_exists($code, PDFManager::instance()->listRegisteredTemplates())) {
             throw (new ModelNotFoundException)->setModel(static::class, [$code]);
         }
 
