@@ -68,4 +68,5 @@ v8.0.4:
     - Synchronise registered views only in the backend and the demo command, and log a code whose view is missing instead of stopping the whole sync.
     - Add the layout argument to loadTemplate() to render with another layout without changing the template.
     - Add the locale argument to loadTemplate() and loadLayout() to render in another language and restore the previous one.
+    - Add pageNumbers() to stamp page numbers without inline PHP.
     - Render through the system Twig environment when the Cms module is missing or no theme is usable, and report CMS rendering errors instead of retrying with the system one.
