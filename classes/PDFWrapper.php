@@ -72,10 +72,15 @@ class PDFWrapper extends PDF
 
     /**
      * @param  array<string, mixed>  $data
+     * @param  string|null  $layout  code of a layout to render with instead of the stored one
      */
-    public function loadTemplate(string $code, array $data = [], ?string $encoding = null): self
+    public function loadTemplate(string $code, array $data = [], ?string $encoding = null, ?string $layout = null): self
     {
         $template = Template::byCode($code);
+
+        if ($layout !== null) {
+            $template->setAttribute('layout', Layout::byCode($layout));
+        }
 
         $this->loadHTML(
             $this->parseTemplate($template, $data),
