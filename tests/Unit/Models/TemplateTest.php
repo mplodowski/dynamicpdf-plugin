@@ -15,6 +15,12 @@ describe('Template', function () {
             ->toThrow(ModelNotFoundException::class);
     });
 
+    it('survives a fetch without the code column', function () {
+        $this->createTemplate(['code' => 'partial::pdf.select', 'is_custom' => false]);
+
+        expect(Template::whereCode('partial::pdf.select')->value('is_custom'))->toBeFalsy();
+    });
+
     it('belongs to a layout', function () {
         $layout = $this->createLayout();
         $template = $this->createTemplate(['layout_id' => $layout->id]);

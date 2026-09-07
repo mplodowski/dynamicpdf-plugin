@@ -44,7 +44,7 @@ class Template extends Model
 
     public function afterFetch(): void
     {
-        if (! $this->is_custom) {
+        if (! $this->is_custom && $this->code) {
             $this->fillFromView($this->code);
         }
     }

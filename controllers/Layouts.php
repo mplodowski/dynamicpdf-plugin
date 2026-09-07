@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use October\Rain\Exception\ApplicationException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
+use Renatio\DynamicPDF\Classes\SyncTemplates;
 use System\Classes\SettingsManager;
 
 class Layouts extends Controller
@@ -31,6 +32,8 @@ class Layouts extends Controller
 
         BackendMenu::setContext('October.System', 'system', 'settings');
         SettingsManager::setContext('Renatio.DynamicPDF', 'templates');
+
+        (new SyncTemplates)->handle();
     }
 
     public function previewPdf(int|string $id): ?Response
