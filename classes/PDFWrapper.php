@@ -4,7 +4,11 @@ namespace Renatio\DynamicPDF\Classes;
 
 use Barryvdh\DomPDF\PDF;
 use Cms\Classes\Controller;
+use Dompdf\Dompdf;
 use Exception;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\View\Factory as ViewFactory;
+use Illuminate\Filesystem\Filesystem;
 use October\Rain\Support\Facades\Twig;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
@@ -20,6 +24,25 @@ use UnexpectedValueException;
  */
 class PDFWrapper extends PDF
 {
+    public function __construct(Dompdf $dompdf, ConfigRepository $config, Filesystem $files, ViewFactory $view)
+    {
+        parent::__construct($dompdf, $config, $files, $view);
+
+        $this->applyCertificatePolicy();
+    }
+
+    /**
+     * @param  array<string, mixed>  $options
+     */
+    public function setOptions(array $options, bool $mergeWithDefaults = false): self
+    {
+        parent::setOptions($options, $mergeWithDefaults);
+
+        $this->applyCertificatePolicy();
+
+        return $this;
+    }
+
     public function __call($method, $parameters)
     {
         if (method_exists($this, $method)) {
@@ -59,8 +82,6 @@ class PDFWrapper extends PDF
             $this->setPaper($template->size, $template->orientation ?? 'portrait');
         }
 
-        $this->allowSelfSignedCertificates();
-
         return $this;
     }
 
@@ -73,8 +94,6 @@ class PDFWrapper extends PDF
             $this->parseLayout(Layout::byCode($code), $data),
             $encoding,
         );
-
-        $this->allowSelfSignedCertificates();
 
         return $this;
     }
@@ -171,12 +190,8 @@ class PDFWrapper extends PDF
         )));
     }
 
-    protected function allowSelfSignedCertificates(): void
+    public function allowSelfSignedCertificates(): self
     {
-        if (app()->environment('production')) {
-            return;
-        }
-
         $current = $this->dompdf->getHttpContext();
 
         $context = stream_context_create(array_merge_recursive(
@@ -191,5 +206,14 @@ class PDFWrapper extends PDF
         ));
 
         $this->dompdf->setHttpContext($context);
+
+        return $this;
+    }
+
+    protected function applyCertificatePolicy(): void
+    {
+        if (config('renatio.dynamicpdf.allow_self_signed_certificates')) {
+            $this->allowSelfSignedCertificates();
+        }
     }
 }
