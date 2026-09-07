@@ -34,15 +34,17 @@ return [
         'menu_label' => 'Szablon',
         'create_template' => 'Utwórz szablon',
         'edit_template' => 'Edycja szablonu',
+        'not_found' => 'Nie znaleziono zarejestrowanego szablonu o kodzie',
     ],
     'layouts' => [
-        'label' => 'Układu',
+        'label' => 'Układy',
         'return' => 'Powrót do listy układów',
     ],
     'layout' => [
         'menu_label' => 'Układ',
         'create_layout' => 'Utwórz układ',
         'edit_layout' => 'Edycja układu',
+        'not_found' => 'Nie znaleziono zarejestrowanego układu o kodzie',
     ],
     'settings' => [
         'description' => 'Zarządzaj szablonami i układami.',
@@ -66,5 +68,9 @@ return [
     ],
     'tab' => [
         'options' => 'Opcje',
+    ],
+    'demo' => [
+        'enabled' => 'Demo włączone. Odśwież listę szablonów PDF.',
+        'disabled' => 'Demo wyłączone. Odśwież listę szablonów PDF.',
     ],
 ];

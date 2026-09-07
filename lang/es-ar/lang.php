@@ -22,15 +22,19 @@ return [
         'templates' => 'Plantillas',
         'layouts' => 'Diseños',
         'background_img' => 'Imagen de fondo',
+        'preview_html' => 'Vista previa HTML',
         'preview_pdf' => 'Previsualizar',
         'created_at' => 'Creado en',
         'updated_at' => 'Modificado en',
         'background_img_comment' => 'Utilize una imagen de 96 DPI para una correcta visualización',
+        'size' => 'Tamaño de papel',
+        'orientation' => 'Orientación del papel',
     ],
     'template' => [
         'menu_label' => 'Plantilla PDF',
         'create_template' => 'Crear Plantilla PDF',
         'edit_template' => 'Editar Plantilla PDF',
+        'not_found' => 'No se encontró una plantilla registrada con el código',
     ],
     'layouts' => [
         'label' => 'Diseños PDF',
@@ -40,15 +44,33 @@ return [
         'menu_label' => 'Diseño PDF',
         'create_layout' => 'Crear Diseño PDF',
         'edit_layout' => 'Editar Diseño PDF',
+        'not_found' => 'No se encontró un diseño registrado con el código',
     ],
     'settings' => [
         'description' => 'Administrar plantillas y diseños PDF.',
     ],
     'permissions' => [
-        'label' => 'Administrar plantillas PDF',
+        'manage_templates' => 'Gestionar plantillas',
+        'manage_layouts' => 'Gestionar diseños',
         'tab' => 'PDF',
     ],
     'menu' => [
         'label' => 'PDF',
+        'category' => 'PDF',
+        'description' => 'Modificar las plantillas PDF y gestionar los diseños PDF.',
+    ],
+    'orientation' => [
+        'portrait' => 'Vertical',
+        'landscape' => 'Horizontal',
+    ],
+    'options' => [
+        'empty' => '-- elegir --',
+    ],
+    'tab' => [
+        'options' => 'Opciones',
+    ],
+    'demo' => [
+        'enabled' => 'La demo está activada. Actualice la lista de plantillas PDF.',
+        'disabled' => 'La demo está desactivada. Actualice la lista de plantillas PDF.',
     ],
 ];

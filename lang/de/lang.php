@@ -27,11 +27,14 @@ return [
         'created_at' => 'Erstellt am',
         'updated_at' => 'Aktualisiert am',
         'background_img_comment' => 'Bilder mit 96 DPI eignen sich am Besten',
+        'size' => 'Papierformat',
+        'orientation' => 'Ausrichtung',
     ],
     'template' => [
         'menu_label' => 'Vorlagen',
         'create_template' => 'Erstelle Vorlage',
         'edit_template' => 'Bearbeite Vorlage',
+        'not_found' => 'Keine registrierte Vorlage mit dem Code gefunden',
     ],
     'layouts' => [
         'label' => 'Layouts',
@@ -41,6 +44,7 @@ return [
         'menu_label' => 'Layout',
         'create_layout' => 'Erstelle Layout',
         'edit_layout' => 'Bearbeite Layout',
+        'not_found' => 'Kein registriertes Layout mit dem Code gefunden',
     ],
     'settings' => [
         'description' => 'Verwaltung von Vorlagen und Layouts.',
@@ -52,5 +56,21 @@ return [
     ],
     'menu' => [
         'label' => 'PDF',
+        'category' => 'PDF',
+        'description' => 'PDF-Vorlagen bearbeiten und PDF-Layouts verwalten.',
+    ],
+    'orientation' => [
+        'portrait' => 'Hochformat',
+        'landscape' => 'Querformat',
+    ],
+    'options' => [
+        'empty' => '-- auswählen --',
+    ],
+    'tab' => [
+        'options' => 'Optionen',
+    ],
+    'demo' => [
+        'enabled' => 'Demo ist aktiviert. Bitte die Liste der PDF-Vorlagen aktualisieren.',
+        'disabled' => 'Demo ist deaktiviert. Bitte die Liste der PDF-Vorlagen aktualisieren.',
     ],
 ];
