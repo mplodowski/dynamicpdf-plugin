@@ -64,3 +64,4 @@ v8.0.4:
     - Render templates and layouts with empty content instead of failing.
     - Throw on unknown wrapper methods instead of ignoring them.
     - Render a registered template or layout from its view when it is not stored yet.
+    - Render through the system Twig environment when the Cms module is missing or no theme is usable, and report CMS rendering errors instead of retrying with the system one.
