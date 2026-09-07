@@ -12,6 +12,7 @@ use October\Tests\Concerns\PerformsMigrations;
 use October\Tests\Concerns\PerformsRegistrations;
 use PDO;
 use ReflectionClass;
+use Renatio\DynamicPDF\Models\Template;
 use TestCase;
 use Throwable;
 
@@ -61,6 +62,7 @@ abstract class OctoberPestTestCase extends TestCase
 
         $this->rollbackDatabaseTransaction();
         $this->flushModelEventListeners();
+        Template::flushLayoutCache();
     }
 
     protected function usingInMemoryDatabase(): bool

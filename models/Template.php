@@ -90,17 +90,33 @@ class Template extends Model
         $this->content_html = array_get($sections, 'html');
     }
 
+    /** @var array<string, Layout|null> */
+    protected static array $layoutsByCode = [];
+
+    /**
+     * Every view-driven row of a list re-reads its layout, so the lookup is remembered
+     * per code for the process and forgotten whenever a layout is saved or deleted.
+     */
     protected function resolveLayout(?string $code): ?Layout
     {
         if (! $code) {
             return null;
         }
 
-        try {
-            return Layout::byCode($code);
-        } catch (ModelNotFoundException) {
-            return null;
+        if (array_key_exists($code, self::$layoutsByCode)) {
+            return self::$layoutsByCode[$code];
         }
+
+        try {
+            return self::$layoutsByCode[$code] = Layout::byCode($code);
+        } catch (ModelNotFoundException) {
+            return self::$layoutsByCode[$code] = null;
+        }
+    }
+
+    public static function flushLayoutCache(): void
+    {
+        self::$layoutsByCode = [];
     }
 
     public function getHtmlAttribute(): string
