@@ -59,7 +59,6 @@ class SyncTemplates
             }
 
             $layout = new Layout;
-            $layout->code = $code;
             $layout->is_locked = true;
             $layout->fillFromView($code);
             $layout->save();

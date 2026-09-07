@@ -3,6 +3,7 @@
 namespace Renatio\DynamicPDF\Models;
 
 use Dompdf\Adapter\CPDF;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Exception\ApplicationException;
@@ -65,11 +66,24 @@ class Template extends Model
 
         $this->title = array_get($sections, 'settings.title', '???');
         $this->code = $path;
-        $this->setAttribute('layout', Layout::whereCode(array_get($sections, 'settings.layout'))->first());
+        $this->setAttribute('layout', $this->resolveLayout(array_get($sections, 'settings.layout')));
         $this->size = array_get($sections, 'settings.size');
         $this->orientation = array_get($sections, 'settings.orientation');
         $this->description = array_get($sections, 'settings.description');
         $this->content_html = array_get($sections, 'html');
+    }
+
+    protected function resolveLayout(?string $code): ?Layout
+    {
+        if (! $code) {
+            return null;
+        }
+
+        try {
+            return Layout::byCode($code);
+        } catch (ModelNotFoundException) {
+            return null;
+        }
     }
 
     public function getHtmlAttribute(): string
@@ -77,9 +91,26 @@ class Template extends Model
         return PDF::loadTemplate($this->code)->getDompdf()->output_html();
     }
 
+    /**
+     * A registered view that is not stored yet (for example before the first backend
+     * request synchronised it) renders straight from the file.
+     */
     public static function byCode(string $code): self
     {
-        return static::whereCode($code)->firstOrFail();
+        $template = static::whereCode($code)->first();
+
+        if ($template instanceof static) {
+            return $template;
+        }
+
+        if (! array_key_exists($code, PDFManager::instance()->listRegisteredTemplates() ?? [])) {
+            throw (new ModelNotFoundException)->setModel(static::class, [$code]);
+        }
+
+        $template = new self;
+        $template->fillFromView($code);
+
+        return $template;
     }
 
     /**

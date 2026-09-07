@@ -2,6 +2,7 @@
 
 namespace Renatio\DynamicPDF\Models;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Less_Parser;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
@@ -46,7 +47,20 @@ class Layout extends Model
 
     public static function byCode(string $code): self
     {
-        return static::whereCode($code)->firstOrFail();
+        $layout = static::whereCode($code)->first();
+
+        if ($layout instanceof static) {
+            return $layout;
+        }
+
+        if (! array_key_exists($code, PDFManager::instance()->listRegisteredLayouts() ?? [])) {
+            throw (new ModelNotFoundException)->setModel(static::class, [$code]);
+        }
+
+        $layout = new self;
+        $layout->fillFromView($code);
+
+        return $layout;
     }
 
     public function getCSS(): string
@@ -73,6 +87,7 @@ class Layout extends Model
     {
         $sections = PDFParser::sections($path);
 
+        $this->code = $path;
         $this->name = array_get($sections, 'settings.name', '???');
         $this->content_css = array_get($sections, 'css');
         $this->content_html = array_get($sections, 'html');
