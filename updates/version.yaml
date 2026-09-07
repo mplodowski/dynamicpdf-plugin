@@ -57,5 +57,6 @@ v8.0.2: Update dependencies.
 v8.0.3: Refactor to use pluck() function.
 v8.0.4:
     - Security fix. Disable inline PHP in backend preview.
+    - Security fix. Sandbox the HTML preview so template scripts cannot run in the backend session.
     - Require PHP 8.2 and October CMS 4.0.
     - Render templates and layouts with empty content instead of failing.
