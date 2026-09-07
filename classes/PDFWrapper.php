@@ -16,6 +16,7 @@ use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SiteManager;
 use System\Facades\System;
+use System\Models\File;
 use System\Models\SiteDefinition;
 use Twig\Environment;
 use UnexpectedValueException;
@@ -132,6 +133,27 @@ class PDFWrapper extends PDF
         $y = $vertical === 'top' ? $numbers['margin'] : $canvas->get_height() - $numbers['margin'] - $height;
 
         $canvas->page_text($x, $y, $numbers['text'], $font, $numbers['size'], $numbers['color']);
+    }
+
+    /**
+     * The rendered document as a file record ready to be attached to a model.
+     */
+    public function toFile(string $filename = 'document.pdf'): File
+    {
+        $file = new File;
+        $file->fromData($this->output(), $filename);
+
+        return $file;
+    }
+
+    /**
+     * @param  array<int, string>  $permissions  dompdf permission names, for example ['print']
+     */
+    public function encrypt(string $password, string $ownerPassword = '', array $permissions = []): self
+    {
+        $this->setEncryption($password, $ownerPassword, $permissions);
+
+        return $this;
     }
 
     public function __call($method, $parameters)
