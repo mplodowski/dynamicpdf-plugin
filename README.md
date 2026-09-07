@@ -228,6 +228,38 @@ active, so theme partials and content blocks are available. Otherwise, for examp
 that loads only the System and Backend modules, the system Twig environment is used. Filters and functions registered
 by plugins through `registerMarkupTags` work in both.
 
+## Global variables
+
+Variables every template and layout should receive, such as company details or a logo URL, are registered in the
+plugin registration class. A closure value is resolved when the document is rendered:
+
+```
+public function registerPDFVariables()
+{
+    return [
+        'company' => 'Acme Ltd',
+        'vat_rate' => fn () => Settings::get('vat_rate'),
+    ];
+}
+```
+
+Data passed to `loadTemplate()`, `loadLayout()` or `parseTemplate()` takes precedence over a registered variable.
+
+## Events
+
+| Event                              | Payload                                       | Return value                              |
+|------------------------------------|-----------------------------------------------|-------------------------------------------|
+| `renatio.dynamicpdf.beforeRender`  | `PDFWrapper $pdf`, `Template\|Layout $model`, `array $data` | an array merged on top of the render data |
+| `renatio.dynamicpdf.afterRender`   | `PDFWrapper $pdf`, `Template\|Layout $model`, `string $html` | a string replacing the rendered HTML      |
+
+```
+Event::listen('renatio.dynamicpdf.beforeRender', function ($pdf, $model, array $data) {
+    return ['watermark' => $data['order']->isDraft() ? 'DRAFT' : null];
+});
+```
+
+Both events fire once per document: for a template together with its layout, or for a layout loaded on its own.
+
 ## Usage
 
 PDF templates and layouts can be accessed in the back-end area via *Settings > PDF > PDF Templates*.

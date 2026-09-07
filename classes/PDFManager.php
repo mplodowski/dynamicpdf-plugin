@@ -16,6 +16,9 @@ class PDFManager
     /** @var array<string, string>|null */
     protected ?array $registeredLayouts = null;
 
+    /** @var array<string, mixed>|null */
+    protected ?array $registeredVariables = null;
+
     public function loadRegisteredTemplates(): void
     {
         $plugins = PluginManager::instance()->getPlugins();
@@ -40,7 +43,37 @@ class PDFManager
                     $this->registerTemplates($templates);
                 }
             }
+
+            if (method_exists($plugin, 'registerPDFVariables')) {
+                $variables = $plugin->registerPDFVariables();
+
+                if (is_array($variables)) {
+                    $this->registerVariables($variables);
+                }
+            }
         }
+    }
+
+    /**
+     * Variables every template and layout receives. A closure value is resolved at render time.
+     *
+     * @return array<string, mixed>
+     */
+    public function listRegisteredVariables(): array
+    {
+        if ($this->registeredVariables === null) {
+            $this->loadRegisteredTemplates();
+        }
+
+        return $this->registeredVariables ?? [];
+    }
+
+    /**
+     * @param  array<string, mixed>  $variables
+     */
+    public function registerVariables(array $variables): void
+    {
+        $this->registeredVariables = array_merge($this->registeredVariables ?? [], $variables);
     }
 
     /**

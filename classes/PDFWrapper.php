@@ -3,6 +3,7 @@
 namespace Renatio\DynamicPDF\Classes;
 
 use Barryvdh\DomPDF\PDF;
+use Closure;
 use Cms\Classes\Controller;
 use Cms\Classes\Theme;
 use Dompdf\Dompdf;
@@ -10,6 +11,7 @@ use Exception;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Renatio\DynamicPDF\Models\Layout;
@@ -223,7 +225,7 @@ class PDFWrapper extends PDF
         $data = $this->withLocaleVariable($data, $locale);
 
         $this->loadHTML(
-            $this->inLocale($locale, fn (): string => $this->parseLayout($layout, $data)),
+            $this->inLocale($locale, fn (): string => $this->renderWithEvents($layout, $data, fn (array $data): string => $this->parseLayout($layout, $data))),
             $encoding,
         );
 
@@ -235,15 +237,56 @@ class PDFWrapper extends PDF
      */
     public function parseTemplate(Template $template, array $data = []): string
     {
-        $html = $this->parseMarkup($template->content_html, $data);
+        return $this->renderWithEvents($template, $data, function (array $data) use ($template): string {
+            $html = $this->parseMarkup($template->content_html, $data);
 
-        if (! $template->layout) {
-            return $html;
+            if (! $template->layout) {
+                return $html;
+            }
+
+            return $this->parseLayout(
+                $template->layout,
+                array_merge(['content_html' => $html], $data),
+            );
+        });
+    }
+
+    /**
+     * Registered variables sit under the render data, a beforeRender listener may return
+     * data to merge on top, and an afterRender listener may return the HTML to use instead.
+     *
+     * @param  array<string, mixed>  $data
+     * @param  callable(array<string, mixed>): string  $render
+     */
+    protected function renderWithEvents(Template|Layout $model, array $data, callable $render): string
+    {
+        $data = array_merge($this->registeredVariables(), $data);
+
+        foreach (Event::fire(Events::BEFORE_RENDER, [$this, $model, $data]) ?? [] as $extra) {
+            if (is_array($extra)) {
+                $data = array_merge($data, $extra);
+            }
         }
 
-        return $this->parseLayout(
-            $template->layout,
-            array_merge(['content_html' => $html], $data),
+        $html = $render($data);
+
+        foreach (Event::fire(Events::AFTER_RENDER, [$this, $model, $html]) ?? [] as $replacement) {
+            if (is_string($replacement)) {
+                $html = $replacement;
+            }
+        }
+
+        return $html;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function registeredVariables(): array
+    {
+        return array_map(
+            fn (mixed $value): mixed => $value instanceof Closure ? $value() : $value,
+            PDFManager::instance()->listRegisteredVariables(),
         );
     }
 
