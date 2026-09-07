@@ -9,7 +9,7 @@ describe('HTML preview', function () {
 
         $response = (new Templates)->html($template->id);
 
-        expect($response->headers->get('Content-Security-Policy'))->toBe('sandbox')
+        expect($response->headers->get('Content-Security-Policy'))->toBe('sandbox allow-same-origin')
             ->and($response->getContent())->toContain('<p>Hello</p>');
     });
 
@@ -18,6 +18,6 @@ describe('HTML preview', function () {
 
         $response = (new Layouts)->html($layout->id);
 
-        expect($response->headers->get('Content-Security-Policy'))->toBe('sandbox');
+        expect($response->headers->get('Content-Security-Policy'))->toBe('sandbox allow-same-origin');
     });
 });

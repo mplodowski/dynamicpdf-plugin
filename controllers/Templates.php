@@ -78,7 +78,7 @@ class Templates extends Controller
     {
         $model = $this->formFindModelObject($id);
 
-        return response($model->html)->header('Content-Security-Policy', 'sandbox');
+        return response($model->html)->header('Content-Security-Policy', 'sandbox allow-same-origin');
     }
 
     public function update_onResetDefault(int|string $recordId): RedirectResponse
