@@ -65,5 +65,9 @@ Drop support for October CMS version 2.x.
 **Security release. Upgrade every installation running 8.0.x.** Plugin requires PHP 8.2 or higher and October CMS 4.0
 or higher.
 
+Calling an option setter that does not exist on the wrapper, dompdf or its options (a typo such as
+`setRemoteEnabled()`, or `setAdminUsername()` removed by dompdf) now throws `UnexpectedValueException` instead of being
+silently ignored.
+
 The backend HTML and PDF preview no longer enables inline PHP. If you use the demo templates, open the
 **Header and Footer** layout and click **Reset to default** to remove the page number script from the stored copy.

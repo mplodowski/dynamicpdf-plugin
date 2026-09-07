@@ -274,8 +274,6 @@ Available options and their defaults:
 * __debugLayoutPaddingBox__: true
 * __pdfBackend__: "CPDF" _(available in config/dompdf.php)_
 * __pdflibLicense__: ""
-* __adminUsername__: "user"
-* __adminPassword__: "password"
 
 See [Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php) for a list of available options.
 
