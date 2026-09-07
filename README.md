@@ -518,12 +518,16 @@ template, so call `setPaper()` when the other layout needs them changed.
 ### Render in another language
 
 The document language usually should not depend on the language of the backend user who generated it. Pass the
-locale to render in; translations, dates and the `locale` template variable follow it, and the application locale is
-restored afterwards, also when rendering fails:
+locale to render in; language file translations (`trans`, `__`), Carbon dates and the `locale` template variable
+follow it while the template is parsed, and the application locale is restored afterwards, also when parsing fails:
 
 ```
 return PDF::loadTemplate('renatio::invoice', $data, locale: 'de')->download('rechnung.pdf');
 ```
+
+The `locale` variable is always available and holds the application locale when no argument is given. RainLab.Translate
+messages (`|_`) and translated model attributes follow the site locale, not this argument, and inline PHP executed by
+dompdf during `output()` runs after the locale has been restored.
 
 ### Change paper size and orientation
 

@@ -83,8 +83,10 @@ class PDFWrapper extends PDF
             $template->setRelation('layout', Layout::byCode($layout));
         }
 
+        $data = $this->withLocaleVariable($data, $locale);
+
         $this->loadHTML(
-            $this->inLocale($locale, fn (array $data): string => $this->parseTemplate($template, $data), $data),
+            $this->inLocale($locale, fn (): string => $this->parseTemplate($template, $data)),
             $encoding,
         );
 
@@ -102,9 +104,10 @@ class PDFWrapper extends PDF
     public function loadLayout(string $code, array $data = [], ?string $encoding = null, ?string $locale = null): self
     {
         $layout = Layout::byCode($code);
+        $data = $this->withLocaleVariable($data, $locale);
 
         $this->loadHTML(
-            $this->inLocale($locale, fn (array $data): string => $this->parseLayout($layout, $data), $data),
+            $this->inLocale($locale, fn (): string => $this->parseLayout($layout, $data)),
             $encoding,
         );
 
@@ -140,23 +143,31 @@ class PDFWrapper extends PDF
     }
 
     /**
-     * Twig, the translator and Carbon all read the application locale, so it is switched
-     * for the render only and always put back, also when the render throws.
-     *
-     * @param  callable(array<string, mixed>): string  $render
      * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
      */
-    protected function inLocale(?string $locale, callable $render, array $data): string
+    protected function withLocaleVariable(array $data, ?string $locale): array
     {
-        if ($locale === null) {
-            return $render($data);
+        return array_merge(['locale' => $locale ?: app()->getLocale()], $data);
+    }
+
+    /**
+     * The translator and Carbon read the application locale, so it is switched for the
+     * parse only and always put back, also when the parse throws.
+     *
+     * @param  callable(): string  $render
+     */
+    protected function inLocale(?string $locale, callable $render): string
+    {
+        if ($locale === null || $locale === '') {
+            return $render();
         }
 
         $previous = app()->getLocale();
         app()->setLocale($locale);
 
         try {
-            return $render(array_merge(['locale' => $locale], $data));
+            return $render();
         } finally {
             app()->setLocale($previous);
         }
