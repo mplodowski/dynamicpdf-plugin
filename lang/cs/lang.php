@@ -37,6 +37,7 @@ return [
         'duplicate' => 'Duplikovat',
         'duplicating' => 'Duplikuje se...',
         'duplicate_success' => 'Kopie byla vytvořena.',
+        'copy_suffix' => '(kopie)',
     ],
     'template' => [
         'menu_label' => 'PDF Šablony',

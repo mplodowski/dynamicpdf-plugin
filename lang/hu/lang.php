@@ -37,6 +37,7 @@ return [
         'duplicate' => 'Duplikálás',
         'duplicating' => 'Duplikálás...',
         'duplicate_success' => 'A másolat létrejött.',
+        'copy_suffix' => '(másolat)',
     ],
     'template' => [
         'menu_label' => 'Sablon',

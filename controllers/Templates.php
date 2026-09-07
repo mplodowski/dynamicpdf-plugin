@@ -57,9 +57,15 @@ class Templates extends Controller
         $this->vars['activeTab'] = $tab ?: 'templates';
     }
 
+    /**
+     * Only a change to what the view file provides detaches the template from the view;
+     * editing the sample data alone keeps it view-driven.
+     */
     public function formBeforeSave(Template $model): void
     {
-        $model->is_custom = true;
+        if ($model->isDirty(['title', 'description', 'content_html', 'layout_id', 'size', 'orientation'])) {
+            $model->is_custom = true;
+        }
     }
 
     public function previewPdf(int|string $id): ?Response

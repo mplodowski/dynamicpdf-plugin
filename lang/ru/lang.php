@@ -37,6 +37,7 @@ return [
         'duplicate' => 'Дублировать',
         'duplicating' => 'Дублирование...',
         'duplicate_success' => 'Копия создана.',
+        'copy_suffix' => '(копия)',
     ],
     'template' => [
         'menu_label' => 'Шаблон',

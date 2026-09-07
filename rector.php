@@ -16,6 +16,7 @@ return RectorConfig::configure()
         __DIR__ . '/console',
         __DIR__ . '/controllers',
         __DIR__ . '/models',
+        __DIR__ . '/traits',
         __DIR__ . '/tests',
         __DIR__ . '/Plugin.php',
     ])

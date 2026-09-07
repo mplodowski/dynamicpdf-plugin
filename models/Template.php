@@ -12,6 +12,7 @@ use October\Rain\Exception\ApplicationException;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
+use Renatio\DynamicPDF\Traits\Duplicates;
 use Throwable;
 
 /**
@@ -30,6 +31,7 @@ use Throwable;
  */
 class Template extends Model
 {
+    use Duplicates;
     use Validation;
 
     public const LAYOUT_CACHE = 'renatio.dynamicpdf.layouts';
@@ -66,26 +68,14 @@ class Template extends Model
         return is_array($data) ? $data : [];
     }
 
-    public function duplicate(): self
+    protected function duplicateLabelAttribute(): string
     {
-        $copy = $this->replicate();
-        $copy->code = $this->uniqueCopyCode($this->code);
-        $copy->title = $this->title . ' (copy)';
-        $copy->is_custom = true;
-        $copy->save();
-
-        return $copy;
+        return 'title';
     }
 
-    protected function uniqueCopyCode(string $code): string
+    protected function prepareDuplicate(self $copy): void
     {
-        $candidate = $code . '_copy';
-
-        for ($i = 2; static::whereCode($candidate)->exists(); $i++) {
-            $candidate = "{$code}_copy{$i}";
-        }
-
-        return $candidate;
+        $copy->is_custom = true;
     }
 
     /**

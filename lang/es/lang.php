@@ -37,6 +37,7 @@ return [
         'duplicate' => 'Duplicar',
         'duplicating' => 'Duplicando...',
         'duplicate_success' => 'Copia creada.',
+        'copy_suffix' => '(copia)',
     ],
     'template' => [
         'menu_label' => 'Plantilla PDF',

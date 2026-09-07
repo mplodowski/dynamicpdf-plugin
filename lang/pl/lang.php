@@ -37,6 +37,7 @@ return [
         'duplicate' => 'Duplikuj',
         'duplicating' => 'Duplikowanie...',
         'duplicate_success' => 'Kopia została utworzona.',
+        'copy_suffix' => '(kopia)',
     ],
     'template' => [
         'menu_label' => 'Szablon',

@@ -19,7 +19,7 @@ columns:
     preview:
         label: renatio.dynamicpdf::lang.templates.preview
         type: partial
-        path: column_preview
+        path: column_preview_layout
         sortable: false
         clickable: false
 

@@ -37,6 +37,7 @@ return [
         'duplicate' => 'Duplica',
         'duplicating' => 'Duplicazione...',
         'duplicate_success' => 'Copia creata.',
+        'copy_suffix' => '(copia)',
     ],
     'template' => [
         'menu_label' => 'Modello',

@@ -37,6 +37,7 @@ return [
         'duplicate' => 'Dupliceren',
         'duplicating' => 'Dupliceren...',
         'duplicate_success' => 'Kopie aangemaakt.',
+        'copy_suffix' => '(kopie)',
     ],
     'template' => [
         'menu_label' => 'Sjabloon',
