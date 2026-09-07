@@ -49,16 +49,15 @@ class Layout extends Model
     {
         $layout = static::whereCode($code)->first();
 
-        if ($layout instanceof self) {
+        if ($layout instanceof static) {
             return $layout;
         }
 
         if (! array_key_exists($code, PDFManager::instance()->listRegisteredLayouts() ?? [])) {
-            throw (new ModelNotFoundException)->setModel(self::class, [$code]);
+            throw (new ModelNotFoundException)->setModel(static::class, [$code]);
         }
 
         $layout = new self;
-        $layout->code = $code;
         $layout->fillFromView($code);
 
         return $layout;
@@ -88,6 +87,7 @@ class Layout extends Model
     {
         $sections = PDFParser::sections($path);
 
+        $this->code = $path;
         $this->name = array_get($sections, 'settings.name', '???');
         $this->content_css = array_get($sections, 'css');
         $this->content_html = array_get($sections, 'html');

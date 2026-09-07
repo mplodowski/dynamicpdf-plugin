@@ -66,11 +66,24 @@ class Template extends Model
 
         $this->title = array_get($sections, 'settings.title', '???');
         $this->code = $path;
-        $this->setAttribute('layout', Layout::whereCode(array_get($sections, 'settings.layout'))->first());
+        $this->setAttribute('layout', $this->resolveLayout(array_get($sections, 'settings.layout')));
         $this->size = array_get($sections, 'settings.size');
         $this->orientation = array_get($sections, 'settings.orientation');
         $this->description = array_get($sections, 'settings.description');
         $this->content_html = array_get($sections, 'html');
+    }
+
+    protected function resolveLayout(?string $code): ?Layout
+    {
+        if (! $code) {
+            return null;
+        }
+
+        try {
+            return Layout::byCode($code);
+        } catch (ModelNotFoundException) {
+            return null;
+        }
     }
 
     public function getHtmlAttribute(): string
@@ -86,12 +99,12 @@ class Template extends Model
     {
         $template = static::whereCode($code)->first();
 
-        if ($template instanceof self) {
+        if ($template instanceof static) {
             return $template;
         }
 
         if (! array_key_exists($code, PDFManager::instance()->listRegisteredTemplates() ?? [])) {
-            throw (new ModelNotFoundException)->setModel(self::class, [$code]);
+            throw (new ModelNotFoundException)->setModel(static::class, [$code]);
         }
 
         $template = new self;
