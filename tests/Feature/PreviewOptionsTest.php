@@ -80,4 +80,28 @@ describe('Backend preview', function () {
 
         expect(stream_context_get_options($wrapper->getDomPDF()->getHttpContext())['http']['follow_location'])->toBeFalse();
     });
+
+    it('limits local files in the preview to the asset directories', function () {
+        $wrapper = captureWrapper();
+        $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
+
+        (new Templates)->previewPdf($template->id);
+
+        $options = $wrapper->getDomPDF()->getOptions();
+
+        expect($options->validateLocalUri(base_path('composer.json'))[1])->toContain('Permission denied')
+            ->and($options->validateLocalUri(storage_path('logs'))[1])->toContain('Permission denied')
+            ->and($options->validateLocalUri(plugins_path('renatio/dynamicpdf/assets/img/october.png')))->toBe([true, null])
+            ->and(array_map('realpath', $options->getChroot()))->not->toContain(realpath(base_path()));
+    });
+
+    it('keeps a custom chroot for the preview', function () {
+        config(['dompdf.options.chroot' => storage_path('app')]);
+        $wrapper = captureWrapper();
+        $layout = $this->createLayout(['content_html' => '<html><body>Hello</body></html>']);
+
+        (new Layouts)->previewPdf($layout->id);
+
+        expect($wrapper->getDomPDF()->getOptions()->getChroot())->toBe([storage_path('app')]);
+    });
 });

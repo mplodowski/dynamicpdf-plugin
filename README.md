@@ -388,7 +388,9 @@ Then in the template you can use following example code:
 > For retrieving stylesheets or images via http following PHP setting must be enabled `allow_url_fopen`.
 
 > The backend preview fetches remote resources only from the hosts listed in `allowed_remote_hosts` of the dompdf
-> configuration or, when that list is empty, from the application host itself.
+> configuration or, when that list is empty, from the application host itself, and reads local files only from the
+> directories October publishes (web root, modules, plugins, themes, app assets, public uploads, media and the resize
+> cache) unless `chroot` is set in the configuration.
 
 When `allow_url_fopen` is disabled on server try to use relative path. You can use October `getLocalPath` function on
 the file object to retrieve it.
