@@ -55,7 +55,7 @@ class Templates extends Controller
         $model->is_custom = true;
     }
 
-    public function previewPdf(int $id): ?Response
+    public function previewPdf(int|string $id): ?Response
     {
         $this->pageTitle = e(trans('renatio.dynamicpdf::lang.templates.preview_pdf'));
 
@@ -74,14 +74,14 @@ class Templates extends Controller
             ->stream();
     }
 
-    public function html(int $id): Response
+    public function html(int|string $id): Response
     {
         $model = $this->formFindModelObject($id);
 
         return response($model->html);
     }
 
-    public function update_onResetDefault(int $recordId): RedirectResponse
+    public function update_onResetDefault(int|string $recordId): RedirectResponse
     {
         $model = $this->formFindModelObject($recordId);
 

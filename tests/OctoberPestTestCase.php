@@ -28,8 +28,6 @@ abstract class OctoberPestTestCase extends TestCase
 
     protected static ?PDO $inMemoryConnection = null;
 
-    protected static bool $pluginsLoaded = false;
-
     public function setUpOctoberPlugin(): void
     {
         $this->loadAllPlugins();

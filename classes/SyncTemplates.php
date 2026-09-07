@@ -31,7 +31,6 @@ class SyncTemplates
             $this->createTemplates($newTemplates);
             $this->scanTranslatedMessages();
         } catch (Exception) {
-            // Silently fail during boot to prevent application errors
         }
     }
 

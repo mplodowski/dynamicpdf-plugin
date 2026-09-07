@@ -9,19 +9,19 @@
     </ul>
 <?php Block::endPut() ?>
 
-<?php if (! $this->fatalError) { ?>
+<?php if (! $this->fatalError) : ?>
     <div class="form-preview" style="display: flex; justify-content: center;">
-        <iframe src="<?= Backend::url('renatio/dynamicpdf/layouts/html/' . $formModel->id) ?>"
+        <iframe src="<?= Backend::url('renatio/dynamicpdf/layouts/html/'.$formModel->id) ?>"
                 style="width: 793px; height: 1121px; border: 1px solid #9098a2;"></iframe>
     </div>
 
     <div class="form-buttons">
         <a class="btn btn-default"
-           href="<?= Backend::url('renatio/dynamicpdf/layouts/update/' . $formModel->id) ?>">
+           href="<?= Backend::url('renatio/dynamicpdf/layouts/update/'.$formModel->id) ?>">
             <?= e(trans('backend::lang.form.close')) ?>
         </a>
     </div>
-<?php } else { ?>
+<?php else: ?>
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>
     <p>
         <a href="<?= Backend::url('renatio/dynamicpdf/templates/index/layouts') ?>"
@@ -29,4 +29,4 @@
             <?= e(trans('renatio.dynamicpdf::lang.layouts.return')) ?>
         </a>
     </p>
-<?php } ?>
+<?php endif ?>

@@ -65,7 +65,7 @@ class Template extends Model
 
         $this->title = array_get($sections, 'settings.title', '???');
         $this->code = $path;
-        $this->layout_id = Layout::whereCode(array_get($sections, 'settings.layout'))->value('id');
+        $this->setAttribute('layout', Layout::whereCode(array_get($sections, 'settings.layout'))->first());
         $this->size = array_get($sections, 'settings.size');
         $this->orientation = array_get($sections, 'settings.orientation');
         $this->description = array_get($sections, 'settings.description');

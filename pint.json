@@ -28,5 +28,9 @@
     },
     "exclude": [
         "vendor"
+    ],
+    "notPath": [
+        "controllers/layouts",
+        "controllers/templates"
     ]
 }

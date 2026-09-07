@@ -8,8 +8,7 @@ use Rector\ValueObject\PhpVersion;
 
 /**
  * declare(strict_types=1) is deliberately left out: October hands models loosely typed values
- * from the database, which strict mode would turn into runtime TypeErrors. Readonly promotion
- * is left out too, since it breaks the Mockery-based tests.
+ * from the database, which strict mode would turn into runtime TypeErrors.
  */
 return RectorConfig::configure()
     ->withPaths([

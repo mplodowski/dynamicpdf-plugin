@@ -55,4 +55,7 @@ v7.1.2: Allow self signed certificates on development environment.
 v8.0.1: Support October 4.
 v8.0.2: Update dependencies.
 v8.0.3: Refactor to use pluck() function.
-v8.0.4: Security fix. Disable inline PHP in backend preview.
+v8.0.4:
+    - Security fix. Disable inline PHP in backend preview.
+    - Require PHP 8.2 and October CMS 4.0.
+    - Render templates and layouts with empty content instead of failing.
