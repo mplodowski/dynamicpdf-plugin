@@ -9,7 +9,7 @@ describe('PDFWrapper', function () {
     });
 
     it('throws on an unknown method instead of ignoring it', function () {
-        expect(fn () => app('dynamicpdf')->setDPI(300))->toThrow(UnexpectedValueException::class);
+        expect(fn () => app('dynamicpdf')->__call('setNoSuchOption', [300]))->toThrow(UnexpectedValueException::class);
     });
 
     it('renders a template inside its layout with Twig data', function () {
