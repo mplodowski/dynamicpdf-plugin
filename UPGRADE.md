@@ -62,12 +62,15 @@ Drop support for October CMS version 2.x.
 
 ## Upgrading To 7.0.0
 
-Plugin requires Laravel Dompdf v2 and dompdf 2. The `setOptions()` method now replaces the whole options object; use
-the dynamic `set*()` methods or `setOption()` to change single options.
+Plugin requires Laravel Dompdf v2 and dompdf 2. `setOptions()` is deprecated and still replaces the whole options
+object, as noted for 4.0.8; the new `setOption()` changes a single option and the dynamic `set*()` methods keep
+working.
 
 ## Upgrading To 8.0.1
 
-Plugin requires October CMS 4.0 or higher.
+Plugin adds support for October CMS 4.0 while keeping 3.x, and upgrades to Laravel Dompdf v3 and dompdf 3. Options
+removed by dompdf 3 (for example `enable_css_float` and `setAdminUsername()`) no longer apply, and the HTML5 parser is
+always on.
 
 ## Upgrading To 8.0.4
 

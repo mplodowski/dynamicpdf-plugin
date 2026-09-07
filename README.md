@@ -269,7 +269,9 @@ The options most often changed are `dpi`, `default_font`, `default_paper_size`, 
 required for images, stylesheets and fonts loaded by URL), `allowed_remote_hosts`, `chroot` and `font_dir`. The full
 list with the current defaults is in the published `config/dompdf.php` and in
 [Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php); every option has a matching
-`set*()` method on the wrapper.
+`set*()` method on the wrapper named after the camel-cased key, except the `enable_*` options, which are
+`setIsRemoteEnabled()`, `setIsPhpEnabled()`, `setIsJavascriptEnabled()`, `setIsHtml5ParserEnabled()` and
+`setIsFontSubsettingEnabled()`.
 
 ### Self-signed certificates
 
