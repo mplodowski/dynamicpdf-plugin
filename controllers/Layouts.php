@@ -47,7 +47,7 @@ class Layouts extends Controller
 
         return PDF::loadLayout($model->code)
             ->setLogOutputFile(storage_path('temp/log.htm'))
-            ->setIsRemoteEnabled(true)
+            ->allowRemoteApplicationAssets()
             ->setDpi(300)
             ->stream();
     }

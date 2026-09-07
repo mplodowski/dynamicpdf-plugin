@@ -8,6 +8,8 @@ use Exception;
 use October\Rain\Support\Facades\Twig;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use System\Classes\SiteManager;
+use System\Models\SiteDefinition;
 use UnexpectedValueException;
 
 /**
@@ -136,19 +138,57 @@ class PDFWrapper extends PDF
         }
     }
 
+    /**
+     * Remote resources stay limited to the hosts from the dompdf configuration plus the
+     * application and site hosts, so a template cannot make the server fetch internal
+     * addresses. The request host is deliberately not consulted: it is client-controlled.
+     */
+    public function allowRemoteApplicationAssets(): self
+    {
+        $options = $this->dompdf->getOptions();
+
+        $hosts = array_merge($options->getAllowedRemoteHosts() ?: [], $this->applicationHosts());
+
+        $options->setIsRemoteEnabled(true)->setAllowedRemoteHosts(array_values(array_unique($hosts)));
+
+        return $this;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function applicationHosts(): array
+    {
+        $urls = SiteManager::instance()->listEnabled()
+            ->filter(fn (SiteDefinition $site): bool => (bool) $site->is_custom_url)
+            ->pluck('app_url')
+            ->push(config('app.url'))
+            ->all();
+
+        return array_values(array_filter(array_map(
+            fn ($url): string => mb_strtolower((string) parse_url((string) $url, PHP_URL_HOST)),
+            $urls,
+        )));
+    }
+
     protected function allowSelfSignedCertificates(): void
     {
         if (app()->environment('production')) {
             return;
         }
 
-        $context = stream_context_create([
-            'ssl' => [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-                'allow_self_signed' => true,
+        $current = $this->dompdf->getHttpContext();
+
+        $context = stream_context_create(array_merge_recursive(
+            is_resource($current) ? stream_context_get_options($current) : [],
+            [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true,
+                ],
             ],
-        ]);
+        ));
 
         $this->dompdf->setHttpContext($context);
     }

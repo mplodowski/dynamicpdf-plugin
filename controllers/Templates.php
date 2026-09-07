@@ -69,7 +69,7 @@ class Templates extends Controller
 
         return PDF::loadTemplate($model->code)
             ->setLogOutputFile(storage_path('temp/log.htm'))
-            ->setIsRemoteEnabled(true)
+            ->allowRemoteApplicationAssets()
             ->setDpi(300)
             ->stream();
     }
