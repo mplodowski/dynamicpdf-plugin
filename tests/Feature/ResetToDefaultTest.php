@@ -21,7 +21,7 @@ describe('Reset to default', function () {
 
         $row = DB::table('renatio_dynamicpdf_pdf_templates')->where('code', 'renatio.dynamicpdf::pdf.invoice')->first();
 
-        expect((bool) $row?->is_custom)->toBeFalse()
+        expect($row?->is_custom)->toBeFalsy()
             ->and((string) $row?->title)->toBe('Invoice')
             ->and((string) $row?->content_html)->toContain('Invoice');
     });

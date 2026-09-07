@@ -85,6 +85,9 @@ TLS certificates are verified on every environment. On a development host with a
 `DYNAMICPDF_ALLOW_SELF_SIGNED=true` in `.env` (or `allow_self_signed_certificates` in `config/renatio/dynamicpdf.php`),
 or call the now public `allowSelfSignedCertificates()` on the wrapper for a single document.
 
+The template and layout `code` columns get a unique index. Duplicate rows, which concurrent synchronisations could
+leave behind, are removed by the migration: the customised (or locked) row is kept, otherwise the oldest one.
+
 Registered PDF views are synchronised to the database when the *PDF Templates* settings page is opened or
 `dynamicpdf:demo` runs, no longer on every request. Rendering a registered view that is not stored yet works without
 the sync. A registered code without a view file is skipped and logged instead of silently stopping the sync.
