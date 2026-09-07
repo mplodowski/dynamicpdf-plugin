@@ -15,9 +15,14 @@ return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/classes',
         __DIR__ . '/console',
+        __DIR__ . '/controllers',
         __DIR__ . '/models',
         __DIR__ . '/tests',
         __DIR__ . '/Plugin.php',
+    ])
+    ->withSkip([
+        __DIR__ . '/controllers/layouts',
+        __DIR__ . '/controllers/templates',
     ])
     ->withPhpVersion(PhpVersion::PHP_82)
     ->withSets([PestSetList::CODING_STYLE])

@@ -15,7 +15,7 @@ use System\Models\Parameter;
 class Plugin extends PluginBase
 {
     /**
-     * @return array{name: string, description: string, author: string, icon: string, homepage: string}
+     * @return array<string, string>
      */
     public function pluginDetails(): array
     {
@@ -52,7 +52,7 @@ class Plugin extends PluginBase
     }
 
     /**
-     * @return array<string, array{label: string, tab: string}>
+     * @return array<string, array<string, mixed>>
      */
     public function registerPermissions(): array
     {
@@ -69,7 +69,7 @@ class Plugin extends PluginBase
     }
 
     /**
-     * @return array{filters?: array<string, array{0: string, 1: string}>}
+     * @return array<string, array<string, mixed>>
      */
     public function registerMarkupTags(): array
     {
@@ -86,7 +86,7 @@ class Plugin extends PluginBase
     }
 
     /**
-     * @return array<string, array{label: string, category: string, icon: string, url: string, description: string, permissions: array<string>}>
+     * @return array<string, array<string, mixed>>
      */
     public function registerSettings(): array
     {

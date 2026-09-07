@@ -2,8 +2,7 @@
 
 use Renatio\DynamicPDF\Tests\TestCase;
 
-pest()->extend(TestCase::class)->beforeEach(function () {
-    $this->setUpOctoberPlugin();
-})->afterEach(function () {
-    $this->tearDownOctoberPlugin();
-})->in(__DIR__);
+pest()->extend(TestCase::class)
+    ->beforeEach(fn () => $this->setUpOctoberPlugin())
+    ->afterEach(fn () => $this->tearDownOctoberPlugin())
+    ->in(__DIR__);

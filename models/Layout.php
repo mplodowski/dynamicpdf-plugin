@@ -55,9 +55,7 @@ class Layout extends Model
             return '';
         }
 
-        $parser = new Less_Parser;
-
-        return $parser->parse($this->content_css)->getCss();
+        return (new Less_Parser)->parse($this->content_css)->getCss();
     }
 
     public function fillFromCode(): void
