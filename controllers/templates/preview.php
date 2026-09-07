@@ -11,7 +11,7 @@
 
 <?php if (! $this->fatalError) : ?>
     <div class="form-preview" style="display: flex; justify-content: center;">
-        <iframe src="<?= Backend::url('renatio/dynamicpdf/templates/html/'.$formModel->id) ?>"
+        <iframe sandbox src="<?= Backend::url('renatio/dynamicpdf/templates/html/'.$formModel->id) ?>"
                 style="width: 793px; height: 1121px; border: 1px solid #9098a2;"></iframe>
     </div>
 
