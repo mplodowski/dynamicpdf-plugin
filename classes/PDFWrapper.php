@@ -308,6 +308,8 @@ class PDFWrapper extends PDF
      * Remote resources stay limited to the hosts from the dompdf configuration plus the
      * application and site hosts, so a template cannot make the server fetch internal
      * addresses. The request host is deliberately not consulted: it is client-controlled.
+     * Local files stay under the asset directories unless the configuration names its own
+     * chroot, so a template cannot embed .env or the logs through file://.
      */
     public function allowRemoteApplicationAssets(): self
     {
@@ -317,7 +319,28 @@ class PDFWrapper extends PDF
 
         $options->setIsRemoteEnabled(true)->setAllowedRemoteHosts(array_values(array_unique($hosts)));
 
+        if ($options->getChroot() === [realpath(base_path())]) {
+            $options->setChroot(self::previewChroot());
+        }
+
         return $this;
+    }
+
+    /**
+     * The directories a template may legitimately embed files from: the web root, plugin
+     * and theme assets and public uploads. Configuration, logs and protected uploads stay out.
+     *
+     * @return array<int, string>
+     */
+    public static function previewChroot(): array
+    {
+        return [
+            public_path(),
+            plugins_path(),
+            themes_path(),
+            storage_path('app/uploads/public'),
+            storage_path('app/media'),
+        ];
     }
 
     /**
