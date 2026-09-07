@@ -493,6 +493,23 @@ Inline PHP (`setIsPhpEnabled(true)`) is no longer needed for page numbers and sh
 > `<script type="text/php">` block in the HTML is executed on the server, so enabling it for templates that can be
 > edited by backend users allows remote code execution. The backend HTML and PDF preview never enables it.
 
+## Testing
+
+`PDF::fake()` replaces the wrapper for the rest of the test: no template is looked up, Twig and dompdf do not run,
+`stream()` and `download()` return an empty `application/pdf` response and `output()` returns an empty string. The
+fake records every `loadTemplate()` / `loadLayout()` call with its data, layout and locale:
+
+```
+$fake = PDF::fake();
+
+$this->get('/backend/acme/orders/pdf/1');
+
+$fake->assertRendered('acme::pdf.invoice', fn (array $data) => $data['order']->id === 1);
+$fake->assertNotRendered('acme::pdf.reminder');
+$fake->assertRenderedCount(1);
+// $fake->assertNothingRendered();
+```
+
 ## Console commands
 
 `php artisan dynamicpdf:sync` synchronises the registered PDF views with the database and lists what was created,
