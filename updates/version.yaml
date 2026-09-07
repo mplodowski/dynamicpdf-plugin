@@ -74,9 +74,9 @@ v8.0.4:
     - Add toFile() and a chainable encrypt().
     - Add registerPDFVariables() and the beforeRender and afterRender events.
     - Add PDF::fake() with render assertions for project tests.
-    - Backend previews render with the sample data of the template, lists show customised and locked records, templates and layouts can be duplicated and previewed from the list.
-    - 20260907_0001_add_sample_data_to_templates_table.php
     - Render through the system Twig environment when the Cms module is missing or no theme is usable, and report CMS rendering errors instead of retrying with the system one.
 v8.0.5:
+    - Backend previews render with the sample data of the template, lists show customised and locked records, templates and layouts can be duplicated and previewed from the list.
     - Add a unique index on the template and layout code, removing duplicates left by concurrent syncs.
+    - 20260907_0001_add_sample_data_to_templates_table.php
     - 20260907_0002_add_unique_code_indexes.php
