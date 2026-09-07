@@ -31,6 +31,8 @@ class Template extends Model
 {
     use Validation;
 
+    public const LAYOUT_CACHE = 'renatio.dynamicpdf.layouts';
+
     public $table = 'renatio_dynamicpdf_pdf_templates';
 
     /** @var array<string, string> */
@@ -91,8 +93,6 @@ class Template extends Model
         $this->content_html = array_get($sections, 'html');
     }
 
-    public const LAYOUT_CACHE = 'renatio.dynamicpdf.layouts';
-
     /**
      * Every view-driven row of a list re-reads its layout, so stored layouts are remembered
      * by code for the current request or queue job (a scoped container instance) and each
@@ -110,6 +110,8 @@ class Template extends Model
             try {
                 $layout = Layout::byCode($code);
             } catch (ModelNotFoundException) {
+                $cache[$code] = false;
+
                 return null;
             }
 
@@ -120,14 +122,21 @@ class Template extends Model
             $cache[$code] = $layout->getAttributes();
         }
 
-        return Layout::hydrate([$cache[$code]])->first();
+        return $cache[$code] === false ? null : Layout::hydrate([$cache[$code]])->first();
     }
 
     /**
-     * @return ArrayObject<string, array<string, mixed>>
+     * Registered in Plugin::register(); bound here as well so a save on a disabled plugin
+     * or outside the plugin bootstrap does not fail.
+     *
+     * @return ArrayObject<string, array<string, mixed>|false>
      */
     public static function layoutCache(): ArrayObject
     {
+        if (! app()->bound(self::LAYOUT_CACHE)) {
+            app()->scoped(self::LAYOUT_CACHE, fn (): ArrayObject => new ArrayObject);
+        }
+
         return app(self::LAYOUT_CACHE);
     }
 

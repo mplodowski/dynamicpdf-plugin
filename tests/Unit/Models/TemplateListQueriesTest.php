@@ -52,6 +52,31 @@ describe('Template list queries', function () {
             ->and(Template::layoutCache()->count())->toBe(0);
     });
 
+    it('remembers that a layout code is unknown', function () {
+        File::put($this->views . '/pdf/a.htm', "title = \"a\"\nlayout = \"acme::pdf.layouts.unknown\"\n==\n<p>a</p>");
+        foreach (['a', 'b'] as $name) {
+            $this->createTemplate(['code' => "acmetest::pdf.{$name}", 'is_custom' => false]);
+        }
+        File::put($this->views . '/pdf/b.htm', "title = \"b\"\nlayout = \"acme::pdf.layouts.unknown\"\n==\n<p>b</p>");
+
+        DB::enableQueryLog();
+        Template::query()->get();
+        $layoutQueries = collect(DB::getQueryLog())->filter(fn (array $q): bool => str_contains($q['query'], 'renatio_dynamicpdf_pdf_layouts'))->count();
+        DB::disableQueryLog();
+
+        expect($layoutQueries)->toBe(1);
+    });
+
+    it('forgets a remembered layout when it is deleted', function () {
+        $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);
+        $this->createTemplate(['code' => 'acmetest::pdf.a', 'is_custom' => false]);
+        Template::query()->get();
+
+        $layout->delete();
+
+        expect(Template::byCode('acmetest::pdf.a')->layout)->toBeNull();
+    });
+
     it('forgets a remembered layout when it is saved', function () {
         $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default', 'name' => 'Before']);
         $this->createTemplate(['code' => 'acmetest::pdf.a', 'is_custom' => false]);
