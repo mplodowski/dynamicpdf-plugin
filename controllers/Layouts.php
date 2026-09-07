@@ -40,7 +40,7 @@ class Layouts extends Controller
         (new SyncTemplates)->handle();
     }
 
-    public function previewPdf(int|string $id): ?Response
+    public function previewpdf(int|string $id): ?Response
     {
         $this->pageTitle = e(trans('renatio.dynamicpdf::lang.templates.preview_pdf'));
 
