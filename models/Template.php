@@ -3,6 +3,7 @@
 namespace Renatio\DynamicPDF\Models;
 
 use Dompdf\Adapter\CPDF;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Exception\ApplicationException;
@@ -77,9 +78,26 @@ class Template extends Model
         return PDF::loadTemplate($this->code)->getDompdf()->output_html();
     }
 
+    /**
+     * A registered view that is not stored yet (for example before the first backend
+     * request synchronised it) renders straight from the file.
+     */
     public static function byCode(string $code): self
     {
-        return static::whereCode($code)->firstOrFail();
+        $template = static::whereCode($code)->first();
+
+        if ($template instanceof self) {
+            return $template;
+        }
+
+        if (! array_key_exists($code, PDFManager::instance()->listRegisteredTemplates() ?? [])) {
+            throw (new ModelNotFoundException)->setModel(self::class, [$code]);
+        }
+
+        $template = new self;
+        $template->fillFromView($code);
+
+        return $template;
     }
 
     /**

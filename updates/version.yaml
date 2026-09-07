@@ -61,3 +61,4 @@ v8.0.4:
     - Require PHP 8.2 and October CMS 4.0.
     - Render templates and layouts with empty content instead of failing.
     - Throw on unknown wrapper methods instead of ignoring them.
+    - Render a registered template or layout from its view when it is not stored yet.
