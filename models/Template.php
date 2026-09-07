@@ -10,6 +10,19 @@ use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 
+/**
+ * @property int $id
+ * @property int|null $layout_id
+ * @property string $code
+ * @property string $title
+ * @property string|null $description
+ * @property string|null $content_html
+ * @property string|null $size
+ * @property string|null $orientation
+ * @property bool $is_custom
+ * @property Layout|null $layout
+ * @property-read string $html
+ */
 class Template extends Model
 {
     use Validation;
@@ -52,7 +65,7 @@ class Template extends Model
 
         $this->title = array_get($sections, 'settings.title', '???');
         $this->code = $path;
-        $this->layout = Layout::whereCode(array_get($sections, 'settings.layout'))->first();
+        $this->layout_id = Layout::whereCode(array_get($sections, 'settings.layout'))->value('id');
         $this->size = array_get($sections, 'settings.size');
         $this->orientation = array_get($sections, 'settings.orientation');
         $this->description = array_get($sections, 'settings.description');

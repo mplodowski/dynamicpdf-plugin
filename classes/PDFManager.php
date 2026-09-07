@@ -3,6 +3,7 @@
 namespace Renatio\DynamicPDF\Classes;
 
 use October\Rain\Support\Traits\Singleton;
+use System\Classes\PluginBase;
 use System\Classes\PluginManager;
 
 class PDFManager
@@ -20,6 +21,10 @@ class PDFManager
         $plugins = PluginManager::instance()->getPlugins();
 
         foreach ($plugins as $plugin) {
+            if (! $plugin instanceof PluginBase) {
+                continue;
+            }
+
             if (method_exists($plugin, 'registerPDFLayouts')) {
                 $layouts = $plugin->registerPDFLayouts();
 

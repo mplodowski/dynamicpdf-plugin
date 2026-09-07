@@ -5,6 +5,8 @@ namespace Renatio\DynamicPDF\Controllers;
 use Backend\Behaviors\FormController;
 use Backend\Classes\Controller;
 use Backend\Facades\BackendMenu;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use October\Rain\Exception\ApplicationException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
@@ -12,12 +14,15 @@ use System\Classes\SettingsManager;
 
 class Layouts extends Controller
 {
+    /** @var array<int, string> */
     public $requiredPermissions = ['renatio.dynamicpdf.manage_layouts'];
 
+    /** @var array<int, class-string> */
     public $implement = [
         FormController::class,
     ];
 
+    /** @var string */
     public $formConfig = 'config_form.yaml';
 
     public function __construct()
@@ -28,14 +33,16 @@ class Layouts extends Controller
         SettingsManager::setContext('Renatio.DynamicPDF', 'templates');
     }
 
-    public function previewPdf($id)
+    public function previewPdf(int $id): ?Response
     {
         $this->pageTitle = e(trans('renatio.dynamicpdf::lang.templates.preview_pdf'));
 
         try {
             $model = $this->formFindModelObject($id);
         } catch (ApplicationException $e) {
-            return $this->handleError($e);
+            $this->handleError($e);
+
+            return null;
         }
 
         return PDF::loadLayout($model->code)
@@ -45,14 +52,14 @@ class Layouts extends Controller
             ->stream();
     }
 
-    public function html($id)
+    public function html(int $id): Response
     {
         $model = $this->formFindModelObject($id);
 
         return response($model->html);
     }
 
-    public function update_onResetDefault($recordId)
+    public function update_onResetDefault(int $recordId): RedirectResponse
     {
         $model = $this->formFindModelObject($recordId);
 

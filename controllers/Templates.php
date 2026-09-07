@@ -6,25 +6,32 @@ use Backend\Behaviors\FormController;
 use Backend\Behaviors\ListController;
 use Backend\Classes\Controller;
 use Backend\Facades\BackendMenu;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use October\Rain\Exception\ApplicationException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
+use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SettingsManager;
 
 class Templates extends Controller
 {
+    /** @var array<int, string> */
     public $requiredPermissions = ['renatio.dynamicpdf.manage_templates'];
 
+    /** @var array<int, class-string> */
     public $implement = [
         ListController::class,
         FormController::class,
     ];
 
+    /** @var array<string, string> */
     public $listConfig = [
         'templates' => 'config_templates_list.yaml',
         'layouts' => 'config_layouts_list.yaml',
     ];
 
+    /** @var string */
     public $formConfig = 'config_form.yaml';
 
     public function __construct()
@@ -35,7 +42,7 @@ class Templates extends Controller
         SettingsManager::setContext('Renatio.DynamicPDF', 'templates');
     }
 
-    public function index($tab = null)
+    public function index(?string $tab = null): void
     {
         $this->asExtension('ListController')->index();
 
@@ -43,19 +50,21 @@ class Templates extends Controller
         $this->vars['activeTab'] = $tab ?: 'templates';
     }
 
-    public function formBeforeSave($model)
+    public function formBeforeSave(Template $model): void
     {
-        $model->is_custom = 1;
+        $model->is_custom = true;
     }
 
-    public function previewPdf($id)
+    public function previewPdf(int $id): ?Response
     {
         $this->pageTitle = e(trans('renatio.dynamicpdf::lang.templates.preview_pdf'));
 
         try {
             $model = $this->formFindModelObject($id);
         } catch (ApplicationException $e) {
-            return $this->handleError($e);
+            $this->handleError($e);
+
+            return null;
         }
 
         return PDF::loadTemplate($model->code)
@@ -65,19 +74,19 @@ class Templates extends Controller
             ->stream();
     }
 
-    public function html($id)
+    public function html(int $id): Response
     {
         $model = $this->formFindModelObject($id);
 
         return response($model->html);
     }
 
-    public function update_onResetDefault($recordId)
+    public function update_onResetDefault(int $recordId): RedirectResponse
     {
         $model = $this->formFindModelObject($recordId);
 
         $model->fillFromCode();
-        $model->is_custom = 0;
+        $model->is_custom = false;
         $model->save();
 
         Flash::success(e(trans('backend::lang.form.reset_success')));

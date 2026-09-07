@@ -12,7 +12,7 @@ class PDFParser
      */
     public static function parse(string $content): array
     {
-        $sections = preg_split('/^={2,}\s*/m', $content, -1);
+        $sections = preg_split('/^={2,}\s*/m', $content, -1) ?: [];
         $sections = array_map('trim', $sections);
         $count = count($sections);
 
@@ -41,6 +41,6 @@ class PDFParser
      */
     public static function sections(string $path): array
     {
-        return self::parse(File::get(View::make($path)->getPath()));
+        return self::parse(File::get(View::getFinder()->find($path)));
     }
 }

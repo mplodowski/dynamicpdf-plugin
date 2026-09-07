@@ -1,0 +1,56 @@
+includes:
+    - ../../../vendor/larastan/larastan/extension.neon
+    - ../../../vendor/pestphp/pest-plugin-phpstan/extension.neon
+
+parameters:
+    level: 7
+
+    paths:
+        - classes
+        - console
+        - controllers
+        - models
+        - Plugin.php
+        - tests
+
+    bootstrapFiles:
+        - ../../../vendor/autoload.php
+        - phpstan-bootstrap.php
+
+    scanDirectories:
+        - ../../../modules
+        - ../../../vendor/october/rain
+
+    # Controller view files are rendered with an injected scope, so $this and every view variable read as undefined.
+    excludePaths:
+        analyseAndScan:
+            - controllers/layouts
+            - controllers/templates
+            - .phpunit.cache
+
+    treatPhpDocTypesAsCertain: false
+
+    ignoreErrors:
+        # Behaviors inject list/form methods into controllers at runtime.
+        -
+            identifier: method.notFound
+            message: '#Call to an undefined method .*\\Controllers\\\w+::(list|form|relation|make)\w+\(\)#'
+
+        # October's query builder is not generic, so create/find/first/get hand back the base Model.
+        -
+            identifier: property.notFound
+            message: '#Access to an undefined property Illuminate\\Database\\Eloquent\\(Model|Collection)#'
+        -
+            identifier: return.type
+            message: '#should return .* but returns Illuminate\\Database\\Eloquent\\Model#'
+
+        # October registers Mail::pretend() on the facade at runtime.
+        -
+            identifier: staticMethod.notFound
+            message: '#Call to an undefined static method Illuminate\\Support\\Facades\\Mail::pretend\(\)#'
+
+        # pest-plugin-phpstan types $this only in function-form hooks; inside the
+        # pest()->extend()->beforeEach()/afterEach() method chain it stays unknown.
+        -
+            path: tests/Pest.php
+            identifier: variable.undefined

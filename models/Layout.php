@@ -11,6 +11,16 @@ use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 use System\Models\File;
 
+/**
+ * @property int $id
+ * @property string $code
+ * @property string $name
+ * @property string|null $content_html
+ * @property string|null $content_css
+ * @property bool $is_locked
+ * @property-read File|null $background_img
+ * @property-read string $html
+ */
 class Layout extends Model
 {
     use Validation;

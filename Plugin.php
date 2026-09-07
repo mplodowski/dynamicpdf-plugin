@@ -33,10 +33,10 @@ class Plugin extends PluginBase
         $this->app->register(ServiceProvider::class);
 
         $this->app->bind('dynamicpdf', fn (Application $app): PDFWrapper => new PDFWrapper(
-            $app['dompdf'],
-            $app['config'],
-            $app['files'],
-            $app['view'],
+            $app->make('dompdf'),
+            $app->make('config'),
+            $app->make('files'),
+            $app->make('view'),
         ));
 
         if (config('dompdf.public_path') === null) {

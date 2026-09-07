@@ -1,12 +1,9 @@
 <?php
 
-require_once __DIR__ . '/TestCase.php';
+use Renatio\DynamicPDF\Tests\TestCase;
 
-uses(Renatio\DynamicPDF\Tests\TestCase::class)
-    ->beforeEach(function () {
-        $this->setUpOctoberPlugin();
-    })
-    ->afterEach(function () {
-        $this->tearDownOctoberPlugin();
-    })
-    ->in(__DIR__);
+pest()->extend(TestCase::class)->beforeEach(function () {
+    $this->setUpOctoberPlugin();
+})->afterEach(function () {
+    $this->tearDownOctoberPlugin();
+})->in(__DIR__);

@@ -9,6 +9,12 @@ use October\Rain\Support\Facades\Twig;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 
+/**
+ * @method self setDpi(int $dpi)
+ * @method self setIsPhpEnabled(bool $enabled)
+ * @method self setIsRemoteEnabled(bool $enabled)
+ * @method self setLogOutputFile(string $path)
+ */
 class PDFWrapper extends PDF
 {
     public function __call($method, $parameters)
@@ -26,7 +32,7 @@ class PDFWrapper extends PDF
         $options = $this->dompdf->getOptions();
 
         if (method_exists($options, $method)) {
-            call_user_func_array([$options, $method], $parameters);
+            $options->$method(...$parameters);
         }
 
         return $this;

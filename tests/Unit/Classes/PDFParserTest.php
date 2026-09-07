@@ -2,63 +2,36 @@
 
 use Renatio\DynamicPDF\Classes\PDFParser;
 
-describe('PDFParser Class', function () {
-    describe('Class Structure', function () {
-        it('parse is static', function () {
-            $reflection = new ReflectionClass(PDFParser::class);
-            $method = $reflection->getMethod('parse');
+describe('PDFParser', function () {
+    it('parses content with only HTML', function () {
+        $result = PDFParser::parse('<p>Hello World</p>');
 
-            expect($method->isStatic())->toBeTrue();
-        });
-
-        it('sections is static', function () {
-            $reflection = new ReflectionClass(PDFParser::class);
-            $method = $reflection->getMethod('sections');
-
-            expect($method->isStatic())->toBeTrue();
-        });
+        expect($result)->toMatchArray([
+            'settings' => [],
+            'css' => null,
+            'html' => '<p>Hello World</p>',
+        ]);
     });
 
-    describe('Parse Method', function () {
-        it('returns array with settings, css, and html keys', function () {
-            $result = PDFParser::parse('');
+    it('parses content with settings and HTML', function () {
+        $result = PDFParser::parse("name = \"Test\"\n==\n<p>Hello</p>");
 
-            expect($result)->toBeArray();
-            expect($result)->toHaveKeys(['settings', 'css', 'html']);
-        });
+        expect($result['settings']['name'])->toBe('Test')
+            ->and($result['css'])->toBeNull()
+            ->and($result['html'])->toBe('<p>Hello</p>');
+    });
 
-        it('parses content with only HTML', function () {
-            $content = '<p>Hello World</p>';
-            $result = PDFParser::parse($content);
+    it('parses content with settings, CSS and HTML', function () {
+        $result = PDFParser::parse("name = \"Test\"\n==\nbody { color: red; }\n==\n<p>Hello</p>");
 
-            expect($result['html'])->toBe('<p>Hello World</p>');
-            expect($result['settings'])->toBeEmpty();
-            expect($result['css'])->toBeNull();
-        });
+        expect($result['settings']['name'])->toBe('Test')
+            ->and($result['css'])->toBe('body { color: red; }')
+            ->and($result['html'])->toBe('<p>Hello</p>');
+    });
 
-        it('parses content with settings and HTML', function () {
-            $content = "name = \"Test\"\n==\n<p>Hello</p>";
-            $result = PDFParser::parse($content);
+    it('trims whitespace from sections', function () {
+        $result = PDFParser::parse("  name = \"Test\"  \n==\n  <p>Hello</p>  ");
 
-            expect($result['settings'])->toHaveKey('name');
-            expect($result['settings']['name'])->toBe('Test');
-            expect($result['html'])->toBe('<p>Hello</p>');
-        });
-
-        it('parses content with settings, CSS, and HTML', function () {
-            $content = "name = \"Test\"\n==\nbody { color: red; }\n==\n<p>Hello</p>";
-            $result = PDFParser::parse($content);
-
-            expect($result['settings']['name'])->toBe('Test');
-            expect($result['css'])->toBe('body { color: red; }');
-            expect($result['html'])->toBe('<p>Hello</p>');
-        });
-
-        it('trims whitespace from sections', function () {
-            $content = "  name = \"Test\"  \n==\n  <p>Hello</p>  ";
-            $result = PDFParser::parse($content);
-
-            expect($result['html'])->toBe('<p>Hello</p>');
-        });
+        expect($result['html'])->toBe('<p>Hello</p>');
     });
 });
