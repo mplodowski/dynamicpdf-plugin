@@ -33,6 +33,8 @@ class PDFWrapper extends PDF
     /** @var array{text: string, position: string, size: float, font: string|null, margin: float, color: array<int, float>}|null */
     protected ?array $pageNumbers = null;
 
+    protected bool $pageNumbersStamped = false;
+
     public function __construct(Dompdf $dompdf, ConfigRepository $config, Filesystem $files, ViewFactory $view)
     {
         parent::__construct($dompdf, $config, $files, $view);
@@ -71,17 +73,34 @@ class PDFWrapper extends PDF
             throw new InvalidArgumentException("Unknown page numbers position [{$position}].");
         }
 
+        if (count($color) !== 3 || array_filter($color, fn (float $c): bool => $c < 0 || $c > 1) !== []) {
+            throw new InvalidArgumentException('Page numbers color must be three RGB components between 0 and 1.');
+        }
+
         $this->pageNumbers = compact('text', 'position', 'size', 'font', 'margin', 'color');
 
         return $this;
     }
 
+    public function loadHTML(string $string, ?string $encoding = null): self
+    {
+        $this->pageNumbersStamped = false;
+        parent::loadHTML($string, $encoding);
+
+        return $this;
+    }
+
+    /**
+     * Stamping appends to the page streams, so a second render() (setEncryption() calls it
+     * unguarded) must not stamp again.
+     */
     public function render(): void
     {
         parent::render();
 
-        if ($this->pageNumbers !== null) {
+        if ($this->pageNumbers !== null && ! $this->pageNumbersStamped) {
             $this->stampPageNumbers($this->pageNumbers);
+            $this->pageNumbersStamped = true;
         }
     }
 
@@ -92,8 +111,14 @@ class PDFWrapper extends PDF
     {
         $canvas = $this->dompdf->getCanvas();
         $metrics = $this->dompdf->getFontMetrics();
-        $font = $metrics->getFont($numbers['font'] ?? $this->dompdf->getOptions()->getDefaultFont());
+        $font = $metrics->getFont($numbers['font']);
+
+        if ($font === null) {
+            throw new InvalidArgumentException("Font [{$numbers['font']}] is not available in the rendered document.");
+        }
+
         $pages = (string) $canvas->get_page_count();
+        // One page_text() call serves every page, so the widest text (the last page) sets the position.
         $sample = str_replace(['{PAGE_NUM}', '{PAGE_COUNT}'], [$pages, $pages], $numbers['text']);
         $width = $metrics->getTextWidth($sample, $font, $numbers['size']);
         $height = $metrics->getFontHeight($font, $numbers['size']);

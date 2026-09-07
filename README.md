@@ -410,8 +410,9 @@ return PDF::loadTemplate('renatio::invoice')
 ```
 
 `{PAGE_NUM}` and `{PAGE_COUNT}` are replaced on each page. Positions: `top-left`, `top-center`, `top-right`,
-`bottom-left`, `bottom-center`, `bottom-right`; `font`, `margin` (points) and `color` (RGB between 0 and 1) are
-optional.
+`bottom-left`, `bottom-center`, `bottom-right`; `font` (a family available in the document, for example one declared
+with `@font-face` in the layout; the dompdf default font otherwise), `margin` (points) and `color` (RGB between 0
+and 1) are optional. Requires the CPDF or PDFLib backend; the GD backend cannot draw page text.
 
 Inline PHP (`setIsPhpEnabled(true)`) is no longer needed for page numbers and should stay off.
 
