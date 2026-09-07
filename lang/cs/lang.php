@@ -11,7 +11,7 @@ return [
         'title' => 'Nadpis',
         'description' => 'Popis',
         'layout' => 'Layout',
-        'empty_option' => '-- Bez šablony --',
+        'empty_option' => '-- Bez layoutu --',
         'code_comment' => 'Unikátní kód patřící pouze této šabloně',
         'content_html' => 'HTML',
         'content_css' => 'CSS',
@@ -34,7 +34,7 @@ return [
         'menu_label' => 'PDF Šablony',
         'create_template' => 'Vytvoření PDF šablony',
         'edit_template' => 'Úprava PDF šablony',
-        'not_found' => 'Registrovaná šablona s tímto kódem nebyla nalezena',
+        'not_found' => 'Nebyla nalezena registrovaná šablona s kódem',
     ],
     'layouts' => [
         'label' => 'PDF Layouty',
@@ -44,20 +44,20 @@ return [
         'menu_label' => 'PDF Layouty',
         'create_layout' => 'Vytvoření PDF layoutu',
         'edit_layout' => 'Úprava PDF layoutu',
-        'not_found' => 'Registrované rozvržení s tímto kódem nebylo nalezeno',
+        'not_found' => 'Nebyl nalezen registrovaný layout s kódem',
     ],
     'settings' => [
         'description' => 'Správa PDF šablon a layoutů.',
     ],
     'permissions' => [
         'manage_templates' => 'Spravovat šablony',
-        'manage_layouts' => 'Spravovat rozvržení',
+        'manage_layouts' => 'Spravovat layouty',
         'tab' => 'PDF',
     ],
     'menu' => [
         'label' => 'PDF',
         'category' => 'PDF',
-        'description' => 'Upravovat šablony PDF a spravovat rozvržení PDF.',
+        'description' => 'Upravovat PDF šablony a spravovat PDF layouty.',
     ],
     'orientation' => [
         'portrait' => 'Na výšku',

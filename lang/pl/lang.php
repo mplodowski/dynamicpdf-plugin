@@ -60,8 +60,8 @@ return [
         'description' => 'Modyfikuj szablony i układy PDF.',
     ],
     'orientation' => [
-        'portrait' => 'Pionowy',
-        'landscape' => 'Poziomy',
+        'portrait' => 'Pionowa',
+        'landscape' => 'Pozioma',
     ],
     'options' => [
         'empty' => '-- wybierz --',

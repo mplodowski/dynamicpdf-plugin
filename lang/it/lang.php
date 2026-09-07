@@ -50,8 +50,8 @@ return [
         'description' => 'Gestisci modelli e layout.',
     ],
     'permissions' => [
-        'manage_templates' => 'Gestire i modelli',
-        'manage_layouts' => 'Gestire i layout',
+        'manage_templates' => 'Gestione modelli',
+        'manage_layouts' => 'Gestione layout',
         'tab' => 'PDF',
     ],
     'menu' => [

@@ -34,7 +34,7 @@ return [
         'menu_label' => 'Sjabloon',
         'create_template' => 'Sjabloon aanmaken',
         'edit_template' => 'Sjabloon bewerken',
-        'not_found' => 'Geen geregistreerd sjabloon gevonden met code',
+        'not_found' => 'Geen geregistreerd sjabloon gevonden met de code',
     ],
     'layouts' => [
         'label' => 'Lay-outs',
@@ -44,7 +44,7 @@ return [
         'menu_label' => 'Lay-out',
         'create_layout' => 'Lay-out aanmaken',
         'edit_layout' => 'Lay-out bewerken',
-        'not_found' => 'Geen geregistreerde lay-out gevonden met code',
+        'not_found' => 'Geen geregistreerde lay-out gevonden met de code',
     ],
     'settings' => [
         'description' => 'Beheer sjablonen en lay-outs.',

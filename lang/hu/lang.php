@@ -11,7 +11,7 @@ return [
         'title' => 'Cím',
         'description' => 'Leírás',
         'layout' => 'Elrendezés',
-        'empty_option' => '-- nincs --',
+        'empty_option' => '-- Nincs elrendezés --',
         'code_comment' => 'Egyedi kódot adjon meg.',
         'content_html' => 'HTML',
         'content_css' => 'CSS',

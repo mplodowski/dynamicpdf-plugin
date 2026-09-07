@@ -34,7 +34,7 @@ return [
         'menu_label' => 'Modèle',
         'create_template' => 'Créer un modèle',
         'edit_template' => 'Modifier le modèle',
-        'not_found' => 'Aucun modèle enregistré avec le code',
+        'not_found' => 'Impossible de trouver un modèle enregistré avec le code',
     ],
     'layouts' => [
         'label' => 'Mises en page',
@@ -44,7 +44,7 @@ return [
         'menu_label' => 'Mise en page',
         'create_layout' => 'Créer une mise en page',
         'edit_layout' => 'Modifier la mise en page',
-        'not_found' => 'Aucune mise en page enregistrée avec le code',
+        'not_found' => 'Impossible de trouver une mise en page enregistrée avec le code',
     ],
     'settings' => [
         'description' => 'Gérer les modèles et les mises en page.',
