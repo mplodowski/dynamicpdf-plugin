@@ -136,6 +136,25 @@ class PDFWrapper extends PDF
         }
     }
 
+    /**
+     * Remote resources stay limited to the hosts from the dompdf configuration or, when
+     * that allows any host, to the application itself, so a template cannot make the server
+     * fetch internal addresses.
+     */
+    public function allowRemoteApplicationAssets(): self
+    {
+        $options = $this->dompdf->getOptions();
+
+        $hosts = $options->getAllowedRemoteHosts() ?: array_values(array_unique(array_filter([
+            parse_url((string) config('app.url'), PHP_URL_HOST),
+            request()->getHost(),
+        ])));
+
+        $options->setIsRemoteEnabled(true)->setAllowedRemoteHosts($hosts);
+
+        return $this;
+    }
+
     protected function allowSelfSignedCertificates(): void
     {
         if (app()->environment('production')) {
