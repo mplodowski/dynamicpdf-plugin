@@ -2,45 +2,30 @@
 
 namespace Renatio\DynamicPDF\Classes;
 
-use Exception;
-use October\Rain\Support\Facades\Event;
-use RainLab\Translate\Classes\ThemeScanner;
+use Illuminate\Support\Facades\Log;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use Throwable;
 
 class SyncTemplates
 {
+    /** @var array<string, true> */
+    protected static array $failed = [];
+
     public function handle(): void
     {
-        try {
-            $this->checkFontsDir();
-            $this->createLayouts();
+        $this->createLayouts();
 
-            $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
+        $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
 
-            if (! $registeredTemplates) {
-                return;
-            }
-
-            $dbTemplates = Template::query()->pluck('is_custom', 'code')->all();
-
-            $this->clearNonCustomizedTemplates($dbTemplates, $registeredTemplates);
-
-            $newTemplates = array_diff_key($registeredTemplates, $dbTemplates);
-
-            $this->createTemplates($newTemplates);
-            $this->scanTranslatedMessages();
-        } catch (Exception) {
+        if (! $registeredTemplates) {
+            return;
         }
-    }
 
-    protected function checkFontsDir(): void
-    {
-        $fontDir = config('dompdf.options.font_dir');
+        $dbTemplates = Template::query()->pluck('is_custom', 'code')->all();
 
-        if ($fontDir && ! file_exists($fontDir)) {
-            mkdir($fontDir, 0755, true);
-        }
+        $this->clearNonCustomizedTemplates($dbTemplates, $registeredTemplates);
+        $this->createTemplates(array_diff_key($registeredTemplates, $dbTemplates));
     }
 
     protected function createLayouts(): void
@@ -53,15 +38,13 @@ class SyncTemplates
 
         $dbLayouts = Layout::query()->pluck('code', 'code')->all();
 
-        foreach ($registeredLayouts as $code) {
-            if (array_key_exists($code, $dbLayouts)) {
-                continue;
-            }
-
-            $layout = new Layout;
-            $layout->is_locked = true;
-            $layout->fillFromView($code);
-            $layout->save();
+        foreach (array_diff_key($registeredLayouts, $dbLayouts) as $code) {
+            $this->create($code, function () use ($code): void {
+                $layout = new Layout;
+                $layout->is_locked = true;
+                $layout->fillFromView($code);
+                $layout->forceSave();
+            });
         }
     }
 
@@ -72,11 +55,7 @@ class SyncTemplates
     protected function clearNonCustomizedTemplates(array $dbTemplates, array $registeredTemplates): void
     {
         foreach ($dbTemplates as $code => $isCustom) {
-            if ($isCustom) {
-                continue;
-            }
-
-            if (! array_key_exists($code, $registeredTemplates)) {
+            if (! $isCustom && ! array_key_exists($code, $registeredTemplates)) {
                 Template::whereCode($code)->delete();
             }
         }
@@ -88,26 +67,30 @@ class SyncTemplates
     protected function createTemplates(array $templates): void
     {
         foreach ($templates as $code) {
-            $template = new Template;
-            $template->fillFromView($code);
-            $template->forceSave();
+            $this->create($code, function () use ($code): void {
+                $template = new Template;
+                $template->fillFromView($code);
+                $template->forceSave();
+            });
         }
     }
 
-    protected function scanTranslatedMessages(): void
+    /**
+     * One registered code without a view file must not stop the others from syncing,
+     * and a code that keeps failing is logged once per process rather than per request.
+     */
+    protected function create(string $code, callable $create): void
     {
-        Event::listen('rainlab.translate.themeScanner.afterScan', function (ThemeScanner $scanner): void {
-            $messages = [];
+        if (isset(self::$failed[$code])) {
+            return;
+        }
 
-            foreach (Layout::all() as $layout) {
-                $messages = array_merge($messages, $scanner->parseContent($layout->content_html));
-            }
+        try {
+            $create();
+        } catch (Throwable $e) {
+            self::$failed[$code] = true;
 
-            foreach (Template::all() as $template) {
-                $messages = array_merge($messages, $scanner->parseContent($template->content_html));
-            }
-
-            $scanner->importMessages($messages);
-        });
+            Log::error("Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", ['exception' => $e]);
+        }
     }
 }

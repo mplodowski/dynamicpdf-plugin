@@ -5,9 +5,12 @@ namespace Renatio\DynamicPDF;
 use Backend\Facades\Backend;
 use Barryvdh\DomPDF\ServiceProvider;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\Event;
+use RainLab\Translate\Classes\ThemeScanner;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
-use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Console\Demo;
+use Renatio\DynamicPDF\Models\Layout;
+use Renatio\DynamicPDF\Models\Template;
 use System\Classes\PluginBase;
 use System\Classes\PluginManager;
 use System\Models\Parameter;
@@ -43,7 +46,19 @@ class Plugin extends PluginBase
             config(['dompdf.public_path' => public_path()]);
         }
 
-        (new SyncTemplates)->handle();
+        Event::listen('rainlab.translate.themeScanner.afterScan', function (ThemeScanner $scanner): void {
+            $messages = [];
+
+            foreach (Layout::all() as $layout) {
+                $messages = array_merge($messages, $scanner->parseContent($layout->content_html));
+            }
+
+            foreach (Template::all() as $template) {
+                $messages = array_merge($messages, $scanner->parseContent($template->content_html));
+            }
+
+            $scanner->importMessages($messages);
+        });
     }
 
     public function register(): void

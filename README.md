@@ -194,6 +194,10 @@ public function registerPDFTemplates()
 
 The method should return an array of pdf view names.
 
+Registered views are synchronised to the database when a *PDF Templates* settings page is displayed and when
+`php artisan dynamicpdf:demo` runs, not on every request. A code whose view file is missing is skipped and written to
+the application log once per process; a stored template whose view file went missing keeps its stored content. Until a registered view is synchronised, `PDF::loadTemplate()` renders it straight from the file.
+
 Like templates, PDF layouts can be registered by adding the `registerPDFLayouts` method of the Plugin registration
 class (`Plugin.php`).
 

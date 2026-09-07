@@ -11,6 +11,7 @@ use Illuminate\Http\Response;
 use October\Rain\Exception\ApplicationException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
+use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SettingsManager;
 
@@ -40,6 +41,11 @@ class Templates extends Controller
 
         BackendMenu::setContext('October.System', 'system', 'settings');
         SettingsManager::setContext('Renatio.DynamicPDF', 'templates');
+    }
+
+    public function beforeDisplay(): void
+    {
+        (new SyncTemplates)->handle();
     }
 
     public function index(?string $tab = null): void

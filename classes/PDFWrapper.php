@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Log;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SiteManager;
@@ -31,6 +32,7 @@ class PDFWrapper extends PDF
         parent::__construct($dompdf, $config, $files, $view);
 
         $this->applyCertificatePolicy();
+        $this->ensureFontDir();
     }
 
     /**
@@ -223,6 +225,15 @@ class PDFWrapper extends PDF
         $this->dompdf->setHttpContext($context);
 
         return $this;
+    }
+
+    protected function ensureFontDir(): void
+    {
+        $fontDir = $this->dompdf->getOptions()->getFontDir();
+
+        if ($fontDir && ! is_dir($fontDir) && ! @mkdir($fontDir, 0755, true) && ! is_dir($fontDir)) {
+            Log::error("Renatio.DynamicPDF could not create the dompdf font directory {$fontDir}.");
+        }
     }
 
     protected function applyCertificatePolicy(): void

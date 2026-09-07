@@ -35,6 +35,11 @@ class Layout extends Model
         'content_html' => ['required'],
     ];
 
+    /** @var array<string, string> */
+    protected $casts = [
+        'is_locked' => 'bool',
+    ];
+
     /** @var array<string, class-string> */
     public $attachOne = [
         'background_img' => File::class,

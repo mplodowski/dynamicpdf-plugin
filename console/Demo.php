@@ -3,6 +3,8 @@
 namespace Renatio\DynamicPDF\Console;
 
 use Illuminate\Console\Command;
+use Renatio\DynamicPDF\Classes\PDFManager;
+use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\PluginManager;
@@ -26,6 +28,9 @@ class Demo extends Command
     protected function enableDemo(): void
     {
         Parameter::set('renatio::dynamicpdf.demo', 1);
+
+        PDFManager::forgetInstance();
+        (new SyncTemplates)->handle();
 
         $this->info(e(trans('renatio.dynamicpdf::lang.demo.enabled')));
     }
