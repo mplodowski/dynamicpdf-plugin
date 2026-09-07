@@ -73,8 +73,9 @@ class PDFWrapper extends PDF
     /**
      * @param  array<string, mixed>  $data
      * @param  string|null  $layout  code of a layout to render with instead of the stored one
+     * @param  string|null  $locale  language to render in, restored afterwards
      */
-    public function loadTemplate(string $code, array $data = [], ?string $encoding = null, ?string $layout = null): self
+    public function loadTemplate(string $code, array $data = [], ?string $encoding = null, ?string $layout = null, ?string $locale = null): self
     {
         $template = Template::byCode($code);
 
@@ -83,7 +84,7 @@ class PDFWrapper extends PDF
         }
 
         $this->loadHTML(
-            $this->parseTemplate($template, $data),
+            $this->inLocale($locale, fn (array $data): string => $this->parseTemplate($template, $data), $data),
             $encoding,
         );
 
@@ -96,11 +97,14 @@ class PDFWrapper extends PDF
 
     /**
      * @param  array<string, mixed>  $data
+     * @param  string|null  $locale  language to render in, restored afterwards
      */
-    public function loadLayout(string $code, array $data = [], ?string $encoding = null): self
+    public function loadLayout(string $code, array $data = [], ?string $encoding = null, ?string $locale = null): self
     {
+        $layout = Layout::byCode($code);
+
         $this->loadHTML(
-            $this->parseLayout(Layout::byCode($code), $data),
+            $this->inLocale($locale, fn (array $data): string => $this->parseLayout($layout, $data), $data),
             $encoding,
         );
 
@@ -133,6 +137,29 @@ class PDFWrapper extends PDF
             $layout->content_html,
             $this->layoutData($layout, $data),
         );
+    }
+
+    /**
+     * Twig, the translator and Carbon all read the application locale, so it is switched
+     * for the render only and always put back, also when the render throws.
+     *
+     * @param  callable(array<string, mixed>): string  $render
+     * @param  array<string, mixed>  $data
+     */
+    protected function inLocale(?string $locale, callable $render, array $data): string
+    {
+        if ($locale === null) {
+            return $render($data);
+        }
+
+        $previous = app()->getLocale();
+        app()->setLocale($locale);
+
+        try {
+            return $render(array_merge(['locale' => $locale], $data));
+        } finally {
+            app()->setLocale($previous);
+        }
     }
 
     /**

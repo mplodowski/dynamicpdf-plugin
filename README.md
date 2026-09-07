@@ -300,8 +300,8 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 
 | Method                                                  | Description                                              |
 |---------------------------------------------------------|----------------------------------------------------------|
-| loadTemplate($code, array $data = [], $encoding = null, $layout = null) | Load backend template, optionally with another layout |
-| loadLayout($code, array $data = [], $encoding = null)   | Load backend layout                                      |
+| loadTemplate($code, array $data = [], $encoding = null, $layout = null, $locale = null) | Load backend template, optionally with another layout and locale |
+| loadLayout($code, array $data = [], $encoding = null, $locale = null) | Load backend layout, optionally in another locale |
 | allowSelfSignedCertificates()                           | Accept self-signed TLS certificates for remote resources |
 | loadHTML($string, $encoding = null)                     | Load HTML string                                         |
 | loadFile($file)                                         | Load HTML string from a file                             |
@@ -529,6 +529,16 @@ return PDF::loadTemplate('renatio::invoice', $data, layout: 'renatio::layouts.co
 
 Only the layout markup, CSS and background image are swapped; paper size and orientation still come from the
 template, so call `setPaper()` when the other layout needs them changed.
+
+### Render in another language
+
+The document language usually should not depend on the language of the backend user who generated it. Pass the
+locale to render in; translations, dates and the `locale` template variable follow it, and the application locale is
+restored afterwards, also when rendering fails:
+
+```
+return PDF::loadTemplate('renatio::invoice', $data, locale: 'de')->download('rechnung.pdf');
+```
 
 ### Change paper size and orientation
 

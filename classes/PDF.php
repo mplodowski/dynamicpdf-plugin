@@ -7,8 +7,8 @@ use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 
 /**
- * @method static PDFWrapper loadTemplate(string $code, array<string, mixed> $data = [], ?string $encoding = null, ?string $layout = null)
- * @method static PDFWrapper loadLayout(string $code, array<string, mixed> $data = [], ?string $encoding = null)
+ * @method static PDFWrapper loadTemplate(string $code, array<string, mixed> $data = [], ?string $encoding = null, ?string $layout = null, ?string $locale = null)
+ * @method static PDFWrapper loadLayout(string $code, array<string, mixed> $data = [], ?string $encoding = null, ?string $locale = null)
  * @method static string parseTemplate(Template $template, array<string, mixed> $data = [])
  * @method static string parseLayout(Layout $layout, array<string, mixed> $data = [])
  * @method static PDFWrapper allowRemoteApplicationAssets()
