@@ -45,6 +45,16 @@ class Layout extends Model
         'background_img' => File::class,
     ];
 
+    public function afterSave(): void
+    {
+        Template::flushLayoutCache();
+    }
+
+    public function afterDelete(): void
+    {
+        Template::flushLayoutCache();
+    }
+
     public function getHtmlAttribute(): string
     {
         return PDF::loadLayout($this->code)->getDompdf()->output_html();

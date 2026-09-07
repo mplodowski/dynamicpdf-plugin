@@ -44,7 +44,7 @@ class Demo extends Command
         }
 
         foreach ($plugin->registerPDFLayouts() as $layout) {
-            Layout::where('code', $layout)->delete();
+            Layout::where('code', $layout)->get()->each->delete();
         }
 
         Parameter::set('renatio::dynamicpdf.demo', 0);

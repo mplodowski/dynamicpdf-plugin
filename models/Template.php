@@ -2,6 +2,7 @@
 
 namespace Renatio\DynamicPDF\Models;
 
+use ArrayObject;
 use Dompdf\Adapter\CPDF;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
@@ -29,6 +30,8 @@ use Throwable;
 class Template extends Model
 {
     use Validation;
+
+    public const LAYOUT_CACHE = 'renatio.dynamicpdf.layouts';
 
     public $table = 'renatio_dynamicpdf_pdf_templates';
 
@@ -90,17 +93,56 @@ class Template extends Model
         $this->content_html = array_get($sections, 'html');
     }
 
+    /**
+     * Every view-driven row of a list re-reads its layout, so stored layouts are remembered
+     * by code for the current request or queue job (a scoped container instance) and each
+     * template gets its own hydrated copy. Unsaved view fallbacks are not remembered.
+     */
     protected function resolveLayout(?string $code): ?Layout
     {
         if (! $code) {
             return null;
         }
 
-        try {
-            return Layout::byCode($code);
-        } catch (ModelNotFoundException) {
-            return null;
+        $cache = self::layoutCache();
+
+        if (! isset($cache[$code])) {
+            try {
+                $layout = Layout::byCode($code);
+            } catch (ModelNotFoundException) {
+                $cache[$code] = false;
+
+                return null;
+            }
+
+            if (! $layout->exists) {
+                return $layout;
+            }
+
+            $cache[$code] = $layout->getAttributes();
         }
+
+        return $cache[$code] === false ? null : Layout::hydrate([$cache[$code]])->first();
+    }
+
+    /**
+     * Registered in Plugin::register(); bound here as well so a save on a disabled plugin
+     * or outside the plugin bootstrap does not fail.
+     *
+     * @return ArrayObject<string, array<string, mixed>|false>
+     */
+    public static function layoutCache(): ArrayObject
+    {
+        if (! app()->bound(self::LAYOUT_CACHE)) {
+            app()->scoped(self::LAYOUT_CACHE, fn (): ArrayObject => new ArrayObject);
+        }
+
+        return app(self::LAYOUT_CACHE);
+    }
+
+    public static function flushLayoutCache(): void
+    {
+        self::layoutCache()->exchangeArray([]);
     }
 
     public function getHtmlAttribute(): string

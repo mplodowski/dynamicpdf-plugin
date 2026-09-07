@@ -64,6 +64,7 @@ v8.0.4:
     - Render templates and layouts with empty content instead of failing.
     - Throw on unknown wrapper methods instead of ignoring them.
     - Render a registered template or layout from its view when it is not stored yet.
+    - Look a layout up once per code instead of once per template row when listing templates.
     - Complete the translations and add French, Italian, Dutch and Russian.
     - Synchronise registered views only in the backend and the demo command, and log a code whose view is missing instead of stopping the whole sync.
     - Add the layout argument to loadTemplate() to render with another layout without changing the template.

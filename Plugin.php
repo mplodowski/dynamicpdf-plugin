@@ -2,6 +2,7 @@
 
 namespace Renatio\DynamicPDF;
 
+use ArrayObject;
 use Backend\Facades\Backend;
 use Barryvdh\DomPDF\ServiceProvider;
 use Illuminate\Contracts\Foundation\Application;
@@ -63,6 +64,8 @@ class Plugin extends PluginBase
 
     public function register(): void
     {
+        $this->app->scoped(Template::LAYOUT_CACHE, fn (): ArrayObject => new ArrayObject);
+
         $this->registerConsoleCommand('dynamicpdf:demo', Demo::class);
     }
 
