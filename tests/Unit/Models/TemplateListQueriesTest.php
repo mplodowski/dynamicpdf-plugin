@@ -37,7 +37,19 @@ describe('Template list queries', function () {
 
         expect($templates)->toHaveCount(3)
             ->and($templates->first()?->layout?->code)->toBe('acme::pdf.layouts.default')
+            ->and($templates->first()?->layout === $templates->last()?->layout)->toBeFalse()
             ->and($layoutQueries)->toBe(1);
+    });
+
+    it('does not remember a layout that only exists as a registered view', function () {
+        PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.default']);
+        File::put($this->views . '/pdf/a.htm', "title = \"a\"\nlayout = \"renatio.dynamicpdf::pdf.layouts.default\"\n==\n<p>a</p>");
+        $this->createTemplate(['code' => 'acmetest::pdf.a', 'is_custom' => false]);
+
+        $template = Template::byCode('acmetest::pdf.a');
+
+        expect($template->layout?->exists)->toBeFalse()
+            ->and(Template::layoutCache()->count())->toBe(0);
     });
 
     it('forgets a remembered layout when it is saved', function () {

@@ -2,6 +2,7 @@
 
 namespace Renatio\DynamicPDF\Models;
 
+use ArrayObject;
 use Dompdf\Adapter\CPDF;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
@@ -90,12 +91,12 @@ class Template extends Model
         $this->content_html = array_get($sections, 'html');
     }
 
-    /** @var array<string, Layout|null> */
-    protected static array $layoutsByCode = [];
+    public const LAYOUT_CACHE = 'renatio.dynamicpdf.layouts';
 
     /**
-     * Every view-driven row of a list re-reads its layout, so the lookup is remembered
-     * per code for the process and forgotten whenever a layout is saved or deleted.
+     * Every view-driven row of a list re-reads its layout, so stored layouts are remembered
+     * by code for the current request or queue job (a scoped container instance) and each
+     * template gets its own hydrated copy. Unsaved view fallbacks are not remembered.
      */
     protected function resolveLayout(?string $code): ?Layout
     {
@@ -103,20 +104,36 @@ class Template extends Model
             return null;
         }
 
-        if (array_key_exists($code, self::$layoutsByCode)) {
-            return self::$layoutsByCode[$code];
+        $cache = self::layoutCache();
+
+        if (! isset($cache[$code])) {
+            try {
+                $layout = Layout::byCode($code);
+            } catch (ModelNotFoundException) {
+                return null;
+            }
+
+            if (! $layout->exists) {
+                return $layout;
+            }
+
+            $cache[$code] = $layout->getAttributes();
         }
 
-        try {
-            return self::$layoutsByCode[$code] = Layout::byCode($code);
-        } catch (ModelNotFoundException) {
-            return self::$layoutsByCode[$code] = null;
-        }
+        return Layout::hydrate([$cache[$code]])->first();
+    }
+
+    /**
+     * @return ArrayObject<string, array<string, mixed>>
+     */
+    public static function layoutCache(): ArrayObject
+    {
+        return app(self::LAYOUT_CACHE);
     }
 
     public static function flushLayoutCache(): void
     {
-        self::$layoutsByCode = [];
+        self::layoutCache()->exchangeArray([]);
     }
 
     public function getHtmlAttribute(): string
