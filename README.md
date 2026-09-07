@@ -429,8 +429,9 @@ deleted or failed; it exits with code 1 when a registered code has no view file.
 templates exist before the first backend visit.
 
 `php artisan dynamicpdf:check` reports the dompdf configuration that fails silently: font, cache and temporary
-directories (existence and write access), `chroot`, inline PHP and remote resources, and every registered code
-without a view file. It exits with code 1 on a failure, so it can guard a deployment.
+directories (existence and write access, without creating anything), `chroot`, inline PHP and remote resources, and
+every registered code without a view file. It exits with code 1 on a failure, so it can guard a deployment. Run both
+commands after `october:migrate`.
 
 ## Examples
 

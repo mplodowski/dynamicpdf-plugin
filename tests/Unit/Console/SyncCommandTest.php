@@ -2,10 +2,14 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Renatio\DynamicPDF\Classes\PDFManager;
+use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Template;
 
 describe('dynamicpdf:sync', function () {
-    afterEach(fn () => PDFManager::forgetInstance());
+    afterEach(function () {
+        PDFManager::forgetInstance();
+        SyncTemplates::forgetFailures();
+    });
 
     it('creates registered views and reports what it did', function () {
         PDFManager::forgetInstance();

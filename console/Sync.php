@@ -23,7 +23,7 @@ class Sync extends Command
         $this->list('Deleted', $report['deleted'], 'yellow');
         $this->list('Failed (see the application log)', $report['failed'], 'red');
 
-        if ($report === ['created' => [], 'deleted' => [], 'failed' => []]) {
+        if (array_filter($report) === []) {
             $this->components->info('Everything is up to date.');
         }
 
