@@ -89,9 +89,10 @@ describe('Backend preview', function () {
 
         $options = $wrapper->getDomPDF()->getOptions();
 
-        expect($options->validateLocalUri(base_path('.env'))[0])->toBeFalse()
-            ->and($options->validateLocalUri(storage_path('logs'))[0])->toBeFalse()
-            ->and($options->validateLocalUri(plugins_path('renatio/dynamicpdf/assets/img/october.png')))->toBe([true, null]);
+        expect($options->validateLocalUri(base_path('composer.json'))[1])->toContain('Permission denied')
+            ->and($options->validateLocalUri(storage_path('logs'))[1])->toContain('Permission denied')
+            ->and($options->validateLocalUri(plugins_path('renatio/dynamicpdf/assets/img/october.png')))->toBe([true, null])
+            ->and(array_map('realpath', $options->getChroot()))->not->toContain(realpath(base_path()));
     });
 
     it('keeps a custom chroot for the preview', function () {

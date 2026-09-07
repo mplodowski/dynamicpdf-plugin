@@ -319,7 +319,9 @@ class PDFWrapper extends PDF
 
         $options->setIsRemoteEnabled(true)->setAllowedRemoteHosts(array_values(array_unique($hosts)));
 
-        if ($options->getChroot() === [realpath(base_path())]) {
+        $chroot = $options->getChroot();
+
+        if (count($chroot) === 1 && realpath((string) $chroot[0]) === realpath(base_path())) {
             $options->setChroot(self::previewChroot());
         }
 
@@ -327,20 +329,31 @@ class PDFWrapper extends PDF
     }
 
     /**
-     * The directories a template may legitimately embed files from: the web root, plugin
-     * and theme assets and public uploads. Configuration, logs and protected uploads stay out.
+     * The directories a template may legitimately embed files from: what October mirrors as
+     * public plus public uploads and the media and resize caches. Configuration, logs and
+     * protected uploads stay out. Without a public/ folder public_path() is the project root
+     * and is dropped, or the restriction would allow everything again.
      *
      * @return array<int, string>
      */
-    public static function previewChroot(): array
+    protected static function previewChroot(): array
     {
-        return [
+        $base = realpath(base_path());
+
+        $paths = [
             public_path(),
             plugins_path(),
             themes_path(),
+            base_path('modules'),
+            base_path('app'),
             storage_path('app/uploads/public'),
+            storage_path('app/public'),
             storage_path('app/media'),
+            storage_path('app/resources'),
+            storage_path('temp/public'),
         ];
+
+        return array_values(array_filter($paths, fn (string $path): bool => realpath($path) !== $base));
     }
 
     /**
