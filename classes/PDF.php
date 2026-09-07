@@ -6,7 +6,7 @@ use Barryvdh\DomPDF\Facade\Pdf as PdfFacade;
 
 class PDF extends PdfFacade
 {
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
         return 'dynamicpdf';
     }

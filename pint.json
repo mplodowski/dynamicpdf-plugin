@@ -1,0 +1,36 @@
+{
+    "preset": "laravel",
+    "rules": {
+        "concat_space": {
+            "spacing": "one"
+        },
+        "method_argument_space": {
+            "on_multiline": "ensure_fully_multiline"
+        },
+        "ordered_imports": {
+            "sort_algorithm": "alpha",
+            "imports_order": [
+                "const",
+                "class",
+                "function"
+            ]
+        },
+        "single_line_empty_body": false,
+        "single_trait_insert_per_statement": true,
+        "trailing_comma_in_multiline": {
+            "elements": [
+                "arrays",
+                "arguments",
+                "parameters"
+            ]
+        },
+        "fully_qualified_strict_types": false
+    },
+    "exclude": [
+        "vendor"
+    ],
+    "notPath": [
+        "controllers/layouts",
+        "controllers/templates"
+    ]
+}

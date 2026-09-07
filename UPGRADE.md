@@ -43,12 +43,12 @@ After this change run `composer update` command.
 
 This is the latest version with support for October 1.x.
 
-Using `setOptions` method to change dompdf options is no longer recommended. This will cause to override all laravel
-dompdf configuration and use only specified by method argument and dompdf defaults for rest options not set by a
+Using `setOptions` method to change dompdf options is no longer recommended. This will override all Laravel
+dompdf configuration and use only options specified by method argument and dompdf defaults for options not set by the
 developer.
 
 Instead of using this method, please use dynamic method call for option you would like to change. Please read more
-in [documentation](https://github.com/mplodowski/dynamicpdf-plugin/blob/master/README.md#configuration-configuration).
+in [documentation](https://github.com/mplodowski/dynamicpdf-plugin/blob/master/README.md#configuration).
 
 ## Upgrading To 5.0.1
 
@@ -59,3 +59,11 @@ Plugin requires OctoberCMS v2.1.x with Laravel 6 and PHP >=7.2.
 Plugin requires October CMS version 3.0 or higher, Laravel 9.0 or higher and PHP >=8.0.
 
 Drop support for October CMS version 2.x.
+
+## Upgrading To 8.0.4
+
+**Security release. Upgrade every installation running 8.0.x.** Plugin requires PHP 8.2 or higher and October CMS 4.0
+or higher.
+
+The backend HTML and PDF preview no longer enables inline PHP. If you use the demo templates, open the
+**Header and Footer** layout and click **Reset to default** to remove the page number script from the stored copy.

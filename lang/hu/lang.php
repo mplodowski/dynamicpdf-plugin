@@ -53,7 +53,7 @@ return [
         'tab' => 'PDF',
     ],
     'menu' => [
-        'label' => 'PDF'
+        'label' => 'PDF',
     ],
     'orientation' => [
         'portrait' => 'Álló',

@@ -25,7 +25,7 @@ return [
         'preview_pdf' => 'Previsualizar',
         'created_at' => 'Creado en',
         'updated_at' => 'Modificado en',
-        'background_img_comment' => 'Utilize una imagen de 96 DPI para una correcta visualización'
+        'background_img_comment' => 'Utilize una imagen de 96 DPI para una correcta visualización',
     ],
     'template' => [
         'menu_label' => 'Plantilla PDF',
@@ -49,6 +49,6 @@ return [
         'tab' => 'PDF',
     ],
     'menu' => [
-        'label' => 'PDF'
-    ]
+        'label' => 'PDF',
+    ],
 ];

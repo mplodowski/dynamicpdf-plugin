@@ -395,6 +395,11 @@ Recommended approach is to save PDF file locally and return redirect to PDF file
 Page numbers can be generated using PHP. Inline PHP is disabled by default, because it can be a security risk. You can
 enable inline PHP using `setIsPhpEnabled` method.
 
+> **Security warning:** only enable `setIsPhpEnabled(true)` when the template content is fully trusted. Any
+> `<script type="text/php">` block in the HTML is executed on the server, so enabling it for templates that can be
+> edited by backend users allows remote code execution. For this reason the backend HTML and PDF preview no longer
+> enables inline PHP, and the bundled demo layout no longer ships a page number script.
+
 ```
 return PDF::loadTemplate('renatio::invoice')
     ->setIsRemoteEnabled(true)
@@ -450,7 +455,7 @@ php artisan dynamicpdf:demo --disable
 
 The first example shows invoice with custom font and image embed.
 
-The second example shows usage of header & footer, page break, page numbers and full background image.
+The second example shows usage of header & footer, page break and full background image.
 
 ### Render PDF in browser
 

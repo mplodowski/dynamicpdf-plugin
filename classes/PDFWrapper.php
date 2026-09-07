@@ -9,6 +9,12 @@ use October\Rain\Support\Facades\Twig;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 
+/**
+ * @method self setDpi(int $dpi)
+ * @method self setIsPhpEnabled(bool $enabled)
+ * @method self setIsRemoteEnabled(bool $enabled)
+ * @method self setLogOutputFile(string $path)
+ */
 class PDFWrapper extends PDF
 {
     public function __call($method, $parameters)
@@ -20,25 +26,28 @@ class PDFWrapper extends PDF
         if (method_exists($this->dompdf, $method)) {
             $return = $this->dompdf->$method(...$parameters);
 
-            return $return == $this->dompdf ? $this : $return;
+            return $return === $this->dompdf ? $this : $return;
         }
 
         $options = $this->dompdf->getOptions();
 
         if (method_exists($options, $method)) {
-            call_user_func_array([$options, $method], $parameters);
+            $options->$method(...$parameters);
         }
 
         return $this;
     }
 
-    public function loadTemplate($code, $data = [], $encoding = null)
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function loadTemplate(string $code, array $data = [], ?string $encoding = null): self
     {
         $template = Template::byCode($code);
 
         $this->loadHTML(
             $this->parseTemplate($template, $data),
-            $encoding
+            $encoding,
         );
 
         if ($template->size) {
@@ -50,11 +59,14 @@ class PDFWrapper extends PDF
         return $this;
     }
 
-    public function loadLayout($code, $data = [], $encoding = null)
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function loadLayout(string $code, array $data = [], ?string $encoding = null): self
     {
         $this->loadHTML(
             $this->parseLayout(Layout::byCode($code), $data),
-            $encoding
+            $encoding,
         );
 
         $this->allowSelfSignedCertificates();
@@ -62,7 +74,10 @@ class PDFWrapper extends PDF
         return $this;
     }
 
-    public function parseTemplate($template, $data = [])
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function parseTemplate(Template $template, array $data = []): string
     {
         $html = $this->parseMarkup($template->content_html, $data);
 
@@ -72,39 +87,53 @@ class PDFWrapper extends PDF
 
         return $this->parseLayout(
             $template->layout,
-            array_merge(['content_html' => $html], $data)
+            array_merge(['content_html' => $html], $data),
         );
     }
 
-    public function parseLayout($layout, $data = [])
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function parseLayout(Layout $layout, array $data = []): string
     {
         return $this->parseMarkup(
             $layout->content_html,
-            $this->layoutData($layout, $data)
+            $this->layoutData($layout, $data),
         );
     }
 
-    protected function layoutData($layout, $data)
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function layoutData(Layout $layout, array $data): array
     {
         return array_merge([
-            'background_img' => $layout->background_img ? $layout->background_img->getPath() : null,
+            'background_img' => $layout->background_img?->getPath(),
             'css' => $layout->getCSS(),
         ], $data);
     }
 
-    protected function parseMarkup($markup, $data)
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    protected function parseMarkup(?string $markup, array $data): string
     {
+        if ($markup === null || $markup === '') {
+            return '';
+        }
+
         try {
             $twig = (new Controller)->getTwig();
             $template = $twig->createTemplate($markup);
 
             return $template->render($data);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return Twig::parse($markup, $data);
         }
     }
 
-    protected function allowSelfSignedCertificates()
+    protected function allowSelfSignedCertificates(): void
     {
         if (app()->environment('production')) {
             return;
