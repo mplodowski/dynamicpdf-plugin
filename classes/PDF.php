@@ -5,6 +5,7 @@ namespace Renatio\DynamicPDF\Classes;
 use Barryvdh\DomPDF\Facade\Pdf as PdfFacade;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use RuntimeException;
 
 /**
  * @method static PDFWrapper loadTemplate(string $code, array<string, mixed> $data = [], ?string $encoding = null, ?string $layout = null, ?string $locale = null)
@@ -22,5 +23,19 @@ class PDF extends PdfFacade
     protected static function getFacadeAccessor(): string
     {
         return 'dynamicpdf';
+    }
+
+    /**
+     * Replace the wrapper with a recorder for the rest of the test, so no template is looked
+     * up and no PDF is produced.
+     */
+    public static function fake(): PDFFake
+    {
+        $app = static::getFacadeApplication() ?? throw new RuntimeException('Facade application has not been set.');
+
+        $fake = new PDFFake($app->make('dompdf'), $app->make('config'), $app->make('files'), $app->make('view'));
+        $app->instance(static::getFacadeAccessor(), $fake);
+
+        return $fake;
     }
 }

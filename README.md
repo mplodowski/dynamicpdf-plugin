@@ -338,6 +338,7 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 | output()                                                | Output the PDF as a string                               |
 | toFile($filename = 'document.pdf', $public = true)      | Return the PDF as a System\Models\File to attach to a model |
 | encrypt($password, $ownerPassword = '', $permissions = []) | Password-protect the PDF (CPDF backend)               |
+| fake()                                                  | Static: replace the wrapper with a recorder for tests    |
 | addInfo(array $info)                                    | Set PDF metadata such as Title or Author                 |
 | save($filename, $disk = null)                           | Save the PDF to a file, optionally on a storage disk     |
 | download($filename = 'document.pdf')                    | Make the PDF downloadable by the user                    |
@@ -492,6 +493,27 @@ Inline PHP (`setIsPhpEnabled(true)`) is no longer needed for page numbers and sh
 > **Security warning:** only enable `setIsPhpEnabled(true)` when the template content is fully trusted. Any
 > `<script type="text/php">` block in the HTML is executed on the server, so enabling it for templates that can be
 > edited by backend users allows remote code execution. The backend HTML and PDF preview never enables it.
+
+## Testing
+
+`PDF::fake()` replaces the wrapper for the rest of the test: no template is looked up, no Twig, dompdf, database or
+filesystem work happens, `stream()` and `download()` return an empty `application/pdf` response, `output()` returns an
+empty string, `save()` writes nothing and `toFile()` returns a record that can be attached and saved. The fake records
+every `loadTemplate()`, `loadLayout()`, `loadView()`, `loadFile()`, `parseTemplate()` and `parseLayout()` call with its
+data, layout and locale:
+
+```
+$fake = PDF::fake();
+
+$this->get('/backend/acme/orders/pdf/1');
+
+$fake->assertRendered('acme::pdf.invoice', fn (array $data) => $data['order']->id === 1);
+$fake->assertRenderedTimes('acme::pdf.invoice', 1);
+$fake->assertNotRendered('acme::pdf.reminder');
+```
+
+`assertNothingRendered()` covers the negative case and `rendered()` returns the raw records. `pageNumbers()` keeps
+validating its arguments under the fake.
 
 ## Console commands
 
