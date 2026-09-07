@@ -50,3 +50,11 @@ secondaryTabs:
             type: dropdown
             emptyOption: renatio.dynamicpdf::lang.options.empty
             span: right
+
+        sample_data:
+            label: renatio.dynamicpdf::lang.templates.sample_data
+            comment: renatio.dynamicpdf::lang.templates.sample_data_comment
+            tab: renatio.dynamicpdf::lang.tab.options
+            type: codeeditor
+            language: json
+            size: large

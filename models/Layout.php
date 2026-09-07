@@ -45,6 +45,28 @@ class Layout extends Model
         'background_img' => File::class,
     ];
 
+    public function duplicate(): self
+    {
+        $copy = $this->replicate();
+        $copy->code = $this->uniqueCopyCode($this->code);
+        $copy->name = $this->name . ' (copy)';
+        $copy->is_locked = false;
+        $copy->save();
+
+        return $copy;
+    }
+
+    protected function uniqueCopyCode(string $code): string
+    {
+        $candidate = $code . '_copy';
+
+        for ($i = 2; static::whereCode($candidate)->exists(); $i++) {
+            $candidate = "{$code}_copy{$i}";
+        }
+
+        return $candidate;
+    }
+
     public function afterSave(): void
     {
         Template::flushLayoutCache();

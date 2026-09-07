@@ -24,6 +24,7 @@ use Throwable;
  * @property string|null $size
  * @property string|null $orientation
  * @property bool $is_custom
+ * @property string|null $sample_data
  * @property Layout|null $layout
  * @property-read string $html
  */
@@ -50,7 +51,42 @@ class Template extends Model
         'title' => ['required'],
         'code' => ['required', 'unique:renatio_dynamicpdf_pdf_templates'],
         'content_html' => ['required'],
+        'sample_data' => ['nullable', 'json'],
     ];
+
+    /**
+     * Data the backend preview renders with, entered as JSON on the template.
+     *
+     * @return array<string, mixed>
+     */
+    public function sampleData(): array
+    {
+        $data = json_decode((string) $this->sample_data, true);
+
+        return is_array($data) ? $data : [];
+    }
+
+    public function duplicate(): self
+    {
+        $copy = $this->replicate();
+        $copy->code = $this->uniqueCopyCode($this->code);
+        $copy->title = $this->title . ' (copy)';
+        $copy->is_custom = true;
+        $copy->save();
+
+        return $copy;
+    }
+
+    protected function uniqueCopyCode(string $code): string
+    {
+        $candidate = $code . '_copy';
+
+        for ($i = 2; static::whereCode($candidate)->exists(); $i++) {
+            $candidate = "{$code}_copy{$i}";
+        }
+
+        return $candidate;
+    }
 
     /**
      * A stored, non-customised template follows its view file. The row is left as
@@ -147,7 +183,7 @@ class Template extends Model
 
     public function getHtmlAttribute(): string
     {
-        return PDF::loadTemplate($this->code)->getDompdf()->output_html();
+        return PDF::loadTemplate($this->code, $this->sampleData())->getDompdf()->output_html();
     }
 
     /**
