@@ -91,3 +91,10 @@ the sync. A registered code without a view file is skipped and logged instead of
 
 The backend HTML and PDF preview no longer enables inline PHP. If you use the demo templates, open the
 **Header and Footer** layout and click **Reset to default** to remove the page number script from the stored copy.
+
+## Upgrading To 8.0.5
+
+The template and layout `code` columns get a unique index. Duplicate rows, which concurrent synchronisations could
+leave behind, are deleted permanently by the migration and not restored by a rollback: for templates the customised
+row is kept, for layouts the locked one, otherwise the oldest. Templates attached to a deleted layout are re-pointed
+to the kept one.
