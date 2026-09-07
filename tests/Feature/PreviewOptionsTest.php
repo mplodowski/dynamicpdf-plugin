@@ -22,7 +22,7 @@ describe('Backend preview', function () {
         $wrapper = captureWrapper();
         $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
 
-        (new Templates)->previewPdf($template->id);
+        (new Templates)->previewpdf($template->id);
 
         expect($wrapper->getDomPDF()->getOptions()->getIsPhpEnabled())->toBeFalse();
     });
@@ -31,7 +31,7 @@ describe('Backend preview', function () {
         $wrapper = captureWrapper();
         $layout = $this->createLayout(['content_html' => '<html><body>Hello</body></html>']);
 
-        (new Layouts)->previewPdf($layout->id);
+        (new Layouts)->previewpdf($layout->id);
 
         expect($wrapper->getDomPDF()->getOptions()->getIsPhpEnabled())->toBeFalse();
     });
@@ -41,7 +41,7 @@ describe('Backend preview', function () {
         $wrapper = captureWrapper();
         $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
 
-        (new Templates)->previewPdf($template->id);
+        (new Templates)->previewpdf($template->id);
 
         $options = $wrapper->getDomPDF()->getOptions();
 
@@ -57,7 +57,7 @@ describe('Backend preview', function () {
         $wrapper = captureWrapper();
         $layout = $this->createLayout(['content_html' => '<html><body>Hello</body></html>']);
 
-        (new Layouts)->previewPdf($layout->id);
+        (new Layouts)->previewpdf($layout->id);
 
         expect($wrapper->getDomPDF()->getOptions()->getAllowedRemoteHosts())->toBe(['app.example.com']);
     });
@@ -67,7 +67,7 @@ describe('Backend preview', function () {
         $wrapper = captureWrapper();
         $layout = $this->createLayout(['content_html' => '<html><body>Hello</body></html>']);
 
-        (new Layouts)->previewPdf($layout->id);
+        (new Layouts)->previewpdf($layout->id);
 
         expect($wrapper->getDomPDF()->getOptions()->getAllowedRemoteHosts())->toBe(['cdn.example.com', 'app.example.com']);
     });
@@ -76,7 +76,7 @@ describe('Backend preview', function () {
         $wrapper = captureWrapper();
         $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
 
-        (new Templates)->previewPdf($template->id);
+        (new Templates)->previewpdf($template->id);
 
         expect(stream_context_get_options($wrapper->getDomPDF()->getHttpContext())['http']['follow_location'])->toBeFalse();
     });
@@ -85,7 +85,7 @@ describe('Backend preview', function () {
         $wrapper = captureWrapper();
         $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
 
-        (new Templates)->previewPdf($template->id);
+        (new Templates)->previewpdf($template->id);
 
         $options = $wrapper->getDomPDF()->getOptions();
 
@@ -100,7 +100,7 @@ describe('Backend preview', function () {
         $wrapper = captureWrapper();
         $layout = $this->createLayout(['content_html' => '<html><body>Hello</body></html>']);
 
-        (new Layouts)->previewPdf($layout->id);
+        (new Layouts)->previewpdf($layout->id);
 
         expect($wrapper->getDomPDF()->getOptions()->getChroot())->toBe([storage_path('app')]);
     });
