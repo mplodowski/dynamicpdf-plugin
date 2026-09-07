@@ -76,8 +76,8 @@ v8.0.4:
     - Add PDF::fake() with render assertions for project tests.
     - Render through the system Twig environment when the Cms module is missing or no theme is usable, and report CMS rendering errors instead of retrying with the system one.
 v8.0.5:
+    - Fix the 404 of the PDF preview under recent October 4.3 builds, which require lowercase action names.
     - Backend previews render with the sample data of the template, lists show customised and locked records, templates and layouts can be duplicated and previewed from the list.
     - Add a unique index on the template and layout code, removing duplicates left by concurrent syncs.
     - 20260907_0001_add_sample_data_to_templates_table.php
-    - Fix the 404 of the PDF preview under October 4.3.5, whose action names must be lowercase.
     - 20260907_0002_add_unique_code_indexes.php
