@@ -525,9 +525,10 @@ follow it while the template is parsed, and the application locale is restored a
 return PDF::loadTemplate('renatio::invoice', $data, locale: 'de')->download('rechnung.pdf');
 ```
 
-The `locale` variable is always available and holds the application locale when no argument is given. RainLab.Translate
-messages (`|_`) and translated model attributes follow the site locale, not this argument, and inline PHP executed by
-dompdf during `output()` runs after the locale has been restored.
+`loadTemplate()` and `loadLayout()` always add the `locale` variable, holding the application locale when no argument
+is given; a `locale` key in your own data takes precedence. With RainLab.Translate installed its messages (`|_`) and
+translated model attributes follow the site locale, not this argument, and inline PHP executed by dompdf during
+`output()` runs after the locale has been restored.
 
 ### Change paper size and orientation
 

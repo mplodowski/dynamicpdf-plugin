@@ -148,7 +148,7 @@ class PDFWrapper extends PDF
      */
     protected function withLocaleVariable(array $data, ?string $locale): array
     {
-        return array_merge(['locale' => $locale ?: app()->getLocale()], $data);
+        return array_merge(['locale' => $locale === null || $locale === '' ? app()->getLocale() : $locale], $data);
     }
 
     /**
