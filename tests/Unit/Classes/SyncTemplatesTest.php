@@ -17,7 +17,7 @@ describe('SyncTemplates', function () {
 
     afterEach(function () {
         PDFManager::forgetInstance();
-        (new ReflectionProperty(SyncTemplates::class, 'failed'))->setValue(null, []);
+        SyncTemplates::forgetFailures();
     });
 
     it('creates registered layouts and templates from their views', function () {

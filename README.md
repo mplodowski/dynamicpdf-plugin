@@ -422,6 +422,16 @@ Inline PHP (`setIsPhpEnabled(true)`) is no longer needed for page numbers and sh
 > `<script type="text/php">` block in the HTML is executed on the server, so enabling it for templates that can be
 > edited by backend users allows remote code execution. The backend HTML and PDF preview never enables it.
 
+## Console commands
+
+`php artisan dynamicpdf:sync` synchronises the registered PDF views with the database and lists what was created,
+deleted or failed; it exits with code 1 when a registered code has no view file. Run it after a deployment so the
+templates exist before the first backend visit.
+
+`php artisan dynamicpdf:check` reports the dompdf configuration that fails silently: font, cache and temporary
+directories (existence and write access), `chroot`, inline PHP and remote resources, and every registered code
+without a view file. It exits with code 1 on a failure, so it can guard a deployment.
+
 ## Examples
 
 ### Demo examples

@@ -12,8 +12,13 @@ class SyncTemplates
     /** @var array<string, true> */
     protected static array $failed = [];
 
+    /** @var array<string, array<int, string>> */
+    protected array $report = ['created' => [], 'deleted' => [], 'failed' => []];
+
     public function handle(): void
     {
+        $this->report = ['created' => [], 'deleted' => [], 'failed' => []];
+
         $this->createLayouts();
 
         $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
@@ -26,6 +31,19 @@ class SyncTemplates
 
         $this->clearNonCustomizedTemplates($dbTemplates, $registeredTemplates);
         $this->createTemplates(array_diff_key($registeredTemplates, $dbTemplates));
+    }
+
+    /**
+     * @return array<string, array<int, string>>
+     */
+    public function report(): array
+    {
+        return $this->report;
+    }
+
+    public static function forgetFailures(): void
+    {
+        self::$failed = [];
     }
 
     protected function createLayouts(): void
@@ -57,6 +75,7 @@ class SyncTemplates
         foreach ($dbTemplates as $code => $isCustom) {
             if (! $isCustom && ! array_key_exists($code, $registeredTemplates)) {
                 Template::whereCode($code)->delete();
+                $this->report['deleted'][] = $code;
             }
         }
     }
@@ -82,13 +101,17 @@ class SyncTemplates
     protected function create(string $code, callable $create): void
     {
         if (isset(self::$failed[$code])) {
+            $this->report['failed'][] = $code;
+
             return;
         }
 
         try {
             $create();
+            $this->report['created'][] = $code;
         } catch (Throwable $e) {
             self::$failed[$code] = true;
+            $this->report['failed'][] = $code;
 
             Log::error("Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", ['exception' => $e]);
         }

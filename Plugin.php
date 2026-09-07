@@ -9,7 +9,9 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Event;
 use RainLab\Translate\Classes\ThemeScanner;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
+use Renatio\DynamicPDF\Console\Check;
 use Renatio\DynamicPDF\Console\Demo;
+use Renatio\DynamicPDF\Console\Sync;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\PluginBase;
@@ -67,6 +69,8 @@ class Plugin extends PluginBase
         $this->app->scoped(Template::LAYOUT_CACHE, fn (): ArrayObject => new ArrayObject);
 
         $this->registerConsoleCommand('dynamicpdf:demo', Demo::class);
+        $this->registerConsoleCommand('dynamicpdf:sync', Sync::class);
+        $this->registerConsoleCommand('dynamicpdf:check', Check::class);
     }
 
     /**
