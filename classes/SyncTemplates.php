@@ -9,9 +9,11 @@ use Throwable;
 
 class SyncTemplates
 {
+    /** @var array<string, true> */
+    protected static array $failed = [];
+
     public function handle(): void
     {
-        $this->checkFontsDir();
         $this->createLayouts();
 
         $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
@@ -24,19 +26,6 @@ class SyncTemplates
 
         $this->clearNonCustomizedTemplates($dbTemplates, $registeredTemplates);
         $this->createTemplates(array_diff_key($registeredTemplates, $dbTemplates));
-    }
-
-    protected function checkFontsDir(): void
-    {
-        $fontDir = config('dompdf.options.font_dir');
-
-        if (! $fontDir || file_exists($fontDir)) {
-            return;
-        }
-
-        if (! @mkdir($fontDir, 0755, true) && ! is_dir($fontDir)) {
-            Log::error("Renatio.DynamicPDF could not create the dompdf font directory {$fontDir}.");
-        }
     }
 
     protected function createLayouts(): void
@@ -54,7 +43,7 @@ class SyncTemplates
                 $layout = new Layout;
                 $layout->is_locked = true;
                 $layout->fillFromView($code);
-                $layout->save();
+                $layout->forceSave();
             });
         }
     }
@@ -87,14 +76,21 @@ class SyncTemplates
     }
 
     /**
-     * One registered code without a view file must not stop the others from syncing.
+     * One registered code without a view file must not stop the others from syncing,
+     * and a code that keeps failing is logged once per process rather than per request.
      */
     protected function create(string $code, callable $create): void
     {
+        if (isset(self::$failed[$code])) {
+            return;
+        }
+
         try {
             $create();
         } catch (Throwable $e) {
-            Log::error("Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}");
+            self::$failed[$code] = true;
+
+            Log::error("Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", ['exception' => $e]);
         }
     }
 }

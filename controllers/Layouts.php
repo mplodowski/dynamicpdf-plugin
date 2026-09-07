@@ -32,7 +32,10 @@ class Layouts extends Controller
 
         BackendMenu::setContext('October.System', 'system', 'settings');
         SettingsManager::setContext('Renatio.DynamicPDF', 'templates');
+    }
 
+    public function beforeDisplay(): void
+    {
         (new SyncTemplates)->handle();
     }
 

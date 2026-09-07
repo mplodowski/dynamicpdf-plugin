@@ -4,12 +4,14 @@ namespace Renatio\DynamicPDF\Models;
 
 use Dompdf\Adapter\CPDF;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Exception\ApplicationException;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
+use Throwable;
 
 /**
  * @property int $id
@@ -30,6 +32,11 @@ class Template extends Model
 
     public $table = 'renatio_dynamicpdf_pdf_templates';
 
+    /** @var array<string, string> */
+    protected $casts = [
+        'is_custom' => 'bool',
+    ];
+
     /** @var array<string, class-string> */
     public $belongsTo = [
         'layout' => Layout::class,
@@ -42,10 +49,20 @@ class Template extends Model
         'content_html' => ['required'],
     ];
 
+    /**
+     * A stored, non-customised template follows its view file. The row is left as
+     * stored when the view is not registered any more or its file is missing.
+     */
     public function afterFetch(): void
     {
-        if (! $this->is_custom && $this->code) {
+        if ($this->is_custom || ! $this->code || ! $this->getView()) {
+            return;
+        }
+
+        try {
             $this->fillFromView($this->code);
+        } catch (Throwable $e) {
+            Log::error("Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
         }
     }
 
