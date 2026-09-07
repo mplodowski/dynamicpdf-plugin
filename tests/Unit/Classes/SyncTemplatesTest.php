@@ -11,13 +11,14 @@ use Renatio\DynamicPDF\Plugin;
 describe('SyncTemplates', function () {
     beforeEach(function () {
         PDFManager::forgetInstance();
+        SyncTemplates::forgetFailures();
         PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.default']);
         PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
     });
 
     afterEach(function () {
         PDFManager::forgetInstance();
-        (new ReflectionProperty(SyncTemplates::class, 'failed'))->setValue(null, []);
+        SyncTemplates::forgetFailures();
     });
 
     it('creates registered layouts and templates from their views', function () {
