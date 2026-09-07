@@ -527,6 +527,9 @@ company, without changing the template in the database:
 return PDF::loadTemplate('renatio::invoice', $data, layout: 'renatio::layouts.company_b')->stream();
 ```
 
+Only the layout markup, CSS and background image are swapped; paper size and orientation still come from the
+template, so call `setPaper()` when the other layout needs them changed.
+
 ### Change paper size and orientation
 
 ```

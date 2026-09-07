@@ -79,7 +79,7 @@ class PDFWrapper extends PDF
         $template = Template::byCode($code);
 
         if ($layout !== null) {
-            $template->setAttribute('layout', Layout::byCode($layout));
+            $template->setRelation('layout', Layout::byCode($layout));
         }
 
         $this->loadHTML(
