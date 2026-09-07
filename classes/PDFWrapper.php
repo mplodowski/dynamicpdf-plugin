@@ -16,6 +16,7 @@ use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SiteManager;
 use System\Facades\System;
+use System\Models\File;
 use System\Models\SiteDefinition;
 use Twig\Environment;
 use UnexpectedValueException;
@@ -132,6 +133,34 @@ class PDFWrapper extends PDF
         $y = $vertical === 'top' ? $numbers['margin'] : $canvas->get_height() - $numbers['margin'] - $height;
 
         $canvas->page_text($x, $y, $numbers['text'], $font, $numbers['size'], $numbers['color']);
+    }
+
+    /**
+     * The rendered document as a file record ready to be attached to a model. The bytes are
+     * written to the uploads disk right away, so attach and save the record or delete it.
+     * $public must match the relation's public flag, or the row points at the wrong directory.
+     */
+    public function toFile(string $filename = 'document.pdf', bool $public = true): File
+    {
+        $file = new File;
+        $file->setAttribute('is_public', $public);
+        $file->fromData($this->output(), $filename);
+
+        return $file;
+    }
+
+    /**
+     * Renders the document, so call it last, right before output(), stream(), download(),
+     * save() or toFile(); a later loadHTML() or setPaper() rebuilds the canvas unencrypted.
+     * Permissions are opt-in: print, modify, copy, add.
+     *
+     * @param  array<int, string>  $permissions
+     */
+    public function encrypt(string $password, string $ownerPassword = '', array $permissions = []): self
+    {
+        $this->setEncryption($password, $ownerPassword, $permissions);
+
+        return $this;
     }
 
     public function __call($method, $parameters)

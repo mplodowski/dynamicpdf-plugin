@@ -299,7 +299,10 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 | setPaper($paper, $orientation = 'portrait')             | Set the paper size and orientation (default A4/portrait) |
 | setWarnings($warnings)                                  | Show or hide warnings                                    |
 | output()                                                | Output the PDF as a string                               |
-| save($filename)                                         | Save the PDF to a file                                   |
+| toFile($filename = 'document.pdf', $public = true)      | Return the PDF as a System\Models\File to attach to a model |
+| encrypt($password, $ownerPassword = '', $permissions = []) | Password-protect the PDF (CPDF backend)               |
+| addInfo(array $info)                                    | Set PDF metadata such as Title or Author                 |
+| save($filename, $disk = null)                           | Save the PDF to a file, optionally on a storage disk     |
 | download($filename = 'document.pdf')                    | Make the PDF downloadable by the user                    |
 | stream($filename = 'document.pdf')                      | Return a response with the PDF to show in the browser    |
 
@@ -394,6 +397,37 @@ Then in the template you can use following example code:
 
 When `allow_url_fopen` is disabled on server try to use relative path. You can use October `getLocalPath` function on
 the file object to retrieve it.
+
+### Attach the PDF to a model
+
+`toFile()` returns a `System\Models\File` built from the rendered document, so the PDF can be attached with October's
+`attachOne` / `attachMany` relations instead of being written to disk by hand:
+
+```
+$order->invoice = PDF::loadTemplate('renatio::invoice', ['order' => $order])->toFile('invoice.pdf', public: false);
+$order->save();
+```
+
+Pass `public: false` for a relation declared with `'public' => false`, otherwise the record points at the wrong
+directory. The file is written to the uploads disk as soon as `toFile()` returns, so attach and save it, or call
+`$file->delete()` when you abandon it.
+
+### Save to a storage disk and set metadata
+
+```
+PDF::loadTemplate('renatio::invoice')
+    ->addInfo(['Title' => 'Invoice 2026/1', 'Author' => 'Acme'])
+    ->save('invoices/2026-1.pdf', 's3');
+```
+
+### Password protection
+
+```
+return PDF::loadTemplate('renatio::invoice')->encrypt('reader-password', 'owner-password', ['print'])->stream();
+```
+
+`encrypt()` renders the document, so call it last, right before the output method. Permissions are opt-in: without
+`['print', 'copy', ...]` the reader cannot print or copy. Requires the CPDF backend.
 
 ### Download PDF via Ajax response
 
