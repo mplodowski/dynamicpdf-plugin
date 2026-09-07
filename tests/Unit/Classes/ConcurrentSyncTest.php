@@ -6,6 +6,11 @@ use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Template;
 
 describe('Unique codes', function () {
+    beforeEach(function () {
+        PDFManager::forgetInstance();
+        SyncTemplates::forgetFailures();
+    });
+
     afterEach(function () {
         PDFManager::forgetInstance();
         SyncTemplates::forgetFailures();

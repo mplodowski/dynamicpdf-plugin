@@ -85,12 +85,16 @@ TLS certificates are verified on every environment. On a development host with a
 `DYNAMICPDF_ALLOW_SELF_SIGNED=true` in `.env` (or `allow_self_signed_certificates` in `config/renatio/dynamicpdf.php`),
 or call the now public `allowSelfSignedCertificates()` on the wrapper for a single document.
 
-The template and layout `code` columns get a unique index. Duplicate rows, which concurrent synchronisations could
-leave behind, are removed by the migration: the customised (or locked) row is kept, otherwise the oldest one.
-
 Registered PDF views are synchronised to the database when the *PDF Templates* settings page is opened or
 `dynamicpdf:demo` runs, no longer on every request. Rendering a registered view that is not stored yet works without
 the sync. A registered code without a view file is skipped and logged instead of silently stopping the sync.
 
 The backend HTML and PDF preview no longer enables inline PHP. If you use the demo templates, open the
 **Header and Footer** layout and click **Reset to default** to remove the page number script from the stored copy.
+
+## Upgrading To 8.0.5
+
+The template and layout `code` columns get a unique index. Duplicate rows, which concurrent synchronisations could
+leave behind, are deleted permanently by the migration and not restored by a rollback: for templates the customised
+row is kept, for layouts the locked one, otherwise the oldest. Templates attached to a deleted layout are re-pointed
+to the kept one.
