@@ -300,7 +300,7 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 
 | Method                                                  | Description                                              |
 |---------------------------------------------------------|----------------------------------------------------------|
-| loadTemplate($code, array $data = [], $encoding = null) | Load backend template                                    |
+| loadTemplate($code, array $data = [], $encoding = null, $layout = null) | Load backend template, optionally with another layout |
 | loadLayout($code, array $data = [], $encoding = null)   | Load backend layout                                      |
 | allowSelfSignedCertificates()                           | Accept self-signed TLS certificates for remote resources |
 | loadHTML($string, $encoding = null)                     | Load HTML string                                         |
@@ -517,6 +517,18 @@ return PDF::loadTemplate('renatio::invoice')
     ->save('/path-to/my_stored_file.pdf')
     ->stream();
 ```
+
+### Render with another layout
+
+A template can be rendered with a different layout than the one stored with it, for example one letterhead per
+company, without changing the template in the database:
+
+```
+return PDF::loadTemplate('renatio::invoice', $data, layout: 'renatio::layouts.company_b')->stream();
+```
+
+Only the layout markup, CSS and background image are swapped; paper size and orientation still come from the
+template, so call `setPaper()` when the other layout needs them changed.
 
 ### Change paper size and orientation
 
