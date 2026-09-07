@@ -4,16 +4,18 @@ namespace Renatio\DynamicPDF\Classes;
 
 use Barryvdh\DomPDF\PDF;
 use Cms\Classes\Controller;
+use Cms\Classes\Theme;
 use Dompdf\Dompdf;
 use Exception;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Filesystem\Filesystem;
-use October\Rain\Support\Facades\Twig;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SiteManager;
+use System\Facades\System;
 use System\Models\SiteDefinition;
+use Twig\Environment;
 use UnexpectedValueException;
 
 /**
@@ -147,14 +149,27 @@ class PDFWrapper extends PDF
             return '';
         }
 
-        try {
-            $twig = (new Controller)->getTwig();
-            $template = $twig->createTemplate($markup);
+        return $this->twig()->createTemplate($markup)->render($data);
+    }
 
-            return $template->render($data);
-        } catch (Exception) {
-            return Twig::parse($markup, $data);
+    /**
+     * The CMS environment adds theme partials and content on top of the system one, so it
+     * is used whenever the module is installed and a usable theme is active. Looking the
+     * theme up can itself throw (no theme configured, a locked theme), which must not stop
+     * a PDF from rendering.
+     */
+    protected function twig(): Environment
+    {
+        if (System::hasModule('Cms')) {
+            try {
+                if (Theme::getActiveTheme() !== null) {
+                    return (new Controller)->getTwig();
+                }
+            } catch (Exception) {
+            }
         }
+
+        return app('twig.environment');
     }
 
     /**

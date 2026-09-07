@@ -209,6 +209,13 @@ public function registerPDFLayouts()
 
 The method should return an array of pdf view names.
 
+## Twig environment
+
+Templates and layouts are rendered with the CMS Twig environment when the Cms module is installed and a theme is
+active, so theme partials and content blocks are available. Otherwise, for example in a backend-only installation
+that loads only the System and Backend modules, the system Twig environment is used. Filters and functions registered
+by plugins through `registerMarkupTags` work in both.
+
 ## Usage
 
 PDF templates and layouts can be accessed in the back-end area via *Settings > PDF > PDF Templates*.
