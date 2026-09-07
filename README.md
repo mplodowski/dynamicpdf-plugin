@@ -277,12 +277,21 @@ Available options and their defaults:
 
 See [Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php) for a list of available options.
 
+### Self-signed certificates
+
+Remote resources (requires `enable_remote` in the dompdf configuration) are fetched with full TLS verification. On a
+development host with a self-signed certificate set `DYNAMICPDF_ALLOW_SELF_SIGNED=true` in `.env` (or
+`allow_self_signed_certificates` in `config/renatio/dynamicpdf.php`), or call `allowSelfSignedCertificates()` on the
+wrapper for a single document. The setting applies to every wrapper instance, including `loadHTML()` and after
+`setOptions()`.
+
 ## Methods
 
 | Method                                                  | Description                                              |
 |---------------------------------------------------------|----------------------------------------------------------|
 | loadTemplate($code, array $data = [], $encoding = null) | Load backend template                                    |
 | loadLayout($code, array $data = [], $encoding = null)   | Load backend layout                                      |
+| allowSelfSignedCertificates()                           | Accept self-signed TLS certificates for remote resources |
 | loadHTML($string, $encoding = null)                     | Load HTML string                                         |
 | loadFile($file)                                         | Load HTML string from a file                             |
 | parseTemplate(Template $template, array $data = [])     | Parse backend template using Twig                        |

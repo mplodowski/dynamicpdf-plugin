@@ -69,5 +69,9 @@ Calling an option setter that does not exist on the wrapper, dompdf or its optio
 `setRemoteEnabled()`, or `setAdminUsername()` removed by dompdf) now throws `UnexpectedValueException` instead of being
 silently ignored.
 
+TLS certificates are verified on every environment. On a development host with a self-signed certificate set
+`DYNAMICPDF_ALLOW_SELF_SIGNED=true` in `.env` (or `allow_self_signed_certificates` in `config/renatio/dynamicpdf.php`),
+or call the now public `allowSelfSignedCertificates()` on the wrapper for a single document.
+
 The backend HTML and PDF preview no longer enables inline PHP. If you use the demo templates, open the
 **Header and Footer** layout and click **Reset to default** to remove the page number script from the stored copy.
