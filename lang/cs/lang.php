@@ -11,7 +11,7 @@ return [
         'title' => 'Nadpis',
         'description' => 'Popis',
         'layout' => 'Layout',
-        'empty_option' => '-- Bez šablony --',
+        'empty_option' => '-- Bez layoutu --',
         'code_comment' => 'Unikátní kód patřící pouze této šabloně',
         'content_html' => 'HTML',
         'content_css' => 'CSS',
@@ -22,15 +22,19 @@ return [
         'templates' => 'Šablony',
         'layouts' => 'Layouty',
         'background_img' => 'Obrázek pozadí',
+        'preview_html' => 'Náhled HTML',
         'preview_pdf' => 'Náhled',
         'created_at' => 'Vytvořeno v',
         'updated_at' => 'Upraveno v',
         'background_img_comment' => 'Pro správné zobrazení použijte obrázek s 96 DPI',
+        'size' => 'Formát papíru',
+        'orientation' => 'Orientace papíru',
     ],
     'template' => [
         'menu_label' => 'PDF Šablony',
         'create_template' => 'Vytvoření PDF šablony',
         'edit_template' => 'Úprava PDF šablony',
+        'not_found' => 'Nebyla nalezena registrovaná šablona s kódem',
     ],
     'layouts' => [
         'label' => 'PDF Layouty',
@@ -40,15 +44,33 @@ return [
         'menu_label' => 'PDF Layouty',
         'create_layout' => 'Vytvoření PDF layoutu',
         'edit_layout' => 'Úprava PDF layoutu',
+        'not_found' => 'Nebyl nalezen registrovaný layout s kódem',
     ],
     'settings' => [
         'description' => 'Správa PDF šablon a layoutů.',
     ],
     'permissions' => [
-        'label' => 'Správa PDF šablon',
+        'manage_templates' => 'Spravovat šablony',
+        'manage_layouts' => 'Spravovat layouty',
         'tab' => 'PDF',
     ],
     'menu' => [
         'label' => 'PDF',
+        'category' => 'PDF',
+        'description' => 'Upravovat PDF šablony a spravovat PDF layouty.',
+    ],
+    'orientation' => [
+        'portrait' => 'Na výšku',
+        'landscape' => 'Na šířku',
+    ],
+    'options' => [
+        'empty' => '-- vyberte --',
+    ],
+    'tab' => [
+        'options' => 'Možnosti',
+    ],
+    'demo' => [
+        'enabled' => 'Demo je zapnuto. Obnovte prosím seznam šablon PDF.',
+        'disabled' => 'Demo je vypnuto. Obnovte prosím seznam šablon PDF.',
     ],
 ];
