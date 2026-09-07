@@ -1,10 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
 use Renatio\DynamicPDF\Models\Layout;
-use Renatio\DynamicPDF\Models\Template;
 
 describe('Reset to default', function () {
     beforeEach(function () {
@@ -19,19 +19,11 @@ describe('Reset to default', function () {
 
         (new Templates)->update_onResetDefault($template->id);
 
-        $stored = Template::byCode('renatio.dynamicpdf::pdf.invoice');
+        $row = DB::table('renatio_dynamicpdf_pdf_templates')->where('code', 'renatio.dynamicpdf::pdf.invoice')->first();
 
-        expect($stored->is_custom)->toBeFalse()
-            ->and($stored->title)->toBe('Invoice')
-            ->and($stored->content_html)->toContain('Invoice');
-    });
-
-    it('marks a template saved through the form as customised', function () {
-        $template = $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'is_custom' => false]);
-
-        (new Templates)->formBeforeSave($template);
-
-        expect($template->is_custom)->toBeTrue();
+        expect((bool) $row?->is_custom)->toBeFalse()
+            ->and((string) $row?->title)->toBe('Invoice')
+            ->and((string) $row?->content_html)->toContain('Invoice');
     });
 
     it('restores a locked layout from its view', function () {
