@@ -1,6 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\File as Filesystem;
+use Illuminate\Support\Facades\View;
 use October\Rain\Exception\ValidationException;
+use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
 use Renatio\DynamicPDF\Models\Layout;
@@ -43,7 +46,7 @@ describe('Backend preview tools', function () {
 
         (new Layouts)->update_onDuplicate($layout->id);
         $copy = Layout::whereCode('acme::pdf.layouts.default_copy')->firstOrFail();
-        \Illuminate\Support\Facades\File::deleteDirectory($uploads);
+        Filesystem::deleteDirectory($uploads);
 
         expect($copy->getAttribute('is_locked'))->toBeFalsy()
             ->and((string) $copy->getAttribute('name'))->toBe('Test Layout (copy)')
@@ -67,5 +70,32 @@ describe('Backend preview tools', function () {
     it('links the layout list to the layout previews', function () {
         expect(file_get_contents(__DIR__ . '/../../models/layout/columns.yaml'))->toContain('path: column_preview_layout')
             ->and(file_get_contents(__DIR__ . '/../../controllers/templates/_column_preview_layout.php'))->toContain('renatio/dynamicpdf/layouts/preview/');
+    });
+});
+
+describe('View-driven template save', function () {
+    beforeEach(function () {
+        $this->views = sys_get_temp_dir() . '/dynamicpdf-views-' . uniqid();
+        Filesystem::makeDirectory($this->views . '/pdf', 0755, true);
+        View::addNamespace('viewdriven', $this->views);
+        Filesystem::put($this->views . '/pdf/a.htm', "title = \"a\"\n==\n<p>v1</p>");
+        PDFManager::instance()->registerTemplates(['viewdriven::pdf.a']);
+    });
+
+    afterEach(function () {
+        PDFManager::forgetInstance();
+        Filesystem::deleteDirectory($this->views);
+    });
+
+    it('stays view-driven when only the sample data changes after the view file changed on disk', function () {
+        $this->createTemplate(['code' => 'viewdriven::pdf.a', 'is_custom' => false, 'content_html' => '<p>v1</p>', 'title' => 'a']);
+        Filesystem::put($this->views . '/pdf/a.htm', "title = \"a\"\n==\n<p>v2</p>");
+
+        $template = Template::byCode('viewdriven::pdf.a');
+        $template->sample_data = '{"name": "Jane"}';
+        (new Templates)->formBeforeSave($template);
+
+        expect((string) $template->content_html)->toBe('<p>v2</p>')
+            ->and($template->is_custom)->toBeFalse();
     });
 });

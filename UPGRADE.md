@@ -94,6 +94,8 @@ The backend HTML and PDF preview no longer enables inline PHP. If you use the de
 
 ## Upgrading To 8.0.5
 
+Run `php artisan october:migrate`.
+
 The template and layout `code` columns get a unique index. Duplicate rows, which concurrent synchronisations could
 leave behind, are deleted permanently by the migration and not restored by a rollback: for templates the customised
 row is kept, for layouts the locked one, otherwise the oldest. Templates attached to a deleted layout are re-pointed
