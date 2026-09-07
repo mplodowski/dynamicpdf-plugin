@@ -11,6 +11,7 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SiteManager;
@@ -27,6 +28,13 @@ use UnexpectedValueException;
  */
 class PDFWrapper extends PDF
 {
+    public const PAGE_NUMBERS_POSITIONS = ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'];
+
+    /** @var array{text: string, position: string, size: float, font: string|null, margin: float, color: array<int, float>}|null */
+    protected ?array $pageNumbers = null;
+
+    protected bool $pageNumbersStamped = false;
+
     public function __construct(Dompdf $dompdf, ConfigRepository $config, Filesystem $files, ViewFactory $view)
     {
         parent::__construct($dompdf, $config, $files, $view);
@@ -45,6 +53,85 @@ class PDFWrapper extends PDF
         $this->applyCertificatePolicy();
 
         return $this;
+    }
+
+    /**
+     * Page numbers are stamped on the canvas after rendering, so no inline PHP has to be
+     * enabled for them. {PAGE_NUM} and {PAGE_COUNT} are replaced by dompdf on every page.
+     *
+     * @param  array<int, float>  $color  RGB components between 0 and 1
+     */
+    public function pageNumbers(
+        string $text = 'Page {PAGE_NUM} of {PAGE_COUNT}',
+        string $position = 'bottom-center',
+        float $size = 9,
+        ?string $font = null,
+        float $margin = 20,
+        array $color = [0, 0, 0],
+    ): self {
+        if (! in_array($position, self::PAGE_NUMBERS_POSITIONS, true)) {
+            throw new InvalidArgumentException("Unknown page numbers position [{$position}].");
+        }
+
+        if (count($color) !== 3 || array_filter($color, fn (float $c): bool => $c < 0 || $c > 1) !== []) {
+            throw new InvalidArgumentException('Page numbers color must be three RGB components between 0 and 1.');
+        }
+
+        $this->pageNumbers = compact('text', 'position', 'size', 'font', 'margin', 'color');
+
+        return $this;
+    }
+
+    public function loadHTML(string $string, ?string $encoding = null): self
+    {
+        $this->pageNumbersStamped = false;
+        parent::loadHTML($string, $encoding);
+
+        return $this;
+    }
+
+    /**
+     * Stamping appends to the page streams, so a second render() (setEncryption() calls it
+     * unguarded) must not stamp again.
+     */
+    public function render(): void
+    {
+        parent::render();
+
+        if ($this->pageNumbers !== null && ! $this->pageNumbersStamped) {
+            $this->stampPageNumbers($this->pageNumbers);
+            $this->pageNumbersStamped = true;
+        }
+    }
+
+    /**
+     * @param  array{text: string, position: string, size: float, font: string|null, margin: float, color: array<int, float>}  $numbers
+     */
+    protected function stampPageNumbers(array $numbers): void
+    {
+        $canvas = $this->dompdf->getCanvas();
+        $metrics = $this->dompdf->getFontMetrics();
+        $font = $metrics->getFont($numbers['font']);
+
+        if ($font === null) {
+            throw new InvalidArgumentException("Font [{$numbers['font']}] is not available in the rendered document.");
+        }
+
+        $pages = (string) $canvas->get_page_count();
+        // One page_text() call serves every page, so the widest text (the last page) sets the position.
+        $sample = str_replace(['{PAGE_NUM}', '{PAGE_COUNT}'], [$pages, $pages], $numbers['text']);
+        $width = $metrics->getTextWidth($sample, $font, $numbers['size']);
+        $height = $metrics->getFontHeight($font, $numbers['size']);
+        [$vertical, $horizontal] = explode('-', $numbers['position']);
+
+        $x = match ($horizontal) {
+            'left' => $numbers['margin'],
+            'center' => ($canvas->get_width() - $width) / 2,
+            default => $canvas->get_width() - $numbers['margin'] - $width,
+        };
+        $y = $vertical === 'top' ? $numbers['margin'] : $canvas->get_height() - $numbers['margin'] - $height;
+
+        $canvas->page_text($x, $y, $numbers['text'], $font, $numbers['size'], $numbers['color']);
     }
 
     public function __call($method, $parameters)

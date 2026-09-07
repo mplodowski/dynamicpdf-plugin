@@ -287,6 +287,9 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 |---------------------------------------------------------|----------------------------------------------------------|
 | loadTemplate($code, array $data = [], $encoding = null, $layout = null, $locale = null) | Load backend template, optionally with another layout and locale |
 | loadLayout($code, array $data = [], $encoding = null, $locale = null) | Load backend layout, optionally in another locale |
+| loadTemplate($code, array $data = [], $encoding = null, $layout = null) | Load backend template, optionally with another layout |
+| loadLayout($code, array $data = [], $encoding = null)   | Load backend layout                                      |
+| pageNumbers($text, $position, $size, $font, $margin, $color) | Stamp page numbers on every page                    |
 | allowSelfSignedCertificates()                           | Accept self-signed TLS certificates for remote resources |
 | loadHTML($string, $encoding = null)                     | Load HTML string                                         |
 | loadFile($file)                                         | Load HTML string from a file                             |
@@ -398,50 +401,24 @@ Recommended approach is to save PDF file locally and return redirect to PDF file
 
 ### Page numbers
 
-Page numbers can be generated using PHP. Inline PHP is disabled by default, because it can be a security risk. You can
-enable inline PHP using `setIsPhpEnabled` method.
-
-> **Security warning:** only enable `setIsPhpEnabled(true)` when the template content is fully trusted. Any
-> `<script type="text/php">` block in the HTML is executed on the server, so enabling it for templates that can be
-> edited by backend users allows remote code execution. For this reason the backend HTML and PDF preview no longer
-> enables inline PHP, and the bundled demo layout no longer ships a page number script.
+Page numbers are stamped on every page after rendering, without enabling inline PHP:
 
 ```
 return PDF::loadTemplate('renatio::invoice')
-    ->setIsRemoteEnabled(true)
-    ->setIsPhpEnabled(true)
+    ->pageNumbers('Page {PAGE_NUM} of {PAGE_COUNT}', position: 'bottom-center', size: 9)
     ->stream();
 ```
 
-After that you must place following code before closing `</body>` tag of the layout file.
+`{PAGE_NUM}` and `{PAGE_COUNT}` are replaced on each page. Positions: `top-left`, `top-center`, `top-right`,
+`bottom-left`, `bottom-center`, `bottom-right`; `font` (a family available in the document, for example one declared
+with `@font-face` in the layout; the dompdf default font otherwise), `margin` (points) and `color` (RGB between 0
+and 1) are optional. Requires the CPDF or PDFLib backend; the GD backend cannot draw page text.
 
-```
-<script type="text/php">
-    if (isset($pdf)) {
-        $size = 9;
-        $color = [0,0,0];
+Inline PHP (`setIsPhpEnabled(true)`) is no longer needed for page numbers and should stay off.
 
-        $font = $fontMetrics->getFont('Open Sans');
-        $textHeight = $fontMetrics->getFontHeight($font, $size);
-        $width = $fontMetrics->getTextWidth('Page 1 of 2', $font, $size);
-
-        $foot = $pdf->open_object();
-
-        $w = $pdf->get_width();
-        $h = $pdf->get_height();
-
-        $y = $h - $textHeight - 13;
-
-        $pdf->close_object();
-        $pdf->add_object($foot, 'all');
-
-        $text = "Page {PAGE_NUM} of {PAGE_COUNT}";
-
-        // Center the text
-        $pdf->page_text($w / 2 - $width / 2, $y, $text, $font, $size, $color);
-    }
-</script>
-```
+> **Security warning:** only enable `setIsPhpEnabled(true)` when the template content is fully trusted. Any
+> `<script type="text/php">` block in the HTML is executed on the server, so enabling it for templates that can be
+> edited by backend users allows remote code execution. The backend HTML and PDF preview never enables it.
 
 ## Examples
 
