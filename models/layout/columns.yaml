@@ -12,6 +12,17 @@ columns:
         label: renatio.dynamicpdf::lang.templates.code
         searchable: true
 
+    is_locked:
+        label: renatio.dynamicpdf::lang.templates.is_locked
+        type: switch
+
+    preview:
+        label: renatio.dynamicpdf::lang.templates.preview
+        type: partial
+        path: column_preview_layout
+        sortable: false
+        clickable: false
+
     created_at:
         label: renatio.dynamicpdf::lang.templates.created_at
         type: datetime

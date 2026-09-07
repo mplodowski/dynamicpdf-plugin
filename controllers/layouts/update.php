@@ -47,6 +47,13 @@
                 <?= e(trans('renatio.dynamicpdf::lang.templates.preview_pdf')) ?>
             </a>
 
+            <button type="button"
+                    class="btn btn-default"
+                    data-request="onDuplicate"
+                    data-load-indicator="<?= e(trans('renatio.dynamicpdf::lang.templates.duplicating')) ?>">
+                <?= e(trans('renatio.dynamicpdf::lang.templates.duplicate')) ?>
+            </button>
+
             <?php if ($formModel->is_locked): ?>
                 <button type="button"
                         class="btn btn-danger pull-right"

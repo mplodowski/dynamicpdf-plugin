@@ -21,6 +21,17 @@ columns:
         relation: layout
         select: name
 
+    is_custom:
+        label: renatio.dynamicpdf::lang.templates.is_custom
+        type: switch
+
+    preview:
+        label: renatio.dynamicpdf::lang.templates.preview
+        type: partial
+        path: column_preview
+        sortable: false
+        clickable: false
+
     created_at:
         label: renatio.dynamicpdf::lang.templates.created_at
         type: datetime

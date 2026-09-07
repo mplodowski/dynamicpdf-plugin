@@ -12,6 +12,7 @@ use October\Rain\Exception\ApplicationException;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
+use Renatio\DynamicPDF\Traits\Duplicates;
 use Throwable;
 
 /**
@@ -24,11 +25,13 @@ use Throwable;
  * @property string|null $size
  * @property string|null $orientation
  * @property bool $is_custom
+ * @property string|null $sample_data
  * @property Layout|null $layout
  * @property-read string $html
  */
 class Template extends Model
 {
+    use Duplicates;
     use Validation;
 
     public const LAYOUT_CACHE = 'renatio.dynamicpdf.layouts';
@@ -50,7 +53,30 @@ class Template extends Model
         'title' => ['required'],
         'code' => ['required', 'unique:renatio_dynamicpdf_pdf_templates'],
         'content_html' => ['required'],
+        'sample_data' => ['nullable', 'json'],
     ];
+
+    /**
+     * Data the backend preview renders with, entered as JSON on the template.
+     *
+     * @return array<string, mixed>
+     */
+    public function sampleData(): array
+    {
+        $data = json_decode((string) $this->sample_data, true);
+
+        return is_array($data) ? $data : [];
+    }
+
+    protected function duplicateLabelAttribute(): string
+    {
+        return 'title';
+    }
+
+    protected function prepareDuplicate(self $copy): void
+    {
+        $copy->is_custom = true;
+    }
 
     /**
      * A stored, non-customised template follows its view file. The row is left as
@@ -147,7 +173,7 @@ class Template extends Model
 
     public function getHtmlAttribute(): string
     {
-        return PDF::loadTemplate($this->code)->getDompdf()->output_html();
+        return PDF::loadTemplate($this->code, $this->sampleData())->getDompdf()->output_html();
     }
 
     /**

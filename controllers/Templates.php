@@ -5,6 +5,7 @@ namespace Renatio\DynamicPDF\Controllers;
 use Backend\Behaviors\FormController;
 use Backend\Behaviors\ListController;
 use Backend\Classes\Controller;
+use Backend\Facades\Backend;
 use Backend\Facades\BackendMenu;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -56,9 +57,15 @@ class Templates extends Controller
         $this->vars['activeTab'] = $tab ?: 'templates';
     }
 
+    /**
+     * Only a change to what the view file provides detaches the template from the view;
+     * editing the sample data alone keeps it view-driven.
+     */
     public function formBeforeSave(Template $model): void
     {
-        $model->is_custom = true;
+        if ($model->isDirty(['title', 'description', 'content_html', 'layout_id', 'size', 'orientation'])) {
+            $model->is_custom = true;
+        }
     }
 
     public function previewPdf(int|string $id): ?Response
@@ -73,7 +80,7 @@ class Templates extends Controller
             return null;
         }
 
-        return PDF::loadTemplate($model->code)
+        return PDF::loadTemplate($model->code, $model->sampleData())
             ->setLogOutputFile(storage_path('temp/log.htm'))
             ->allowRemoteApplicationAssets()
             ->setDpi(300)
@@ -85,6 +92,15 @@ class Templates extends Controller
         $model = $this->formFindModelObject($id);
 
         return response($model->html)->header('Content-Security-Policy', 'sandbox allow-same-origin');
+    }
+
+    public function update_onDuplicate(int|string $recordId): RedirectResponse
+    {
+        $copy = $this->formFindModelObject($recordId)->duplicate();
+
+        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.duplicate_success')));
+
+        return Backend::redirect('renatio/dynamicpdf/templates/update/' . $copy->id);
     }
 
     public function update_onResetDefault(int|string $recordId): RedirectResponse

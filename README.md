@@ -269,6 +269,11 @@ context yourself. A listener that returns `false` stops the remaining listeners,
 
 PDF templates and layouts can be accessed in the back-end area via *Settings > PDF > PDF Templates*.
 
+The list marks templates edited in the back-end as *Customized* (they no longer follow their view file) and registered
+layouts as *Locked*, and links to the HTML and PDF preview of every record. A template's *Sample data* (a JSON object on
+the *Options* tab) is passed to both previews, so `{{ variables }}` render with realistic values. *Duplicate* on a
+template or layout creates an editable copy with a `_copy` code.
+
 Layouts define the PDF scaffold, that is everything that repeats on a PDF, such as a header and footer. Each layout has
 unique code, optional background image, HTML content and CSS/LESS content. Not all CSS properties are supported, so
 check [CSSCompatibility](https://github.com/dompdf/dompdf/wiki/CSSCompatibility).
