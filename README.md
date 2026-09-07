@@ -12,6 +12,14 @@ HTML to PDF converter uses [dompdf](https://github.com/dompdf/dompdf) library.
 
 Plugin uses dompdf wrapper for Laravel [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
 
+## Requirements
+
+This plugin requires PHP 8.2 or higher and October CMS 4.0 or higher. Running its test suite and static analysis
+needs PHP 8.4.
+
+Templates are rendered with Twig without a sandbox, so the `Manage templates` and `Manage layouts` permissions
+should only be granted to trusted users.
+
 ## Like this plugin?
 
 If you like this plugin, give this plugin a Like or Make donation with [PayPal](https://www.paypal.me/mplodowski).
@@ -257,36 +265,11 @@ PDF::loadTemplate('renatio::invoice')
     ->stream();
 ```
 
-Available options and their defaults:
-
-* __rootDir__: "{app_directory}/vendor/dompdf/dompdf"
-* __tempDir__: "/tmp" _(available in config/dompdf.php)_
-* __fontDir__: "{app_directory}/storage/fonts/" _(available in config/dompdf.php)_
-* __fontCache__: "{app_directory}/storage/fonts/" _(available in config/dompdf.php)_
-* __chroot__: "{app_directory}" _(available in config/dompdf.php)_
-* __logOutputFile__: "/tmp/log.htm"
-* __defaultMediaType__: "screen" _(available in config/dompdf.php)_
-* __defaultPaperSize__: "a4" _(available in config/dompdf.php)_
-* __defaultFont__: "serif" _(available in config/dompdf.php)_
-* __dpi__: 96 _(available in config/dompdf.php)_
-* __fontHeightRatio__: 1.1 _(available in config/dompdf.php)_
-* __isPhpEnabled__: false _(available in config/dompdf.php)_
-* __isRemoteEnabled__: true _(available in config/dompdf.php)_
-* __isJavascriptEnabled__: true _(available in config/dompdf.php)_
-* __isHtml5ParserEnabled__: false _(available in config/dompdf.php)_
-* __isFontSubsettingEnabled__: false _(available in config/dompdf.php)_
-* __debugPng__: false
-* __debugKeepTemp__: false
-* __debugCss__: false
-* __debugLayout__: false
-* __debugLayoutLines__: true
-* __debugLayoutBlocks__: true
-* __debugLayoutInline__: true
-* __debugLayoutPaddingBox__: true
-* __pdfBackend__: "CPDF" _(available in config/dompdf.php)_
-* __pdflibLicense__: ""
-
-See [Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php) for a list of available options.
+The options most often changed are `dpi`, `default_font`, `default_paper_size`, `enable_remote` (off by default;
+required for images, stylesheets and fonts loaded by URL), `allowed_remote_hosts`, `chroot` and `font_dir`. The full
+list with the current defaults is in the published `config/dompdf.php` and in
+[Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php); every option has a matching
+`set*()` method on the wrapper.
 
 ### Self-signed certificates
 

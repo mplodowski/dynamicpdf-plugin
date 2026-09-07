@@ -60,6 +60,15 @@ Plugin requires October CMS version 3.0 or higher, Laravel 9.0 or higher and PHP
 
 Drop support for October CMS version 2.x.
 
+## Upgrading To 7.0.0
+
+Plugin requires Laravel Dompdf v2 and dompdf 2. The `setOptions()` method now replaces the whole options object; use
+the dynamic `set*()` methods or `setOption()` to change single options.
+
+## Upgrading To 8.0.1
+
+Plugin requires October CMS 4.0 or higher.
+
 ## Upgrading To 8.0.4
 
 **Security release. Upgrade every installation running 8.0.x.** Plugin requires PHP 8.2 or higher and October CMS 4.0
