@@ -83,6 +83,12 @@ describe('View-driven template save', function () {
             ->and((string) $template->sample_data)->toBe('{"name": "Jane"}');
     });
 
+    it('is customised when created in the backend', function () {
+        $this->saveTemplateForm(null, ['title' => 'Made by hand', 'code' => 'viewdriven::pdf.b', 'content_html' => '<p>hand</p>'])->assertOk();
+
+        expect(Template::byCode('viewdriven::pdf.b')->is_custom)->toBeTrue();
+    });
+
     it('becomes customised when the content is edited in the form', function () {
         $this->saveTemplateForm($this->template->id, ['title' => 'a', 'content_html' => '<p>edited</p>'])->assertOk();
 

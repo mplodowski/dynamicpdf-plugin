@@ -13,14 +13,14 @@ use Renatio\DynamicPDF\Models\Template;
 abstract class TestCase extends OctoberPestTestCase
 {
     /**
-     * Posts the update form of a template the way the backend does, through the onSave handler.
-     *
      * @param  array<string, mixed>  $fields
      * @return TestResponse<\Illuminate\Http\Response>
      */
-    public function saveTemplateForm(int $id, array $fields): TestResponse
+    public function saveTemplateForm(?int $id, array $fields): TestResponse
     {
-        return $this->post(Backend::url('renatio/dynamicpdf/templates/update/' . $id), ['Template' => $fields], [
+        $path = $id === null ? 'renatio/dynamicpdf/templates/create' : 'renatio/dynamicpdf/templates/update/' . $id;
+
+        return $this->post(Backend::url($path), ['Template' => $fields], [
             'X-AJAX-HANDLER' => 'onSave',
             'X-Requested-With' => 'XMLHttpRequest',
         ]);
@@ -40,8 +40,7 @@ abstract class TestCase extends OctoberPestTestCase
     }
 
     /**
-     * Registers PDF views written to a temporary directory under the given namespace and
-     * returns that directory; the caller deletes it and forgets the PDFManager instance.
+     * The caller deletes the returned directory and forgets the PDFManager instance.
      *
      * @param  array<string, string>  $files  view name without extension => file content
      */
