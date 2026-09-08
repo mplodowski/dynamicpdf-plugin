@@ -80,8 +80,7 @@ class Template extends Model
 
     /**
      * A stored, non-customised template follows its view file. The row is left as
-     * stored when the view is not registered any more or its file is missing. The
-     * refreshed attributes count as original, so only a later edit reads as dirty.
+     * stored when the view is not registered any more or its file is missing.
      */
     public function afterFetch(): void
     {
@@ -91,7 +90,6 @@ class Template extends Model
 
         try {
             $this->fillFromView($this->code);
-            $this->syncOriginal();
         } catch (Throwable $e) {
             Log::error("Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
         }

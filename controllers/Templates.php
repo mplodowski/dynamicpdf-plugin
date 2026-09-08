@@ -59,13 +59,30 @@ class Templates extends Controller
 
     /**
      * Only a change to what the view file provides detaches the template from the view;
-     * editing the sample data alone keeps it view-driven.
+     * editing the sample data alone keeps it view-driven. The posted values are compared
+     * with the model because the form data is applied to it only after this hook.
      */
     public function formBeforeSave(Template $model): void
     {
-        if ($model->isDirty(['title', 'description', 'content_html', 'layout_id', 'size', 'orientation'])) {
-            $model->is_custom = true;
+        if ($model->is_custom) {
+            return;
         }
+
+        $posted = $this->formGetWidget()->getSaveData();
+        $fields = ['title' => 'title', 'description' => 'description', 'content_html' => 'content_html', 'layout' => 'layout_id', 'size' => 'size', 'orientation' => 'orientation'];
+
+        foreach ($fields as $field => $attribute) {
+            if (array_key_exists($field, $posted) && $this->normalize($posted[$field]) !== $this->normalize($model->getAttribute($attribute))) {
+                $model->is_custom = true;
+
+                return;
+            }
+        }
+    }
+
+    protected function normalize(mixed $value): string
+    {
+        return str_replace("\r\n", "\n", trim((string) $value));
     }
 
     public function previewpdf(int|string $id): ?Response
