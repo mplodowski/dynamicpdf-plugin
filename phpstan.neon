@@ -49,9 +49,3 @@ parameters:
         -
             identifier: staticMethod.notFound
             message: '#Call to an undefined static method Illuminate\\Support\\Facades\\Mail::pretend\(\)#'
-
-        # pest-plugin-phpstan types $this only in function-form hooks; inside the
-        # pest()->extend()->beforeEach()/afterEach() method chain it stays unknown.
-        -
-            path: tests/Pest.php
-            identifier: variable.undefined
