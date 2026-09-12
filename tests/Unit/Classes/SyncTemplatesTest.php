@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
@@ -19,6 +21,10 @@ describe('SyncTemplates', function () {
     afterEach(function () {
         PDFManager::forgetInstance();
         SyncTemplates::forgetFailures();
+
+        if (isset($this->views)) {
+            File::deleteDirectory($this->views);
+        }
     });
 
     it('creates registered layouts and templates from their views', function () {
@@ -65,6 +71,62 @@ describe('SyncTemplates', function () {
         Log::spy();
 
         expect(Template::byCode('renatio.dynamicpdf::pdf.gone')->content_html)->toBe('<p>stored</p>');
+    });
+
+    it('writes a changed view file back to the row of a non-customised template', function () {
+        $this->views = $this->registerViewTemplates('syncviews', ['a' => "title = \"First\"\n==\n<p>v1</p>"]);
+
+        $sync = new SyncTemplates;
+        $sync->handle();
+
+        File::put($this->views . '/pdf/a.htm', "title = \"Second\"\n==\n<p>v2</p>");
+
+        $sync->handle();
+
+        $row = DB::table('renatio_dynamicpdf_pdf_templates')->where('code', 'syncviews::pdf.a')->first();
+
+        expect($row->title)->toBe('Second')
+            ->and($row->content_html)->toBe('<p>v2</p>')
+            ->and($sync->report()['updated'])->toBe(['syncviews::pdf.a']);
+    });
+
+    it('keeps the stored row when the view of its layout cannot be read', function () {
+        PDFManager::instance()->registerLayouts(['syncviews::pdf.layouts.gone']);
+        $this->views = $this->registerViewTemplates('syncviews', ['a' => "title = \"Second\"\nlayout = \"syncviews::pdf.layouts.gone\"\n==\n<p>v2</p>"]);
+        $this->createTemplate(['code' => 'syncviews::pdf.a', 'is_custom' => false, 'title' => 'First', 'content_html' => '<p>v1</p>']);
+        Log::spy();
+
+        $sync = new SyncTemplates;
+        $sync->handle();
+
+        $row = DB::table('renatio_dynamicpdf_pdf_templates')->where('code', 'syncviews::pdf.a')->first();
+
+        expect($row->title)->toBe('First')
+            ->and($row->content_html)->toBe('<p>v1</p>')
+            ->and($sync->report()['updated'])->toBe([]);
+    });
+
+    it('keeps the stored row when the view file parses to no content', function () {
+        $this->views = $this->registerViewTemplates('syncviews', ['a' => '']);
+        $this->createTemplate(['code' => 'syncviews::pdf.a', 'is_custom' => false, 'title' => 'First', 'content_html' => '<p>v1</p>']);
+
+        $sync = new SyncTemplates;
+        $sync->handle();
+
+        $row = DB::table('renatio_dynamicpdf_pdf_templates')->where('code', 'syncviews::pdf.a')->first();
+
+        expect($row->title)->toBe('First')
+            ->and($row->content_html)->toBe('<p>v1</p>')
+            ->and($sync->report()['updated'])->toBe([]);
+    });
+
+    it('leaves a customised template alone when its view file changes', function () {
+        $this->views = $this->registerViewTemplates('syncviews', ['a' => "title = \"Second\"\n==\n<p>v2</p>"]);
+        $this->createTemplate(['code' => 'syncviews::pdf.a', 'is_custom' => true, 'title' => 'Mine', 'content_html' => '<p>mine</p>']);
+
+        (new SyncTemplates)->handle();
+
+        expect(DB::table('renatio_dynamicpdf_pdf_templates')->where('code', 'syncviews::pdf.a')->value('title'))->toBe('Mine');
     });
 
     it('synchronises before a templates page is displayed', function () {

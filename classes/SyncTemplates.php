@@ -2,6 +2,7 @@
 
 namespace Renatio\DynamicPDF\Classes;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Log;
 use Renatio\DynamicPDF\Models\Layout;
@@ -14,11 +15,11 @@ class SyncTemplates
     protected static array $failed = [];
 
     /** @var array<string, array<int, string>> */
-    protected array $report = ['created' => [], 'deleted' => [], 'failed' => []];
+    protected array $report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
     public function handle(): void
     {
-        $this->report = ['created' => [], 'deleted' => [], 'failed' => []];
+        $this->report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
         $this->createLayouts();
 
@@ -31,6 +32,7 @@ class SyncTemplates
         $dbTemplates = Template::query()->pluck('is_custom', 'code')->all();
 
         $this->clearNonCustomizedTemplates($dbTemplates, $registeredTemplates);
+        $this->refreshTemplates($registeredTemplates);
         $this->createTemplates(array_diff_key($registeredTemplates, $dbTemplates));
     }
 
@@ -58,7 +60,7 @@ class SyncTemplates
         $dbLayouts = Layout::query()->pluck('code', 'code')->all();
 
         foreach (array_diff_key($registeredLayouts, $dbLayouts) as $code) {
-            $this->create($code, function () use ($code): void {
+            $this->write($code, 'created', function () use ($code): void {
                 $layout = new Layout;
                 $layout->is_locked = true;
                 $layout->fillFromView($code);
@@ -82,12 +84,40 @@ class SyncTemplates
     }
 
     /**
+     * Template::afterFetch() has already refilled a non-customised row from its view file, so a row
+     * whose file changed comes back dirty. Storing it keeps list search and sort off the stale values,
+     * but a file that parsed to no content at all (a deploy window, a botched edit) must not wipe it.
+     *
+     * @param  array<string, string>  $registeredTemplates
+     */
+    protected function refreshTemplates(array $registeredTemplates): void
+    {
+        /** @var Collection<int, Template> $templates */
+        $templates = Template::query()
+            ->where('is_custom', false)
+            ->whereIn('code', array_keys($registeredTemplates))
+            ->get();
+
+        foreach ($templates as $template) {
+            $this->write($template->code, 'updated', function () use ($template): bool {
+                if (! $template->content_html || ! $template->isDirty(Template::VIEW_FIELDS)) {
+                    return false;
+                }
+
+                $template->forceSave();
+
+                return true;
+            });
+        }
+    }
+
+    /**
      * @param  array<string, string>  $templates
      */
     protected function createTemplates(array $templates): void
     {
         foreach ($templates as $code) {
-            $this->create($code, function () use ($code): void {
+            $this->write($code, 'created', function () use ($code): void {
                 $template = new Template;
                 $template->fillFromView($code);
                 $template->forceSave();
@@ -96,10 +126,11 @@ class SyncTemplates
     }
 
     /**
-     * One registered code without a view file must not stop the others from syncing,
-     * and a code that keeps failing is logged once per process rather than per request.
+     * One registered code that cannot be written must not stop the others from syncing, and a code
+     * that keeps failing is logged once per process rather than per request. A callback returning
+     * false wrote nothing and is left out of the report.
      */
-    protected function create(string $code, callable $create): void
+    protected function write(string $code, string $outcome, callable $write): void
     {
         if (isset(self::$failed[$code])) {
             $this->report['failed'][] = $code;
@@ -108,8 +139,9 @@ class SyncTemplates
         }
 
         try {
-            $create();
-            $this->report['created'][] = $code;
+            if ($write() !== false) {
+                $this->report[$outcome][] = $code;
+            }
         } catch (UniqueConstraintViolationException) {
             // Another request synced the same code a moment earlier; the row exists.
         } catch (Throwable $e) {
