@@ -36,6 +36,11 @@ class Template extends Model
 
     public const LAYOUT_CACHE = 'renatio.dynamicpdf.layouts';
 
+    /**
+     * Form fields the view file provides, mapped to the attribute they are stored in.
+     */
+    public const VIEW_FIELDS = ['title' => 'title', 'description' => 'description', 'content_html' => 'content_html', 'layout' => 'layout_id', 'size' => 'size', 'orientation' => 'orientation'];
+
     public $table = 'renatio_dynamicpdf_pdf_templates';
 
     /** @var array<string, string> */

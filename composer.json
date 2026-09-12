@@ -24,6 +24,7 @@
         "barryvdh/laravel-dompdf": "^3.1"
     },
     "require-dev": {
+        "laravel/pao": "^1.1",
         "larastan/larastan": "^3.0",
         "pestphp/pest": "^5.0",
         "pestphp/pest-plugin-phpstan": "^5.0",

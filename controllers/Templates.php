@@ -58,14 +58,37 @@ class Templates extends Controller
     }
 
     /**
-     * Only a change to what the view file provides detaches the template from the view;
-     * editing the sample data alone keeps it view-driven.
+     * A template created in the backend is customised. A stored one is detached from its
+     * view only by a change to what the view file provides; editing the sample data alone
+     * keeps it view-driven. The posted values are compared with the model because the
+     * form data is applied to it only after this hook.
      */
     public function formBeforeSave(Template $model): void
     {
-        if ($model->isDirty(['title', 'description', 'content_html', 'layout_id', 'size', 'orientation'])) {
+        if (! $model->exists) {
             $model->is_custom = true;
+
+            return;
         }
+
+        if ($model->is_custom) {
+            return;
+        }
+
+        $posted = (array) post($this->formGetWidget()->arrayName);
+
+        foreach (Template::VIEW_FIELDS as $field => $attribute) {
+            if (array_key_exists($field, $posted) && $this->normalize($posted[$field]) !== $this->normalize($model->getAttribute($attribute))) {
+                $model->is_custom = true;
+
+                return;
+            }
+        }
+    }
+
+    protected function normalize(mixed $value): string
+    {
+        return str_replace("\r\n", "\n", trim((string) $value));
     }
 
     public function previewpdf(int|string $id): ?Response
