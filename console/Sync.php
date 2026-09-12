@@ -20,6 +20,7 @@ class Sync extends Command
         $report = $sync->report();
 
         $this->list('Created', $report['created'], 'green');
+        $this->list('Updated', $report['updated'], 'cyan');
         $this->list('Deleted', $report['deleted'], 'yellow');
         $this->list('Failed (see the application log)', $report['failed'], 'red');
 
