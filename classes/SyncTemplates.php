@@ -60,7 +60,7 @@ class SyncTemplates
         $dbLayouts = Layout::query()->pluck('code', 'code')->all();
 
         foreach (array_diff_key($registeredLayouts, $dbLayouts) as $code) {
-            $this->create($code, function () use ($code): void {
+            $this->write($code, 'created', function () use ($code): void {
                 $layout = new Layout;
                 $layout->is_locked = true;
                 $layout->fillFromView($code);
@@ -85,7 +85,8 @@ class SyncTemplates
 
     /**
      * Template::afterFetch() has already refilled a non-customised row from its view file, so a row
-     * whose file changed comes back dirty. Storing it keeps list search and sort off the stale values.
+     * whose file changed comes back dirty. Storing it keeps list search and sort off the stale values,
+     * but a file that parsed to no content at all (a deploy window, a botched edit) must not wipe it.
      *
      * @param  array<string, string>  $registeredTemplates
      */
@@ -98,10 +99,15 @@ class SyncTemplates
             ->get();
 
         foreach ($templates as $template) {
-            if ($template->isDirty(Template::VIEW_FIELDS)) {
+            $this->write($template->code, 'updated', function () use ($template): bool {
+                if (! $template->content_html || ! $template->isDirty(Template::VIEW_FIELDS)) {
+                    return false;
+                }
+
                 $template->forceSave();
-                $this->report['updated'][] = $template->code;
-            }
+
+                return true;
+            });
         }
     }
 
@@ -111,7 +117,7 @@ class SyncTemplates
     protected function createTemplates(array $templates): void
     {
         foreach ($templates as $code) {
-            $this->create($code, function () use ($code): void {
+            $this->write($code, 'created', function () use ($code): void {
                 $template = new Template;
                 $template->fillFromView($code);
                 $template->forceSave();
@@ -120,10 +126,11 @@ class SyncTemplates
     }
 
     /**
-     * One registered code without a view file must not stop the others from syncing,
-     * and a code that keeps failing is logged once per process rather than per request.
+     * One registered code that cannot be written must not stop the others from syncing, and a code
+     * that keeps failing is logged once per process rather than per request. A callback returning
+     * false wrote nothing and is left out of the report.
      */
-    protected function create(string $code, callable $create): void
+    protected function write(string $code, string $outcome, callable $write): void
     {
         if (isset(self::$failed[$code])) {
             $this->report['failed'][] = $code;
@@ -132,8 +139,9 @@ class SyncTemplates
         }
 
         try {
-            $create();
-            $this->report['created'][] = $code;
+            if ($write() !== false) {
+                $this->report[$outcome][] = $code;
+            }
         } catch (UniqueConstraintViolationException) {
             // Another request synced the same code a moment earlier; the row exists.
         } catch (Throwable $e) {

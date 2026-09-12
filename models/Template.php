@@ -84,8 +84,8 @@ class Template extends Model
     }
 
     /**
-     * A stored, non-customised template follows its view file. The row is left as
-     * stored when the view is not registered any more or its file is missing.
+     * A stored, non-customised template follows its view file. The row is left as stored when the
+     * view is not registered any more, its file is missing, or the fill throws part way through.
      */
     public function afterFetch(): void
     {
@@ -93,9 +93,14 @@ class Template extends Model
             return;
         }
 
+        $stored = $this->getAttributes();
+
         try {
             $this->fillFromView($this->code);
         } catch (Throwable $e) {
+            $this->setRawAttributes($stored, true);
+            $this->unsetRelation('layout');
+
             Log::error("Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
         }
     }

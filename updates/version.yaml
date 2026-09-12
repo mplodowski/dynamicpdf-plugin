@@ -84,3 +84,4 @@ v8.0.5:
 v8.0.6:
     - Fix the customised flag on view-driven templates in the backend form, and PDF::fake() when the facade is already resolved.
     - Synchronisation writes changed view files back to the rows of non-customised templates.
+    - Keep the stored template when its view file cannot be read in full or parses to no content.
