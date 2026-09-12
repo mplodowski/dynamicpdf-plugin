@@ -217,8 +217,9 @@ Registered views are synchronised to the database when a *PDF Templates* setting
 `php artisan dynamicpdf:demo` runs, not on every request. Synchronisation creates the missing templates, removes the
 ones that are not registered any more and writes changed view files back to the rows of templates that are not
 customised, so list search and sort work on the current values. A code whose view file is missing is skipped and
-written to the application log once per process; a stored template whose view file went missing keeps its stored
-content. Until a registered view is synchronised, `PDF::loadTemplate()` renders it straight from the file.
+written to the application log once per process; a stored template whose view file went missing, cannot be read in
+full or parses to no content keeps its stored content. Until a registered view is synchronised,
+`PDF::loadTemplate()` renders it straight from the file.
 
 Like templates, PDF layouts can be registered by adding the `registerPDFLayouts` method of the Plugin registration
 class (`Plugin.php`).
