@@ -214,8 +214,11 @@ public function registerPDFTemplates()
 The method should return an array of pdf view names.
 
 Registered views are synchronised to the database when a *PDF Templates* settings page is displayed and when
-`php artisan dynamicpdf:demo` runs, not on every request. A code whose view file is missing is skipped and written to
-the application log once per process; a stored template whose view file went missing keeps its stored content. Until a registered view is synchronised, `PDF::loadTemplate()` renders it straight from the file.
+`php artisan dynamicpdf:demo` runs, not on every request. Synchronisation creates the missing templates, removes the
+ones that are not registered any more and writes changed view files back to the rows of templates that are not
+customised, so list search and sort work on the current values. A code whose view file is missing is skipped and
+written to the application log once per process; a stored template whose view file went missing keeps its stored
+content. Until a registered view is synchronised, `PDF::loadTemplate()` renders it straight from the file.
 
 Like templates, PDF layouts can be registered by adding the `registerPDFLayouts` method of the Plugin registration
 class (`Plugin.php`).
@@ -532,8 +535,8 @@ validating its arguments under the fake.
 ## Console commands
 
 `php artisan dynamicpdf:sync` synchronises the registered PDF views with the database and lists what was created,
-deleted or failed; it exits with code 1 when a registered code has no view file. Run it after a deployment so the
-templates exist before the first backend visit.
+updated, deleted or failed; it exits with code 1 when a registered code has no view file. Run it after a deployment
+so the templates exist before the first backend visit.
 
 `php artisan dynamicpdf:check` reports the dompdf configuration that fails silently: font, cache and temporary
 directories (existence and write access, without creating anything), `chroot`, inline PHP and remote resources, and

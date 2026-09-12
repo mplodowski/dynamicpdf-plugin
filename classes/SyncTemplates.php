@@ -2,6 +2,7 @@
 
 namespace Renatio\DynamicPDF\Classes;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Log;
 use Renatio\DynamicPDF\Models\Layout;
@@ -14,11 +15,11 @@ class SyncTemplates
     protected static array $failed = [];
 
     /** @var array<string, array<int, string>> */
-    protected array $report = ['created' => [], 'deleted' => [], 'failed' => []];
+    protected array $report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
     public function handle(): void
     {
-        $this->report = ['created' => [], 'deleted' => [], 'failed' => []];
+        $this->report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
         $this->createLayouts();
 
@@ -31,6 +32,7 @@ class SyncTemplates
         $dbTemplates = Template::query()->pluck('is_custom', 'code')->all();
 
         $this->clearNonCustomizedTemplates($dbTemplates, $registeredTemplates);
+        $this->refreshTemplates($registeredTemplates);
         $this->createTemplates(array_diff_key($registeredTemplates, $dbTemplates));
     }
 
@@ -77,6 +79,28 @@ class SyncTemplates
             if (! $isCustom && ! array_key_exists($code, $registeredTemplates)) {
                 Template::whereCode($code)->delete();
                 $this->report['deleted'][] = $code;
+            }
+        }
+    }
+
+    /**
+     * Template::afterFetch() has already refilled a non-customised row from its view file, so a row
+     * whose file changed comes back dirty. Storing it keeps list search and sort off the stale values.
+     *
+     * @param  array<string, string>  $registeredTemplates
+     */
+    protected function refreshTemplates(array $registeredTemplates): void
+    {
+        /** @var Collection<int, Template> $templates */
+        $templates = Template::query()
+            ->where('is_custom', false)
+            ->whereIn('code', array_keys($registeredTemplates))
+            ->get();
+
+        foreach ($templates as $template) {
+            if ($template->isDirty(Template::VIEW_FIELDS)) {
+                $template->forceSave();
+                $this->report['updated'][] = $template->code;
             }
         }
     }
