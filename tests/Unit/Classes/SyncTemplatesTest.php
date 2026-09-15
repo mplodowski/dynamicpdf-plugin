@@ -120,6 +120,20 @@ describe('SyncTemplates', function () {
             ->and($sync->report()['updated'])->toBe([]);
     });
 
+    it('keeps the stored layout when the view resolves its layout code to nothing', function () {
+        $layout = $this->createLayout(['code' => 'syncviews::pdf.layouts.kept']);
+        $this->views = $this->registerViewTemplates('syncviews', ['a' => "title = \"Second\"\nlayout = \"syncviews::pdf.layouts.unknown\"\n==\n<p>v2</p>"]);
+        $this->createTemplate(['code' => 'syncviews::pdf.a', 'is_custom' => false, 'title' => 'First', 'content_html' => '<p>v1</p>', 'layout_id' => $layout->id]);
+
+        $sync = new SyncTemplates;
+        $sync->handle();
+
+        $row = DB::table('renatio_dynamicpdf_pdf_templates')->where('code', 'syncviews::pdf.a')->first();
+
+        expect((int) $row->layout_id)->toBe($layout->id)
+            ->and($sync->report()['updated'])->toBe([]);
+    });
+
     it('leaves a customised template alone when its view file changes', function () {
         $this->views = $this->registerViewTemplates('syncviews', ['a' => "title = \"Second\"\n==\n<p>v2</p>"]);
         $this->createTemplate(['code' => 'syncviews::pdf.a', 'is_custom' => true, 'title' => 'Mine', 'content_html' => '<p>mine</p>']);

@@ -75,9 +75,7 @@ always on.
 ## Upgrading To 8.0.4
 
 **Security release. Upgrade every installation running 8.0.x.** Plugin requires PHP 8.2 or higher and October CMS 4.0
-or higher.
-
-Calling an option setter that does not exist on the wrapper, dompdf or its options (a typo such as
+or higher. Calling an option setter that does not exist on the wrapper, dompdf or its options (a typo such as
 `setRemoteEnabled()`, or `setAdminUsername()` removed by dompdf) now throws `UnexpectedValueException` instead of being
 silently ignored.
 
@@ -85,12 +83,11 @@ TLS certificates are verified on every environment. On a development host with a
 `DYNAMICPDF_ALLOW_SELF_SIGNED=true` in `.env` (or `allow_self_signed_certificates` in `config/renatio/dynamicpdf.php`),
 or call the now public `allowSelfSignedCertificates()` on the wrapper for a single document.
 
-Registered PDF views are synchronised to the database when the *PDF Templates* settings page is opened or
-`dynamicpdf:demo` runs, no longer on every request. Rendering a registered view that is not stored yet works without
-the sync. A registered code without a view file is skipped and logged instead of silently stopping the sync.
-
 The backend HTML and PDF preview no longer enables inline PHP. If you use the demo templates, open the
 **Header and Footer** layout and click **Reset to default** to remove the page number script from the stored copy.
+Registered PDF views are synchronised to the database when a *PDF Templates* or *PDF Layouts* backend page is opened
+or `dynamicpdf:sync` or `dynamicpdf:demo` runs, no longer on every request; a registered code without a view file is
+logged and skipped instead of stopping the sync.
 
 ## Upgrading To 8.0.5
 
@@ -100,3 +97,7 @@ The template and layout `code` columns get a unique index. Duplicate rows, which
 leave behind, are deleted permanently by the migration and not restored by a rollback: for templates the customised
 row is kept, for layouts the locked one, otherwise the oldest. Templates attached to a deleted layout are re-pointed
 to the kept one.
+
+## Upgrading To 8.0.6
+
+Synchronisation now writes a changed view file back to the row of a template that was never customised, so list search and sort use the current values; a template edited in the backend is untouched. A view file that cannot be read in full, or that parses to no content, leaves the stored content alone.

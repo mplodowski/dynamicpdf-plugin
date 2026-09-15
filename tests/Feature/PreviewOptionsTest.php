@@ -50,6 +50,32 @@ describe('Backend preview', function () {
             ->and($options->validateRemoteUri('http://169.254.169.254/latest/meta-data/')[0])->toBeFalse();
     });
 
+    it('restricts remote resources for a schemeless application url', function () {
+        config(['app.url' => 'myapp.test']);
+        $wrapper = captureWrapper();
+        $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
+
+        (new Templates)->previewpdf($template->id);
+
+        $options = $wrapper->getDomPDF()->getOptions();
+
+        expect($options->getAllowedRemoteHosts())->toBe(['myapp.test'])
+            ->and($options->validateRemoteUri('http://169.254.169.254/latest/meta-data/')[0])->toBeFalse();
+    });
+
+    it('disables remote resources when no application host can be resolved', function () {
+        config(['app.url' => '']);
+        $wrapper = captureWrapper();
+        $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
+
+        (new Templates)->previewpdf($template->id);
+
+        $options = $wrapper->getDomPDF()->getOptions();
+
+        expect($options->getIsRemoteEnabled())->toBeFalse()
+            ->and($options->validateRemoteUri('http://169.254.169.254/latest/meta-data/')[0])->toBeFalse();
+    });
+
     it('ignores the Host header of the preview request', function () {
         config(['app.url' => 'https://app.example.com']);
         Facade::clearResolvedInstance('request');

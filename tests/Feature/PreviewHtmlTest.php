@@ -9,8 +9,13 @@ describe('HTML preview', function () {
 
         $response = (new Templates)->html($template->id);
 
-        expect($response->headers->get('Content-Security-Policy'))->toBe('sandbox allow-same-origin')
+        expect($response->headers->get('Content-Security-Policy'))->toBe("sandbox; script-src 'none'; object-src 'none'")
             ->and($response->getContent())->toContain('<p>Hello</p>');
+    });
+
+    it('keeps the preview iframes fully sandboxed', function () {
+        expect(file_get_contents(plugins_path('renatio/dynamicpdf/controllers/templates/preview.php')))->toContain('<iframe sandbox src=')
+            ->and(file_get_contents(plugins_path('renatio/dynamicpdf/controllers/layouts/preview.php')))->toContain('<iframe sandbox src=');
     });
 
     it('serves the layout HTML sandboxed', function () {
@@ -18,6 +23,6 @@ describe('HTML preview', function () {
 
         $response = (new Layouts)->html($layout->id);
 
-        expect($response->headers->get('Content-Security-Policy'))->toBe('sandbox allow-same-origin');
+        expect($response->headers->get('Content-Security-Policy'))->toBe("sandbox; script-src 'none'; object-src 'none'");
     });
 });

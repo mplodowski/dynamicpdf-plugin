@@ -53,7 +53,7 @@ class Layouts extends Controller
         }
 
         return PDF::loadLayout($model->code)
-            ->setLogOutputFile(storage_path('temp/log.htm'))
+            ->setLogOutputFile(config('app.debug') ? storage_path('temp/log.htm') : '')
             ->allowRemoteApplicationAssets()
             ->setDpi(300)
             ->stream();
@@ -63,7 +63,7 @@ class Layouts extends Controller
     {
         $model = $this->formFindModelObject($id);
 
-        return response($model->html)->header('Content-Security-Policy', 'sandbox allow-same-origin');
+        return response($model->html)->header('Content-Security-Policy', "sandbox; script-src 'none'; object-src 'none'");
     }
 
     public function update_onDuplicate(int|string $recordId): RedirectResponse

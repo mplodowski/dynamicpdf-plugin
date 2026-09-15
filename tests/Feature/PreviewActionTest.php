@@ -5,7 +5,7 @@ use Renatio\DynamicPDF\Controllers\Templates;
 
 describe('Preview PDF action', function () {
     it('is reachable from the lowercase URL October 4.3.5 requires', function () {
-        expect((new Templates)->actionExists('previewpdf'))->toBeTrue()
-            ->and((new Layouts)->actionExists('previewpdf'))->toBeTrue();
+        expect(get_class_methods(Templates::class))->toContain('previewpdf')
+            ->and(get_class_methods(Layouts::class))->toContain('previewpdf');
     });
 });

@@ -6,6 +6,7 @@ use Barryvdh\DomPDF\PDF;
 use Closure;
 use Cms\Classes\Controller;
 use Cms\Classes\Theme;
+use Dompdf\CanvasFactory;
 use Dompdf\Dompdf;
 use Exception;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
@@ -87,10 +88,24 @@ class PDFWrapper extends PDF
 
     public function loadHTML(string $string, ?string $encoding = null): self
     {
+        $this->pageNumbers = null;
         $this->pageNumbersStamped = false;
         parent::loadHTML($string, $encoding);
+        $this->resetCanvas();
 
         return $this;
+    }
+
+    /**
+     * dompdf rebuilds the canvas only when the paper size changes, so page text stamped on an
+     * earlier document would reappear on the next one rendered by the same instance.
+     */
+    protected function resetCanvas(): void
+    {
+        $canvas = CanvasFactory::get_instance($this->dompdf, $this->dompdf->getPaperSize(), $this->dompdf->getPaperOrientation());
+
+        $this->dompdf->setCanvas($canvas);
+        $this->dompdf->getFontMetrics()->setCanvas($canvas);
     }
 
     /**
@@ -167,10 +182,6 @@ class PDFWrapper extends PDF
 
     public function __call($method, $parameters)
     {
-        if (method_exists($this, $method)) {
-            return $this->$method(...$parameters);
-        }
-
         if (method_exists($this->dompdf, $method)) {
             $return = $this->dompdf->$method(...$parameters);
 
@@ -411,9 +422,14 @@ class PDFWrapper extends PDF
     {
         $options = $this->dompdf->getOptions();
 
-        $hosts = array_merge($options->getAllowedRemoteHosts() ?: [], $this->applicationHosts());
+        $hosts = array_values(array_unique(array_merge($options->getAllowedRemoteHosts() ?: [], $this->applicationHosts())));
 
-        $options->setIsRemoteEnabled(true)->setAllowedRemoteHosts(array_values(array_unique($hosts)));
+        /** An empty allowed host list is ignored by dompdf, which would leave remote fetching unrestricted. */
+        if ($hosts === []) {
+            $options->setIsRemoteEnabled(false);
+        } else {
+            $options->setIsRemoteEnabled(true)->setAllowedRemoteHosts($hosts);
+        }
 
         $chroot = $options->getChroot();
 
@@ -464,16 +480,24 @@ class PDFWrapper extends PDF
             ->all();
 
         return array_values(array_filter(array_map(
-            fn ($url): string => mb_strtolower((string) parse_url((string) $url, PHP_URL_HOST)),
+            fn ($url): string => mb_strtolower(self::hostOf((string) $url)),
             $urls,
         )));
+    }
+
+    /**
+     * A schemeless app URL such as myapp.test parses to no host at all.
+     */
+    protected static function hostOf(string $url): string
+    {
+        return (string) (parse_url($url, PHP_URL_HOST) ?: parse_url('//' . ltrim($url, '/'), PHP_URL_HOST));
     }
 
     public function allowSelfSignedCertificates(): self
     {
         $current = $this->dompdf->getHttpContext();
 
-        $context = stream_context_create(array_merge_recursive(
+        $context = stream_context_create(array_replace_recursive(
             is_resource($current) ? stream_context_get_options($current) : [],
             [
                 'ssl' => [

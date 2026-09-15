@@ -123,10 +123,19 @@ class Template extends Model
         $this->title = array_get($sections, 'settings.title', '???');
         $this->code = $path;
         $this->setAttribute('layout', $this->resolveLayout(array_get($sections, 'settings.layout')));
-        $this->size = array_get($sections, 'settings.size');
-        $this->orientation = array_get($sections, 'settings.orientation');
+        $this->size = self::lowercaseOption(array_get($sections, 'settings.size'));
+        $this->orientation = self::lowercaseOption(array_get($sections, 'settings.orientation'));
         $this->description = array_get($sections, 'settings.description');
         $this->content_html = array_get($sections, 'html');
+    }
+
+    /**
+     * The dompdf paper sizes and orientations are keyed in lowercase, so a view declaring A4
+     * would otherwise fill the form with a value no option matches.
+     */
+    protected static function lowercaseOption(mixed $value): ?string
+    {
+        return $value === null || $value === '' ? null : mb_strtolower((string) $value);
     }
 
     /**

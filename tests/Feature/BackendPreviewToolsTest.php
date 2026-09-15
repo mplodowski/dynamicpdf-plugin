@@ -83,6 +83,17 @@ describe('View-driven template save', function () {
             ->and((string) $template->sample_data)->toBe('{"name": "Jane"}');
     });
 
+    it('stays view-driven when a view declaring an uppercase paper size is saved unchanged', function () {
+        Filesystem::put($this->views . '/pdf/a.htm', "title = \"a\"\nsize = \"A4\"\n==\n<p>v1</p>");
+
+        $this->saveTemplateForm($this->template->id, ['title' => 'a', 'content_html' => '<p>v1</p>', 'size' => 'a4', 'orientation' => ''])->assertOk();
+
+        $template = Template::byCode('viewdriven::pdf.a');
+
+        expect($template->is_custom)->toBeFalse()
+            ->and(Template::whereCode('viewdriven::pdf.a')->value('size'))->toBe('a4');
+    });
+
     it('is customised when created in the backend', function () {
         $this->saveTemplateForm(null, ['title' => 'Made by hand', 'code' => 'viewdriven::pdf.b', 'content_html' => '<p>hand</p>'])->assertOk();
 
