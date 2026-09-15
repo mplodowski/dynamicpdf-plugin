@@ -2,21 +2,15 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\View;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Template;
 
 describe('Template list queries', function () {
     beforeEach(function () {
-        $this->views = sys_get_temp_dir() . '/dynamicpdf-views-' . uniqid();
-        File::makeDirectory($this->views . '/pdf', 0755, true);
-        View::addNamespace('acmetest', $this->views);
-
-        foreach (['a', 'b', 'c'] as $name) {
-            File::put($this->views . "/pdf/{$name}.htm", "title = \"{$name}\"\nlayout = \"acme::pdf.layouts.default\"\n==\n<p>{$name}</p>");
-        }
-
-        PDFManager::instance()->registerTemplates(['acmetest::pdf.a', 'acmetest::pdf.b', 'acmetest::pdf.c']);
+        $this->views = $this->registerViewTemplates('acmetest', array_combine(['a', 'b', 'c'], array_map(
+            fn (string $name): string => "title = \"{$name}\"\nlayout = \"acme::pdf.layouts.default\"\n==\n<p>{$name}</p>",
+            ['a', 'b', 'c'],
+        )));
     });
 
     afterEach(function () {

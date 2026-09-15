@@ -1,6 +1,9 @@
 <?php
 
+use Backend\Facades\BackendAuth;
+use Illuminate\Support\Facades\File as Filesystem;
 use October\Rain\Exception\ValidationException;
+use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
 use Renatio\DynamicPDF\Models\Layout;
@@ -43,29 +46,55 @@ describe('Backend preview tools', function () {
 
         (new Layouts)->update_onDuplicate($layout->id);
         $copy = Layout::whereCode('acme::pdf.layouts.default_copy')->firstOrFail();
-        \Illuminate\Support\Facades\File::deleteDirectory($uploads);
+        Filesystem::deleteDirectory($uploads);
 
         expect($copy->getAttribute('is_locked'))->toBeFalsy()
             ->and((string) $copy->getAttribute('name'))->toBe('Test Layout (copy)')
             ->and(File::where('attachment_id', $copy->id)->where('field', 'background_img')->count())->toBe(1);
     });
 
-    it('keeps a view-driven template view-driven when only the sample data changes', function () {
-        $template = $this->createTemplate(['is_custom' => false]);
-        $template->sample_data = '{"name": "Jane"}';
-
-        (new Templates)->formBeforeSave($template);
-
-        expect($template->is_custom)->toBeFalse();
-
-        $template->content_html = '<p>edited</p>';
-        (new Templates)->formBeforeSave($template);
-
-        expect($template->is_custom)->toBeTrue();
-    });
-
     it('links the layout list to the layout previews', function () {
         expect(file_get_contents(__DIR__ . '/../../models/layout/columns.yaml'))->toContain('path: column_preview_layout')
             ->and(file_get_contents(__DIR__ . '/../../controllers/templates/_column_preview_layout.php'))->toContain('renatio/dynamicpdf/layouts/preview/');
+    });
+});
+
+describe('View-driven template save', function () {
+    beforeEach(function () {
+        $this->views = $this->registerViewTemplates('viewdriven', ['a' => "title = \"a\"\n==\n<p>v1</p>"]);
+        $this->template = $this->createTemplate(['code' => 'viewdriven::pdf.a', 'is_custom' => false, 'content_html' => '<p>v1</p>', 'title' => 'a']);
+        actingAsBackendUserWith(['manage_templates']);
+    });
+
+    afterEach(function () {
+        BackendAuth::logout();
+        PDFManager::forgetInstance();
+        Filesystem::deleteDirectory($this->views);
+    });
+
+    it('stays view-driven when only the sample data is saved after the view file changed on disk', function () {
+        Filesystem::put($this->views . '/pdf/a.htm', "title = \"a\"\n==\n<p>v2</p>");
+
+        $this->saveTemplateForm($this->template->id, ['title' => 'a', 'content_html' => '<p>v2</p>', 'sample_data' => '{"name": "Jane"}'])->assertOk();
+
+        $template = Template::byCode('viewdriven::pdf.a');
+
+        expect($template->is_custom)->toBeFalse()
+            ->and((string) $template->sample_data)->toBe('{"name": "Jane"}');
+    });
+
+    it('is customised when created in the backend', function () {
+        $this->saveTemplateForm(null, ['title' => 'Made by hand', 'code' => 'viewdriven::pdf.b', 'content_html' => '<p>hand</p>'])->assertOk();
+
+        expect(Template::byCode('viewdriven::pdf.b')->is_custom)->toBeTrue();
+    });
+
+    it('becomes customised when the content is edited in the form', function () {
+        $this->saveTemplateForm($this->template->id, ['title' => 'a', 'content_html' => '<p>edited</p>'])->assertOk();
+
+        $template = Template::byCode('viewdriven::pdf.a');
+
+        expect($template->is_custom)->toBeTrue()
+            ->and((string) $template->content_html)->toBe('<p>edited</p>');
     });
 });

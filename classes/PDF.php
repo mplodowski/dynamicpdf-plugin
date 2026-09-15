@@ -34,7 +34,7 @@ class PDF extends PdfFacade
         $app = static::getFacadeApplication() ?? throw new RuntimeException('Facade application has not been set.');
 
         $fake = new PDFFake($app->make('dompdf'), $app->make('config'), $app->make('files'), $app->make('view'));
-        $app->instance(static::getFacadeAccessor(), $fake);
+        static::swap($fake);
 
         return $fake;
     }

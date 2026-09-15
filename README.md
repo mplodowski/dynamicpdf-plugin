@@ -12,6 +12,17 @@ HTML to PDF converter uses [dompdf](https://github.com/dompdf/dompdf) library.
 
 Plugin uses dompdf wrapper for Laravel [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
 
+## Features
+
+- PDF templates and layouts edited in the backend, with HTML and PDF preview rendered from sample data.
+- Templates and layouts registered by plugins as view files, synchronised to the database and customisable, with
+  reset to the file version.
+- Twig markup with theme partials, translations, global variables and `beforeRender` / `afterRender` events.
+- Render per document with another layout, in another language, with page numbers, password protection and
+  paper size and orientation.
+- Output as a browser stream, download, file on a storage disk or a `System\Models\File` ready to attach to a model.
+- `PDF::fake()` with render assertions for project tests, `dynamicpdf:sync` and `dynamicpdf:check` console commands.
+
 ## Requirements
 
 This plugin requires PHP 8.2 or higher and October CMS 4.0 or higher. Running its test suite and static analysis
@@ -329,8 +340,6 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 |---------------------------------------------------------|----------------------------------------------------------|
 | loadTemplate($code, array $data = [], $encoding = null, $layout = null, $locale = null) | Load backend template, optionally with another layout and locale |
 | loadLayout($code, array $data = [], $encoding = null, $locale = null) | Load backend layout, optionally in another locale |
-| loadTemplate($code, array $data = [], $encoding = null, $layout = null) | Load backend template, optionally with another layout |
-| loadLayout($code, array $data = [], $encoding = null)   | Load backend layout                                      |
 | pageNumbers($text, $position, $size, $font, $margin, $color) | Stamp page numbers on every page                    |
 | allowSelfSignedCertificates()                           | Accept self-signed TLS certificates for remote resources |
 | loadHTML($string, $encoding = null)                     | Load HTML string                                         |

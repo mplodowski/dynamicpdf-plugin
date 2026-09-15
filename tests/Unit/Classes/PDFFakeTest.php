@@ -45,4 +45,12 @@ describe('PDF::fake()', function () {
         expect(fn () => $fake->assertNothingRendered())->toThrow(AssertionFailedError::class)
             ->and(fn () => $fake->assertRendered('acme::pdf.invoice', fn (array $data): bool => isset($data['missing'])))->toThrow(AssertionFailedError::class);
     });
+
+    it('replaces a wrapper the facade has already resolved', function () {
+        PDF::getFacadeRoot();
+
+        $fake = PDF::fake();
+
+        expect(PDF::getFacadeRoot())->toBe($fake);
+    });
 });
