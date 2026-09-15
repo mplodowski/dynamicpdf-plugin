@@ -75,7 +75,13 @@ class Templates extends Controller
             return;
         }
 
-        $posted = (array) post($this->formGetWidget()->arrayName);
+        $widget = $this->formGetWidget();
+
+        if ($widget === null) {
+            return;
+        }
+
+        $posted = (array) $widget->getSaveData();
 
         foreach (Template::VIEW_FIELDS as $field => $attribute) {
             if (array_key_exists($field, $posted) && $this->normalize($posted[$field]) !== $this->normalize($model->getAttribute($attribute))) {
@@ -104,7 +110,7 @@ class Templates extends Controller
         }
 
         return PDF::loadTemplate($model->code, $model->sampleData())
-            ->setLogOutputFile(storage_path('temp/log.htm'))
+            ->setLogOutputFile(config('app.debug') ? storage_path('temp/log.htm') : '')
             ->allowRemoteApplicationAssets()
             ->setDpi(300)
             ->stream();
@@ -114,7 +120,7 @@ class Templates extends Controller
     {
         $model = $this->formFindModelObject($id);
 
-        return response($model->html)->header('Content-Security-Policy', 'sandbox allow-same-origin');
+        return response($model->html)->header('Content-Security-Policy', "sandbox; script-src 'none'; object-src 'none'");
     }
 
     public function update_onDuplicate(int|string $recordId): RedirectResponse

@@ -41,6 +41,16 @@ describe('Page numbers', function () {
             ->toThrow(InvalidArgumentException::class);
     });
 
+    it('forgets page numbers when another document is loaded', function () use ($twoPages) {
+        $wrapper = $twoPages();
+        $wrapper->pageNumbers('Page {PAGE_NUM} of {PAGE_COUNT}');
+        $wrapper->output(['compress' => 0]);
+
+        $wrapper->loadHTML('<p>second document</p>');
+
+        expect($wrapper->output(['compress' => 0]))->not->toContain('Page 1 of');
+    });
+
     it('renders without page numbers by default', function () use ($twoPages) {
         expect($twoPages()->output(['compress' => 0]))->not->toContain('Page 1 of 2');
     });

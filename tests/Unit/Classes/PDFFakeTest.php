@@ -31,8 +31,8 @@ describe('PDF::fake()', function () {
     it('matches the real Content-Disposition header', function () {
         PDF::fake();
 
-        expect(PDF::loadTemplate('acme::pdf.invoice')->download('faktura-ą.pdf')->headers->get('Content-Disposition'))
-            ->toBe("attachment; filename=faktura-a.pdf; filename*=utf-8''faktura-%C4%85.pdf");
+        expect(PDF::loadTemplate('acme::pdf.invoice')->download('invoice-ä.pdf')->headers->get('Content-Disposition'))
+            ->toBe("attachment; filename=invoice-a.pdf; filename*=utf-8''invoice-%C3%A4.pdf");
     });
 
     it('fails the assertions the way a test expects', function () {

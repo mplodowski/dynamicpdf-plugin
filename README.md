@@ -25,11 +25,19 @@ Plugin uses dompdf wrapper for Laravel [barryvdh/laravel-dompdf](https://github.
 
 ## Requirements
 
-This plugin requires PHP 8.2 or higher and October CMS 4.0 or higher. Running its test suite and static analysis
-needs PHP 8.4.
+This plugin requires PHP 8.2 or higher and October CMS 4.0 or higher.
 
 Templates are rendered with Twig without a sandbox, so the `Manage templates` and `Manage layouts` permissions
 should only be granted to trusted users.
+
+## Permissions
+
+Access is granted per area under **Settings → Administrators**, on the **PDF** tab. Super users bypass both.
+
+| Permission | What it unlocks |
+| --- | --- |
+| **Manage templates** | The *PDF Templates* page, its previews and duplicates. |
+| **Manage layouts** | The *PDF Layouts* page, its previews and duplicates. |
 
 ## Like this plugin?
 
@@ -213,9 +221,13 @@ public function registerPDFTemplates()
 
 The method should return an array of pdf view names.
 
-Registered views are synchronised to the database when a *PDF Templates* settings page is displayed and when
-`php artisan dynamicpdf:demo` runs, not on every request. A code whose view file is missing is skipped and written to
-the application log once per process; a stored template whose view file went missing keeps its stored content. Until a registered view is synchronised, `PDF::loadTemplate()` renders it straight from the file.
+Registered views are synchronised to the database when the *PDF Templates* or *PDF Layouts* backend page is displayed
+and when `php artisan dynamicpdf:sync` or `php artisan dynamicpdf:demo` runs, not on every request. Synchronisation creates the missing templates, removes the
+ones that are not registered any more and writes changed view files back to the rows of templates that are not
+customised, so list search and sort work on the current values. A code whose view file is missing is skipped and
+written to the application log once per process; a stored template whose view file went missing, cannot be read in
+full or parses to no content keeps its stored content. Until a registered view is synchronised,
+`PDF::loadTemplate()` renders it straight from the file.
 
 Like templates, PDF layouts can be registered by adding the `registerPDFLayouts` method of the Plugin registration
 class (`Plugin.php`).
@@ -237,7 +249,8 @@ The method should return an array of pdf view names.
 Templates and layouts are rendered with the CMS Twig environment when the Cms module is installed and a theme is
 active, so theme partials and content blocks are available. Otherwise, for example in a backend-only installation
 that loads only the System and Backend modules, the system Twig environment is used. Filters and functions registered
-by plugins through `registerMarkupTags` work in both.
+by plugins through `registerMarkupTags` work in both. Filters and tags provided by the Cms module itself (`|theme`,
+`|page`, `{% partial %}`) are unavailable without it.
 
 ## Global variables
 
@@ -274,7 +287,8 @@ Event::listen('renatio.dynamicpdf.beforeRender', function ($pdf, $model, array $
 Both events fire once per document: for a template together with its layout (`loadTemplate()`, `parseTemplate()`),
 or for a layout rendered on its own (`loadLayout()`, `parseLayout()`). They also fire for the backend HTML and PDF
 preview, so keep side effects such as counters or audit entries out of the listeners or check `$pdf` for the preview
-context yourself. A listener that returns `false` stops the remaining listeners, as with every October event.
+context yourself. Every listener runs; the arrays they return are merged in turn, and the reserved names
+`content_html`, `css`, `background_img` and `locale` are stripped from what a listener returns.
 
 ## Usage
 
@@ -342,6 +356,7 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 | loadLayout($code, array $data = [], $encoding = null, $locale = null) | Load backend layout, optionally in another locale |
 | pageNumbers($text, $position, $size, $font, $margin, $color) | Stamp page numbers on every page                    |
 | allowSelfSignedCertificates()                           | Accept self-signed TLS certificates for remote resources |
+| allowRemoteApplicationAssets()                          | Limit remote resources to the application host and local files to the asset directories |
 | loadHTML($string, $encoding = null)                     | Load HTML string                                         |
 | loadFile($file)                                         | Load HTML string from a file                             |
 | parseTemplate(Template $template, array $data = [])     | Parse backend template using Twig                        |
@@ -442,7 +457,7 @@ Then in the template you can use following example code:
 
 > For retrieving stylesheets or images via http following PHP setting must be enabled `allow_url_fopen`.
 
-> The backend preview fetches remote resources only from the hosts listed in `allowed_remote_hosts` of the dompdf
+> The backend PDF preview fetches remote resources only from the hosts listed in `allowed_remote_hosts` of the dompdf
 > configuration or, when that list is empty, from the application host itself, and reads local files only from the
 > directories October publishes (web root, modules, plugins, themes, app assets, public uploads, media and the resize
 > cache) unless `chroot` is set in the configuration.
@@ -502,7 +517,8 @@ return PDF::loadTemplate('renatio::invoice')
 with `@font-face` in the layout; the dompdf default font otherwise), `margin` (points) and `color` (RGB between 0
 and 1) are optional. Requires the CPDF or PDFLib backend; the GD backend cannot draw page text.
 
-Inline PHP (`setIsPhpEnabled(true)`) is no longer needed for page numbers and should stay off.
+Call `pageNumbers()` after loading the document; it applies to that document only. Inline PHP
+(`setIsPhpEnabled(true)`) is no longer needed for page numbers and should stay off.
 
 > **Security warning:** only enable `setIsPhpEnabled(true)` when the template content is fully trusted. Any
 > `<script type="text/php">` block in the HTML is executed on the server, so enabling it for templates that can be
@@ -532,8 +548,8 @@ validating its arguments under the fake.
 ## Console commands
 
 `php artisan dynamicpdf:sync` synchronises the registered PDF views with the database and lists what was created,
-deleted or failed; it exits with code 1 when a registered code has no view file. Run it after a deployment so the
-templates exist before the first backend visit.
+updated, deleted or failed; it exits with code 1 when a registered code has no view file. Run it after a deployment
+so the templates exist before the first backend visit.
 
 `php artisan dynamicpdf:check` reports the dompdf configuration that fails silently: font, cache and temporary
 directories (existence and write access, without creating anything), `chroot`, inline PHP and remote resources, and

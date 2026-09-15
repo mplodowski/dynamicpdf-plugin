@@ -12,6 +12,22 @@ describe('PDFWrapper', function () {
         expect(fn () => app('dynamicpdf')->__call('setNoSuchOption', [300]))->toThrow(UnexpectedValueException::class);
     });
 
+    it('throws for a protected helper instead of exposing it', function () {
+        expect(fn () => app('dynamicpdf')->__call('applyCertificatePolicy', []))->toThrow(UnexpectedValueException::class);
+    });
+
+    it('keeps the ssl stream options scalar when the certificate policy is applied twice', function () {
+        $wrapper = app('dynamicpdf');
+        $wrapper->allowSelfSignedCertificates();
+        $wrapper->allowSelfSignedCertificates();
+
+        $ssl = stream_context_get_options($wrapper->getDomPDF()->getHttpContext())['ssl'];
+
+        expect($ssl['verify_peer'])->toBe(false)
+            ->and($ssl['verify_peer_name'])->toBe(false)
+            ->and($ssl['allow_self_signed'])->toBe(true);
+    });
+
     it('renders a template inside its layout with Twig data', function () {
         $layout = $this->createLayout([
             'content_html' => '<html><body>{{ content_html|raw }}</body></html>',

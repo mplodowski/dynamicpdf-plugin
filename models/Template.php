@@ -84,8 +84,8 @@ class Template extends Model
     }
 
     /**
-     * A stored, non-customised template follows its view file. The row is left as
-     * stored when the view is not registered any more or its file is missing.
+     * A stored, non-customised template follows its view file. The row is left as stored when the
+     * view is not registered any more, its file is missing, or the fill throws part way through.
      */
     public function afterFetch(): void
     {
@@ -93,9 +93,14 @@ class Template extends Model
             return;
         }
 
+        $stored = $this->getAttributes();
+
         try {
             $this->fillFromView($this->code);
         } catch (Throwable $e) {
+            $this->setRawAttributes($stored, true);
+            $this->unsetRelation('layout');
+
             Log::error("Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
         }
     }
@@ -118,10 +123,19 @@ class Template extends Model
         $this->title = array_get($sections, 'settings.title', '???');
         $this->code = $path;
         $this->setAttribute('layout', $this->resolveLayout(array_get($sections, 'settings.layout')));
-        $this->size = array_get($sections, 'settings.size');
-        $this->orientation = array_get($sections, 'settings.orientation');
+        $this->size = self::lowercaseOption(array_get($sections, 'settings.size'));
+        $this->orientation = self::lowercaseOption(array_get($sections, 'settings.orientation'));
         $this->description = array_get($sections, 'settings.description');
         $this->content_html = array_get($sections, 'html');
+    }
+
+    /**
+     * The dompdf paper sizes and orientations are keyed in lowercase, so a view declaring A4
+     * would otherwise fill the form with a value no option matches.
+     */
+    protected static function lowercaseOption(mixed $value): ?string
+    {
+        return $value === null || $value === '' ? null : mb_strtolower((string) $value);
     }
 
     /**

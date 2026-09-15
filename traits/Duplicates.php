@@ -2,10 +2,13 @@
 
 namespace Renatio\DynamicPDF\Traits;
 
+use Illuminate\Database\UniqueConstraintViolationException;
+
 trait Duplicates
 {
     /**
-     * A copy with a free code, its attachments and the label of the copy marked as such.
+     * A copy with a free code, its attachments and the label of the copy marked as such. The
+     * code is looked up again once when a concurrent duplicate took it between check and insert.
      */
     public function duplicate(): static
     {
@@ -13,7 +16,13 @@ trait Duplicates
         $copy->code = $this->uniqueCopyCode((string) $this->code);
         $copy->{$this->duplicateLabelAttribute()} = $this->{$this->duplicateLabelAttribute()} . ' ' . trans('renatio.dynamicpdf::lang.templates.copy_suffix');
         $this->prepareDuplicate($copy);
-        $copy->save();
+
+        try {
+            $copy->save();
+        } catch (UniqueConstraintViolationException) {
+            $copy->code = $this->uniqueCopyCode((string) $this->code);
+            $copy->save();
+        }
 
         return $copy;
     }
