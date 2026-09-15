@@ -30,7 +30,7 @@ return [
         'size' => 'Rozmiar papieru',
         'orientation' => 'Orientacja papieru',
         'sample_data' => 'Dane przykładowe',
-        'sample_data_comment' => 'Obiekt JSON ze zmiennymi, z którymi renderowany jest podgląd w panelu, np. {"name": "Jan Kowalski"}.',
+        'sample_data_comment' => 'Obiekt JSON ze zmiennymi, z którymi renderowany jest podgląd w panelu, np. {"name": "Jan Kowalski", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Dostosowany',
         'is_locked' => 'Zablokowany',
         'preview' => 'Podgląd',

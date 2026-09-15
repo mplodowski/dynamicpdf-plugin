@@ -30,7 +30,7 @@ return [
         'size' => 'Papír mérete',
         'orientation' => 'Papír tájolása',
         'sample_data' => 'Mintaadatok',
-        'sample_data_comment' => 'JSON objektum a változókkal, amelyekkel az admin előnézet renderelődik, például {"name": "Kovács János"}.',
+        'sample_data_comment' => 'JSON objektum a változókkal, amelyekkel az admin előnézet renderelődik, például {"name": "Kovács János", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Testreszabott',
         'is_locked' => 'Zárolt',
         'preview' => 'Előnézet',
