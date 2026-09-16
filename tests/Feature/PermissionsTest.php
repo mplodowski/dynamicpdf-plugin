@@ -1,6 +1,7 @@
 <?php
 
 use October\Rain\Exception\ForbiddenException;
+use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
 use Renatio\DynamicPDF\Models\Layout;
@@ -123,6 +124,19 @@ describe('Granular permissions', function () {
         $layout = $this->createLayout();
 
         expect(fn () => (new Layouts)->run('html', [$layout->id]))->toThrow(ForbiddenException::class);
+    });
+
+    it('hides the delete button of a view-driven template from a user without the update permission', function () {
+        actingAsBackendUserWith(['manage_templates', 'manage_templates.delete']);
+        PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
+        $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'is_custom' => false]);
+
+        $content = (new Templates)->run('index', ['templates'])->getContent();
+
+        PDFManager::forgetInstance();
+
+        expect($content)->not->toContain('onDeleteRecord')
+            ->and($content)->not->toContain('onResetRecord');
     });
 
     it('hides the new template button without the create permission', function () {

@@ -66,7 +66,7 @@
                         data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>">
                     <?= e(trans('backend::lang.form.reset_default')) ?>
                 </button>
-            <?php elseif (BackendAuth::userHasAccess('renatio.dynamicpdf.manage_templates.delete')): ?>
+            <?php elseif (! $formModel->followsView() && BackendAuth::userHasAccess('renatio.dynamicpdf.manage_templates.delete')): ?>
                 <button type="button"
                         class="oc-icon-trash-o btn-icon danger pull-right"
                         data-request="onDelete"

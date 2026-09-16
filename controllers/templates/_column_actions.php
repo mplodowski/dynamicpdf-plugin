@@ -29,7 +29,7 @@
                 data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>"
                 data-load-indicator="<?= e(trans('backend::lang.form.resetting')) ?>"
                 data-tooltip-text="<?= e(trans('backend::lang.form.reset_default')) ?>"><i class="octo-icon-refresh icon-lg m-0"></i></button>
-    <?php elseif (BackendAuth::userHasAccess($permission . '.delete')): ?>
+    <?php elseif (! $record->followsView() && BackendAuth::userHasAccess($permission . '.delete')): ?>
         <button type="button"
                 class="btn btn-sm btn-danger"
                 data-request="onDeleteRecord"
