@@ -16,26 +16,39 @@ class Demo extends Command
 
     protected $description = 'Enable/Disable PDF demo templates.';
 
-    public function handle(): void
+    public function handle(): int
     {
-        if ($this->option('disable')) {
-            $this->disableDemo();
-        } else {
-            $this->enableDemo();
-        }
+        return $this->option('disable') ? $this->disableDemo() : $this->enableDemo();
     }
 
-    protected function enableDemo(): void
+    protected function enableDemo(): int
     {
         Parameter::set('renatio::dynamicpdf.demo', 1);
 
         PDFManager::forgetInstance();
-        (new SyncTemplates)->handle();
+        SyncTemplates::forgetFailures();
 
-        $this->info(e(trans('renatio.dynamicpdf::lang.demo.enabled')));
+        $sync = new SyncTemplates;
+        $sync->handle();
+
+        $failed = $sync->report()['failed'];
+
+        if ($failed === []) {
+            $this->info(e(trans('renatio.dynamicpdf::lang.demo.enabled')));
+
+            return self::SUCCESS;
+        }
+
+        $this->line('<fg=red;options=bold>Failed (see the application log)</>');
+
+        foreach ($failed as $code) {
+            $this->line("  {$code}");
+        }
+
+        return self::FAILURE;
     }
 
-    protected function disableDemo(): void
+    protected function disableDemo(): int
     {
         $plugin = PluginManager::instance()->findByNamespace('Renatio.DynamicPDF');
 
@@ -50,5 +63,7 @@ class Demo extends Command
         Parameter::set('renatio::dynamicpdf.demo', 0);
 
         $this->info(e(trans('renatio.dynamicpdf::lang.demo.disabled')));
+
+        return self::SUCCESS;
     }
 }

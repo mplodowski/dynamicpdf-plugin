@@ -3,7 +3,7 @@
 return [
     'plugin' => [
         'name' => 'Dinamikus PDF',
-        'description' => 'Egyedi PDF fájlok generálása.',
+        'description' => 'PDF generálása az adminban szerkesztett HTML és Twig sablonokból, elrendezésekkel, oldalszámozással, jelszavas védelemmel és csatolható fájllal.',
     ],
     'templates' => [
         'label' => 'Sablonok',

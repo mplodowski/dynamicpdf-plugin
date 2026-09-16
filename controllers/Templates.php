@@ -6,6 +6,7 @@ use Backend\Behaviors\FormController;
 use Backend\Behaviors\ListController;
 use Backend\Classes\Controller;
 use Backend\Facades\Backend;
+use Backend\Facades\BackendAuth;
 use Backend\Facades\BackendMenu;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -38,10 +39,20 @@ class Templates extends Controller
 
     public function __construct()
     {
+        /** Dropped before parent::__construct() so ListController never builds the layouts list. */
+        if (! self::canManageLayouts()) {
+            unset($this->listConfig['layouts']);
+        }
+
         parent::__construct();
 
         BackendMenu::setContext('October.System', 'system', 'settings');
         SettingsManager::setContext('Renatio.DynamicPDF', 'templates');
+    }
+
+    protected static function canManageLayouts(): bool
+    {
+        return (bool) BackendAuth::userHasAccess('renatio.dynamicpdf.manage_layouts');
     }
 
     public function beforeDisplay(): void
@@ -53,8 +64,11 @@ class Templates extends Controller
     {
         $this->asExtension('ListController')->index();
 
+        $canManageLayouts = self::canManageLayouts();
+
         $this->bodyClass = 'compact-container';
-        $this->vars['activeTab'] = $tab ?: 'templates';
+        $this->vars['canManageLayouts'] = $canManageLayouts;
+        $this->vars['activeTab'] = $canManageLayouts && $tab ? $tab : 'templates';
     }
 
     /**

@@ -25,7 +25,7 @@ class Check extends Command
     {
         $this->newLine();
 
-        $this->directory('Font directory', config('dompdf.options.font_dir'));
+        $this->directory('Font directory', config('dompdf.options.font_dir'), createdOnRender: true);
         $this->directory('Font cache', config('dompdf.options.font_cache'));
         $this->directory('Temporary directory', config('dompdf.options.temp_dir'));
 
@@ -70,9 +70,10 @@ class Check extends Command
 
     /**
      * Only reports: creating the directory here would give it the CLI user's ownership and
-     * certify a directory the web server still cannot write to.
+     * certify a directory the web server still cannot write to. $createdOnRender is for the
+     * font directory alone, which PDFWrapper::ensureFontDir() creates on the first render.
      */
-    protected function directory(string $label, mixed $path): void
+    protected function directory(string $label, mixed $path, bool $createdOnRender = false): void
     {
         if (! is_string($path) || $path === '') {
             $this->components->twoColumnDetail($label, self::WARN . ' not configured');
@@ -81,6 +82,14 @@ class Check extends Command
         }
 
         if (! is_dir($path)) {
+            $parent = $this->nearestExistingParent($path);
+
+            if ($createdOnRender && ! file_exists($path) && is_writable($parent)) {
+                $this->components->twoColumnDetail($label, self::WARN . " {$path} does not exist; the first render creates it if the web server can write to {$parent}");
+
+                return;
+            }
+
             $this->report($label, "{$path} does not exist; create it and make it writable for the web server");
 
             return;
@@ -93,6 +102,17 @@ class Check extends Command
         }
 
         $this->components->twoColumnDetail($label, self::PASS . " {$path}");
+    }
+
+    protected function nearestExistingParent(string $path): string
+    {
+        $path = rtrim($path, DIRECTORY_SEPARATOR);
+
+        while ($path !== '' && ! is_dir($path) && dirname($path) !== $path) {
+            $path = dirname($path);
+        }
+
+        return $path;
     }
 
     /**

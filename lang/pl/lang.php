@@ -3,7 +3,7 @@
 return [
     'plugin' => [
         'name' => 'DynamicPDF',
-        'description' => 'Generuj dynamiczne pliki PDF.',
+        'description' => 'Generuj pliki PDF z szablonów HTML i Twig edytowanych w panelu, z layoutami, numeracją stron, ochroną hasłem i plikiem gotowym do załączenia.',
     ],
     'templates' => [
         'label' => 'Szablony',

@@ -306,10 +306,10 @@ Access is granted under **Settings → Administrators**, on the **PDF** tab. Sup
 
 | Permission | What it unlocks |
 | --- | --- |
-| **Manage templates** | The *PDF Templates* page with both lists, and the template form, previews and duplicates. |
+| **Manage templates** | The *PDF Templates* page, and the template form, previews and duplicates. |
 | **Manage layouts** | The layout form, its previews and duplicates. |
 
-Opening a layout from the *Layouts* tab therefore needs both permissions.
+Without **Manage layouts** the *Layouts* tab is hidden on the *PDF Templates* page.
 
 ## Configuration
 
