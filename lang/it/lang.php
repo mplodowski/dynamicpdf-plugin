@@ -32,7 +32,7 @@ return [
         'sample_data' => 'Dati di esempio',
         'sample_data_comment' => 'Oggetto JSON con le variabili usate dall\'anteprima nel pannello, ad esempio {"name": "Mario Rossi", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Personalizzato',
-        'is_locked' => 'Bloccato',
+        'is_locked' => 'Da vista',
         'preview' => 'Anteprima',
         'duplicate' => 'Duplica',
         'duplicating' => 'Duplicazione...',
