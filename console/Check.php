@@ -82,8 +82,10 @@ class Check extends Command
         }
 
         if (! is_dir($path)) {
-            if ($createdOnRender && is_writable($this->nearestExistingParent($path))) {
-                $this->components->twoColumnDetail($label, self::WARN . " {$path} does not exist; it will be created on the first render");
+            $parent = $this->nearestExistingParent($path);
+
+            if ($createdOnRender && ! file_exists($path) && is_writable($parent)) {
+                $this->components->twoColumnDetail($label, self::WARN . " {$path} does not exist; the first render creates it if the web server can write to {$parent}");
 
                 return;
             }

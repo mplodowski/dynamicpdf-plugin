@@ -31,11 +31,11 @@ class Demo extends Command
         $sync = new SyncTemplates;
         $sync->handle();
 
-        $this->info(e(trans('renatio.dynamicpdf::lang.demo.enabled')));
-
         $failed = $sync->report()['failed'];
 
         if ($failed === []) {
+            $this->info(e(trans('renatio.dynamicpdf::lang.demo.enabled')));
+
             return self::SUCCESS;
         }
 

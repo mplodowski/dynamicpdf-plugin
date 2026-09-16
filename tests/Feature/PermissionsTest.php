@@ -27,7 +27,8 @@ describe('Permissions', function () {
 
         $content = (new Templates)->run('index', ['layouts'])->getContent();
 
-        expect($content)->not->toContain('renatio/dynamicpdf/templates/index/layouts')
+        expect($content)->toContain('renatio/dynamicpdf/templates/create')
+            ->and($content)->not->toContain('renatio/dynamicpdf/templates/index/layouts')
             ->and($content)->not->toContain(trans('renatio.dynamicpdf::lang.templates.new_layout'));
     });
 
