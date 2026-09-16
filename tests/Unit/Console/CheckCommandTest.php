@@ -18,7 +18,7 @@ describe('dynamicpdf:check', function () {
         config(['dompdf.options.font_dir' => $missing]);
 
         expect(Artisan::call('dynamicpdf:check'))->toBe(0)
-            ->and(Artisan::output())->toContain('will be created on the first render')
+            ->and(Artisan::output())->toContain('the first render creates it')
             ->and($missing)->not->toBeDirectory();
     });
 
