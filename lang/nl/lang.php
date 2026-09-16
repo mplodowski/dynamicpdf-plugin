@@ -3,7 +3,7 @@
 return [
     'plugin' => [
         'name' => 'DynamicPDF',
-        'description' => 'Genereer dynamische en aangepaste PDF-bestanden.',
+        'description' => 'Genereer PDF\'s uit in het beheer bewerkte HTML- en Twig-sjablonen, met lay-outs, paginanummers, wachtwoordbeveiliging en een bestand klaar om bij te voegen.',
     ],
     'templates' => [
         'label' => 'Sjablonen',

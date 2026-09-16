@@ -3,7 +3,7 @@
 return [
     'plugin' => [
         'name' => 'Dynamické PDF',
-        'description' => 'Generování dynamických a upravitelných PDF.',
+        'description' => 'Generujte PDF ze šablon HTML a Twig upravovaných v administraci, s layouty, číslováním stránek, ochranou heslem a souborem připraveným k přiložení.',
     ],
     'templates' => [
         'label' => 'PDF Šablony',

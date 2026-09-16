@@ -3,7 +3,7 @@
 return [
     'plugin' => [
         'name' => 'DynamicPDF',
-        'description' => 'Genera PDF dinámicos y personalizados.',
+        'description' => 'Genera PDF a partir de plantillas HTML y Twig editadas en el panel, con layouts, numeración de páginas, protección con contraseña y un archivo listo para adjuntar.',
     ],
     'templates' => [
         'label' => 'Plantillas PDF',

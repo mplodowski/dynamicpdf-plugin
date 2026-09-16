@@ -3,7 +3,7 @@
 return [
     'plugin' => [
         'name' => 'DynamicPDF',
-        'description' => 'Generate dynamic and customized PDFs.',
+        'description' => 'Generate PDFs from HTML and Twig templates edited in the backend, with layouts, page numbers, password protection and a file ready to attach.',
     ],
     'templates' => [
         'label' => 'Templates',

@@ -1,7 +1,7 @@
 {
     "name": "renatio/dynamicpdf-plugin",
     "type": "october-plugin",
-    "description": "October HTML to PDF converter using dompdf library.",
+    "description": "Generate PDFs in October CMS from HTML and Twig templates edited in the backend, with layouts, page numbers, password protection and file output.",
     "homepage": "https://octobercms.com/plugin/renatio-dynamicpdf",
     "keywords": [
         "octobercms-plugin",
