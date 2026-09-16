@@ -33,7 +33,6 @@ return [
         'sample_data_comment' => 'JSON-Objekt mit den Variablen für die Vorschau im Backend, z. B. {"name": "Max Mustermann", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Angepasst',
         'is_locked' => 'Aus View',
-        'preview' => 'Vorschau',
         'duplicate' => 'Duplizieren',
         'duplicating' => 'Wird dupliziert...',
         'duplicate_success' => 'Kopie wurde erstellt.',

@@ -33,7 +33,6 @@ return [
         'sample_data_comment' => 'JSON object with the variables the backend preview renders with, for example {"name": "John Doe", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Customized',
         'is_locked' => 'From view',
-        'preview' => 'Preview',
         'duplicate' => 'Duplicate',
         'duplicating' => 'Duplicating...',
         'duplicate_success' => 'Copy created.',

@@ -33,7 +33,6 @@ return [
         'sample_data_comment' => 'Objeto JSON con las variables con las que se renderiza la vista previa del panel, por ejemplo {"name": "Juan Pérez", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Personalizado',
         'is_locked' => 'Desde vista',
-        'preview' => 'Vista previa',
         'duplicate' => 'Duplicar',
         'duplicating' => 'Duplicando...',
         'duplicate_success' => 'Copia creada.',

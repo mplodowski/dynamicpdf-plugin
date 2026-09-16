@@ -33,7 +33,6 @@ return [
         'sample_data_comment' => 'Объект JSON с переменными для предпросмотра в панели, например {"name": "Иван Иванов", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Изменён',
         'is_locked' => 'Из представления',
-        'preview' => 'Предпросмотр',
         'duplicate' => 'Дублировать',
         'duplicating' => 'Дублирование...',
         'duplicate_success' => 'Копия создана.',

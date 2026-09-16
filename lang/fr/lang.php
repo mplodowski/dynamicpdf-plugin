@@ -33,7 +33,6 @@ return [
         'sample_data_comment' => 'Objet JSON avec les variables utilisées par l\'aperçu du panneau, par exemple {"name": "Jean Dupont", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Personnalisé',
         'is_locked' => 'Depuis la vue',
-        'preview' => 'Aperçu',
         'duplicate' => 'Dupliquer',
         'duplicating' => 'Duplication...',
         'duplicate_success' => 'Copie créée.',

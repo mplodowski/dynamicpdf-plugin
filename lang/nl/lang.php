@@ -33,7 +33,6 @@ return [
         'sample_data_comment' => 'JSON-object met de variabelen waarmee het voorbeeld in het beheer wordt weergegeven, bijvoorbeeld {"name": "Jan Jansen", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Aangepast',
         'is_locked' => 'Uit view',
-        'preview' => 'Voorbeeld',
         'duplicate' => 'Dupliceren',
         'duplicating' => 'Dupliceren...',
         'duplicate_success' => 'Kopie aangemaakt.',
