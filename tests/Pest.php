@@ -6,7 +6,10 @@ use Renatio\DynamicPDF\Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->beforeEach(fn () => $this->setUpOctoberPlugin())
-    ->afterEach(fn () => $this->tearDownOctoberPlugin())
+    ->afterEach(function () {
+        BackendAuth::logout();
+        $this->tearDownOctoberPlugin();
+    })
     ->in(__DIR__);
 
 /**
@@ -34,4 +37,23 @@ function actingAsBackendUserWith(array $permissions): User
     BackendAuth::login($user);
 
     return $user;
+}
+
+/**
+ * A user holding every DynamicPDF permission.
+ */
+function actingAsPdfManager(): User
+{
+    return actingAsBackendUserWith([
+        'manage_templates',
+        'manage_templates.create',
+        'manage_templates.update',
+        'manage_templates.delete',
+        'manage_templates.preview',
+        'manage_layouts',
+        'manage_layouts.create',
+        'manage_layouts.update',
+        'manage_layouts.delete',
+        'manage_layouts.preview',
+    ]);
 }

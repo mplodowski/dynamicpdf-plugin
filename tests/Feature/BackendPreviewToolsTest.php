@@ -1,6 +1,5 @@
 <?php
 
-use Backend\Facades\BackendAuth;
 use Illuminate\Support\Facades\File as Filesystem;
 use October\Rain\Exception\ValidationException;
 use Renatio\DynamicPDF\Classes\PDFManager;
@@ -11,6 +10,8 @@ use Renatio\DynamicPDF\Models\Template;
 use System\Models\File;
 
 describe('Backend preview tools', function () {
+    beforeEach(fn () => actingAsPdfManager());
+
     it('renders the HTML preview with the sample data of the template', function () {
         $template = $this->createTemplate(['content_html' => '<p>Hello {{ name }}</p>', 'sample_data' => '{"name": "Jane"}']);
 
@@ -56,6 +57,8 @@ describe('Backend preview tools', function () {
 });
 
 describe('PDF preview document', function () {
+    beforeEach(fn () => actingAsPdfManager());
+
     it('names the document after the template instead of the layout title', function () {
         $template = $this->createTemplate(['title' => 'Quarterly Invoice', 'content_html' => '<p>Hello</p>']);
 
@@ -70,11 +73,10 @@ describe('View-driven template save', function () {
     beforeEach(function () {
         $this->views = $this->registerViewTemplates('viewdriven', ['a' => "title = \"a\"\n==\n<p>v1</p>"]);
         $this->template = $this->createTemplate(['code' => 'viewdriven::pdf.a', 'is_custom' => false, 'content_html' => '<p>v1</p>', 'title' => 'a']);
-        actingAsBackendUserWith(['manage_templates']);
+        actingAsPdfManager();
     });
 
     afterEach(function () {
-        BackendAuth::logout();
         PDFManager::forgetInstance();
         Filesystem::deleteDirectory($this->views);
     });

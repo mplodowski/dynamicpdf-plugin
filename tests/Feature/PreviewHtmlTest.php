@@ -4,6 +4,8 @@ use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
 
 describe('HTML preview', function () {
+    beforeEach(fn () => actingAsPdfManager());
+
     it('serves the template HTML sandboxed', function () {
         $template = $this->createTemplate(['content_html' => '<p>Hello</p><script>alert(1)</script>']);
 

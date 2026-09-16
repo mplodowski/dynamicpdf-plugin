@@ -64,7 +64,15 @@ return [
     ],
     'permissions' => [
         'manage_templates' => 'Manage templates',
+        'create_templates' => 'Create templates',
+        'update_templates' => 'Update templates',
+        'delete_templates' => 'Delete templates',
+        'preview_templates' => 'Preview templates',
         'manage_layouts' => 'Manage layouts',
+        'create_layouts' => 'Create layouts',
+        'update_layouts' => 'Update layouts',
+        'delete_layouts' => 'Delete layouts',
+        'preview_layouts' => 'Preview layouts',
         'tab' => 'PDF',
     ],
     'menu' => [

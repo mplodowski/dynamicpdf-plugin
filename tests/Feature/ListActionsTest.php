@@ -1,6 +1,5 @@
 <?php
 
-use Backend\Facades\BackendAuth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File as Filesystem;
 use Renatio\DynamicPDF\Classes\PDFManager;
@@ -9,7 +8,7 @@ use Renatio\DynamicPDF\Models\Template;
 
 describe('List actions', function () {
     beforeEach(function () {
-        actingAsBackendUserWith(['manage_templates']);
+        actingAsPdfManager();
         $this->views = '';
     });
 
@@ -18,7 +17,6 @@ describe('List actions', function () {
             Filesystem::deleteDirectory($this->views);
         }
 
-        BackendAuth::logout();
         PDFManager::forgetInstance();
     });
 
@@ -62,6 +60,7 @@ describe('List actions', function () {
     });
 
     it('refuses a layout action without manage_layouts', function () {
+        actingAsBackendUserWith(['manage_templates', 'manage_templates.create']);
         $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);
 
         $response = $this->listAction('onDuplicateRecord', ['id' => $layout->id, 'definition' => 'layouts']);
@@ -71,7 +70,6 @@ describe('List actions', function () {
     });
 
     it('deletes a locked layout whose view registration is gone', function () {
-        actingAsBackendUserWith(['manage_templates', 'manage_layouts']);
         $layout = $this->createLayout(['code' => 'gone::pdf.layouts.default', 'is_locked' => true]);
 
         $this->listAction('onDeleteRecord', ['id' => $layout->id, 'definition' => 'layouts'])->assertOk();
@@ -80,7 +78,6 @@ describe('List actions', function () {
     });
 
     it('duplicates a layout from the list with manage_layouts', function () {
-        actingAsBackendUserWith(['manage_templates', 'manage_layouts']);
         $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);
 
         $this->listAction('onDuplicateRecord', ['id' => $layout->id, 'definition' => 'layouts'])->assertOk();

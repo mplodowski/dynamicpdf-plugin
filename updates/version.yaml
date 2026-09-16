@@ -55,21 +55,15 @@ v7.1.2: Allow self signed certificates on development environment.
 v8.0.1: Support October 4.
 v8.0.2: Update dependencies.
 v8.0.3: Refactor to use pluck() function.
-v8.0.4:
-    - Security release. The backend preview no longer runs inline PHP, the HTML preview is sandboxed, and remote resources and local files are limited to the application host and the asset directories.
-    - Accept self-signed certificates only with the allow_self_signed_certificates config, not on every non-production environment.
-    - Require PHP 8.2 and October CMS 4.0, and throw on an unknown option setter instead of ignoring it.
-    - Synchronise registered views only in the backend and the console commands, and skip a code whose view file is missing instead of stopping the sync.
-    - Render a template with another layout or in another locale, stamp page numbers without inline PHP, and return the document as a System\Models\File.
-    - Add registerPDFVariables(), the beforeRender and afterRender events, PDF::fake() for tests and the dynamicpdf:sync and dynamicpdf:check commands.
-v8.0.5:
-    - Render backend previews with the sample data of the template, mark customised and locked records in the lists, and duplicate or preview a template or layout straight from the list.
-    - Fix the 404 of the PDF preview on recent October 4.3 builds.
+v8.1.0:
+    - Security release. Sandboxed backend preview without inline PHP, remote resources limited to the application host and the asset directories.
+    - Require PHP 8.2 and October CMS 4.0.
+    - Granular create, update, delete and preview permissions for templates and layouts.
+    - Backend previews rendered with the sample data of the template.
     - 20260907_0001_add_sample_data_to_templates_table.php
-    - Add a unique index on the template and layout code, removing the duplicates left by concurrent synchronisations.
+    - Unique index on the template and layout code.
     - 20260907_0002_add_unique_code_indexes.php
-v8.0.6:
-    - Write changed view files back to non-customised templates on synchronisation, and keep the stored content when the view file cannot be read.
-    - Fix the customised flag on view-driven templates saved in the backend form.
-    - Duplicate, reset or delete templates and layouts straight from the list, and label registered layouts From view.
-    - Hide the layouts tab without the manage_layouts permission, and return a failure exit code from dynamicpdf:demo when the sync fails.
+    - Synchronisation writes changed view files back to non-customised templates.
+    - Duplicate, reset, preview or delete templates and layouts straight from the list.
+    - Render a template with another layout or locale, and return the PDF as a System\Models\File.
+    - Add registerPDFVariables(), the beforeRender and afterRender events, PDF::fake() and the dynamicpdf:sync and dynamicpdf:check commands.

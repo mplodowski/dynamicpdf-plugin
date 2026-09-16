@@ -8,6 +8,7 @@ use Renatio\DynamicPDF\Models\Layout;
 
 describe('Reset to default', function () {
     beforeEach(function () {
+        actingAsPdfManager();
         PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
         PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.default']);
     });

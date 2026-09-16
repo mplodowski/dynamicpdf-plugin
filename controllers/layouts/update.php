@@ -36,25 +36,29 @@
                 <?= e(trans('backend::lang.form.save_and_close')) ?>
             </button>
 
-            <a class="btn btn-info"
-               href="<?= Backend::url('renatio/dynamicpdf/layouts/preview/'.$formModel->id) ?>">
-                <?= e(trans('renatio.dynamicpdf::lang.templates.preview_html')) ?>
-            </a>
+            <?php if (BackendAuth::userHasAccess('renatio.dynamicpdf.manage_layouts.preview')): ?>
+                <a class="btn btn-info"
+                   href="<?= Backend::url('renatio/dynamicpdf/layouts/preview/'.$formModel->id) ?>">
+                    <?= e(trans('renatio.dynamicpdf::lang.templates.preview_html')) ?>
+                </a>
 
-            <a class="btn btn-info"
-               target="_blank"
-               href="<?= Backend::url('renatio/dynamicpdf/layouts/previewpdf/'.$formModel->id) ?>">
-                <?= e(trans('renatio.dynamicpdf::lang.templates.preview_pdf')) ?>
-            </a>
+                <a class="btn btn-info"
+                   target="_blank"
+                   href="<?= Backend::url('renatio/dynamicpdf/layouts/previewpdf/'.$formModel->id) ?>">
+                    <?= e(trans('renatio.dynamicpdf::lang.templates.preview_pdf')) ?>
+                </a>
+            <?php endif ?>
 
-            <button type="button"
-                    class="btn btn-default"
-                    data-request="onDuplicate"
-                    data-load-indicator="<?= e(trans('renatio.dynamicpdf::lang.templates.duplicating')) ?>">
-                <?= e(trans('renatio.dynamicpdf::lang.templates.duplicate')) ?>
-            </button>
+            <?php if (BackendAuth::userHasAccess('renatio.dynamicpdf.manage_layouts.create')): ?>
+                <button type="button"
+                        class="btn btn-default"
+                        data-request="onDuplicate"
+                        data-load-indicator="<?= e(trans('renatio.dynamicpdf::lang.templates.duplicating')) ?>">
+                    <?= e(trans('renatio.dynamicpdf::lang.templates.duplicate')) ?>
+                </button>
+            <?php endif ?>
 
-            <?php if ($formModel->followsView()): ?>
+            <?php if ($formModel->followsView() && BackendAuth::userHasAccess('renatio.dynamicpdf.manage_layouts.update')): ?>
                 <button type="button"
                         class="btn btn-danger pull-right"
                         data-request="onResetDefault"
@@ -62,7 +66,7 @@
                         data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>">
                     <?= e(trans('backend::lang.form.reset_default')) ?>
                 </button>
-            <?php else : ?>
+            <?php elseif (BackendAuth::userHasAccess('renatio.dynamicpdf.manage_layouts.delete')): ?>
                 <button type="button"
                         class="oc-icon-trash-o btn-icon danger pull-right"
                         data-request="onDelete"

@@ -14,9 +14,9 @@ function captureWrapper(): \Renatio\DynamicPDF\Classes\PDFWrapper
 }
 
 describe('Backend preview', function () {
-    afterEach(function () {
-        app()->forgetInstance('dynamicpdf');
-    });
+    beforeEach(fn () => actingAsPdfManager());
+
+    afterEach(fn () => app()->forgetInstance('dynamicpdf'));
 
     it('does not enable inline PHP when previewing a template', function () {
         $wrapper = captureWrapper();

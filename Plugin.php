@@ -78,14 +78,48 @@ class Plugin extends PluginBase
      */
     public function registerPermissions(): array
     {
+        $tab = 'renatio.dynamicpdf::lang.permissions.tab';
+
         return [
             'renatio.dynamicpdf.manage_templates' => [
                 'label' => 'renatio.dynamicpdf::lang.permissions.manage_templates',
-                'tab' => 'renatio.dynamicpdf::lang.permissions.tab',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_templates.create' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.create_templates',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_templates.update' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.update_templates',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_templates.delete' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.delete_templates',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_templates.preview' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.preview_templates',
+                'tab' => $tab,
             ],
             'renatio.dynamicpdf.manage_layouts' => [
                 'label' => 'renatio.dynamicpdf::lang.permissions.manage_layouts',
-                'tab' => 'renatio.dynamicpdf::lang.permissions.tab',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_layouts.create' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.create_layouts',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_layouts.update' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.update_layouts',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_layouts.delete' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.delete_layouts',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_layouts.preview' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.preview_layouts',
+                'tab' => $tab,
             ],
         ];
     }
