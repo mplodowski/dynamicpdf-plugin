@@ -83,6 +83,10 @@ TLS certificates are verified on every environment. On a development host with a
 `DYNAMICPDF_ALLOW_SELF_SIGNED=true` in `.env` (or `allow_self_signed_certificates` in `config/renatio/dynamicpdf.php`),
 or call the now public `allowSelfSignedCertificates()` on the wrapper for a single document.
 
+The backend PDF preview fetches remote resources only from the hosts in `allowed_remote_hosts` of the dompdf
+configuration plus the application host, and reads local files only from the published asset directories. Add the
+host to `allowed_remote_hosts`, or set your own `chroot`, when a preview stops showing an image or a font.
+
 The backend HTML and PDF preview no longer enables inline PHP. If you use the demo templates, open the
 **Header and Footer** layout and click **Reset to default** to remove the page number script from the stored copy.
 Registered PDF views are synchronised to the database when a *PDF Templates* or *PDF Layouts* backend page is opened
@@ -100,4 +104,8 @@ to the kept one.
 
 ## Upgrading To 8.0.6
 
-Synchronisation now writes a changed view file back to the row of a template that was never customised, so list search and sort use the current values; a template edited in the backend is untouched. A view file that cannot be read in full, or that parses to no content, leaves the stored content alone.
+Synchronisation now writes a changed view file back to the row of a template that was never customised, so list
+search and sort use the current values; a template edited in the backend is untouched. A view file that parses to no
+content leaves the stored content alone. Saving a view-driven template in the backend no longer marks it *Customized*
+unless a value from the view file changed; use **Reset to default** on a template an earlier version flagged by
+mistake, or it will not follow its view file again.
