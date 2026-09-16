@@ -1,16 +1,14 @@
 # Dynamic PDF Plugin
 
-**Demo URL:** https://october-demo.renatio.com/backend/backend/auth/signin
+Create and edit PDF templates for [October CMS](https://octobercms.com) in the backend — HTML and Twig in, a
+document out.
 
-**Login:** dynamicpdf
-
+**Demo URL:** https://october-demo.renatio.com/backend/backend/auth/signin  
+**Login:** dynamicpdf  
 **Password:** dynamicpdf
 
-This plugin allows developers to create and edit PDF templates with a simple user interface.
-
-HTML to PDF converter uses [dompdf](https://github.com/dompdf/dompdf) library.
-
-Plugin uses dompdf wrapper for Laravel [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
+Templates and layouts live in the database or in view files shipped by your plugins, and are rendered to PDF with
+[dompdf](https://github.com/dompdf/dompdf) through [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf).
 
 ## Features
 
@@ -29,15 +27,6 @@ This plugin requires PHP 8.2 or higher and October CMS 4.0 or higher.
 
 Templates are rendered with Twig without a sandbox, so the `Manage templates` and `Manage layouts` permissions
 should only be granted to trusted users.
-
-## Permissions
-
-Access is granted per area under **Settings → Administrators**, on the **PDF** tab. Super users bypass both.
-
-| Permission | What it unlocks |
-| --- | --- |
-| **Manage templates** | The *PDF Templates* page, its previews and duplicates. |
-| **Manage layouts** | The *PDF Layouts* page, its previews and duplicates. |
 
 ## Like this plugin?
 
@@ -195,6 +184,8 @@ The configuration section sets the PDF view parameters. The following configurat
 | **size**        | the template paper size, optional, default `a4`.              |
 | **orientation** | the template paper orientation, optional, default `portrait`. |
 
+> **Note:** **size** and **orientation** are read case-insensitively; `A4` is stored as `a4`.
+
 ### Using PDF templates
 
 PDF templates reside in the database and can be created in the back-end area via *Settings > PDF > PDF Templates*.
@@ -222,12 +213,13 @@ public function registerPDFTemplates()
 The method should return an array of pdf view names.
 
 Registered views are synchronised to the database when the *PDF Templates* or *PDF Layouts* backend page is displayed
-and when `php artisan dynamicpdf:sync` or `php artisan dynamicpdf:demo` runs, not on every request. Synchronisation creates the missing templates, removes the
-ones that are not registered any more and writes changed view files back to the rows of templates that are not
-customised, so list search and sort work on the current values. A code whose view file is missing is skipped and
-written to the application log once per process; a stored template whose view file went missing, cannot be read in
-full or parses to no content keeps its stored content. Until a registered view is synchronised,
-`PDF::loadTemplate()` renders it straight from the file.
+and when `php artisan dynamicpdf:sync` or `php artisan dynamicpdf:demo` runs, not on every request. Synchronisation
+creates the missing templates and layouts, deletes the templates that are no longer registered and were never
+customised, and writes changed view files back to the rows of templates that are not customised, so list search and
+sort work on the current values. Customised templates and every layout are left alone. A code whose view file is
+missing is skipped and written to the application log once per process; a stored template whose view file went
+missing, parses to no content or whose layout code resolves to nothing keeps its stored content. Until a registered
+view is synchronised, `PDF::loadTemplate()` renders it straight from the file.
 
 Like templates, PDF layouts can be registered by adding the `registerPDFLayouts` method of the Plugin registration
 class (`Plugin.php`).
@@ -296,14 +288,28 @@ PDF templates and layouts can be accessed in the back-end area via *Settings > P
 
 The list marks templates edited in the back-end as *Customized* (they no longer follow their view file) and registered
 layouts as *Locked*, and links to the HTML and PDF preview of every record. A template's *Sample data* (a JSON object on
-the *Options* tab) is passed to both previews, so `{{ variables }}` render with realistic values. *Duplicate* on a
-template or layout creates an editable copy with a `_copy` code.
+the *Options* tab, nested objects and lists included) is passed to both previews, so `{{ variables }}` render with
+realistic values. A template becomes *Customized* only when a value the view file provides is changed; editing the
+sample data alone keeps it view-driven.
+*Duplicate* on the template or layout form creates an editable copy with a `_copy` code (`_copy2` and so on when that
+code is taken); the copy of a template is customised and the copy of a layout is not locked.
 
 Layouts define the PDF scaffold, that is everything that repeats on a PDF, such as a header and footer. Each layout has
 unique code, optional background image, HTML content and CSS/LESS content. Not all CSS properties are supported, so
 check [CSSCompatibility](https://github.com/dompdf/dompdf/wiki/CSSCompatibility).
 
 Templates define the actual PDF content parsed from HTML.
+
+## Permissions
+
+Access is granted under **Settings → Administrators**, on the **PDF** tab. Super users bypass both.
+
+| Permission | What it unlocks |
+| --- | --- |
+| **Manage templates** | The *PDF Templates* page with both lists, and the template form, previews and duplicates. |
+| **Manage layouts** | The layout form, its previews and duplicates. |
+
+Opening a layout from the *Layouts* tab therefore needs both permissions.
 
 ## Configuration
 
@@ -337,8 +343,9 @@ required for images, stylesheets and fonts loaded by URL), `allowed_remote_hosts
 list with the current defaults is in the published `config/dompdf.php` and in
 [Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php); every option has a matching
 `set*()` method on the wrapper named after the camel-cased key, except the `enable_*` options, which are
-`setIsRemoteEnabled()`, `setIsPhpEnabled()`, `setIsJavascriptEnabled()`, `setIsHtml5ParserEnabled()` and
-`setIsFontSubsettingEnabled()`.
+`setIsRemoteEnabled()`, `setIsPhpEnabled()`, `setIsJavascriptEnabled()`, `setIsHtml5ParserEnabled()`,
+`setIsFontSubsettingEnabled()` and `setIsPdfAEnabled()`. A setter that exists on neither dompdf nor its options
+throws `UnexpectedValueException`.
 
 ### Self-signed certificates
 
@@ -354,13 +361,16 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 |---------------------------------------------------------|----------------------------------------------------------|
 | loadTemplate($code, array $data = [], $encoding = null, $layout = null, $locale = null) | Load backend template, optionally with another layout and locale |
 | loadLayout($code, array $data = [], $encoding = null, $locale = null) | Load backend layout, optionally in another locale |
-| pageNumbers($text, $position, $size, $font, $margin, $color) | Stamp page numbers on every page                    |
+| pageNumbers($text = 'Page {PAGE_NUM} of {PAGE_COUNT}', $position = 'bottom-center', $size = 9, $font = null, $margin = 20, $color = [0, 0, 0]) | Stamp page numbers on every page of the loaded document |
 | allowSelfSignedCertificates()                           | Accept self-signed TLS certificates for remote resources |
-| allowRemoteApplicationAssets()                          | Limit remote resources to the application host and local files to the asset directories |
+| allowRemoteApplicationAssets()                          | Limit remote resources to the configured and application hosts and local files to the asset directories |
 | loadHTML($string, $encoding = null)                     | Load HTML string                                         |
 | loadFile($file)                                         | Load HTML string from a file                             |
+| loadView($view, array $data = [], array $mergeData = [], $encoding = null) | Load a Laravel view                   |
 | parseTemplate(Template $template, array $data = [])     | Parse backend template using Twig                        |
-| parseLayout(Layout $layout, array $mergeData = [])      | Parse backend layout using Twig                          |
+| parseLayout(Layout $layout, array $data = [])           | Parse backend layout using Twig                          |
+| setOption($attribute, $value = null)                    | Change one dompdf option, or an array of them            |
+| setOptions(array $options, $mergeWithDefaults = false)  | Replace the whole dompdf options object                  |
 | getDomPDF()                                             | Get the DomPDF instance                                  |
 | setPaper($paper, $orientation = 'portrait')             | Set the paper size and orientation (default A4/portrait) |
 | setWarnings($warnings)                                  | Show or hide warnings                                    |
@@ -458,9 +468,11 @@ Then in the template you can use following example code:
 > For retrieving stylesheets or images via http following PHP setting must be enabled `allow_url_fopen`.
 
 > The backend PDF preview fetches remote resources only from the hosts listed in `allowed_remote_hosts` of the dompdf
-> configuration or, when that list is empty, from the application host itself, and reads local files only from the
-> directories October publishes (web root, modules, plugins, themes, app assets, public uploads, media and the resize
-> cache) unless `chroot` is set in the configuration.
+> configuration plus the application host (`app.url` and the custom site URLs); when no host can be resolved at all it
+> fetches nothing remote. It reads local files only from the directories October publishes (web root, modules,
+> plugins, themes, app assets, public uploads, media and the resize cache) unless `chroot` is set in the
+> configuration, and writes the dompdf log file only when `app.debug` is on. A schemeless `APP_URL` such as
+> `myapp.test` is understood.
 
 When `allow_url_fopen` is disabled on server try to use relative path. You can use October `getLocalPath` function on
 the file object to retrieve it.
