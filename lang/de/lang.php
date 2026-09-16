@@ -24,6 +24,7 @@ return [
         'background_img' => 'Hintergrundbild',
         'preview_html' => 'HTML Vorschau',
         'preview_pdf' => 'PDF Vorschau',
+        'actions' => 'Aktionen',
         'created_at' => 'Erstellt am',
         'updated_at' => 'Aktualisiert am',
         'background_img_comment' => 'Bilder mit 96 DPI eignen sich am besten',

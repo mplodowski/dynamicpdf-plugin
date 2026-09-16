@@ -24,6 +24,7 @@ return [
         'background_img' => 'Imagen de fondo',
         'preview_html' => 'Vista previa HTML',
         'preview_pdf' => 'Previsualizar',
+        'actions' => 'Acciones',
         'created_at' => 'Creado en',
         'updated_at' => 'Modificado en',
         'background_img_comment' => 'Utilice una imagen de 96 DPI para una correcta visualización',

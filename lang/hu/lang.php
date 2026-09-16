@@ -24,6 +24,7 @@ return [
         'background_img' => 'Háttérkép',
         'preview_html' => 'HTML előnézet',
         'preview_pdf' => 'PDF előnézet',
+        'actions' => 'Műveletek',
         'created_at' => 'Létrehozva',
         'updated_at' => 'Módosítva',
         'background_img_comment' => 'A megfelelő megjelenéshez 96 DPI méretű képet használjon.',

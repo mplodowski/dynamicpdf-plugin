@@ -24,6 +24,7 @@ return [
         'background_img' => 'Achtergrondafbeelding',
         'preview_html' => 'HTML-voorbeeld',
         'preview_pdf' => 'PDF-voorbeeld',
+        'actions' => 'Acties',
         'created_at' => 'Aangemaakt op',
         'updated_at' => 'Bijgewerkt op',
         'background_img_comment' => 'Gebruik een afbeelding van minimaal 96 DPI voor een correcte weergave. 300 DPI aanbevolen.',

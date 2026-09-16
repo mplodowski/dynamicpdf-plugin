@@ -24,6 +24,7 @@ return [
         'background_img' => 'Image de fond',
         'preview_html' => 'Aperçu HTML',
         'preview_pdf' => 'Aperçu PDF',
+        'actions' => 'Actions',
         'created_at' => 'Créé le',
         'updated_at' => 'Modifié le',
         'background_img_comment' => 'Utilisez une image d\'au moins 96 DPI pour un affichage correct. 300 DPI recommandé.',

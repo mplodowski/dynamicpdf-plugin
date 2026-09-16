@@ -24,6 +24,7 @@ return [
         'background_img' => 'Obraz w tle',
         'preview_html' => 'Podgląd HTML',
         'preview_pdf' => 'Podgląd PDF',
+        'actions' => 'Akcje',
         'created_at' => 'Data utworzenia',
         'updated_at' => 'Data edycji',
         'background_img_comment' => 'Użyj obrazu o rozdzielczości przynajmniej 96 DPI do poprawnego wyświetlenia. Zalecany obraz 300 DPI.',

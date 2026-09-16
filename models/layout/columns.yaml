@@ -26,7 +26,7 @@ columns:
         type: datetime
 
     preview:
-        label: renatio.dynamicpdf::lang.templates.preview_pdf
+        label: renatio.dynamicpdf::lang.templates.actions
         type: partial
         path: column_preview_layout
         sortable: false

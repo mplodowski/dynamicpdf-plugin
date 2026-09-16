@@ -24,6 +24,7 @@ return [
         'background_img' => 'Obrázek pozadí',
         'preview_html' => 'Náhled HTML',
         'preview_pdf' => 'Náhled',
+        'actions' => 'Akce',
         'created_at' => 'Vytvořeno v',
         'updated_at' => 'Upraveno v',
         'background_img_comment' => 'Pro správné zobrazení použijte obrázek s 96 DPI',

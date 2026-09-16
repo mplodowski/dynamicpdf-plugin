@@ -24,6 +24,7 @@ return [
         'background_img' => 'Фоновое изображение',
         'preview_html' => 'Предпросмотр HTML',
         'preview_pdf' => 'Предпросмотр PDF',
+        'actions' => 'Действия',
         'created_at' => 'Создано',
         'updated_at' => 'Обновлено',
         'background_img_comment' => 'Для корректного отображения используйте изображение не менее 96 DPI. Рекомендуется 300 DPI.',
