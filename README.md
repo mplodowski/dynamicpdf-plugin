@@ -286,12 +286,14 @@ context yourself. Every listener runs; the arrays they return are merged in turn
 
 PDF templates and layouts can be accessed in the back-end area via *Settings > PDF > PDF Templates*.
 
-The list marks templates edited in the back-end as *Customized* (they no longer follow their view file) and registered
-layouts as *Locked*, and links to the HTML and PDF preview of every record. A template's *Sample data* (a JSON object on
+The list marks templates edited in the back-end as *Customized* (they no longer follow their view file) and layouts
+created from a registered view file as *From view* (they offer *Reset to default* instead of *Delete*), and links to
+the HTML and PDF preview of every record. A template's *Sample data* (a JSON object on
 the *Options* tab, nested objects and lists included) is passed to both previews, so `{{ variables }}` render with
 realistic values. A template becomes *Customized* only when a value the view file provides is changed; editing the
 sample data alone keeps it view-driven.
-*Duplicate* on the template or layout form creates an editable copy with a `_copy` code (`_copy2` and so on when that
+The *Actions* column of both lists opens the PDF preview and duplicates, resets or deletes the record; a record
+that follows a view file offers *Reset to default* instead of *Delete*. *Duplicate* creates an editable copy with a `_copy` code (`_copy2` and so on when that
 code is taken); the copy of a template is customised and the copy of a layout is not locked.
 
 Layouts define the PDF scaffold, that is everything that repeats on a PDF, such as a header and footer. Each layout has

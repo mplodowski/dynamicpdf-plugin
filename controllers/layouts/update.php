@@ -54,7 +54,7 @@
                 <?= e(trans('renatio.dynamicpdf::lang.templates.duplicate')) ?>
             </button>
 
-            <?php if ($formModel->is_locked): ?>
+            <?php if ($formModel->followsView()): ?>
                 <button type="button"
                         class="btn btn-danger pull-right"
                         data-request="onResetDefault"

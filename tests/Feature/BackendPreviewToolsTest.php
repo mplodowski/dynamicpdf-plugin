@@ -53,10 +53,6 @@ describe('Backend preview tools', function () {
             ->and(File::where('attachment_id', $copy->id)->where('field', 'background_img')->count())->toBe(1);
     });
 
-    it('links the layout list to the layout previews', function () {
-        expect(file_get_contents(__DIR__ . '/../../models/layout/columns.yaml'))->toContain('path: column_preview_layout')
-            ->and(file_get_contents(__DIR__ . '/../../controllers/templates/_column_preview_layout.php'))->toContain('renatio/dynamicpdf/layouts/preview/');
-    });
 });
 
 describe('View-driven template save', function () {

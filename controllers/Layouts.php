@@ -77,12 +77,9 @@ class Layouts extends Controller
 
     public function update_onResetDefault(int|string $recordId): RedirectResponse
     {
-        $model = $this->formFindModelObject($recordId);
+        $this->formFindModelObject($recordId)->resetToView();
 
-        $model->fillFromCode();
-        $model->save();
-
-        Flash::success(e(trans('backend::lang.form.reset_success')));
+        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.reset_success')));
 
         return redirect()->refresh();
     }

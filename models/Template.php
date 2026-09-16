@@ -105,6 +105,16 @@ class Template extends Model
         }
     }
 
+    /**
+     * Restores the stored row from its view file and hands it back to the sync.
+     */
+    public function resetToView(): void
+    {
+        $this->fillFromCode();
+        $this->is_custom = false;
+        $this->save();
+    }
+
     public function fillFromCode(): void
     {
         $path = $this->getView();
@@ -241,5 +251,13 @@ class Template extends Model
     public function getView(): ?string
     {
         return array_get(PDFManager::instance()->listRegisteredTemplates(), $this->code);
+    }
+
+    /**
+     * A record the sync would recreate from its view file; deleting it only makes it come back.
+     */
+    public function followsView(): bool
+    {
+        return (bool) $this->getView();
     }
 }

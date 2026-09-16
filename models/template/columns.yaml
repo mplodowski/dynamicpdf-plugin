@@ -15,6 +15,7 @@ columns:
     description:
         label: renatio.dynamicpdf::lang.templates.description
         searchable: true
+        invisible: true
 
     layout:
         label: renatio.dynamicpdf::lang.templates.layout
@@ -25,12 +26,6 @@ columns:
         label: renatio.dynamicpdf::lang.templates.is_custom
         type: switch
 
-    preview:
-        label: renatio.dynamicpdf::lang.templates.preview
-        type: partial
-        path: column_preview
-        sortable: false
-        clickable: false
 
     created_at:
         label: renatio.dynamicpdf::lang.templates.created_at
@@ -39,3 +34,13 @@ columns:
     updated_at:
         label: renatio.dynamicpdf::lang.templates.updated_at
         type: datetime
+
+    preview:
+        label: renatio.dynamicpdf::lang.templates.actions
+        type: partial
+        path: column_actions
+        sortable: false
+        clickable: false
+        align: center
+        cssClass: text-nowrap
+        width: 130px

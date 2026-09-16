@@ -42,9 +42,9 @@ class Layout extends Model
         'is_locked' => 'bool',
     ];
 
-    /** @var array<string, class-string> */
+    /** @var array<string, array<int|string, mixed>> */
     public $attachOne = [
-        'background_img' => File::class,
+        'background_img' => [File::class, 'delete' => true],
     ];
 
     protected function duplicateLabelAttribute(): string
@@ -99,6 +99,15 @@ class Layout extends Model
         return (new Less_Parser)->parse($this->content_css)->getCss();
     }
 
+    /**
+     * Restores the stored row from its view file and hands it back to the sync.
+     */
+    public function resetToView(): void
+    {
+        $this->fillFromCode();
+        $this->save();
+    }
+
     public function fillFromCode(): void
     {
         $path = $this->getView();
@@ -123,5 +132,13 @@ class Layout extends Model
     public function getView(): ?string
     {
         return array_get(PDFManager::instance()->listRegisteredLayouts(), $this->code);
+    }
+
+    /**
+     * A record the sync would recreate from its view file; deleting it only makes it come back.
+     */
+    public function followsView(): bool
+    {
+        return (bool) $this->getView();
     }
 }
