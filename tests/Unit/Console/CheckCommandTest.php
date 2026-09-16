@@ -13,13 +13,39 @@ describe('dynamicpdf:check', function () {
             ->and(Artisan::output())->toContain('PASS');
     });
 
-    it('fails when the font directory is missing without creating it', function () {
+    it('warns without creating it when the font directory is missing but its parent is writable', function () {
         $missing = sys_get_temp_dir() . '/dynamicpdf-missing-' . uniqid();
         config(['dompdf.options.font_dir' => $missing]);
 
-        expect(Artisan::call('dynamicpdf:check'))->toBe(1)
-            ->and(Artisan::output())->toContain('FAIL')
+        expect(Artisan::call('dynamicpdf:check'))->toBe(0)
+            ->and(Artisan::output())->toContain('will be created on the first render')
             ->and($missing)->not->toBeDirectory();
+    });
+
+    it('fails when the missing font directory cannot be created', function () {
+        if (function_exists('posix_geteuid') && posix_geteuid() === 0) {
+            $this->markTestSkipped('root can write into an unwritable directory');
+        }
+
+        $parent = sys_get_temp_dir() . '/dynamicpdf-readonly-' . uniqid();
+        mkdir($parent, 0555);
+
+        try {
+            config(['dompdf.options.font_dir' => $parent . '/fonts']);
+
+            expect(Artisan::call('dynamicpdf:check'))->toBe(1)
+                ->and(Artisan::output())->toContain('FAIL');
+        } finally {
+            chmod($parent, 0755);
+            rmdir($parent);
+        }
+    });
+
+    it('fails when the temporary directory is missing', function () {
+        config(['dompdf.options.temp_dir' => sys_get_temp_dir() . '/dynamicpdf-missing-' . uniqid()]);
+
+        expect(Artisan::call('dynamicpdf:check'))->toBe(1)
+            ->and(Artisan::output())->toContain('FAIL');
     });
 
     it('warns when allowed_remote_hosts is not an array', function () {
