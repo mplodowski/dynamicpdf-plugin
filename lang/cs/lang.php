@@ -30,7 +30,7 @@ return [
         'size' => 'Formát papíru',
         'orientation' => 'Orientace papíru',
         'sample_data' => 'Ukázková data',
-        'sample_data_comment' => 'Objekt JSON s proměnnými, se kterými se vykresluje náhled v administraci, např. {"name": "Jan Novák"}.',
+        'sample_data_comment' => 'Objekt JSON s proměnnými, se kterými se vykresluje náhled v administraci, např. {"name": "Jan Novák", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Upraveno',
         'is_locked' => 'Uzamčeno',
         'preview' => 'Náhled',

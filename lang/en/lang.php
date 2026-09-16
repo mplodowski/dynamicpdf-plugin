@@ -30,7 +30,7 @@ return [
         'size' => 'Paper size',
         'orientation' => 'Paper orientation',
         'sample_data' => 'Sample data',
-        'sample_data_comment' => 'JSON object with the variables the backend preview renders with, for example {"name": "John Doe"}.',
+        'sample_data_comment' => 'JSON object with the variables the backend preview renders with, for example {"name": "John Doe", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Customized',
         'is_locked' => 'Locked',
         'preview' => 'Preview',

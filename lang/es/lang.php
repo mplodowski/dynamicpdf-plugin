@@ -30,7 +30,7 @@ return [
         'size' => 'Tamaño de papel',
         'orientation' => 'Orientación del papel',
         'sample_data' => 'Datos de ejemplo',
-        'sample_data_comment' => 'Objeto JSON con las variables con las que se renderiza la vista previa del panel, por ejemplo {"name": "Juan Pérez"}.',
+        'sample_data_comment' => 'Objeto JSON con las variables con las que se renderiza la vista previa del panel, por ejemplo {"name": "Juan Pérez", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Personalizado',
         'is_locked' => 'Bloqueado',
         'preview' => 'Vista previa',
