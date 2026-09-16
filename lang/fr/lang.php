@@ -39,6 +39,7 @@ return [
         'duplicate_success' => 'Copie créée.',
         'copy_suffix' => '(copie)',
         'delete_view_refused' => "Cet enregistrement ne peut pas être supprimé car il provient d'un fichier de vue.",
+        'reset_view_only' => "Seul un enregistrement provenant d'un fichier de vue peut y être réinitialisé.",
     ],
     'template' => [
         'menu_label' => 'Modèle',

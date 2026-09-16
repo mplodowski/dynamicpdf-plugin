@@ -39,6 +39,7 @@ return [
         'duplicate_success' => 'Kopie aangemaakt.',
         'copy_suffix' => '(kopie)',
         'delete_view_refused' => 'Dit item kan niet worden verwijderd omdat het uit een view-bestand komt.',
+        'reset_view_only' => 'Alleen een item dat uit een view-bestand komt kan ernaar worden hersteld.',
     ],
     'template' => [
         'menu_label' => 'Sjabloon',

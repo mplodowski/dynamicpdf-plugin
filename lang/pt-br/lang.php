@@ -39,6 +39,7 @@ return [
         'duplicate_success' => 'Cópia criada.',
         'copy_suffix' => '(cópia)',
         'delete_view_refused' => 'Este registro não pode ser excluído porque vem de um arquivo de visualização.',
+        'reset_view_only' => 'Somente um registro que vem de um arquivo de visualização pode ser restaurado para ele.',
     ],
     'template' => [
         'menu_label' => 'Modelo',

@@ -173,8 +173,13 @@ class Templates extends Controller
     public function index_onResetRecord(): array
     {
         $definition = $this->listDefinition();
+        $model = $this->findListRecord($definition);
 
-        $this->findListRecord($definition)->resetToView();
+        if (! $model->followsView()) {
+            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.templates.reset_view_only')));
+        }
+
+        $model->resetToView();
 
         Flash::success(e(trans('backend::lang.form.reset_success')));
 

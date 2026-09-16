@@ -70,6 +70,15 @@ describe('List actions', function () {
             ->and(Layout::whereCode('acme::pdf.layouts.default_copy')->exists())->toBeFalse();
     });
 
+    it('deletes a locked layout whose view registration is gone', function () {
+        actingAsBackendUserWith(['manage_templates', 'manage_layouts']);
+        $layout = $this->createLayout(['code' => 'gone::pdf.layouts.default', 'is_locked' => true]);
+
+        $this->listAction('onDeleteRecord', ['id' => $layout->id, 'definition' => 'layouts'])->assertOk();
+
+        expect(Layout::find($layout->id))->toBeNull();
+    });
+
     it('duplicates a layout from the list with manage_layouts', function () {
         actingAsBackendUserWith(['manage_templates', 'manage_layouts']);
         $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);

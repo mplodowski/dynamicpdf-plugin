@@ -39,6 +39,7 @@ return [
         'duplicate_success' => 'Copia creata.',
         'copy_suffix' => '(copia)',
         'delete_view_refused' => 'Questo record non può essere eliminato perché proviene da un file di vista.',
+        'reset_view_only' => 'Solo un record che proviene da un file di vista può essere ripristinato.',
     ],
     'template' => [
         'menu_label' => 'Modello',

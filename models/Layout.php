@@ -42,9 +42,9 @@ class Layout extends Model
         'is_locked' => 'bool',
     ];
 
-    /** @var array<string, class-string> */
+    /** @var array<string, array<int|string, mixed>> */
     public $attachOne = [
-        'background_img' => File::class,
+        'background_img' => [File::class, 'delete' => true],
     ];
 
     protected function duplicateLabelAttribute(): string
@@ -139,6 +139,6 @@ class Layout extends Model
      */
     public function followsView(): bool
     {
-        return $this->is_locked || (bool) $this->getView();
+        return (bool) $this->getView();
     }
 }

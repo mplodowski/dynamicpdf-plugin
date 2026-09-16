@@ -39,6 +39,7 @@ return [
         'duplicate_success' => 'Kopie wurde erstellt.',
         'copy_suffix' => '(Kopie)',
         'delete_view_refused' => 'Dieser Eintrag kann nicht gelöscht werden, da er aus einer View-Datei stammt.',
+        'reset_view_only' => 'Nur ein Eintrag aus einer View-Datei kann auf sie zurückgesetzt werden.',
     ],
     'template' => [
         'menu_label' => 'Vorlagen',

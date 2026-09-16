@@ -39,6 +39,7 @@ return [
         'duplicate_success' => 'Copia creada.',
         'copy_suffix' => '(copia)',
         'delete_view_refused' => 'Este registro no se puede eliminar porque proviene de un archivo de vista.',
+        'reset_view_only' => 'Solo un registro que proviene de un archivo de vista puede restablecerse a él.',
     ],
     'template' => [
         'menu_label' => 'Plantilla PDF',
