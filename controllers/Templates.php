@@ -10,6 +10,7 @@ use Backend\Facades\BackendAuth;
 use Backend\Facades\BackendMenu;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 use October\Rain\Exception\ApplicationException;
 use October\Rain\Exception\ForbiddenException;
 use October\Rain\Support\Facades\Flash;
@@ -125,11 +126,14 @@ class Templates extends Controller
             return null;
         }
 
-        return PDF::loadTemplate($model->code, $model->sampleData())
+        $pdf = PDF::loadTemplate($model->code, $model->sampleData())
             ->setLogOutputFile(config('app.debug') ? storage_path('temp/log.htm') : '')
             ->allowRemoteApplicationAssets()
-            ->setDpi(300)
-            ->stream();
+            ->setDpi(300);
+
+        $pdf->render();
+
+        return $pdf->addInfo(['Title' => $model->title])->stream(Str::slug($model->title) . '.pdf');
     }
 
     public function html(int|string $id): Response

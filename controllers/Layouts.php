@@ -8,6 +8,7 @@ use Backend\Facades\Backend;
 use Backend\Facades\BackendMenu;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 use October\Rain\Exception\ApplicationException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
@@ -52,11 +53,14 @@ class Layouts extends Controller
             return null;
         }
 
-        return PDF::loadLayout($model->code)
+        $pdf = PDF::loadLayout($model->code)
             ->setLogOutputFile(config('app.debug') ? storage_path('temp/log.htm') : '')
             ->allowRemoteApplicationAssets()
-            ->setDpi(300)
-            ->stream();
+            ->setDpi(300);
+
+        $pdf->render();
+
+        return $pdf->addInfo(['Title' => $model->name])->stream(Str::slug($model->name) . '.pdf');
     }
 
     public function html(int|string $id): Response

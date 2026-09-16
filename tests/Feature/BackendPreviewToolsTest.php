@@ -55,6 +55,17 @@ describe('Backend preview tools', function () {
 
 });
 
+describe('PDF preview document', function () {
+    it('names the document after the template instead of the layout title', function () {
+        $template = $this->createTemplate(['title' => 'Quarterly Invoice', 'content_html' => '<p>Hello</p>']);
+
+        $response = (new Templates)->previewpdf($template->id);
+
+        expect($response->getContent())->toContain('/Title (' . "\xFE\xFF" . mb_convert_encoding('Quarterly Invoice', 'UTF-16BE') . ')')
+            ->and($response->headers->get('Content-Disposition'))->toContain('quarterly-invoice.pdf');
+    });
+});
+
 describe('View-driven template save', function () {
     beforeEach(function () {
         $this->views = $this->registerViewTemplates('viewdriven', ['a' => "title = \"a\"\n==\n<p>v1</p>"]);
