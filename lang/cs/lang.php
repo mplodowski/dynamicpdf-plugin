@@ -38,6 +38,7 @@ return [
         'duplicating' => 'Duplikuje se...',
         'duplicate_success' => 'Kopie byla vytvořena.',
         'copy_suffix' => '(kopie)',
+        'delete_view_refused' => 'Tuto položku nelze smazat, protože pochází ze souboru pohledu.',
     ],
     'template' => [
         'menu_label' => 'PDF Šablony',

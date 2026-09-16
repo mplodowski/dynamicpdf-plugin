@@ -38,6 +38,7 @@ return [
         'duplicating' => 'Duplicando...',
         'duplicate_success' => 'Copia creada.',
         'copy_suffix' => '(copia)',
+        'delete_view_refused' => 'Este registro no se puede eliminar porque proviene de un archivo de vista.',
     ],
     'template' => [
         'menu_label' => 'Plantilla PDF',

@@ -27,6 +27,18 @@ abstract class TestCase extends OctoberPestTestCase
     }
 
     /**
+     * @param  array<string, mixed>  $data
+     * @return TestResponse<\Illuminate\Http\Response>
+     */
+    public function listAction(string $handler, array $data): TestResponse
+    {
+        return $this->post(Backend::url('renatio/dynamicpdf/templates'), $data, [
+            'X-AJAX-HANDLER' => $handler,
+            'X-Requested-With' => 'XMLHttpRequest',
+        ]);
+    }
+
+    /**
      * @param  array<string, mixed>  $attributes
      */
     public function createLayout(array $attributes = []): Layout

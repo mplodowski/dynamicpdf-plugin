@@ -38,6 +38,7 @@ return [
         'duplicating' => 'Дублирование...',
         'duplicate_success' => 'Копия создана.',
         'copy_suffix' => '(копия)',
+        'delete_view_refused' => 'Эту запись нельзя удалить, так как она создана из файла представления.',
     ],
     'template' => [
         'menu_label' => 'Шаблон',

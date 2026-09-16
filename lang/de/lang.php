@@ -38,6 +38,7 @@ return [
         'duplicating' => 'Wird dupliziert...',
         'duplicate_success' => 'Kopie wurde erstellt.',
         'copy_suffix' => '(Kopie)',
+        'delete_view_refused' => 'Dieser Eintrag kann nicht gelöscht werden, da er aus einer View-Datei stammt.',
     ],
     'template' => [
         'menu_label' => 'Vorlagen',

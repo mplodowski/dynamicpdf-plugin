@@ -38,6 +38,7 @@ return [
         'duplicating' => 'Duplicando...',
         'duplicate_success' => 'Cópia criada.',
         'copy_suffix' => '(cópia)',
+        'delete_view_refused' => 'Este registro não pode ser excluído porque vem de um arquivo de visualização.',
     ],
     'template' => [
         'menu_label' => 'Modelo',

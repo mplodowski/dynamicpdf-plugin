@@ -38,6 +38,7 @@ return [
         'duplicating' => 'Duplikowanie...',
         'duplicate_success' => 'Kopia została utworzona.',
         'copy_suffix' => '(kopia)',
+        'delete_view_refused' => 'Tego rekordu nie można usunąć, ponieważ pochodzi z pliku widoku.',
     ],
     'template' => [
         'menu_label' => 'Szablon',

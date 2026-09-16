@@ -38,7 +38,9 @@ columns:
     preview:
         label: renatio.dynamicpdf::lang.templates.actions
         type: partial
-        path: column_preview
+        path: column_actions
         sortable: false
         clickable: false
-        align: right
+        align: center
+        cssClass: text-nowrap
+        width: 130px

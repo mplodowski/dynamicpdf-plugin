@@ -38,6 +38,7 @@ return [
         'duplicating' => 'Duplicating...',
         'duplicate_success' => 'Copy created.',
         'copy_suffix' => '(copy)',
+        'delete_view_refused' => 'This record cannot be deleted because it comes from a view file.',
     ],
     'template' => [
         'menu_label' => 'Template',

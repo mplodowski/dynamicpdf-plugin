@@ -38,6 +38,7 @@ return [
         'duplicating' => 'Duplication...',
         'duplicate_success' => 'Copie créée.',
         'copy_suffix' => '(copie)',
+        'delete_view_refused' => "Cet enregistrement ne peut pas être supprimé car il provient d'un fichier de vue.",
     ],
     'template' => [
         'menu_label' => 'Modèle',

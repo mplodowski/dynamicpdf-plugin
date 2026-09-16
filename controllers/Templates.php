@@ -11,9 +11,11 @@ use Backend\Facades\BackendMenu;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use October\Rain\Exception\ApplicationException;
+use October\Rain\Exception\ForbiddenException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
+use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SettingsManager;
 
@@ -148,14 +150,74 @@ class Templates extends Controller
 
     public function update_onResetDefault(int|string $recordId): RedirectResponse
     {
-        $model = $this->formFindModelObject($recordId);
-
-        $model->fillFromCode();
-        $model->is_custom = false;
-        $model->save();
+        $this->formFindModelObject($recordId)->resetToView();
 
         Flash::success(e(trans('backend::lang.form.reset_success')));
 
         return redirect()->refresh();
+    }
+
+    public function index_onDuplicateRecord(): RedirectResponse
+    {
+        $definition = $this->listDefinition();
+        $copy = $this->findListRecord($definition)->duplicate();
+
+        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.duplicate_success')));
+
+        return Backend::redirect("renatio/dynamicpdf/{$definition}/update/{$copy->id}");
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function index_onResetRecord(): array
+    {
+        $definition = $this->listDefinition();
+
+        $this->findListRecord($definition)->resetToView();
+
+        Flash::success(e(trans('backend::lang.form.reset_success')));
+
+        return $this->listRefresh($definition);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function index_onDeleteRecord(): array
+    {
+        $definition = $this->listDefinition();
+        $model = $this->findListRecord($definition);
+
+        if ($model->followsView()) {
+            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.templates.delete_view_refused')));
+        }
+
+        $model->delete();
+
+        Flash::success(e(trans('backend::lang.list.delete_selected_success')));
+
+        return $this->listRefresh($definition);
+    }
+
+    protected function listDefinition(): string
+    {
+        return post('definition') === 'layouts' ? 'layouts' : 'templates';
+    }
+
+    protected function findListRecord(string $definition): Template|Layout
+    {
+        if ($definition === 'layouts' && ! self::canManageLayouts()) {
+            throw new ForbiddenException;
+        }
+
+        $id = (int) post('id');
+        $model = $definition === 'layouts' ? Layout::find($id) : Template::find($id);
+
+        if (! $model) {
+            throw new ApplicationException(e(trans('backend::lang.form.not_found_message', ['class' => $definition, 'id' => $id])));
+        }
+
+        return $model;
     }
 }

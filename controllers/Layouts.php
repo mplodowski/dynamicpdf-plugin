@@ -77,10 +77,7 @@ class Layouts extends Controller
 
     public function update_onResetDefault(int|string $recordId): RedirectResponse
     {
-        $model = $this->formFindModelObject($recordId);
-
-        $model->fillFromCode();
-        $model->save();
+        $this->formFindModelObject($recordId)->resetToView();
 
         Flash::success(e(trans('backend::lang.form.reset_success')));
 

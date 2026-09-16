@@ -38,6 +38,7 @@ return [
         'duplicating' => 'Duplikálás...',
         'duplicate_success' => 'A másolat létrejött.',
         'copy_suffix' => '(másolat)',
+        'delete_view_refused' => 'Ez a rekord nem törölhető, mert egy nézetfájlból származik.',
     ],
     'template' => [
         'menu_label' => 'Sablon',
