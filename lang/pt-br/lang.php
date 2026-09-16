@@ -36,7 +36,9 @@ return [
         'is_locked' => 'Da view',
         'duplicate' => 'Duplicar',
         'duplicating' => 'Duplicando...',
-        'duplicate_success' => 'Cópia criada.',
+        'duplicate_success' => 'A cópia foi criada.',
+        'reset_success' => 'O registro foi restaurado do arquivo de visualização.',
+        'delete_success' => 'O registro foi excluído.',
         'copy_suffix' => '(cópia)',
         'delete_view_refused' => 'Este registro não pode ser excluído porque vem de um arquivo de visualização.',
         'reset_view_only' => 'Somente um registro que vem de um arquivo de visualização pode ser restaurado para ele.',
@@ -81,7 +83,7 @@ return [
         'options' => 'Opções',
     ],
     'demo' => [
-        'enabled' => 'A demonstração está ativada. Atualize a lista de modelos de PDF.',
-        'disabled' => 'A demonstração está desativada. Atualize a lista de modelos de PDF.',
+        'enabled' => 'Os modelos de demonstração foram ativados.',
+        'disabled' => 'Os modelos de demonstração foram desativados.',
     ],
 ];

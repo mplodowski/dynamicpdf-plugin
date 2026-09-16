@@ -37,6 +37,8 @@ return [
         'duplicate' => 'Duplikálás',
         'duplicating' => 'Duplikálás...',
         'duplicate_success' => 'A másolat létrejött.',
+        'reset_success' => 'A rekord visszaállt a nézetfájlból.',
+        'delete_success' => 'A rekord törölve lett.',
         'copy_suffix' => '(másolat)',
         'delete_view_refused' => 'Ez a rekord nem törölhető, mert egy nézetfájlból származik.',
         'reset_view_only' => 'Csak nézetfájlból származó rekord állítható vissza arra.',
@@ -81,7 +83,7 @@ return [
         'options' => 'Beállítások',
     ],
     'demo' => [
-        'enabled' => 'A demó be van kapcsolva. Frissítse a PDF sablonok listáját.',
-        'disabled' => 'A demó ki van kapcsolva. Frissítse a PDF sablonok listáját.',
+        'enabled' => 'A demó sablonok bekapcsolva.',
+        'disabled' => 'A demó sablonok kikapcsolva.',
     ],
 ];

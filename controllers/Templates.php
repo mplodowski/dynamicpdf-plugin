@@ -152,7 +152,7 @@ class Templates extends Controller
     {
         $this->formFindModelObject($recordId)->resetToView();
 
-        Flash::success(e(trans('backend::lang.form.reset_success')));
+        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.reset_success')));
 
         return redirect()->refresh();
     }
@@ -181,7 +181,7 @@ class Templates extends Controller
 
         $model->resetToView();
 
-        Flash::success(e(trans('backend::lang.form.reset_success')));
+        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.reset_success')));
 
         return $this->listRefresh($definition);
     }
@@ -200,7 +200,7 @@ class Templates extends Controller
 
         $model->delete();
 
-        Flash::success(e(trans('backend::lang.list.delete_selected_success')));
+        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.delete_success')));
 
         return $this->listRefresh($definition);
     }

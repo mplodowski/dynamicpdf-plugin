@@ -36,7 +36,9 @@ return [
         'is_locked' => 'Depuis la vue',
         'duplicate' => 'Dupliquer',
         'duplicating' => 'Duplication...',
-        'duplicate_success' => 'Copie créée.',
+        'duplicate_success' => 'La copie a été créée.',
+        'reset_success' => 'L\'enregistrement a été restauré depuis son fichier de vue.',
+        'delete_success' => 'L\'enregistrement a été supprimé.',
         'copy_suffix' => '(copie)',
         'delete_view_refused' => "Cet enregistrement ne peut pas être supprimé car il provient d'un fichier de vue.",
         'reset_view_only' => "Seul un enregistrement provenant d'un fichier de vue peut y être réinitialisé.",
@@ -81,7 +83,7 @@ return [
         'options' => 'Options',
     ],
     'demo' => [
-        'enabled' => 'La démo est activée. Actualisez la liste des modèles PDF.',
-        'disabled' => 'La démo est désactivée. Actualisez la liste des modèles PDF.',
+        'enabled' => 'Les modèles de démonstration ont été activés.',
+        'disabled' => 'Les modèles de démonstration ont été désactivés.',
     ],
 ];

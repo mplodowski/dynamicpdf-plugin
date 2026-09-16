@@ -36,7 +36,9 @@ return [
         'is_locked' => 'Uit view',
         'duplicate' => 'Dupliceren',
         'duplicating' => 'Dupliceren...',
-        'duplicate_success' => 'Kopie aangemaakt.',
+        'duplicate_success' => 'De kopie is aangemaakt.',
+        'reset_success' => 'Het item is hersteld uit het view-bestand.',
+        'delete_success' => 'Het item is verwijderd.',
         'copy_suffix' => '(kopie)',
         'delete_view_refused' => 'Dit item kan niet worden verwijderd omdat het uit een view-bestand komt.',
         'reset_view_only' => 'Alleen een item dat uit een view-bestand komt kan ernaar worden hersteld.',
@@ -81,7 +83,7 @@ return [
         'options' => 'Opties',
     ],
     'demo' => [
-        'enabled' => 'Demo is ingeschakeld. Vernieuw de lijst met PDF-sjablonen.',
-        'disabled' => 'Demo is uitgeschakeld. Vernieuw de lijst met PDF-sjablonen.',
+        'enabled' => 'De demosjablonen zijn ingeschakeld.',
+        'disabled' => 'De demosjablonen zijn uitgeschakeld.',
     ],
 ];

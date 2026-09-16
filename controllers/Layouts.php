@@ -79,7 +79,7 @@ class Layouts extends Controller
     {
         $this->formFindModelObject($recordId)->resetToView();
 
-        Flash::success(e(trans('backend::lang.form.reset_success')));
+        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.reset_success')));
 
         return redirect()->refresh();
     }

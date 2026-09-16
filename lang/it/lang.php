@@ -36,7 +36,9 @@ return [
         'is_locked' => 'Da vista',
         'duplicate' => 'Duplica',
         'duplicating' => 'Duplicazione...',
-        'duplicate_success' => 'Copia creata.',
+        'duplicate_success' => 'La copia è stata creata.',
+        'reset_success' => 'Il record è stato ripristinato dal suo file di vista.',
+        'delete_success' => 'Il record è stato eliminato.',
         'copy_suffix' => '(copia)',
         'delete_view_refused' => 'Questo record non può essere eliminato perché proviene da un file di vista.',
         'reset_view_only' => 'Solo un record che proviene da un file di vista può essere ripristinato.',
@@ -81,7 +83,7 @@ return [
         'options' => 'Opzioni',
     ],
     'demo' => [
-        'enabled' => 'La demo è attiva. Aggiorna l\'elenco dei modelli PDF.',
-        'disabled' => 'La demo è disattivata. Aggiorna l\'elenco dei modelli PDF.',
+        'enabled' => 'I modelli demo sono stati attivati.',
+        'disabled' => 'I modelli demo sono stati disattivati.',
     ],
 ];

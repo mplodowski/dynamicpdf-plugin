@@ -37,6 +37,8 @@ return [
         'duplicate' => 'Duplikovat',
         'duplicating' => 'Duplikuje se...',
         'duplicate_success' => 'Kopie byla vytvořena.',
+        'reset_success' => 'Položka byla obnovena ze souboru pohledu.',
+        'delete_success' => 'Položka byla smazána.',
         'copy_suffix' => '(kopie)',
         'delete_view_refused' => 'Tuto položku nelze smazat, protože pochází ze souboru pohledu.',
         'reset_view_only' => 'Obnovit lze pouze položku, která pochází ze souboru pohledu.',
@@ -81,7 +83,7 @@ return [
         'options' => 'Možnosti',
     ],
     'demo' => [
-        'enabled' => 'Demo je zapnuto. Obnovte prosím seznam šablon PDF.',
-        'disabled' => 'Demo je vypnuto. Obnovte prosím seznam šablon PDF.',
+        'enabled' => 'Ukázkové šablony byly zapnuty.',
+        'disabled' => 'Ukázkové šablony byly vypnuty.',
     ],
 ];

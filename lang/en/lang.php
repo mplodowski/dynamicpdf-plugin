@@ -36,7 +36,9 @@ return [
         'is_locked' => 'From view',
         'duplicate' => 'Duplicate',
         'duplicating' => 'Duplicating...',
-        'duplicate_success' => 'Copy created.',
+        'duplicate_success' => 'The copy was created.',
+        'reset_success' => 'The record was restored from its view file.',
+        'delete_success' => 'The record was deleted.',
         'copy_suffix' => '(copy)',
         'delete_view_refused' => 'This record cannot be deleted because it comes from a view file.',
         'reset_view_only' => 'Only a record that comes from a view file can be reset to it.',
@@ -81,7 +83,7 @@ return [
         'options' => 'Options',
     ],
     'demo' => [
-        'enabled' => 'Demo is enabled. Please refresh PDF templates list.',
-        'disabled' => 'Demo is disabled. Please refresh PDF templates list.',
+        'enabled' => 'The demo templates were enabled.',
+        'disabled' => 'The demo templates were disabled.',
     ],
 ];

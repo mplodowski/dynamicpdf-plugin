@@ -36,7 +36,9 @@ return [
         'is_locked' => 'Desde vista',
         'duplicate' => 'Duplicar',
         'duplicating' => 'Duplicando...',
-        'duplicate_success' => 'Copia creada.',
+        'duplicate_success' => 'La copia fue creada.',
+        'reset_success' => 'El registro fue restaurado desde su archivo de vista.',
+        'delete_success' => 'El registro fue eliminado.',
         'copy_suffix' => '(copia)',
         'delete_view_refused' => 'Este registro no se puede eliminar porque proviene de un archivo de vista.',
         'reset_view_only' => 'Solo un registro que proviene de un archivo de vista puede restablecerse a él.',
@@ -81,7 +83,7 @@ return [
         'options' => 'Opciones',
     ],
     'demo' => [
-        'enabled' => 'La demo está activada. Actualice la lista de plantillas PDF.',
-        'disabled' => 'La demo está desactivada. Actualice la lista de plantillas PDF.',
+        'enabled' => 'Las plantillas de demostración fueron activadas.',
+        'disabled' => 'Las plantillas de demostración fueron desactivadas.',
     ],
 ];

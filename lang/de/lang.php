@@ -36,7 +36,9 @@ return [
         'is_locked' => 'Aus View',
         'duplicate' => 'Duplizieren',
         'duplicating' => 'Wird dupliziert...',
-        'duplicate_success' => 'Kopie wurde erstellt.',
+        'duplicate_success' => 'Die Kopie wurde erstellt.',
+        'reset_success' => 'Der Eintrag wurde aus seiner View-Datei wiederhergestellt.',
+        'delete_success' => 'Der Eintrag wurde gelöscht.',
         'copy_suffix' => '(Kopie)',
         'delete_view_refused' => 'Dieser Eintrag kann nicht gelöscht werden, da er aus einer View-Datei stammt.',
         'reset_view_only' => 'Nur ein Eintrag aus einer View-Datei kann auf sie zurückgesetzt werden.',
@@ -81,7 +83,7 @@ return [
         'options' => 'Optionen',
     ],
     'demo' => [
-        'enabled' => 'Demo ist aktiviert. Bitte aktualisieren Sie die Liste der PDF-Vorlagen.',
-        'disabled' => 'Demo ist deaktiviert. Bitte aktualisieren Sie die Liste der PDF-Vorlagen.',
+        'enabled' => 'Die Demo-Vorlagen wurden aktiviert.',
+        'disabled' => 'Die Demo-Vorlagen wurden deaktiviert.',
     ],
 ];

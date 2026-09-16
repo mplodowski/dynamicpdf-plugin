@@ -37,6 +37,8 @@ return [
         'duplicate' => 'Duplikuj',
         'duplicating' => 'Duplikowanie...',
         'duplicate_success' => 'Kopia została utworzona.',
+        'reset_success' => 'Rekord został przywrócony z pliku widoku.',
+        'delete_success' => 'Rekord został usunięty.',
         'copy_suffix' => '(kopia)',
         'delete_view_refused' => 'Tego rekordu nie można usunąć, ponieważ pochodzi z pliku widoku.',
         'reset_view_only' => 'Tylko rekord pochodzący z pliku widoku można do niego przywrócić.',
@@ -81,7 +83,7 @@ return [
         'options' => 'Opcje',
     ],
     'demo' => [
-        'enabled' => 'Demo włączone. Odśwież listę szablonów PDF.',
-        'disabled' => 'Demo wyłączone. Odśwież listę szablonów PDF.',
+        'enabled' => 'Szablony demo zostały włączone.',
+        'disabled' => 'Szablony demo zostały wyłączone.',
     ],
 ];
