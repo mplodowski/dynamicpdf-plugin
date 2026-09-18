@@ -90,3 +90,6 @@ The template and layout `code` columns get a unique index; the migration deletes
 the customised or locked one. Registered views are synchronised when a backend page opens or `dynamicpdf:sync` runs,
 and a changed view file is written back to templates that were never customised. Use **Reset to default** on a
 template an earlier version flagged *Customized* by mistake.
+
+Templates and layouts can be translated per language, off by default and changing nothing until enabled. Set
+`'renatio_dynamicpdf_template' => true` under `features` in `config/multisite.php` and clear the application cache.

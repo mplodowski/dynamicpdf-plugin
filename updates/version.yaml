@@ -67,3 +67,4 @@ v8.1.0:
     - Duplicate, reset, preview or delete templates and layouts straight from the list.
     - Render a template with another layout or locale, and return the PDF as a System\Models\File.
     - Add registerPDFVariables(), the beforeRender and afterRender events, PDF::fake() and the dynamicpdf:sync and dynamicpdf:check commands.
+    - Translate template and layout content per language, enabled with the renatio_dynamicpdf_template multisite feature.

@@ -662,9 +662,27 @@ return PDF::loadTemplate('renatio::invoice', $data, locale: 'de')->download('rec
 ```
 
 `loadTemplate()` and `loadLayout()` always add the `locale` variable, holding the application locale when no argument
-is given; a `locale` key in your own data takes precedence. With RainLab.Translate installed its messages (`|_`) and
-translated model attributes follow the site locale, not this argument, and inline PHP executed by dompdf during
-`output()` runs after the locale has been restored.
+is given; a `locale` key in your own data takes precedence. Inline PHP executed by dompdf during `output()` runs after
+the locale has been restored.
+
+#### Translate the templates themselves
+
+Template title and markup, and layout markup and CSS, can be stored per language. Off by default; turn it on in
+`config/multisite.php` and clear the application cache:
+
+```
+'features' => [
+    'renatio_dynamicpdf_template' => true,
+],
+```
+
+Editing a template or layout with another site selected in the backend then writes a translation instead of
+overwriting the stored content, and the `locale` argument above picks the translation to render with. A language with
+no translation falls back to the stored content, and templates backed by a view file keep following that file in the
+default language, so **Reset to default** and the synchronisation never touch a translation. Localized view files and
+per-language background images are not supported.
+
+This is independent of RainLab.Translate, whose `|_` messages follow the site locale, not the `locale` argument.
 
 ### Change paper size and orientation
 

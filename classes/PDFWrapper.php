@@ -212,6 +212,9 @@ class PDFWrapper extends PDF
             $template->setRelation('layout', Layout::byCode($layout));
         }
 
+        $this->applyTranslateContext($template, $locale);
+        $this->applyTranslateContext($template->layout, $locale);
+
         $data = $this->withLocaleVariable($data, $locale);
 
         $this->loadHTML(
@@ -233,6 +236,9 @@ class PDFWrapper extends PDF
     public function loadLayout(string $code, array $data = [], ?string $encoding = null, ?string $locale = null): self
     {
         $layout = Layout::byCode($code);
+
+        $this->applyTranslateContext($layout, $locale);
+
         $data = $this->withLocaleVariable($data, $locale);
 
         $this->loadHTML(
@@ -334,6 +340,27 @@ class PDFWrapper extends PDF
             $layout->content_html,
             $this->layoutData($layout, $data),
         );
+    }
+
+    /**
+     * The most specific key of the locale chain that has a translation wins. Without a
+     * locale argument the models keep following the active site on their own.
+     */
+    protected function applyTranslateContext(Template|Layout|null $model, ?string $locale): void
+    {
+        if ($locale === null || $locale === '' || $model === null || ! $model->exists || ! $model->isTranslatableEnabled()) {
+            return;
+        }
+
+        foreach (SiteManager::instance()->getLocaleKeyChain($locale) as $localeKey) {
+            if ($model->hasTranslations($localeKey)) {
+                $model->setLocale($localeKey);
+
+                return;
+            }
+        }
+
+        $model->setLocale($locale);
     }
 
     /**

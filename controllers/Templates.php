@@ -81,7 +81,8 @@ class Templates extends Controller
      * A template created in the backend is customised. A stored one is detached from its
      * view only by a change to what the view file provides; editing the sample data alone
      * keeps it view-driven. The posted values are compared with the model because the
-     * form data is applied to it only after this hook.
+     * form data is applied to it only after this hook. A form editing a translation writes
+     * the translation row and leaves the view-driven base alone, so it never detaches.
      */
     public function formBeforeSave(Template $model): void
     {
@@ -91,7 +92,7 @@ class Templates extends Controller
             return;
         }
 
-        if ($model->is_custom) {
+        if ($model->is_custom || $model->shouldTranslate()) {
             return;
         }
 

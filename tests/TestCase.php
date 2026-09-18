@@ -9,6 +9,8 @@ use Illuminate\Testing\TestResponse;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use System\Classes\SiteManager;
+use System\Models\SiteDefinition;
 
 abstract class TestCase extends OctoberPestTestCase
 {
@@ -36,6 +38,32 @@ abstract class TestCase extends OctoberPestTestCase
             'X-AJAX-HANDLER' => $handler,
             'X-Requested-With' => 'XMLHttpRequest',
         ]);
+    }
+
+    /**
+     * The install already carries the primary site the default locale comes from.
+     */
+    public function enableTranslation(string $locale = 'de'): SiteDefinition
+    {
+        config(['multisite.features.renatio_dynamicpdf_template' => true]);
+
+        return $this->createSite($locale);
+    }
+
+    public function createSite(string $locale = 'de'): SiteDefinition
+    {
+        $site = SiteDefinition::create([
+            'name' => 'Site ' . $locale,
+            'code' => 'site-' . $locale,
+            'locale' => $locale,
+            'is_enabled' => true,
+            'is_prefixed' => true,
+            'route_prefix' => '/' . $locale,
+        ]);
+
+        SiteManager::instance()->resetCache();
+
+        return $site;
     }
 
     /**
@@ -69,6 +97,22 @@ abstract class TestCase extends OctoberPestTestCase
         PDFManager::instance()->registerTemplates(array_map(fn (string $name): string => "{$namespace}::pdf.{$name}", array_keys($files)));
 
         return $directory;
+    }
+
+    public function findTemplate(string $code): Template
+    {
+        /** @var Template $template */
+        $template = Template::query()->where('code', $code)->firstOrFail();
+
+        return $template;
+    }
+
+    public function findLayout(string $code): Layout
+    {
+        /** @var Layout $layout */
+        $layout = Layout::query()->where('code', $code)->firstOrFail();
+
+        return $layout;
     }
 
     /**

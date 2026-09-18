@@ -87,7 +87,9 @@ class SyncTemplates
      * Template::afterFetch() has already refilled a non-customised row from its view file, so a row
      * whose file changed comes back dirty. Storing it keeps list search and sort off the stale values,
      * but a file that parsed to no content at all (a deploy window, a botched edit) must not wipe it,
-     * and neither must a layout code that momentarily resolves to nothing.
+     * and neither must a layout code that momentarily resolves to nothing. The comparison runs on
+     * the base values, or a row differing from its view only by a translation would be rewritten
+     * on every request.
      *
      * @param  array<string, string>  $registeredTemplates
      */
@@ -100,7 +102,7 @@ class SyncTemplates
             ->get();
 
         foreach ($templates as $template) {
-            $this->write($template->code, 'updated', function () use ($template): bool {
+            $this->write($template->code, 'updated', fn (): bool => $template->inDefaultLocale(function () use ($template): bool {
                 if (! $template->content_html || ! $template->isDirty(Template::VIEW_FIELDS)) {
                     return false;
                 }
@@ -112,7 +114,7 @@ class SyncTemplates
                 $template->forceSave();
 
                 return true;
-            });
+            }));
         }
     }
 
