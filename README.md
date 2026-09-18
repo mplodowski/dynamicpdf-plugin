@@ -308,10 +308,19 @@ Access is granted under **Settings → Administrators**, on the **PDF** tab. Sup
 
 | Permission | What it unlocks |
 | --- | --- |
-| **Manage templates** | The *PDF Templates* page, and the template form, previews and duplicates. |
-| **Manage layouts** | The layout form, its previews and duplicates. |
+| **Manage templates** | The *PDF Templates* page and the template form. |
+| **Create templates** | The *New template* button and duplicating a template. |
+| **Update templates** | Saving a template and resetting it to its view file. |
+| **Delete templates** | Deleting a template from the list or the form. |
+| **Preview templates** | The HTML and PDF preview of a template. |
+| **Manage layouts** | The layout form. |
+| **Create layouts** | The *New layout* button and duplicating a layout. |
+| **Update layouts** | Saving a layout and resetting it to its view file. |
+| **Delete layouts** | Deleting a layout. |
+| **Preview layouts** | The HTML and PDF preview of a layout. |
 
-Without **Manage layouts** the *Layouts* tab is hidden on the *PDF Templates* page.
+Without **Manage layouts** the *Layouts* tab is hidden on the *PDF Templates* page. Buttons a user cannot use are
+hidden, and every action is checked again on the server.
 
 ## Configuration
 

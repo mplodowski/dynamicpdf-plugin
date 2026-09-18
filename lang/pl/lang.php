@@ -64,7 +64,15 @@ return [
     ],
     'permissions' => [
         'manage_templates' => 'Zarządzaj szablonami',
+        'create_templates' => 'Twórz szablony',
+        'update_templates' => 'Edytuj szablony',
+        'delete_templates' => 'Usuwaj szablony',
+        'preview_templates' => 'Podgląd szablonów',
         'manage_layouts' => 'Zarządzaj układami',
+        'create_layouts' => 'Twórz układy',
+        'update_layouts' => 'Edytuj układy',
+        'delete_layouts' => 'Usuwaj układy',
+        'preview_layouts' => 'Podgląd układów',
         'tab' => 'PDF',
     ],
     'menu' => [

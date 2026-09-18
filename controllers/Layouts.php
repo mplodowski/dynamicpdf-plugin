@@ -13,10 +13,13 @@ use October\Rain\Exception\ApplicationException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
+use Renatio\DynamicPDF\Traits\ChecksFormPermissions;
 use System\Classes\SettingsManager;
 
 class Layouts extends Controller
 {
+    use ChecksFormPermissions;
+
     /** @var array<int, string> */
     public $requiredPermissions = ['renatio.dynamicpdf.manage_layouts'];
 
@@ -43,6 +46,8 @@ class Layouts extends Controller
 
     public function previewpdf(int|string $id): ?Response
     {
+        $this->requireFormPermission('modelPreview');
+
         $this->pageTitle = e(trans('renatio.dynamicpdf::lang.templates.preview_pdf'));
 
         try {
@@ -65,6 +70,8 @@ class Layouts extends Controller
 
     public function html(int|string $id): Response
     {
+        $this->requireFormPermission('modelPreview');
+
         $model = $this->formFindModelObject($id);
 
         return response($model->html)->header('Content-Security-Policy', "sandbox; script-src 'none'; object-src 'none'");
@@ -72,6 +79,8 @@ class Layouts extends Controller
 
     public function update_onDuplicate(int|string $recordId): RedirectResponse
     {
+        $this->requireFormPermission('modelCreate');
+
         $copy = $this->formFindModelObject($recordId)->duplicate();
 
         Flash::success(e(trans('renatio.dynamicpdf::lang.templates.duplicate_success')));
@@ -81,6 +90,8 @@ class Layouts extends Controller
 
     public function update_onResetDefault(int|string $recordId): RedirectResponse
     {
+        $this->requireFormPermission('modelUpdate');
+
         $this->formFindModelObject($recordId)->resetToView();
 
         Flash::success(e(trans('renatio.dynamicpdf::lang.templates.reset_success')));

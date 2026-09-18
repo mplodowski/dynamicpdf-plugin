@@ -18,10 +18,13 @@ use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use Renatio\DynamicPDF\Traits\ChecksFormPermissions;
 use System\Classes\SettingsManager;
 
 class Templates extends Controller
 {
+    use ChecksFormPermissions;
+
     /** @var array<int, string> */
     public $requiredPermissions = ['renatio.dynamicpdf.manage_templates'];
 
@@ -116,6 +119,8 @@ class Templates extends Controller
 
     public function previewpdf(int|string $id): ?Response
     {
+        $this->requireFormPermission('modelPreview');
+
         $this->pageTitle = e(trans('renatio.dynamicpdf::lang.templates.preview_pdf'));
 
         try {
@@ -138,6 +143,8 @@ class Templates extends Controller
 
     public function html(int|string $id): Response
     {
+        $this->requireFormPermission('modelPreview');
+
         $model = $this->formFindModelObject($id);
 
         return response($model->html)->header('Content-Security-Policy', "sandbox; script-src 'none'; object-src 'none'");
@@ -145,6 +152,8 @@ class Templates extends Controller
 
     public function update_onDuplicate(int|string $recordId): RedirectResponse
     {
+        $this->requireFormPermission('modelCreate');
+
         $copy = $this->formFindModelObject($recordId)->duplicate();
 
         Flash::success(e(trans('renatio.dynamicpdf::lang.templates.duplicate_success')));
@@ -154,6 +163,8 @@ class Templates extends Controller
 
     public function update_onResetDefault(int|string $recordId): RedirectResponse
     {
+        $this->requireFormPermission('modelUpdate');
+
         $this->formFindModelObject($recordId)->resetToView();
 
         Flash::success(e(trans('renatio.dynamicpdf::lang.templates.reset_success')));
@@ -164,6 +175,7 @@ class Templates extends Controller
     public function index_onDuplicateRecord(): RedirectResponse
     {
         $definition = $this->listDefinition();
+        $this->checkListPermission($definition, 'create');
         $copy = $this->findListRecord($definition)->duplicate();
 
         Flash::success(e(trans('renatio.dynamicpdf::lang.templates.duplicate_success')));
@@ -177,6 +189,7 @@ class Templates extends Controller
     public function index_onResetRecord(): array
     {
         $definition = $this->listDefinition();
+        $this->checkListPermission($definition, 'update');
         $model = $this->findListRecord($definition);
 
         if (! $model->followsView()) {
@@ -196,6 +209,7 @@ class Templates extends Controller
     public function index_onDeleteRecord(): array
     {
         $definition = $this->listDefinition();
+        $this->checkListPermission($definition, 'delete');
         $model = $this->findListRecord($definition);
 
         if ($model->followsView()) {
@@ -212,6 +226,13 @@ class Templates extends Controller
     protected function listDefinition(): string
     {
         return post('definition') === 'layouts' ? 'layouts' : 'templates';
+    }
+
+    protected function checkListPermission(string $definition, string $action): void
+    {
+        if (! BackendAuth::userHasAccess("renatio.dynamicpdf.manage_{$definition}.{$action}")) {
+            throw new ForbiddenException;
+        }
     }
 
     protected function findListRecord(string $definition): Template|Layout

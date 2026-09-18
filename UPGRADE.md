@@ -72,40 +72,21 @@ Plugin adds support for October CMS 4.0 while keeping 3.x, and upgrades to Larav
 removed by dompdf 3 (for example `enable_css_float` and `setAdminUsername()`) no longer apply, and the HTML5 parser is
 always on.
 
-## Upgrading To 8.0.4
+## Upgrading To 8.1.0
 
-**Security release. Upgrade every installation running 8.0.x.** Plugin requires PHP 8.2 or higher and October CMS 4.0
-or higher. Calling an option setter that does not exist on the wrapper, dompdf or its options (a typo such as
-`setRemoteEnabled()`, or `setAdminUsername()` removed by dompdf) now throws `UnexpectedValueException` instead of being
-silently ignored.
+**Security release. Upgrade every installation running 8.0.x.** Requires PHP 8.2 and October CMS 4.0. Run
+`php artisan october:migrate`.
 
-TLS certificates are verified on every environment. On a development host with a self-signed certificate set
-`DYNAMICPDF_ALLOW_SELF_SIGNED=true` in `.env` (or `allow_self_signed_certificates` in `config/renatio/dynamicpdf.php`),
-or call the now public `allowSelfSignedCertificates()` on the wrapper for a single document.
+The backend preview is sandboxed: no inline PHP, remote resources only from the application host and
+`allowed_remote_hosts`, local files only from the asset directories. Reset the demo **Header and Footer** layout to
+drop its page number script. TLS certificates are verified everywhere; set `DYNAMICPDF_ALLOW_SELF_SIGNED=true` on a
+development host with a self-signed certificate. An unknown option setter now throws instead of being ignored.
 
-The backend PDF preview fetches remote resources only from the hosts in `allowed_remote_hosts` of the dompdf
-configuration plus the application host, and reads local files only from the published asset directories. Add the
-host to `allowed_remote_hosts`, or set your own `chroot`, when a preview stops showing an image or a font.
+Permissions are granular: creating, updating, deleting and previewing templates and layouts each have their own
+permission. A role keeps only **Manage templates** and **Manage layouts**, so grant the rest under
+**Settings → Administrators → Roles**.
 
-The backend HTML and PDF preview no longer enables inline PHP. If you use the demo templates, open the
-**Header and Footer** layout and click **Reset to default** to remove the page number script from the stored copy.
-Registered PDF views are synchronised to the database when a *PDF Templates* or *PDF Layouts* backend page is opened
-or `dynamicpdf:sync` or `dynamicpdf:demo` runs, no longer on every request; a registered code without a view file is
-logged and skipped instead of stopping the sync.
-
-## Upgrading To 8.0.5
-
-Run `php artisan october:migrate`.
-
-The template and layout `code` columns get a unique index. Duplicate rows, which concurrent synchronisations could
-leave behind, are deleted permanently by the migration and not restored by a rollback: for templates the customised
-row is kept, for layouts the locked one, otherwise the oldest. Templates attached to a deleted layout are re-pointed
-to the kept one.
-
-## Upgrading To 8.0.6
-
-Synchronisation now writes a changed view file back to the row of a template that was never customised, so list
-search and sort use the current values; a template edited in the backend is untouched. A view file that parses to no
-content leaves the stored content alone. Saving a view-driven template in the backend no longer marks it *Customized*
-unless a value from the view file changed; use **Reset to default** on a template an earlier version flagged by
-mistake, or it will not follow its view file again.
+The template and layout `code` columns get a unique index; the migration deletes duplicate rows permanently, keeping
+the customised or locked one. Registered views are synchronised when a backend page opens or `dynamicpdf:sync` runs,
+and a changed view file is written back to templates that were never customised. Use **Reset to default** on a
+template an earlier version flagged *Customized* by mistake.

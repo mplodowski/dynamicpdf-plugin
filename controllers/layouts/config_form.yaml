@@ -29,3 +29,9 @@ update:
 # Preview page
 preview:
     title: renatio.dynamicpdf::lang.templates.preview_html
+
+permissions:
+    modelCreate: renatio.dynamicpdf.manage_layouts.create
+    modelUpdate: renatio.dynamicpdf.manage_layouts.update
+    modelDelete: renatio.dynamicpdf.manage_layouts.delete
+    modelPreview: renatio.dynamicpdf.manage_layouts.preview
