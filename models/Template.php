@@ -262,6 +262,11 @@ class Template extends Model
         return array_get(PDFManager::instance()->listRegisteredTemplates(), $this->code);
     }
 
+    public function isCustomised(): bool
+    {
+        return $this->is_custom;
+    }
+
     /**
      * A record the sync would recreate from its view file; deleting it only makes it come back.
      */

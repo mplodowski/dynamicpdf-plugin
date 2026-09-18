@@ -212,6 +212,9 @@ class PDFWrapper extends PDF
             $template->setRelation('layout', Layout::byCode($layout));
         }
 
+        $template->fillFromLocalizedView($locale);
+        $template->layout?->fillFromLocalizedView($locale);
+
         $this->applyTranslateContext($template, $locale);
         $this->applyTranslateContext($template->layout, $locale);
 
@@ -236,6 +239,8 @@ class PDFWrapper extends PDF
     public function loadLayout(string $code, array $data = [], ?string $encoding = null, ?string $locale = null): self
     {
         $layout = Layout::byCode($code);
+
+        $layout->fillFromLocalizedView($locale);
 
         $this->applyTranslateContext($layout, $locale);
 

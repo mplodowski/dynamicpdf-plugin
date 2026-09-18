@@ -93,3 +93,4 @@ template an earlier version flagged *Customized* by mistake.
 
 Templates and layouts can be translated per language, off by default and changing nothing until enabled. Set
 `'renatio_dynamicpdf_template' => true` under `features` in `config/multisite.php` and clear the application cache.
+A registered view may also ship a localized sibling, `pdf.de.invoice` next to `pdf.invoice`, used for that render only.

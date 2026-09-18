@@ -679,8 +679,13 @@ Template title and markup, and layout markup and CSS, can be stored per language
 Editing a template or layout with another site selected in the backend then writes a translation instead of
 overwriting the stored content, and the `locale` argument above picks the translation to render with. A language with
 no translation falls back to the stored content, and templates backed by a view file keep following that file in the
-default language, so **Reset to default** and the synchronisation never touch a translation. Localized view files and
-per-language background images are not supported.
+default language, so **Reset to default** and the synchronisation never touch a translation. Per-language background
+images are not supported.
+
+A registered view can ship localized siblings: `pdf.invoice` renders from `pdf.de.invoice`, `pdf.layouts.default`
+from `pdf.layouts.de.default`. The locale chain is followed, so `de-AT` takes `pdf.de-AT.invoice` and falls back to
+`pdf.de.invoice`. The sibling is read for that render only and never changes the stored row; a customised template,
+an unlocked layout or a stored translation wins over it.
 
 This is independent of RainLab.Translate, whose `|_` messages follow the site locale, not the `locale` argument.
 

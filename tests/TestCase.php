@@ -84,19 +84,55 @@ abstract class TestCase extends OctoberPestTestCase
      *
      * @param  array<string, string>  $files  view name without extension => file content
      */
-    public function registerViewTemplates(string $namespace, array $files): string
+    public function registerViewTemplates(string $namespace, array $files, ?string $directory = null): string
     {
-        $directory = sys_get_temp_dir() . '/dynamicpdf-views-' . uniqid();
-        File::makeDirectory($directory . '/pdf', 0755, true);
-        View::addNamespace($namespace, $directory);
+        $directory = $this->writeViewFiles($namespace, $files, $directory);
 
-        foreach ($files as $name => $content) {
-            File::put("{$directory}/pdf/{$name}.htm", $content);
-        }
-
-        PDFManager::instance()->registerTemplates(array_map(fn (string $name): string => "{$namespace}::pdf.{$name}", array_keys($files)));
+        PDFManager::instance()->registerTemplates($this->viewNames($namespace, $files));
 
         return $directory;
+    }
+
+    /**
+     * @param  array<string, string>  $files  view name without extension => file content
+     */
+    public function registerViewLayouts(string $namespace, array $files, ?string $directory = null): string
+    {
+        $directory = $this->writeViewFiles($namespace, $files, $directory);
+
+        PDFManager::instance()->registerLayouts($this->viewNames($namespace, $files));
+
+        return $directory;
+    }
+
+    /**
+     * Writes view files without registering them, for the localized siblings of a registered view.
+     *
+     * @param  array<string, string>  $files  view name without extension => file content
+     */
+    public function writeViewFiles(string $namespace, array $files, ?string $directory = null): string
+    {
+        if ($directory === null) {
+            $directory = sys_get_temp_dir() . '/dynamicpdf-views-' . uniqid();
+            View::addNamespace($namespace, $directory);
+        }
+
+        foreach ($files as $name => $content) {
+            $path = "{$directory}/pdf/{$name}.htm";
+            File::ensureDirectoryExists(dirname($path));
+            File::put($path, $content);
+        }
+
+        return $directory;
+    }
+
+    /**
+     * @param  array<string, string>  $files
+     * @return array<int, string>
+     */
+    protected function viewNames(string $namespace, array $files): array
+    {
+        return array_map(fn (string $name): string => "{$namespace}::pdf." . str_replace('/', '.', $name), array_keys($files));
     }
 
     public function findTemplate(string $code): Template

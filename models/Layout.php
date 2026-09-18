@@ -142,6 +142,14 @@ class Layout extends Model
     }
 
     /**
+     * Layouts carry no is_custom flag: a stored one is view-driven while it stays locked.
+     */
+    public function isCustomised(): bool
+    {
+        return $this->exists && ! $this->is_locked;
+    }
+
+    /**
      * A record the sync would recreate from its view file; deleting it only makes it come back.
      */
     public function followsView(): bool
