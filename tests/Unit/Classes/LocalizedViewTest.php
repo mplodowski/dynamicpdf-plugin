@@ -89,4 +89,25 @@ describe('Localized view files', function () {
 
         expect(renderHtml('localizedlayout::pdf.invoice', 'de'))->toContain('DE-LAYOUT')->toContain('Body');
     });
+
+    it('keeps the layout given to loadTemplate() over the one of the sibling view', function () {
+        $this->enableTranslation('de');
+
+        $this->directory = $this->registerViewLayouts('overridelayout', [
+            'layouts/default' => "name = \"Default\"\n==\n<html><body>DEFAULT {{ content_html }}</body></html>",
+            'layouts/plain' => "name = \"Plain\"\n==\n<html><body>PLAIN {{ content_html }}</body></html>",
+        ]);
+        $this->registerViewTemplates('overridelayout', [
+            'invoice' => "title = \"Invoice\"\nlayout = \"overridelayout::pdf.layouts.default\"\n==\n<p>Body</p>",
+        ], $this->directory);
+        $this->writeViewFiles('overridelayout', [
+            'de/invoice' => "title = \"Rechnung\"\nlayout = \"overridelayout::pdf.layouts.default\"\n==\n<p>Deutsch</p>",
+        ], $this->directory);
+
+        (new SyncTemplates)->handle();
+
+        $html = app('dynamicpdf')->loadTemplate('overridelayout::pdf.invoice', layout: 'overridelayout::pdf.layouts.plain', locale: 'de')->getDomPDF()->outputHtml();
+
+        expect($html)->toContain('PLAIN')->toContain('Deutsch')->not->toContain('DEFAULT');
+    });
 });

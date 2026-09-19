@@ -207,12 +207,12 @@ class PDFWrapper extends PDF
     public function loadTemplate(string $code, array $data = [], ?string $encoding = null, ?string $layout = null, ?string $locale = null): self
     {
         $template = Template::byCode($code);
+        $template->fillFromLocalizedView($locale);
 
         if ($layout !== null) {
             $template->setRelation('layout', Layout::byCode($layout));
         }
 
-        $template->fillFromLocalizedView($locale);
         $template->layout?->fillFromLocalizedView($locale);
 
         $this->applyTranslateContext($template, $locale);
