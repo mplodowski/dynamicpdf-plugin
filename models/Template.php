@@ -13,6 +13,7 @@ use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 use Renatio\DynamicPDF\Traits\Duplicates;
+use Renatio\DynamicPDF\Traits\TranslatesContent;
 use Throwable;
 
 /**
@@ -32,6 +33,7 @@ use Throwable;
 class Template extends Model
 {
     use Duplicates;
+    use TranslatesContent;
     use Validation;
 
     public const LAYOUT_CACHE = 'renatio.dynamicpdf.layouts';
@@ -42,6 +44,9 @@ class Template extends Model
     public const VIEW_FIELDS = ['title' => 'title', 'description' => 'description', 'content_html' => 'content_html', 'layout' => 'layout_id', 'size' => 'size', 'orientation' => 'orientation'];
 
     public $table = 'renatio_dynamicpdf_pdf_templates';
+
+    /** @var array<int, string> */
+    public $translatable = ['title', 'content_html'];
 
     /** @var array<string, string> */
     protected $casts = [
@@ -93,16 +98,18 @@ class Template extends Model
             return;
         }
 
-        $stored = $this->getAttributes();
+        $this->inDefaultLocale(function (): void {
+            $stored = $this->getAttributes();
 
-        try {
-            $this->fillFromView($this->code);
-        } catch (Throwable $e) {
-            $this->setRawAttributes($stored, true);
-            $this->unsetRelation('layout');
+            try {
+                $this->fillFromView($this->code);
+            } catch (Throwable $e) {
+                $this->setRawAttributes($stored, true);
+                $this->unsetRelation('layout');
 
-            Log::error("Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
-        }
+                Log::error("Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
+            }
+        });
     }
 
     /**
@@ -110,9 +117,11 @@ class Template extends Model
      */
     public function resetToView(): void
     {
-        $this->fillFromCode();
-        $this->is_custom = false;
-        $this->save();
+        $this->inDefaultLocale(function (): void {
+            $this->fillFromCode();
+            $this->is_custom = false;
+            $this->save();
+        });
     }
 
     public function fillFromCode(): void
@@ -251,6 +260,11 @@ class Template extends Model
     public function getView(): ?string
     {
         return array_get(PDFManager::instance()->listRegisteredTemplates(), $this->code);
+    }
+
+    public function isCustomised(): bool
+    {
+        return $this->is_custom;
     }
 
     /**

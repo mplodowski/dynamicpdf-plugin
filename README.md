@@ -18,6 +18,8 @@ Templates and layouts live in the database or in view files shipped by your plug
 - Twig markup with theme partials, translations, global variables and `beforeRender` / `afterRender` events.
 - Render per document with another layout, in another language, with page numbers, password protection and
   paper size and orientation.
+- Templates translated per language with the native October multisite translation, or shipped as localized view
+  files such as `pdf.de.invoice`.
 - Output as a browser stream, download, file on a storage disk or a `System\Models\File` ready to attach to a model.
 - `PDF::fake()` with render assertions for project tests, `dynamicpdf:sync` and `dynamicpdf:check` console commands.
 
@@ -662,9 +664,47 @@ return PDF::loadTemplate('renatio::invoice', $data, locale: 'de')->download('rec
 ```
 
 `loadTemplate()` and `loadLayout()` always add the `locale` variable, holding the application locale when no argument
-is given; a `locale` key in your own data takes precedence. With RainLab.Translate installed its messages (`|_`) and
-translated model attributes follow the site locale, not this argument, and inline PHP executed by dompdf during
-`output()` runs after the locale has been restored.
+is given; a `locale` key in your own data takes precedence. Inline PHP executed by dompdf during `output()` runs after
+the locale has been restored.
+
+#### Translate the templates themselves
+
+Template title and markup, and layout markup and CSS, can be stored per language. Off by default; turn it on in
+`config/multisite.php` and clear the application cache:
+
+```
+'features' => [
+    'renatio_dynamicpdf_template' => true,
+],
+```
+
+Editing a template or layout with another site selected in the backend then writes a translation instead of
+overwriting the stored content, the backend previews follow the selected site, and the `locale` argument above picks
+the translation to render with:
+
+```php
+PDF::loadTemplate('acme.shop::pdf.invoice', $data, locale: 'pl')->download('faktura.pdf');
+```
+
+A language with no translation falls back to the stored content, and templates backed by a view file keep following
+that file in the default language, so **Reset to default** and the synchronisation never touch a translation.
+Per-language background images are not supported.
+
+A registered view can ship localized siblings: `pdf.invoice` renders from `pdf.de.invoice`, `pdf.layouts.default`
+from `pdf.layouts.de.default`. The locale chain is followed, so `de-AT` takes `pdf.de-AT.invoice` and falls back to
+`pdf.de.invoice`. The sibling is read for that render only and never changes the stored row; a customised template,
+an unlocked layout or a stored translation wins over it.
+
+```
+plugins/acme/shop/views/pdf/
+    invoice.htm
+    de/invoice.htm
+    de-AT/invoice.htm
+    layouts/default.htm
+    layouts/de/default.htm
+```
+
+This is independent of RainLab.Translate, whose `|_` messages follow the site locale, not the `locale` argument.
 
 ### Change paper size and orientation
 

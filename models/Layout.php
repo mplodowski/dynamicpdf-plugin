@@ -11,6 +11,7 @@ use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 use Renatio\DynamicPDF\Traits\Duplicates;
+use Renatio\DynamicPDF\Traits\TranslatesContent;
 use System\Models\File;
 
 /**
@@ -26,9 +27,13 @@ use System\Models\File;
 class Layout extends Model
 {
     use Duplicates;
+    use TranslatesContent;
     use Validation;
 
     public $table = 'renatio_dynamicpdf_pdf_layouts';
+
+    /** @var array<int, string> */
+    public $translatable = ['content_html', 'content_css'];
 
     /** @var array<string, array<string>> */
     public $rules = [
@@ -104,8 +109,10 @@ class Layout extends Model
      */
     public function resetToView(): void
     {
-        $this->fillFromCode();
-        $this->save();
+        $this->inDefaultLocale(function (): void {
+            $this->fillFromCode();
+            $this->save();
+        });
     }
 
     public function fillFromCode(): void
@@ -132,6 +139,14 @@ class Layout extends Model
     public function getView(): ?string
     {
         return array_get(PDFManager::instance()->listRegisteredLayouts(), $this->code);
+    }
+
+    /**
+     * Layouts carry no is_custom flag: a stored one is view-driven while it stays locked.
+     */
+    public function isCustomised(): bool
+    {
+        return $this->exists && ! $this->is_locked;
     }
 
     /**
