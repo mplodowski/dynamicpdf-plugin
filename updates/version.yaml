@@ -56,16 +56,11 @@ v8.0.1: Support October 4.
 v8.0.2: Update dependencies.
 v8.0.3: Refactor to use pluck() function.
 v8.1.0:
-    - Security release. Sandboxed backend preview without inline PHP, remote resources limited to the application host and the asset directories.
+    - Security release. Sandboxed backend preview, no inline PHP.
     - Require PHP 8.2 and October CMS 4.0.
-    - Granular create, update, delete and preview permissions for templates and layouts.
-    - Backend previews rendered with the sample data of the template.
+    - Granular permissions for templates and layouts.
+    - Template and layout translations, localized view files.
+    - Page numbers without inline PHP, PDF::fake() for tests.
+    - dynamicpdf:sync and dynamicpdf:check commands.
     - 20260907_0001_add_sample_data_to_templates_table.php
-    - Unique index on the template and layout code.
     - 20260907_0002_add_unique_code_indexes.php
-    - Synchronisation writes changed view files back to non-customised templates.
-    - Duplicate, reset, preview or delete templates and layouts straight from the list.
-    - Render a template with another layout or locale, and return the PDF as a System\Models\File.
-    - Add registerPDFVariables(), the beforeRender and afterRender events, PDF::fake() and the dynamicpdf:sync and dynamicpdf:check commands.
-    - Translate template and layout content per language, enabled with the renatio_dynamicpdf_template multisite feature.
-    - Render a registered template or layout from a localized sibling view file.
