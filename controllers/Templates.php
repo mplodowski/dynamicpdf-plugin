@@ -82,7 +82,7 @@ class Templates extends Controller
      * view only by a change to what the view file provides; editing the sample data alone
      * keeps it view-driven. The posted values are compared with the model because the
      * form data is applied to it only after this hook. A form editing a translation writes
-     * the translation row and leaves the view-driven base alone, so it never detaches.
+     * translated fields to the translation row, so only a change to a shared field detaches.
      */
     public function formBeforeSave(Template $model): void
     {
@@ -92,7 +92,7 @@ class Templates extends Controller
             return;
         }
 
-        if ($model->is_custom || $model->shouldTranslate()) {
+        if ($model->is_custom) {
             return;
         }
 
@@ -104,7 +104,11 @@ class Templates extends Controller
 
         $posted = (array) $widget->getSaveData();
 
-        foreach (Template::VIEW_FIELDS as $field => $attribute) {
+        $fields = $model->shouldTranslate()
+            ? array_diff_key(Template::VIEW_FIELDS, array_flip($model->getTranslatableAttributes()))
+            : Template::VIEW_FIELDS;
+
+        foreach ($fields as $field => $attribute) {
             if (array_key_exists($field, $posted) && $this->normalize($posted[$field]) !== $this->normalize($model->getAttribute($attribute))) {
                 $model->is_custom = true;
 
