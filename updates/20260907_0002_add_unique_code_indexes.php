@@ -13,41 +13,42 @@ return new class extends Migration
 
     protected const LAYOUTS = 'renatio_dynamicpdf_pdf_layouts';
 
+    /**
+     * Only the deduplication is transactional: MySQL commits implicitly on ALTER TABLE.
+     */
     public function up()
     {
         DB::transaction(function () {
             $this->deduplicateTemplates();
             $this->deduplicateLayouts();
-
-            foreach ([self::TEMPLATES, self::LAYOUTS] as $name) {
-                Schema::table($name, function (Blueprint $table) use ($name) {
-                    if (! Schema::hasIndex($name, $name . '_code_unique')) {
-                        $table->unique('code');
-                    }
-
-                    if (Schema::hasIndex($name, $name . '_code_index')) {
-                        $table->dropIndex(['code']);
-                    }
-                });
-            }
         });
+
+        foreach ([self::TEMPLATES, self::LAYOUTS] as $name) {
+            Schema::table($name, function (Blueprint $table) use ($name) {
+                if (! Schema::hasIndex($name, $name . '_code_unique')) {
+                    $table->unique('code');
+                }
+
+                if (Schema::hasIndex($name, $name . '_code_index')) {
+                    $table->dropIndex(['code']);
+                }
+            });
+        }
     }
 
     public function down()
     {
-        DB::transaction(function () {
-            foreach ([self::TEMPLATES, self::LAYOUTS] as $name) {
-                Schema::table($name, function (Blueprint $table) use ($name) {
-                    if (Schema::hasIndex($name, $name . '_code_unique')) {
-                        $table->dropUnique(['code']);
-                    }
+        foreach ([self::TEMPLATES, self::LAYOUTS] as $name) {
+            Schema::table($name, function (Blueprint $table) use ($name) {
+                if (Schema::hasIndex($name, $name . '_code_unique')) {
+                    $table->dropUnique(['code']);
+                }
 
-                    if (! Schema::hasIndex($name, $name . '_code_index')) {
-                        $table->index('code');
-                    }
-                });
-            }
-        });
+                if (! Schema::hasIndex($name, $name . '_code_index')) {
+                    $table->index('code');
+                }
+            });
+        }
     }
 
     /**
