@@ -27,11 +27,14 @@ describe('Reset to default', function () {
             ->and((string) $row?->content_html)->toContain('Invoice');
     });
 
-    it('restores a locked layout from its view', function () {
-        $layout = $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'name' => 'Edited', 'content_html' => '<html><body>edited</body></html>', 'is_locked' => true]);
+    it('restores an edited layout from its view and makes it follow the view again', function () {
+        $layout = $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'name' => 'Edited', 'content_html' => '<html><body>edited</body></html>', 'is_locked' => false]);
 
         (new Layouts)->update_onResetDefault($layout->id);
 
-        expect(Layout::byCode('renatio.dynamicpdf::pdf.layouts.default')->name)->toBe('Default Layout');
+        $stored = Layout::byCode('renatio.dynamicpdf::pdf.layouts.default');
+
+        expect($stored->name)->toBe('Default Layout')
+            ->and($stored->is_locked)->toBeTrue();
     });
 });

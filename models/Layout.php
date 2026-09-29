@@ -31,6 +31,11 @@ class Layout extends Model
     use TranslatesContent;
     use Validation;
 
+    /**
+     * Form fields the view file provides.
+     */
+    public const VIEW_FIELDS = ['name' => 'name', 'content_html' => 'content_html', 'content_css' => 'content_css'];
+
     public $table = 'renatio_dynamicpdf_pdf_layouts';
 
     /** @var array<int, string> */
@@ -125,6 +130,7 @@ class Layout extends Model
     {
         $this->inDefaultLocale(function (): void {
             $this->fillFromCode();
+            $this->is_locked = true;
             $this->save();
         });
     }

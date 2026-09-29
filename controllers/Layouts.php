@@ -13,12 +13,15 @@ use October\Rain\Exception\ApplicationException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
+use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Traits\ChecksFormPermissions;
+use Renatio\DynamicPDF\Traits\DetectsViewChanges;
 use System\Classes\SettingsManager;
 
 class Layouts extends Controller
 {
     use ChecksFormPermissions;
+    use DetectsViewChanges;
 
     /** @var array<int, string> */
     public $requiredPermissions = ['renatio.dynamicpdf.manage_layouts'];
@@ -42,6 +45,13 @@ class Layouts extends Controller
     public function beforeDisplay(): void
     {
         (new SyncTemplates)->handle();
+    }
+
+    public function formBeforeSave(Layout $model): void
+    {
+        if ($model->is_locked && $this->postedViewFieldChanged($model, Layout::VIEW_FIELDS)) {
+            $model->is_locked = false;
+        }
     }
 
     public function previewpdf(int|string $id): ?Response

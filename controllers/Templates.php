@@ -19,11 +19,13 @@ use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Renatio\DynamicPDF\Traits\ChecksFormPermissions;
+use Renatio\DynamicPDF\Traits\DetectsViewChanges;
 use System\Classes\SettingsManager;
 
 class Templates extends Controller
 {
     use ChecksFormPermissions;
+    use DetectsViewChanges;
 
     /** @var array<int, string> */
     public $requiredPermissions = ['renatio.dynamicpdf.manage_templates'];
@@ -80,9 +82,7 @@ class Templates extends Controller
     /**
      * A template created in the backend is customised. A stored one is detached from its
      * view only by a change to what the view file provides; editing the sample data alone
-     * keeps it view-driven. The posted values are compared with the model because the
-     * form data is applied to it only after this hook. A form editing a translation writes
-     * translated fields to the translation row, so only a change to a shared field detaches.
+     * keeps it view-driven.
      */
     public function formBeforeSave(Template $model): void
     {
@@ -92,34 +92,9 @@ class Templates extends Controller
             return;
         }
 
-        if ($model->is_custom) {
-            return;
+        if (! $model->is_custom && $this->postedViewFieldChanged($model, Template::VIEW_FIELDS)) {
+            $model->is_custom = true;
         }
-
-        $widget = $this->formGetWidget();
-
-        if ($widget === null) {
-            return;
-        }
-
-        $posted = (array) $widget->getSaveData();
-
-        $fields = $model->shouldTranslate()
-            ? array_diff_key(Template::VIEW_FIELDS, array_flip($model->getTranslatableAttributes()))
-            : Template::VIEW_FIELDS;
-
-        foreach ($fields as $field => $attribute) {
-            if (array_key_exists($field, $posted) && $this->normalize($posted[$field]) !== $this->normalize($model->getAttribute($attribute))) {
-                $model->is_custom = true;
-
-                return;
-            }
-        }
-    }
-
-    protected function normalize(mixed $value): string
-    {
-        return str_replace("\r\n", "\n", trim((string) $value));
     }
 
     public function previewpdf(int|string $id): ?Response
