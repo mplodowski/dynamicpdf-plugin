@@ -46,6 +46,13 @@ describe('PDF::fake()', function () {
             ->and(fn () => $fake->assertRendered('acme::pdf.invoice', fn (array $data): bool => isset($data['missing'])))->toThrow(AssertionFailedError::class);
     });
 
+    it('throws for a method the real wrapper does not have, like production does', function () {
+        $fake = PDF::fake();
+
+        expect($fake->loadTemplate('acme::pdf.invoice')->setDpi(300))->toBe($fake)
+            ->and(fn () => $fake->loadTemplate('acme::pdf.invoice')->__call('setIsRemoteEnabeld', [true]))->toThrow(UnexpectedValueException::class);
+    });
+
     it('replaces a wrapper the facade has already resolved', function () {
         PDF::getFacadeRoot();
 
