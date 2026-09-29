@@ -42,6 +42,18 @@ describe('PDFWrapper', function () {
         expect($html)->toBe('<html><body><p>Hello World</p></body></html>');
     });
 
+    it('applies the paper size and orientation of the template', function (?string $orientation, string $expected, array $size) {
+        $this->createTemplate(['code' => 'acme::pdf.paper', 'size' => 'a5', 'orientation' => $orientation]);
+
+        $dompdf = app('dynamicpdf')->loadTemplate('acme::pdf.paper')->getDomPDF();
+
+        expect($dompdf->getPaperOrientation())->toBe($expected)
+            ->and($dompdf->getPaperSize())->toBe($size);
+    })->with([
+        'landscape' => ['landscape', 'landscape', [0.0, 0.0, 595.28, 419.53]],
+        'no orientation' => [null, 'portrait', [0.0, 0.0, 419.53, 595.28]],
+    ]);
+
     it('renders an empty string for a template with null content_html', function () {
         $template = $this->createTemplate();
         $template->content_html = null;
