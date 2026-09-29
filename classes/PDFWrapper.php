@@ -234,7 +234,9 @@ class PDFWrapper extends PDF
         );
 
         if ($template->size || $template->orientation) {
-            $this->setPaper($template->size ?: $this->dompdf->getOptions()->getDefaultPaperSize(), $template->orientation ?: 'portrait');
+            $options = $this->dompdf->getOptions();
+
+            $this->setPaper($template->size ?: $options->getDefaultPaperSize(), $template->orientation ?: $options->getDefaultPaperOrientation());
         }
 
         return $this;

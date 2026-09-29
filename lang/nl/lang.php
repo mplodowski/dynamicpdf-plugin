@@ -92,6 +92,7 @@ return [
     ],
     'options' => [
         'empty' => '-- kies --',
+        'default' => 'Standaard (:value)',
     ],
     'tab' => [
         'options' => 'Opties',

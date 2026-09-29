@@ -92,6 +92,7 @@ return [
     ],
     'options' => [
         'empty' => '-- выберите --',
+        'default' => 'По умолчанию (:value)',
     ],
     'tab' => [
         'options' => 'Параметры',

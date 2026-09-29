@@ -63,7 +63,7 @@
 
             <?php if ($formModel->followsView() && BackendAuth::userHasAccess('renatio.dynamicpdf.manage_templates.update')): ?>
                 <button type="button"
-                        class="btn btn-danger pull-right"
+                        class="btn btn-warning pull-right"
                         data-request="onResetDefault"
                         data-request-before-update="$(this).trigger('unchange.oc.changeMonitor')"
                         data-load-indicator="<?= e(trans('backend::lang.form.resetting')) ?>"
@@ -73,6 +73,7 @@
             <?php elseif (! $formModel->followsView() && BackendAuth::userHasAccess('renatio.dynamicpdf.manage_templates.delete')): ?>
                 <button type="button"
                         class="oc-icon-trash-o btn-icon danger pull-right"
+                        aria-label="<?= e(trans('backend::lang.form.delete')) ?>"
                         data-request="onDelete"
                         data-request-before-update="$(this).trigger('unchange.oc.changeMonitor')"
                         data-load-indicator="<?= e(trans('backend::lang.form.deleting_name',

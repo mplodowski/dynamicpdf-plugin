@@ -92,6 +92,7 @@ return [
     ],
     'options' => [
         'empty' => '-- vyberte --',
+        'default' => 'Výchozí (:value)',
     ],
     'tab' => [
         'options' => 'Možnosti',
