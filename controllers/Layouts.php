@@ -70,8 +70,7 @@ class Layouts extends Controller
 
         $pdf = PDF::loadLayout($model->code)
             ->setLogOutputFile(config('app.debug') ? storage_path('temp/log.htm') : '')
-            ->allowRemoteApplicationAssets()
-            ->setDpi(300);
+            ->allowRemoteApplicationAssets();
 
         $pdf->render();
 

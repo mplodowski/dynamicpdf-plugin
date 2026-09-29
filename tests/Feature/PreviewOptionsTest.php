@@ -36,6 +36,17 @@ describe('Backend preview', function () {
         expect($wrapper->getDomPDF()->getOptions()->getIsPhpEnabled())->toBeFalse();
     });
 
+    it('renders the preview with the configured DPI like PDFs generated from code', function (string $type) {
+        config(['dompdf.options.dpi' => 120]);
+        $wrapper = captureWrapper();
+
+        $type === 'template'
+            ? (new Templates)->previewpdf($this->createTemplate(['content_html' => '<p>Hello</p>'])->id)
+            : (new Layouts)->previewpdf($this->createLayout(['content_html' => '<html><body>Hello</body></html>'])->id);
+
+        expect($wrapper->getDomPDF()->getOptions()->getDpi())->toBe(120);
+    })->with(['template', 'layout']);
+
     it('limits remote resources to the application host when the config allows any host', function () {
         config(['app.url' => 'https://app.example.com']);
         $wrapper = captureWrapper();

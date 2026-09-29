@@ -88,3 +88,6 @@ of functions are rejected on save and fail the render of an older layout, so rem
 Footer** layout, and use **Reset to default** on a template an earlier version flagged *Customized* by mistake. Set
 `DYNAMICPDF_ALLOW_SELF_SIGNED=true` on a development host with a self-signed certificate; an unknown `set*()` option
 call now throws `UnexpectedValueException`.
+
+The backend **Preview PDF** no longer forces 300 DPI and uses `dompdf.options.dpi` like PDFs generated from code, so
+`px` sizes in the preview now match the real output. Check templates whose sizes were tuned to the old preview.
