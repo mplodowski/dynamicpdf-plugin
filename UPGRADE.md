@@ -81,6 +81,8 @@ The backend preview is sandboxed: no inline PHP, remote resources only from the 
 `allowed_remote_hosts`, local files only from the asset directories. Reset the demo **Header and Footer** layout to
 drop its page number script. TLS certificates are verified everywhere; set `DYNAMICPDF_ALLOW_SELF_SIGNED=true` on a
 development host with a self-signed certificate. An unknown option setter now throws instead of being ignored.
+Layout CSS may no longer read server files: `@import` of anything but a remote `https://` stylesheet and the
+`data-uri()` / `image-size()` functions are rejected on save and fail the render of a layout stored earlier.
 
 Permissions are granular: creating, updating, deleting and previewing templates and layouts each have their own
 permission. A role keeps only **Manage templates** and **Manage layouts**, so grant the rest under
