@@ -13,41 +13,59 @@ return new class extends Migration
 
     protected const LAYOUTS = 'renatio_dynamicpdf_pdf_layouts';
 
+    /**
+     * Only the deduplication is transactional: MySQL commits implicitly on ALTER TABLE.
+     */
     public function up()
     {
         DB::transaction(function () {
             $this->deduplicateTemplates();
             $this->deduplicateLayouts();
-
-            foreach ([self::TEMPLATES, self::LAYOUTS] as $name) {
-                Schema::table($name, function (Blueprint $table) use ($name) {
-                    if (! Schema::hasIndex($name, $name . '_code_unique')) {
-                        $table->unique('code');
-                    }
-
-                    if (Schema::hasIndex($name, $name . '_code_index')) {
-                        $table->dropIndex(['code']);
-                    }
-                });
-            }
         });
+
+        foreach ([self::TEMPLATES, self::LAYOUTS] as $name) {
+            $indexes = $this->codeIndexes($name);
+
+            Schema::table($name, function (Blueprint $table) use ($indexes) {
+                if (! isset($indexes['unique'])) {
+                    $table->unique('code');
+                }
+
+                if (isset($indexes['plain'])) {
+                    $table->dropIndex($indexes['plain']);
+                }
+            });
+        }
     }
 
     public function down()
     {
-        DB::transaction(function () {
-            foreach ([self::TEMPLATES, self::LAYOUTS] as $name) {
-                Schema::table($name, function (Blueprint $table) use ($name) {
-                    if (Schema::hasIndex($name, $name . '_code_unique')) {
-                        $table->dropUnique(['code']);
-                    }
+        foreach ([self::TEMPLATES, self::LAYOUTS] as $name) {
+            $indexes = $this->codeIndexes($name);
 
-                    if (! Schema::hasIndex($name, $name . '_code_index')) {
-                        $table->index('code');
-                    }
-                });
-            }
-        });
+            Schema::table($name, function (Blueprint $table) use ($indexes) {
+                if (isset($indexes['unique'])) {
+                    $table->dropUnique($indexes['unique']);
+                }
+
+                if (! isset($indexes['plain'])) {
+                    $table->index('code');
+                }
+            });
+        }
+    }
+
+    /**
+     * Looked up by column, not by name: a table prefix with prefix_indexes renames the indexes.
+     *
+     * @return array{unique?: string, plain?: string}
+     */
+    protected function codeIndexes(string $table): array
+    {
+        return collect(Schema::getIndexes($table))
+            ->where('columns', ['code'])
+            ->mapWithKeys(fn (array $index) => [$index['unique'] ? 'unique' : 'plain' => $index['name']])
+            ->all();
     }
 
     /**
