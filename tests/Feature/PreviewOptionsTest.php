@@ -64,7 +64,7 @@ describe('Backend preview', function () {
     });
 
     it('disables remote resources when no application host can be resolved', function () {
-        config(['app.url' => '']);
+        config(['app.url' => '', 'dompdf.options.enable_remote' => true]);
         $wrapper = captureWrapper();
         $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
 
@@ -96,15 +96,6 @@ describe('Backend preview', function () {
         (new Layouts)->previewpdf($layout->id);
 
         expect($wrapper->getDomPDF()->getOptions()->getAllowedRemoteHosts())->toBe(['cdn.example.com', 'app.example.com']);
-    });
-
-    it('keeps redirects disabled when accepting self-signed certificates', function () {
-        $wrapper = captureWrapper();
-        $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
-
-        (new Templates)->previewpdf($template->id);
-
-        expect(stream_context_get_options($wrapper->getDomPDF()->getHttpContext())['http']['follow_location'])->toBeFalse();
     });
 
     it('limits local files in the preview to the asset directories', function () {

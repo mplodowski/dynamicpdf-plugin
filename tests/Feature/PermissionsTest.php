@@ -15,14 +15,14 @@ use Renatio\DynamicPDF\Tests\TestCase;
 
 describe('Permissions', function () {
     it('refuses the template preview without manage_templates', function () {
-        actingAsBackendUserWith([]);
+        actingAsPdfManager(['manage_templates']);
         $template = $this->createTemplate();
 
         expect(fn () => (new Templates)->run('html', [$template->id]))->toThrow(ForbiddenException::class);
     });
 
     it('refuses the layout preview without manage_layouts', function () {
-        actingAsBackendUserWith(['manage_templates']);
+        actingAsPdfManager(['manage_layouts']);
         $layout = $this->createLayout();
 
         expect(fn () => (new Layouts)->run('html', [$layout->id]))->toThrow(ForbiddenException::class);
@@ -32,9 +32,11 @@ describe('Permissions', function () {
         actingAsBackendUserWith(['manage_templates', 'manage_templates.create']);
         $this->createLayout();
 
-        $content = (new Templates)->run('index', ['layouts'])->getContent();
+        $controller = new Templates;
+        $content = $controller->run('index', ['layouts'])->getContent();
 
-        expect($content)->toContain('renatio/dynamicpdf/templates/create')
+        expect($controller->listConfig)->not->toHaveKey('layouts')
+            ->and($content)->toContain('renatio/dynamicpdf/templates/create')
             ->and($content)->not->toContain('renatio/dynamicpdf/templates/index/layouts')
             ->and($content)->not->toContain(trans('renatio.dynamicpdf::lang.templates.new_layout'));
     });

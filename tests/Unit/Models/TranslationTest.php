@@ -93,4 +93,13 @@ describe('Native model translation', function () {
         expect($this->findTemplate($templateCopy->code)->getTranslation('content_html', 'de', false))->toBe('DE-BODY')
             ->and($this->findLayout($layoutCopy->code)->getTranslation('content_html', 'de', false))->toBe('DE-LAYOUT');
     });
+
+    it('restores the model locale when the default-locale callback throws', function () {
+        $this->enableTranslation('de');
+        $template = $this->createTemplate();
+        $template->setLocale('de');
+
+        expect(fn () => $template->inDefaultLocale(fn () => throw new RuntimeException))->toThrow(RuntimeException::class)
+            ->and($template->getLocale())->toBe('de');
+    });
 });

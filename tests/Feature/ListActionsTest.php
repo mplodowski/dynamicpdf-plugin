@@ -61,7 +61,7 @@ describe('List actions', function () {
     });
 
     it('refuses a layout action without manage_layouts', function () {
-        actingAsBackendUserWith(['manage_templates', 'manage_templates.create']);
+        actingAsPdfManager(['manage_layouts']);
         $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);
 
         $response = $this->listAction('onDuplicateRecord', ['id' => $layout->id, 'definition' => 'layouts']);
