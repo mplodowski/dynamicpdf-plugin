@@ -11,7 +11,7 @@ trait TranslatesContent
 
     abstract public function getView(): ?string;
 
-    abstract public function fillFromView(string $path): void;
+    abstract public function fillFromView(string $code): void;
 
     abstract public function isCustomised(): bool;
 

@@ -75,12 +75,14 @@ class SyncTemplates
      */
     protected function clearNonCustomizedTemplates(array $dbTemplates, array $registeredTemplates): void
     {
-        foreach ($dbTemplates as $code => $isCustom) {
-            if (! $isCustom && ! array_key_exists($code, $registeredTemplates)) {
-                Template::whereCode($code)->delete();
-                $this->report['deleted'][] = $code;
-            }
+        $obsolete = array_keys(array_diff_key(array_filter($dbTemplates, fn (mixed $isCustom): bool => ! $isCustom), $registeredTemplates));
+
+        if ($obsolete === []) {
+            return;
         }
+
+        Template::whereIn('code', $obsolete)->delete();
+        $this->report['deleted'] = $obsolete;
     }
 
     /**

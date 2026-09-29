@@ -7,6 +7,7 @@ use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use Renatio\DynamicPDF\Plugin;
 use System\Classes\PluginManager;
 use System\Models\Parameter;
 
@@ -23,7 +24,7 @@ class Demo extends Command
 
     protected function enableDemo(): int
     {
-        Parameter::set('renatio::dynamicpdf.demo', 1);
+        Parameter::set(Plugin::DEMO_PARAMETER, 1);
 
         PDFManager::forgetInstance();
         SyncTemplates::forgetFailures();
@@ -52,9 +53,7 @@ class Demo extends Command
     {
         $plugin = PluginManager::instance()->findByNamespace('Renatio.DynamicPDF');
 
-        foreach ($plugin->registerPDFTemplates() as $template) {
-            Template::where('code', $template)->delete();
-        }
+        Template::whereIn('code', $plugin->registerPDFTemplates())->delete();
 
         foreach ($plugin->registerPDFLayouts() as $layout) {
             Layout::where('code', $layout)->doesntHave('templates')->get()->each->delete();
@@ -64,7 +63,7 @@ class Demo extends Command
             }
         }
 
-        Parameter::set('renatio::dynamicpdf.demo', 0);
+        Parameter::set(Plugin::DEMO_PARAMETER, 0);
 
         $this->info(e(trans('renatio.dynamicpdf::lang.demo.disabled')));
 

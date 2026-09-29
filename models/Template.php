@@ -6,6 +6,7 @@ use ArrayObject;
 use Dompdf\Adapter\CPDF;
 use Dompdf\Options;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
@@ -66,7 +67,7 @@ class Template extends Model
     /** @var array<string, array<string>> */
     public $rules = [
         'title' => ['required'],
-        'code' => ['required', self::CODE_FORMAT, 'unique:renatio_dynamicpdf_pdf_templates'],
+        'code' => ['required', self::CODE_FORMAT, 'unique'],
         'content_html' => ['required'],
         'sample_data' => ['nullable', 'json'],
     ];
@@ -138,26 +139,26 @@ class Template extends Model
 
     public function fillFromCode(): void
     {
-        $path = $this->getView();
+        $view = $this->getView();
 
-        if (! $path) {
+        if (! $view) {
             throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.template.not_found')) . ': ' . $this->code);
         }
 
-        $this->fillFromView($path);
+        $this->fillFromView($view);
     }
 
-    public function fillFromView(string $path): void
+    public function fillFromView(string $code): void
     {
-        $sections = PDFParser::sections($path);
+        $sections = PDFParser::sections($code);
 
-        $this->title = array_get($sections, 'settings.title', '???');
-        $this->code = $path;
-        $this->setAttribute('layout', $this->resolveLayout(array_get($sections, 'settings.layout')));
-        $this->size = self::lowercaseOption(array_get($sections, 'settings.size'));
-        $this->orientation = self::lowercaseOption(array_get($sections, 'settings.orientation'));
-        $this->description = array_get($sections, 'settings.description');
-        $this->content_html = array_get($sections, 'html');
+        $this->title = Arr::get($sections, 'settings.title', '???');
+        $this->code = $code;
+        $this->setAttribute('layout', $this->resolveLayout(Arr::get($sections, 'settings.layout')));
+        $this->size = self::lowercaseOption(Arr::get($sections, 'settings.size'));
+        $this->orientation = self::lowercaseOption(Arr::get($sections, 'settings.orientation'));
+        $this->description = Arr::get($sections, 'settings.description');
+        $this->content_html = Arr::get($sections, 'html');
     }
 
     protected static function lowercaseOption(mixed $value): ?string
@@ -262,7 +263,7 @@ class Template extends Model
 
         $options = new Options(app('dompdf.options'));
         $size = $options->getDefaultPaperSize();
-        $orientation = array_get(self::getOrientationOptions(), $options->getDefaultPaperOrientation());
+        $orientation = Arr::get(self::getOrientationOptions(), $options->getDefaultPaperOrientation());
 
         if (isset($fields->size) && is_string($size)) {
             $fields->size->emptyOption(trans('renatio.dynamicpdf::lang.options.default', ['value' => ucfirst($size)]));
@@ -275,7 +276,7 @@ class Template extends Model
 
     public function getView(): ?string
     {
-        return array_get(PDFManager::instance()->listRegisteredTemplates(), $this->code);
+        return Arr::get(PDFManager::instance()->listRegisteredTemplates(), $this->code);
     }
 
     public function isCustomised(): bool

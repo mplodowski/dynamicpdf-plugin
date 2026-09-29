@@ -23,7 +23,7 @@ class PDFManager
 
     protected bool $loaded = false;
 
-    public function loadRegisteredTemplates(): void
+    public function loadRegistrations(): void
     {
         if ($this->loaded) {
             return;
@@ -55,7 +55,7 @@ class PDFManager
      */
     public function listRegisteredLayouts(): array
     {
-        $this->loadRegisteredTemplates();
+        $this->loadRegistrations();
 
         return $this->registeredLayouts;
     }
@@ -65,7 +65,7 @@ class PDFManager
      */
     public function listRegisteredTemplates(): array
     {
-        $this->loadRegisteredTemplates();
+        $this->loadRegistrations();
 
         return $this->registeredTemplates;
     }
@@ -75,7 +75,7 @@ class PDFManager
      */
     public function listRegisteredVariables(): array
     {
-        $this->loadRegisteredTemplates();
+        $this->loadRegistrations();
 
         return $this->registeredVariables;
     }

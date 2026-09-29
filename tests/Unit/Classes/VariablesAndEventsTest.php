@@ -5,6 +5,7 @@ use Renatio\DynamicPDF\Classes\Events;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Models\Template;
+use Renatio\DynamicPDF\Plugin;
 use System\Models\Parameter;
 
 describe('Global variables and events', function () {
@@ -37,7 +38,7 @@ describe('Global variables and events', function () {
     });
 
     it('keeps plugin registrations when a variable was registered before the plugins were read', function () {
-        Parameter::set('renatio::dynamicpdf.demo', 1);
+        Parameter::set(Plugin::DEMO_PARAMETER, 1);
         PDFManager::instance()->registerVariables(['company' => 'Acme']);
 
         expect(PDFManager::instance()->listRegisteredVariables())->toHaveKey('company')

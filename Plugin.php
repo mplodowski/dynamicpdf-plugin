@@ -20,6 +20,8 @@ use System\Models\Parameter;
 
 class Plugin extends PluginBase
 {
+    public const DEMO_PARAMETER = 'renatio::dynamicpdf.demo';
+
     /**
      * @return array<string, string>
      */
@@ -163,7 +165,7 @@ class Plugin extends PluginBase
      */
     public function registerPDFTemplates(): array
     {
-        if (! Parameter::get('renatio::dynamicpdf.demo')) {
+        if (! Parameter::get(self::DEMO_PARAMETER)) {
             return [];
         }
 
@@ -178,7 +180,7 @@ class Plugin extends PluginBase
      */
     public function registerPDFLayouts(): array
     {
-        if (! Parameter::get('renatio::dynamicpdf.demo')) {
+        if (! Parameter::get(self::DEMO_PARAMETER)) {
             return [];
         }
 

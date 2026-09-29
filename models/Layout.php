@@ -3,6 +3,7 @@
 namespace Renatio\DynamicPDF\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Arr;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Exception\ApplicationException;
@@ -48,7 +49,7 @@ class Layout extends Model
     /** @var array<string, array<string>> */
     public $rules = [
         'name' => ['required'],
-        'code' => ['required', self::CODE_FORMAT, 'unique:renatio_dynamicpdf_pdf_layouts'],
+        'code' => ['required', self::CODE_FORMAT, 'unique'],
         'content_html' => ['required'],
     ];
 
@@ -171,28 +172,28 @@ class Layout extends Model
 
     public function fillFromCode(): void
     {
-        $path = $this->getView();
+        $view = $this->getView();
 
-        if (! $path) {
+        if (! $view) {
             throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.layout.not_found')) . ': ' . $this->code);
         }
 
-        $this->fillFromView($path);
+        $this->fillFromView($view);
     }
 
-    public function fillFromView(string $path): void
+    public function fillFromView(string $code): void
     {
-        $sections = PDFParser::sections($path);
+        $sections = PDFParser::sections($code);
 
-        $this->code = $path;
-        $this->name = array_get($sections, 'settings.name', '???');
-        $this->content_css = array_get($sections, 'css');
-        $this->content_html = array_get($sections, 'html');
+        $this->code = $code;
+        $this->name = Arr::get($sections, 'settings.name', '???');
+        $this->content_css = Arr::get($sections, 'css');
+        $this->content_html = Arr::get($sections, 'html');
     }
 
     public function getView(): ?string
     {
-        return array_get(PDFManager::instance()->listRegisteredLayouts(), $this->code);
+        return Arr::get(PDFManager::instance()->listRegisteredLayouts(), $this->code);
     }
 
     public function isCustomised(): bool
