@@ -43,6 +43,8 @@ return [
         'copy_suffix' => '(kopie)',
         'delete_view_refused' => 'Tuto položku nelze smazat, protože pochází ze souboru pohledu.',
         'reset_view_only' => 'Obnovit lze pouze položku, která pochází ze souboru pohledu.',
+        'view_follows' => 'Tento záznam vychází ze souboru pohledu `:view` a dostává jeho aktualizace z pluginu. Uložením změn se od těchto aktualizací odpojí.',
+        'view_detached' => 'Tento záznam už nevychází ze souboru pohledu `:view`, takže se na něj aktualizace pluginu nevztahují. **:reset** obnoví verzi ze souboru pohledu.',
         'twig_invalid' => 'Chyba syntaxe Twig na řádku :line: :message',
         'preview_failed' => 'Náhled se nepodařilo vykreslit. :message',
     ],

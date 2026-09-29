@@ -43,6 +43,8 @@ return [
         'copy_suffix' => '(copia)',
         'delete_view_refused' => 'Questo record non può essere eliminato perché proviene da un file di vista.',
         'reset_view_only' => 'Solo un record che proviene da un file di vista può essere ripristinato.',
+        'view_follows' => 'Questo record segue il file di vista `:view` e riceve i suoi aggiornamenti dal plugin. Salvare modifiche lo scollega da questi aggiornamenti.',
+        'view_detached' => 'Questo record non segue più il file di vista `:view`, quindi gli aggiornamenti del plugin non vengono applicati. **:reset** ripristina la versione del file di vista.',
         'twig_invalid' => 'Errore di sintassi Twig alla riga :line: :message',
         'preview_failed' => 'Impossibile generare l\'anteprima. :message',
     ],

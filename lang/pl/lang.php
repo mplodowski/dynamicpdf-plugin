@@ -43,6 +43,8 @@ return [
         'copy_suffix' => '(kopia)',
         'delete_view_refused' => 'Tego rekordu nie można usunąć, ponieważ pochodzi z pliku widoku.',
         'reset_view_only' => 'Do pliku widoku można przywrócić tylko rekord, który z niego pochodzi.',
+        'view_follows' => 'Ten rekord korzysta z pliku widoku `:view` i otrzymuje jego aktualizacje z pluginu. Zapisanie w nim zmian odłączy go od tych aktualizacji.',
+        'view_detached' => 'Ten rekord nie korzysta już z pliku widoku `:view`, więc aktualizacje pluginu go nie obejmują. **:reset** przywraca wersję z pliku widoku.',
         'twig_invalid' => 'Błąd składni Twig w linii :line: :message',
         'preview_failed' => 'Nie udało się wygenerować podglądu. :message',
     ],

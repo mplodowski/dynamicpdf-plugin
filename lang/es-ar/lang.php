@@ -43,6 +43,8 @@ return [
         'copy_suffix' => '(copia)',
         'delete_view_refused' => 'Este registro no se puede eliminar porque proviene de un archivo de vista.',
         'reset_view_only' => 'Solo se pueden restablecer los registros que provienen de un archivo de vista.',
+        'view_follows' => 'Este registro sigue el archivo de vista `:view` y recibe sus actualizaciones del plugin. Guardar cambios en él lo desvincula de esas actualizaciones.',
+        'view_detached' => 'Este registro ya no sigue el archivo de vista `:view`, por lo que no recibe las actualizaciones del plugin. **:reset** restaura la versión del archivo de vista.',
         'twig_invalid' => 'Error de sintaxis de Twig en la línea :line: :message',
         'preview_failed' => 'No se pudo generar la vista previa. :message',
     ],

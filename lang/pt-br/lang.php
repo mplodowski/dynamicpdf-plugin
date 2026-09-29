@@ -43,6 +43,8 @@ return [
         'copy_suffix' => '(cópia)',
         'delete_view_refused' => 'Este registro não pode ser excluído porque vem de um arquivo de view.',
         'reset_view_only' => 'Somente um registro que vem de um arquivo de view pode ser restaurado para ele.',
+        'view_follows' => 'Este registro segue o arquivo de view `:view` e recebe as atualizações dele pelo plugin. Salvar alterações nele o desvincula dessas atualizações.',
+        'view_detached' => 'Este registro não segue mais o arquivo de view `:view`, então as atualizações do plugin não são aplicadas. **:reset** restaura a versão do arquivo de view.',
         'twig_invalid' => 'Erro de sintaxe Twig na linha :line: :message',
         'preview_failed' => 'Não foi possível gerar a pré-visualização. :message',
     ],

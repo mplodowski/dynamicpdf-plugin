@@ -14,6 +14,7 @@ use October\Rain\Exception\ValidationException;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
+use Renatio\DynamicPDF\Traits\DescribesViewStatus;
 use Renatio\DynamicPDF\Traits\Duplicates;
 use Renatio\DynamicPDF\Traits\TranslatesContent;
 use Renatio\DynamicPDF\Traits\ValidatesCodeFormat;
@@ -36,6 +37,7 @@ use Throwable;
  */
 class Template extends Model
 {
+    use DescribesViewStatus;
     use Duplicates;
     use TranslatesContent;
     use ValidatesCodeFormat;
@@ -286,6 +288,8 @@ class Template extends Model
      */
     public function filterFields($fields, ?string $context = null): void
     {
+        $this->describeViewStatus($fields);
+
         $options = new Options(app('dompdf.options'));
         $size = $options->getDefaultPaperSize();
         $orientation = array_get(self::getOrientationOptions(), $options->getDefaultPaperOrientation());

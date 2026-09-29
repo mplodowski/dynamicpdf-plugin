@@ -43,6 +43,8 @@ return [
         'copy_suffix' => '(kopie)',
         'delete_view_refused' => 'Dit item kan niet worden verwijderd omdat het uit een view-bestand komt.',
         'reset_view_only' => 'Alleen een item dat uit een view-bestand komt, kan daarnaar worden teruggezet.',
+        'view_follows' => 'Dit item volgt het view-bestand `:view` en krijgt de updates ervan uit de plugin. Wijzigingen opslaan koppelt het los van die updates.',
+        'view_detached' => 'Dit item volgt het view-bestand `:view` niet meer, dus plugin-updates worden er niet op toegepast. **:reset** zet de versie uit het view-bestand terug.',
         'twig_invalid' => 'Twig-syntaxfout op regel :line: :message',
         'preview_failed' => 'Het voorbeeld kon niet worden weergegeven. :message',
     ],

@@ -43,6 +43,8 @@ return [
         'copy_suffix' => '(copy)',
         'delete_view_refused' => 'This record cannot be deleted because it comes from a view file.',
         'reset_view_only' => 'Only a record that comes from a view file can be reset to it.',
+        'view_follows' => 'This record follows the view file `:view` and receives its updates from the plugin. Saving changes to it detaches it from those updates.',
+        'view_detached' => 'This record no longer follows the view file `:view`, so plugin updates to it are not applied. **:reset** restores the version from the view file.',
         'twig_invalid' => 'Twig syntax error on line :line: :message',
         'preview_failed' => 'The preview could not be rendered. :message',
     ],

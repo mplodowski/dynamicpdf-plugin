@@ -4,6 +4,9 @@
 
 fields:
 
+    _view_status@update:
+        type: hint
+
     name@create:
         label: renatio.dynamicpdf::lang.templates.name
         span: left

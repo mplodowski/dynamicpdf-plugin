@@ -43,6 +43,8 @@ return [
         'copy_suffix' => '(Kopie)',
         'delete_view_refused' => 'Dieser Eintrag kann nicht gelöscht werden, da er aus einer View-Datei stammt.',
         'reset_view_only' => 'Nur ein Eintrag aus einer View-Datei kann auf sie zurückgesetzt werden.',
+        'view_follows' => 'Dieser Eintrag folgt der View-Datei `:view` und erhält deren Updates aus dem Plugin. Wenn Sie Änderungen speichern, wird er von diesen Updates getrennt.',
+        'view_detached' => 'Dieser Eintrag folgt der View-Datei `:view` nicht mehr, Plugin-Updates werden daher nicht übernommen. **:reset** stellt die Version aus der View-Datei wieder her.',
         'twig_invalid' => 'Twig-Syntaxfehler in Zeile :line: :message',
         'preview_failed' => 'Die Vorschau konnte nicht erstellt werden. :message',
     ],

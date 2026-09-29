@@ -43,6 +43,8 @@ return [
         'copy_suffix' => '(copie)',
         'delete_view_refused' => "Cet enregistrement ne peut pas être supprimé car il provient d'un fichier de vue.",
         'reset_view_only' => "Seul un enregistrement provenant d'un fichier de vue peut y être réinitialisé.",
+        'view_follows' => 'Cet enregistrement suit le fichier de vue `:view` et reçoit ses mises à jour du plugin. Enregistrer des modifications le détache de ces mises à jour.',
+        'view_detached' => 'Cet enregistrement ne suit plus le fichier de vue `:view`, les mises à jour du plugin ne s\'y appliquent donc pas. **:reset** restaure la version du fichier de vue.',
         'twig_invalid' => 'Erreur de syntaxe Twig à la ligne :line : :message',
         'preview_failed' => 'L\'aperçu n\'a pas pu être généré. :message',
     ],

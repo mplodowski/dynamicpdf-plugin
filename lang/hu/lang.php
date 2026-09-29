@@ -43,6 +43,8 @@ return [
         'copy_suffix' => '(másolat)',
         'delete_view_refused' => 'Ez a rekord nem törölhető, mert egy nézetfájlból származik.',
         'reset_view_only' => 'Csak nézetfájlból származó rekord állítható vissza arra.',
+        'view_follows' => 'Ez a rekord a(z) `:view` nézetfájlt követi, és a bővítményből kapja a frissítéseit. A módosítások mentése leválasztja ezekről a frissítésekről.',
+        'view_detached' => 'Ez a rekord már nem követi a(z) `:view` nézetfájlt, így a bővítmény frissítései nem vonatkoznak rá. A **:reset** visszaállítja a nézetfájl szerinti változatot.',
         'twig_invalid' => 'Twig-szintaxishiba, :line. sor: :message',
         'preview_failed' => 'Az előnézetet nem sikerült előállítani. :message',
     ],
