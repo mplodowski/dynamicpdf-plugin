@@ -23,6 +23,7 @@ use System\Models\File;
  * @property string|null $content_css
  * @property bool $is_locked
  * @property-read File|null $background_img
+ * @property-read \October\Rain\Database\Collection<int, Template> $templates
  * @property-read string $html
  */
 class Layout extends Model
@@ -51,6 +52,11 @@ class Layout extends Model
     /** @var array<string, string> */
     protected $casts = [
         'is_locked' => 'bool',
+    ];
+
+    /** @var array<string, class-string> */
+    public $hasMany = [
+        'templates' => Template::class,
     ];
 
     /** @var array<string, array<int|string, mixed>> */
@@ -84,6 +90,18 @@ class Layout extends Model
     public function afterSave(): void
     {
         Template::flushLayoutCache();
+    }
+
+    /**
+     * Templates keep a dangling layout_id otherwise and render without the layout.
+     */
+    public function beforeDelete(): void
+    {
+        $titles = $this->templates->pluck('title');
+
+        if ($titles->isNotEmpty()) {
+            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.layout.delete_in_use', ['templates' => $titles->implode(', ')])));
+        }
     }
 
     public function afterDelete(): void

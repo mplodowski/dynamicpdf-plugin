@@ -58,6 +58,8 @@ return [
         'create_layout' => 'Créer une mise en page',
         'edit_layout' => 'Modifier la mise en page',
         'not_found' => 'Impossible de trouver une mise en page enregistrée avec le code',
+        'delete_in_use' => 'Cette mise en page ne peut pas être supprimée car ces modèles l\'utilisent : :templates. Attribuez-leur d\'abord une autre mise en page.',
+        'used_by' => 'Utilisée par',
     ],
     'settings' => [
         'description' => 'Gérer les modèles et les mises en page.',

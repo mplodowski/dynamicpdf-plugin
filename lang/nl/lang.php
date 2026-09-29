@@ -58,6 +58,8 @@ return [
         'create_layout' => 'Lay-out aanmaken',
         'edit_layout' => 'Lay-out bewerken',
         'not_found' => 'Geen geregistreerde lay-out gevonden met de code',
+        'delete_in_use' => 'Deze lay-out kan niet worden verwijderd omdat deze sjablonen hem gebruiken: :templates. Wijs ze eerst een andere lay-out toe.',
+        'used_by' => 'Gebruikt door',
     ],
     'settings' => [
         'description' => 'Beheer sjablonen en lay-outs.',

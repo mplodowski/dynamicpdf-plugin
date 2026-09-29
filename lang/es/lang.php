@@ -58,6 +58,8 @@ return [
         'create_layout' => 'Crear Diseño PDF',
         'edit_layout' => 'Editar Diseño PDF',
         'not_found' => 'No se encontró un diseño registrado con el código',
+        'delete_in_use' => 'Este diseño no se puede eliminar porque lo usan estas plantillas: :templates. Asígneles otro diseño primero.',
+        'used_by' => 'Usado por',
     ],
     'settings' => [
         'description' => 'Administrar plantillas y diseños PDF.',

@@ -58,6 +58,8 @@ return [
         'create_layout' => 'Create Layout',
         'edit_layout' => 'Edit Layout',
         'not_found' => 'Unable to find a registered layout with code',
+        'delete_in_use' => 'This layout cannot be deleted because these templates use it: :templates. Assign them another layout first.',
+        'used_by' => 'Used by',
         'css_reads_files' => 'The CSS may not read server files. Remove @import of LESS files, @import (inline) and the data-uri(), image-size(), image-width() and image-height() functions; plain CSS imports are allowed.',
         'css_invalid' => 'The layout CSS could not be compiled.',
     ],

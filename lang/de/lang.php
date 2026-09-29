@@ -58,6 +58,8 @@ return [
         'create_layout' => 'Erstelle Layout',
         'edit_layout' => 'Bearbeite Layout',
         'not_found' => 'Kein registriertes Layout mit dem Code gefunden',
+        'delete_in_use' => 'Dieses Layout kann nicht gelöscht werden, weil diese Vorlagen es verwenden: :templates. Weisen Sie ihnen zuerst ein anderes Layout zu.',
+        'used_by' => 'Verwendet von',
     ],
     'settings' => [
         'description' => 'Verwaltung von Vorlagen und Layouts.',
