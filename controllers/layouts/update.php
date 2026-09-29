@@ -10,7 +10,7 @@
 <?php Block::endPut() ?>
 
 <?php if (! $this->fatalError) : ?>
-    <?= Form::open(['class' => 'layout']) ?>
+    <?= Form::open(['class' => 'layout', 'data-change-monitor' => true]) ?>
 
     <div class="layout-row">
         <?= $this->formRender() ?>
@@ -20,6 +20,7 @@
         <div class="loading-indicator-container">
             <button type="submit"
                     data-request="onSave"
+                    data-change-monitor-commit
                     data-request-data="redirect:0"
                     data-hotkey="ctrl+s, cmd+s"
                     data-load-indicator="<?= e(trans('backend::lang.form.saving_name', ['name' => $formRecordName])) ?>"
@@ -29,6 +30,7 @@
 
             <button type="button"
                     data-request="onSave"
+                    data-change-monitor-commit
                     data-request-data="close:1"
                     data-hotkey="ctrl+enter, cmd+enter"
                     data-load-indicator="<?= e(trans('backend::lang.form.saving_name', ['name' => $formRecordName])) ?>"
@@ -38,6 +40,7 @@
 
             <?php if (BackendAuth::userHasAccess('renatio.dynamicpdf.manage_layouts.preview')): ?>
                 <a class="btn btn-info"
+                   target="_blank"
                    href="<?= Backend::url('renatio/dynamicpdf/layouts/preview/'.$formModel->id) ?>">
                     <?= e(trans('renatio.dynamicpdf::lang.templates.preview_html')) ?>
                 </a>
@@ -62,6 +65,7 @@
                 <button type="button"
                         class="btn btn-danger pull-right"
                         data-request="onResetDefault"
+                        data-change-monitor-commit
                         data-load-indicator="<?= e(trans('backend::lang.form.resetting')) ?>"
                         data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>">
                     <?= e(trans('backend::lang.form.reset_default')) ?>
@@ -70,6 +74,7 @@
                 <button type="button"
                         class="oc-icon-trash-o btn-icon danger pull-right"
                         data-request="onDelete"
+                        data-change-monitor-commit
                         data-load-indicator="<?= e(trans('backend::lang.form.deleting_name',
                             ['name' => $formRecordName])) ?>"
                         data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>">
