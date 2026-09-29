@@ -74,7 +74,7 @@ always on.
 
 ## Upgrading To 8.1.0
 
-**Security release. Upgrade every installation running 8.0.x.** Requires PHP 8.2 and October CMS 4.0. Run
+**Security release. Upgrade every installation running 8.0.x.** Requires PHP 8.2 and October CMS 4.4. Run
 `php artisan october:migrate`. October CMS 3 is no longer supported and stays on 8.0.3.
 
 The backend preview is sandboxed: no inline PHP, remote resources only from the application host and

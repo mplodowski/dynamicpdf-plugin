@@ -25,7 +25,7 @@ Templates and layouts live in the database or in view files shipped by your plug
 
 ## Requirements
 
-This plugin requires PHP 8.2 or higher and October CMS 4.0 or higher.
+This plugin requires PHP 8.2 or higher and October CMS 4.4 or higher.
 
 Templates are rendered with Twig without a sandbox, so the `Manage templates` and `Manage layouts` permissions
 should only be granted to trusted users.
