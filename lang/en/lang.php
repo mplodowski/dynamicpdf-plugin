@@ -58,6 +58,8 @@ return [
         'create_layout' => 'Create Layout',
         'edit_layout' => 'Edit Layout',
         'not_found' => 'Unable to find a registered layout with code',
+        'css_reads_files' => 'The CSS may not read server files. Remove @import of LESS files, @import (inline) and the data-uri(), image-size(), image-width() and image-height() functions; plain CSS imports are allowed.',
+        'css_invalid' => 'The layout CSS could not be compiled.',
     ],
     'settings' => [
         'description' => 'Manage templates and layouts.',

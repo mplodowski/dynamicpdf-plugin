@@ -3,10 +3,11 @@
 namespace Renatio\DynamicPDF\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Less_Parser;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Exception\ApplicationException;
+use October\Rain\Exception\ValidationException;
+use Renatio\DynamicPDF\Classes\LessCompiler;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
@@ -62,6 +63,19 @@ class Layout extends Model
         $copy->is_locked = false;
     }
 
+    public function beforeValidate(): void
+    {
+        if (! $this->content_css || ! $this->isDirty('content_css')) {
+            return;
+        }
+
+        try {
+            (new LessCompiler)->compile($this->content_css);
+        } catch (ApplicationException $e) {
+            throw new ValidationException(['content_css' => $e->getMessage()]);
+        }
+    }
+
     public function afterSave(): void
     {
         Template::flushLayoutCache();
@@ -101,7 +115,7 @@ class Layout extends Model
             return '';
         }
 
-        return (new Less_Parser)->parse($this->content_css)->getCss();
+        return (new LessCompiler)->compile($this->content_css);
     }
 
     /**
