@@ -40,11 +40,13 @@ function actingAsBackendUserWith(array $permissions): User
 }
 
 /**
- * A user holding every DynamicPDF permission.
+ * A user holding every DynamicPDF permission, except the given ones.
+ *
+ * @param  array<int, string>  $except  codes without the plugin prefix
  */
-function actingAsPdfManager(): User
+function actingAsPdfManager(array $except = []): User
 {
-    return actingAsBackendUserWith([
+    return actingAsBackendUserWith(array_diff([
         'manage_templates',
         'manage_templates.create',
         'manage_templates.update',
@@ -55,5 +57,5 @@ function actingAsPdfManager(): User
         'manage_layouts.update',
         'manage_layouts.delete',
         'manage_layouts.preview',
-    ]);
+    ], $except));
 }

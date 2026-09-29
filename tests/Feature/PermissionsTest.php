@@ -1,11 +1,17 @@
 <?php
 
+use Backend\Facades\Backend;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\TestResponse;
 use October\Rain\Exception\ForbiddenException;
 use Renatio\DynamicPDF\Classes\PDFManager;
+use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use Renatio\DynamicPDF\Tests\TestCase;
 
 describe('Permissions', function () {
     it('refuses the template preview without manage_templates', function () {
@@ -147,3 +153,109 @@ describe('Granular permissions', function () {
         expect($content)->not->toContain('renatio/dynamicpdf/templates/create');
     });
 });
+
+describe('Guarded controller actions', function () {
+    beforeEach(function () {
+        PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
+        PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.default']);
+
+        $this->records = [
+            ':template' => $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'title' => 'Edited', 'is_custom' => true])->id,
+            ':layout' => $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'name' => 'Edited', 'is_locked' => true])->id,
+            ':custom_template' => $this->createTemplate(['code' => 'acme::pdf.custom', 'is_custom' => true])->id,
+            ':custom_layout' => $this->createLayout(['code' => 'acme::pdf.layouts.custom'])->id,
+        ];
+
+        (new SyncTemplates)->handle();
+    });
+
+    afterEach(fn () => PDFManager::forgetInstance());
+
+    it('refuses the action without its permission and leaves the records untouched', function (string $permission, string $path, ?string $handler) {
+        actingAsPdfManager([$permission]);
+        $before = pdfRecordsSnapshot();
+
+        $response = callGuardedAction($this, $path, $handler);
+
+        expect($response->status())->toBeGreaterThanOrEqual(400)
+            ->and(pdfRecordsSnapshot())->toEqual($before);
+    })->with('guarded actions');
+
+    it('performs the action with every permission', function (string $permission, string $path, ?string $handler) {
+        actingAsPdfManager();
+        $before = pdfRecordsSnapshot();
+
+        $response = callGuardedAction($this, $path, $handler);
+
+        $changesRecords = $handler !== null && ! str_contains($handler, '::');
+
+        expect($response->status())->toBeLessThan(400);
+
+        if ($changesRecords) {
+            expect(pdfRecordsSnapshot())->not->toEqual($before);
+        }
+    })->with('guarded actions');
+
+    /**
+     * FormController::update() already refuses the page action these handlers run behind, so only a
+     * direct call reaches their own guard.
+     */
+    it('refuses a direct reset without the update permission', function (Closure $controller, string $permission, string $record) {
+        actingAsPdfManager([$permission]);
+        $before = pdfRecordsSnapshot();
+
+        expect(fn () => $controller()->update_onResetDefault($this->records[$record]))->toThrow(ForbiddenException::class)
+            ->and(pdfRecordsSnapshot())->toEqual($before);
+    })->with([
+        'template' => [fn (): Templates => new Templates, 'manage_templates.update', ':template'],
+        'layout' => [fn (): Layouts => new Layouts, 'manage_layouts.update', ':layout'],
+    ]);
+});
+
+dataset('guarded actions', [
+    'duplicate a template' => ['manage_templates.create', 'templates/update/:template', 'onDuplicate'],
+    'reset a template' => ['manage_templates.update', 'templates/update/:template', 'onResetDefault'],
+    'create a template' => ['manage_templates.create', 'templates/create', 'onSave'],
+    'save a template' => ['manage_templates.update', 'templates/update/:template', 'onSave'],
+    'delete a template' => ['manage_templates.delete', 'templates/update/:custom_template', 'onDelete'],
+    'open the templates list' => ['manage_templates', 'templates', null],
+    'duplicate a layout' => ['manage_layouts.create', 'layouts/update/:layout', 'onDuplicate'],
+    'reset a layout' => ['manage_layouts.update', 'layouts/update/:layout', 'onResetDefault'],
+    'create a layout' => ['manage_layouts.create', 'layouts/create', 'onSave'],
+    'save a layout' => ['manage_layouts.update', 'layouts/update/:layout', 'onSave'],
+    'delete a layout' => ['manage_layouts.delete', 'layouts/update/:custom_layout', 'onDelete'],
+    'open a layout' => ['manage_layouts', 'layouts/update/:layout', null],
+    'preview a layout as PDF' => ['manage_layouts.preview', 'layouts/previewpdf/:layout', null],
+    'delete a layout from the templates list' => ['manage_layouts', 'templates', 'onDeleteRecord'],
+    'refresh the layouts list widget' => ['manage_layouts', 'templates', 'layouts::onRefresh'],
+]);
+
+/**
+ * @return TestResponse<Response>
+ */
+function callGuardedAction(TestCase $test, string $path, ?string $handler): TestResponse
+{
+    $url = Backend::url('renatio/dynamicpdf/' . strtr($path, $test->records));
+
+    if ($handler === null) {
+        return $test->get($url);
+    }
+
+    return $test->post($url, [
+        'id' => $test->records[':custom_layout'],
+        'definition' => 'layouts',
+        'Template' => ['title' => 'Posted', 'code' => 'acme::pdf.posted', 'content_html' => '<p>posted</p>'],
+        'Layout' => ['name' => 'Posted', 'code' => 'acme::pdf.layouts.posted', 'content_html' => '<html><body>posted</body></html>'],
+    ], ['X-AJAX-HANDLER' => $handler, 'X-Requested-With' => 'XMLHttpRequest']);
+}
+
+/**
+ * @return array<int, array<int, object>>
+ */
+function pdfRecordsSnapshot(): array
+{
+    return [
+        DB::table('renatio_dynamicpdf_pdf_templates')->orderBy('id')->get()->all(),
+        DB::table('renatio_dynamicpdf_pdf_layouts')->orderBy('id')->get()->all(),
+    ];
+}
