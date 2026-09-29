@@ -184,7 +184,7 @@ The configuration section sets the PDF view parameters. The following configurat
 | **layout**      | the layout code, optional.                                                                                   |
 | **description** | the template description, optional.                                                                          |
 | **size**        | the template paper size, optional; without it `default_paper_size` of the dompdf configuration applies.      |
-| **orientation** | the template paper orientation, optional; used only together with **size**, default `portrait`.              |
+| **orientation** | the template paper orientation, optional; applies without **size** too, default `portrait`.                  |
 
 > **Note:** **size** and **orientation** are read case-insensitively; `A4` is stored as `a4`.
 
