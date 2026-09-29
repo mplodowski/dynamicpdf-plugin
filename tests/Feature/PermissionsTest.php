@@ -210,6 +210,19 @@ describe('Guarded controller actions', function () {
         'template' => [fn (): Templates => new Templates, 'manage_templates.update', ':template'],
         'layout' => [fn (): Layouts => new Layouts, 'manage_layouts.update', ':layout'],
     ]);
+
+    it('refuses to delete a record that follows a view from its form', function (string $path) {
+        actingAsPdfManager();
+        $before = pdfRecordsSnapshot();
+
+        $response = callGuardedAction($this, $path, 'onDelete');
+
+        expect($response->getContent())->toContain(trans('renatio.dynamicpdf::lang.templates.delete_view_refused'))
+            ->and(pdfRecordsSnapshot())->toEqual($before);
+    })->with([
+        'template' => 'templates/update/:template',
+        'layout' => 'layouts/update/:layout',
+    ]);
 });
 
 dataset('guarded actions', [
