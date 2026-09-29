@@ -162,6 +162,7 @@ describe('Guarded controller actions', function () {
         $this->records = [
             ':template' => $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'title' => 'Edited', 'is_custom' => true])->id,
             ':layout' => $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'name' => 'Edited', 'is_locked' => true])->id,
+            ':custom_template' => $this->createTemplate(['code' => 'acme::pdf.custom', 'is_custom' => true])->id,
             ':custom_layout' => $this->createLayout(['code' => 'acme::pdf.layouts.custom'])->id,
         ];
 
@@ -216,13 +217,13 @@ dataset('guarded actions', [
     'reset a template' => ['manage_templates.update', 'templates/update/:template', 'onResetDefault'],
     'create a template' => ['manage_templates.create', 'templates/create', 'onSave'],
     'save a template' => ['manage_templates.update', 'templates/update/:template', 'onSave'],
-    'delete a template' => ['manage_templates.delete', 'templates/update/:template', 'onDelete'],
+    'delete a template' => ['manage_templates.delete', 'templates/update/:custom_template', 'onDelete'],
     'open the templates list' => ['manage_templates', 'templates', null],
     'duplicate a layout' => ['manage_layouts.create', 'layouts/update/:layout', 'onDuplicate'],
     'reset a layout' => ['manage_layouts.update', 'layouts/update/:layout', 'onResetDefault'],
     'create a layout' => ['manage_layouts.create', 'layouts/create', 'onSave'],
     'save a layout' => ['manage_layouts.update', 'layouts/update/:layout', 'onSave'],
-    'delete a layout' => ['manage_layouts.delete', 'layouts/update/:layout', 'onDelete'],
+    'delete a layout' => ['manage_layouts.delete', 'layouts/update/:custom_layout', 'onDelete'],
     'open a layout' => ['manage_layouts', 'layouts/update/:layout', null],
     'preview a layout as PDF' => ['manage_layouts.preview', 'layouts/previewpdf/:layout', null],
     'delete a layout from the templates list' => ['manage_layouts', 'templates', 'onDeleteRecord'],
