@@ -34,4 +34,12 @@ describe('Code format', function () {
 
         expect($model->save())->toBeTrue();
     })->with(['createTemplate', 'createLayout']);
+
+    it('duplicates a stored row with an older free-form code', function (string $create) {
+        $model = $this->{$create}();
+        $model->code = 'review test code with spaces';
+        $model->forceSave();
+
+        expect($model::findOrFail($model->id)->duplicate()->code)->toBe('review_test_code_with_spaces_copy');
+    })->with(['createTemplate', 'createLayout']);
 });
