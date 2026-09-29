@@ -13,6 +13,7 @@ use October\Rain\Exception\ApplicationException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
+use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Traits\ChecksFormPermissions;
 use System\Classes\SettingsManager;
 
@@ -42,6 +43,38 @@ class Layouts extends Controller
     public function beforeDisplay(): void
     {
         (new SyncTemplates)->handle();
+    }
+
+    public function formBeforeSave(Layout $model): void
+    {
+        if (! $model->is_locked) {
+            return;
+        }
+
+        $widget = $this->formGetWidget();
+
+        if ($widget === null) {
+            return;
+        }
+
+        $posted = (array) $widget->getSaveData();
+
+        $fields = $model->shouldTranslate()
+            ? array_diff(Layout::VIEW_FIELDS, $model->getTranslatableAttributes())
+            : Layout::VIEW_FIELDS;
+
+        foreach ($fields as $field) {
+            if (array_key_exists($field, $posted) && $this->normalize($posted[$field]) !== $this->normalize($model->getAttribute($field))) {
+                $model->is_locked = false;
+
+                return;
+            }
+        }
+    }
+
+    protected function normalize(mixed $value): string
+    {
+        return str_replace("\r\n", "\n", trim((string) $value));
     }
 
     public function previewpdf(int|string $id): ?Response

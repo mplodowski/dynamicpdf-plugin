@@ -218,7 +218,8 @@ Registered views are synchronised to the database when the *PDF Templates* or *P
 and when `php artisan dynamicpdf:sync` or `php artisan dynamicpdf:demo` runs, not on every request. Synchronisation
 creates the missing templates and layouts, deletes the templates that are no longer registered and were never
 customised, and writes changed view files back to the rows of templates that are not customised, so list search and
-sort work on the current values. Customised templates and every layout are left alone. A code whose view file is
+sort work on the current values. Customised templates and every layout are left alone, so a changed layout view file
+reaches an existing layout only through *Reset to default*. A code whose view file is
 missing is skipped and written to the application log once per process; a stored template whose view file went
 missing, parses to no content or whose layout code resolves to nothing keeps its stored content. Until a registered
 view is synchronised, `PDF::loadTemplate()` renders it straight from the file.
@@ -293,7 +294,9 @@ created from a registered view file as *From view* (they offer *Reset to default
 the HTML and PDF preview of every record. A template's *Sample data* (a JSON object on
 the *Options* tab, nested objects and lists included) is passed to both previews, so `{{ variables }}` render with
 realistic values. A template becomes *Customized* only when a value the view file provides is changed; editing the
-sample data alone keeps it view-driven.
+sample data alone keeps it view-driven. Likewise a layout stops being *From view* once its name, markup or CSS is
+changed, and its localized view files are then no longer used. Edits saved with another site selected are
+translations and change neither flag. *Reset to default* makes the record follow its view file again.
 The *Actions* column of both lists opens the PDF preview and duplicates, resets or deletes the record; a record
 that follows a view file offers *Reset to default* instead of *Delete*. *Duplicate* creates an editable copy with a `_copy` code (`_copy2` and so on when that
 code is taken); the copy of a template is customised and the copy of a layout is not locked.

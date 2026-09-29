@@ -29,6 +29,18 @@ abstract class TestCase extends OctoberPestTestCase
     }
 
     /**
+     * @param  array<string, mixed>  $fields
+     * @return TestResponse<\Illuminate\Http\Response>
+     */
+    public function saveLayoutForm(int $id, array $fields): TestResponse
+    {
+        return $this->post(Backend::url('renatio/dynamicpdf/layouts/update/' . $id), ['Layout' => $fields], [
+            'X-AJAX-HANDLER' => 'onSave',
+            'X-Requested-With' => 'XMLHttpRequest',
+        ]);
+    }
+
+    /**
      * @param  array<string, mixed>  $data
      * @return TestResponse<\Illuminate\Http\Response>
      */
