@@ -3,10 +3,12 @@
 namespace Renatio\DynamicPDF\Traits;
 
 use Renatio\DynamicPDF\Classes\PDF;
-use Twig\Error\SyntaxError;
+use Twig\Error\Error as TwigError;
 
 /**
  * Markup is parsed but never rendered, so a save needs no sample data and runs no code.
+ * The view sync force-saves developer markup, which October still passes through
+ * beforeValidate, so a forced save is not checked.
  */
 trait ValidatesTwigSyntax
 {
@@ -15,13 +17,13 @@ trait ValidatesTwigSyntax
      */
     protected function twigSyntaxErrors(): array
     {
-        if (! $this->content_html || ! $this->isDirty('content_html')) {
+        if ($this->validationForced || ! $this->content_html || ! $this->isDirty('content_html')) {
             return [];
         }
 
         try {
             PDF::checkSyntax($this->content_html, (string) $this->code);
-        } catch (SyntaxError $e) {
+        } catch (TwigError $e) {
             return ['content_html' => trans('renatio.dynamicpdf::lang.templates.twig_invalid', [
                 'line' => $e->getTemplateLine(),
                 'message' => $e->getRawMessage(),

@@ -422,19 +422,27 @@ class PDFWrapper extends PDF
 
     /**
      * Compiles the markup without rendering it, on the environment a render would use, so
-     * filters and tags the CMS and other plugins register are known.
+     * filters and tags the CMS and other plugins register are known. Without a usable theme
+     * (console, queue) the system environment lacks the CMS ones, so a name it does not know
+     * is let through rather than rejecting markup a front-end render accepts.
      *
-     * @throws SyntaxError
+     * @throws TwigError
      */
     public function checkSyntax(string $markup, string $name): void
     {
         $twig = $this->twig();
 
-        $this->whileTwigControllerCurrent(function () use ($twig, $markup, $name): string {
-            $twig->parse($twig->tokenize(new Source($markup, $name)));
+        try {
+            $this->whileTwigControllerCurrent(function () use ($twig, $markup, $name): string {
+                $twig->parse($twig->tokenize(new Source($markup, $name)));
 
-            return '';
-        });
+                return '';
+            });
+        } catch (SyntaxError $e) {
+            if ($this->twigController !== null || ! System::hasModule('Cms') || ! preg_match('/^Unknown ".+" (filter|function|test|tag)\./', $e->getRawMessage())) {
+                throw $e;
+            }
+        }
     }
 
     /**
@@ -454,7 +462,7 @@ class PDFWrapper extends PDF
         try {
             return $this->whileTwigControllerCurrent(fn (): string => $twig->createTemplate($markup)->render($data));
         } catch (TwigError $e) {
-            if (str_starts_with((string) $e->getSourceContext()?->getName(), '__string_template__')) {
+            if ($e->getSourceContext()?->getCode() === $markup && str_starts_with($e->getSourceContext()->getName(), '__string_template__')) {
                 $e->setSourceContext(new Source($markup, $name));
             }
 

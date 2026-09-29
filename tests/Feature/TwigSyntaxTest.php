@@ -3,11 +3,16 @@
 use Cms\Classes\Theme;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use October\Rain\Exception\ValidationException;
+use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
+use Renatio\DynamicPDF\Models\Template;
 use Twig\Environment;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 describe('Twig syntax', function () {
     afterEach(function () {
@@ -15,6 +20,10 @@ describe('Twig syntax', function () {
         Event::forget('cms.extendTwig');
         Theme::resetCache();
         app()->forgetInstance('twig.environment');
+
+        if (isset($this->views)) {
+            File::deleteDirectory($this->views);
+        }
     });
 
     it('rejects template HTML with a Twig syntax error on the HTML field with its line', function () {
@@ -79,5 +88,38 @@ describe('Twig syntax', function () {
 
         expect($controller->previewpdf($layout->id))->toBeNull()
             ->and((fn () => $this->fatalError)->call($controller))->toContain('acme.broken.layout');
+    });
+
+    it('syncs view files without checking them, also with CMS tags and no active theme', function () {
+        $this->views = $this->registerViewTemplates('twigsync', [
+            'cms' => "title = \"Cms\"\n==\n<p>{{ 'a.css'|theme }}</p>",
+            'broken' => "title = \"Broken\"\n==\n<p>{{ foo </p>",
+        ]);
+
+        (new SyncTemplates)->handle();
+
+        expect(Template::whereCode('twigsync::pdf.cms')->exists())->toBeTrue()
+            ->and(Template::whereCode('twigsync::pdf.broken')->exists())->toBeTrue();
+    });
+
+    it('does not reject CMS tags when no theme is active to check them against', function () {
+        $template = $this->createTemplate(['content_html' => "{% partial 'x' %}{{ 'a.css'|theme }}"]);
+
+        expect($template->exists)->toBeTrue();
+    });
+
+    it('logs a failure Twig wraps while rendering the HTML preview', function () {
+        actingAsPdfManager();
+        Event::listen('cms.theme.getActiveTheme', fn (): string => 'demo');
+        Event::listen('cms.extendTwig', function (Environment $twig): void {
+            $twig->addFunction(new TwigFunction('pdf_test_fail', fn () => throw new RuntimeException('database gone')));
+        });
+        Theme::resetCache();
+        $template = $this->createTemplate(['content_html' => '{{ pdf_test_fail() }}']);
+        $log = Log::spy();
+
+        expect((new Templates)->html($template->id)->getContent())->toContain('database gone');
+
+        $log->shouldHaveReceived('error')->once();
     });
 });
