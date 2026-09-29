@@ -46,9 +46,6 @@ class Template extends Model
 
     public const LAYOUT_CACHE = 'renatio.dynamicpdf.layouts';
 
-    /**
-     * Form fields the view file provides, mapped to the attribute they are stored in.
-     */
     public const VIEW_FIELDS = ['title' => 'title', 'description' => 'description', 'content_html' => 'content_html', 'layout' => 'layout_id', 'size' => 'size', 'orientation' => 'orientation'];
 
     public $table = 'renatio_dynamicpdf_pdf_templates';
@@ -80,8 +77,6 @@ class Template extends Model
     ];
 
     /**
-     * Data the backend preview renders with, entered as JSON on the template.
-     *
      * @return array<string, mixed>
      */
     public function sampleData(): array
@@ -112,10 +107,6 @@ class Template extends Model
         $copy->is_custom = true;
     }
 
-    /**
-     * A stored, non-customised template follows its view file. The row is left as stored when the
-     * view is not registered any more, its file is missing, or the fill throws part way through.
-     */
     public function afterFetch(): void
     {
         if ($this->is_custom || ! $this->code || ! $this->getView()) {
@@ -136,9 +127,6 @@ class Template extends Model
         });
     }
 
-    /**
-     * Restores the stored row from its view file and hands it back to the sync.
-     */
     public function resetToView(): void
     {
         $this->inDefaultLocale(function (): void {
@@ -172,20 +160,11 @@ class Template extends Model
         $this->content_html = array_get($sections, 'html');
     }
 
-    /**
-     * The dompdf paper sizes and orientations are keyed in lowercase, so a view declaring A4
-     * would otherwise fill the form with a value no option matches.
-     */
     protected static function lowercaseOption(mixed $value): ?string
     {
         return $value === null || $value === '' ? null : mb_strtolower((string) $value);
     }
 
-    /**
-     * Every view-driven row of a list re-reads its layout, so stored layouts are remembered
-     * by code for the current request or queue job (a scoped container instance) and each
-     * template gets its own hydrated copy. Unsaved view fallbacks are not remembered.
-     */
     protected function resolveLayout(?string $code): ?Layout
     {
         if (! $code) {
@@ -214,9 +193,6 @@ class Template extends Model
     }
 
     /**
-     * Registered in Plugin::register(); bound here as well so a save on a disabled plugin
-     * or outside the plugin bootstrap does not fail.
-     *
      * @return ArrayObject<string, array<string, mixed>|false>
      */
     public static function layoutCache(): ArrayObject
@@ -238,10 +214,6 @@ class Template extends Model
         return PDF::loadTemplate($this->code, $this->sampleData())->getDompdf()->output_html();
     }
 
-    /**
-     * A registered view that is not stored yet (for example before the first backend
-     * request synchronised it) renders straight from the file.
-     */
     public static function byCode(string $code): self
     {
         $template = static::whereCode($code)->first();
@@ -282,8 +254,6 @@ class Template extends Model
     }
 
     /**
-     * An empty size or orientation falls back to the dompdf defaults, so the empty option names them.
-     *
      * @param  object  $fields
      */
     public function filterFields($fields, ?string $context = null): void
@@ -313,9 +283,6 @@ class Template extends Model
         return $this->is_custom;
     }
 
-    /**
-     * A record the sync would recreate from its view file; deleting it only makes it come back.
-     */
     public function followsView(): bool
     {
         return (bool) $this->getView();

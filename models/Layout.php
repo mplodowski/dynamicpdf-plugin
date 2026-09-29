@@ -38,9 +38,6 @@ class Layout extends Model
     use ValidatesTwigSyntax;
     use Validation;
 
-    /**
-     * Form fields the view file provides.
-     */
     public const VIEW_FIELDS = ['name' => 'name', 'content_html' => 'content_html', 'content_css' => 'content_css'];
 
     public $table = 'renatio_dynamicpdf_pdf_layouts';
@@ -117,9 +114,6 @@ class Layout extends Model
         Template::flushLayoutCache();
     }
 
-    /**
-     * Templates keep a dangling layout_id otherwise and render without the layout.
-     */
     public function beforeDelete(): void
     {
         $titles = Template::where('layout_id', $this->id)->pluck('title');
@@ -166,9 +160,6 @@ class Layout extends Model
         return (new LessCompiler)->compile($this->content_css);
     }
 
-    /**
-     * Restores the stored row from its view file and hands it back to the sync.
-     */
     public function resetToView(): void
     {
         $this->inDefaultLocale(function (): void {
@@ -204,17 +195,11 @@ class Layout extends Model
         return array_get(PDFManager::instance()->listRegisteredLayouts(), $this->code);
     }
 
-    /**
-     * Layouts carry no is_custom flag: a stored one is view-driven while it stays locked.
-     */
     public function isCustomised(): bool
     {
         return $this->exists && ! $this->is_locked;
     }
 
-    /**
-     * A record the sync would recreate from its view file; deleting it only makes it come back.
-     */
     public function followsView(): bool
     {
         return (bool) $this->getView();

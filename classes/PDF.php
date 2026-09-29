@@ -25,10 +25,6 @@ class PDF extends PdfFacade
         return 'dynamicpdf';
     }
 
-    /**
-     * Replace the wrapper with a recorder for the rest of the test, so no template is looked
-     * up and no PDF is produced.
-     */
     public static function fake(): PDFFake
     {
         $app = static::getFacadeApplication() ?? throw new RuntimeException('Facade application has not been set.');

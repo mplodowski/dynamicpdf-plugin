@@ -68,10 +68,7 @@ class PDFWrapper extends PDF
     }
 
     /**
-     * Page numbers are stamped on the canvas after rendering, so no inline PHP has to be
-     * enabled for them. {PAGE_NUM} and {PAGE_COUNT} are replaced by dompdf on every page.
-     *
-     * @param  array<int, float>  $color  RGB components between 0 and 1
+     * @param  array<int, float>  $color
      */
     public function pageNumbers(
         string $text = 'Page {PAGE_NUM} of {PAGE_COUNT}',
@@ -160,11 +157,6 @@ class PDFWrapper extends PDF
         $canvas->page_text($x, $y, $numbers['text'], $font, $numbers['size'], $numbers['color']);
     }
 
-    /**
-     * The rendered document as a file record ready to be attached to a model. The bytes are
-     * written to the uploads disk right away, so attach and save the record or delete it.
-     * $public must match the relation's public flag, or the row points at the wrong directory.
-     */
     public function toFile(string $filename = 'document.pdf', bool $public = true): File
     {
         $file = new File;
@@ -175,10 +167,6 @@ class PDFWrapper extends PDF
     }
 
     /**
-     * Renders the document, so call it last, right before output(), stream(), download(),
-     * save() or toFile(); a later loadHTML() or setPaper() rebuilds the canvas unencrypted.
-     * Permissions are opt-in: print, modify, copy, add.
-     *
      * @param  array<int, string>  $permissions
      */
     public function encrypt(string $password, string $ownerPassword = '', array $permissions = []): self
@@ -209,8 +197,6 @@ class PDFWrapper extends PDF
 
     /**
      * @param  array<string, mixed>  $data
-     * @param  string|null  $layout  code of a layout to render with instead of the stored one
-     * @param  string|null  $locale  language to render in, restored afterwards
      */
     public function loadTemplate(string $code, array $data = [], ?string $encoding = null, ?string $layout = null, ?string $locale = null): self
     {
@@ -244,7 +230,6 @@ class PDFWrapper extends PDF
 
     /**
      * @param  array<string, mixed>  $data
-     * @param  string|null  $locale  language to render in, restored afterwards
      */
     public function loadLayout(string $code, array $data = [], ?string $encoding = null, ?string $locale = null): self
     {
@@ -283,17 +268,9 @@ class PDFWrapper extends PDF
         });
     }
 
-    /**
-     * Keys the wrapper sets itself; a registered variable or listener cannot take them over.
-     */
     public const RESERVED_VARIABLES = ['content_html', 'css', 'background_img', 'locale'];
 
     /**
-     * Registered variables sit under the render data, a beforeRender listener may return
-     * data to merge on top, and an afterRender listener may return the HTML to use instead.
-     * Fires once per document: parseTemplate() renders the layout without going through
-     * parseLayout(), which fires for a layout rendered on its own.
-     *
      * @param  array<string, mixed>  $data
      * @param  callable(array<string, mixed>): string  $render
      */
@@ -358,10 +335,6 @@ class PDFWrapper extends PDF
         );
     }
 
-    /**
-     * The most specific key of the locale chain that has a translation wins. Without a
-     * locale argument the models keep following the active site on their own.
-     */
     protected function applyTranslateContext(Template|Layout|null $model, ?string $locale): void
     {
         if ($locale === null || $locale === '' || $model === null || ! $model->exists || ! $model->isTranslatableEnabled()) {
@@ -389,9 +362,6 @@ class PDFWrapper extends PDF
     }
 
     /**
-     * The translator and Carbon read the application locale, so it is switched for the
-     * parse only and always put back, also when the parse throws.
-     *
      * @param  callable(): string  $render
      */
     protected function inLocale(?string $locale, callable $render): string
@@ -423,10 +393,8 @@ class PDFWrapper extends PDF
     }
 
     /**
-     * Compiles the markup without rendering it, on the environment a render would use, so
-     * filters and tags the CMS and other plugins register are known. Without a usable theme
-     * (console, queue) the system environment lacks the CMS ones, so a name it does not know
-     * is let through rather than rejecting markup a front-end render accepts.
+     * Without a theme (console, queue) the CMS filters and tags are missing, so an unknown
+     * name is let through rather than rejecting markup a front-end render accepts.
      *
      * @throws TwigError
      */
@@ -448,8 +416,7 @@ class PDFWrapper extends PDF
     }
 
     /**
-     * Errors raised in the markup itself are renamed after the template or layout code, as
-     * Twig names string templates by a hash that does not say which record failed.
+     * Twig names a string template by a hash, so its errors are renamed after the record code.
      *
      * @param  array<string, mixed>  $data
      */
@@ -480,10 +447,6 @@ class PDFWrapper extends PDF
         return $this->twigController ? $this->twigController->whileCurrent($render) : $render();
     }
 
-    /**
-     * The environment is built once per theme, so a wrapper reused under another site
-     * context does not keep rendering with the first site's theme.
-     */
     protected function twig(): Environment
     {
         $theme = $this->activeTheme();
@@ -497,12 +460,6 @@ class PDFWrapper extends PDF
         return $this->twigEnvironment;
     }
 
-    /**
-     * The CMS environment adds theme partials and content on top of the system one, so it
-     * is used whenever the module is installed and a usable theme is active. Looking the
-     * theme up can itself throw (no theme configured, a locked theme), which must not stop
-     * a PDF from rendering.
-     */
     protected function activeTheme(): ?Theme
     {
         if (! System::hasModule('Cms')) {
@@ -525,13 +482,6 @@ class PDFWrapper extends PDF
         }
     }
 
-    /**
-     * Remote resources stay limited to the hosts from the dompdf configuration plus the
-     * application and site hosts, so a template cannot make the server fetch internal
-     * addresses. The request host is deliberately not consulted: it is client-controlled.
-     * Local files stay under the asset directories unless the configuration names its own
-     * chroot, so a template cannot embed .env or the logs through file://.
-     */
     public function allowRemoteApplicationAssets(): self
     {
         $options = $this->dompdf->getOptions();
@@ -555,10 +505,7 @@ class PDFWrapper extends PDF
     }
 
     /**
-     * The directories a template may legitimately embed files from: what October mirrors as
-     * public plus public uploads and the media and resize caches. Configuration, logs and
-     * protected uploads stay out. Without a public/ folder public_path() is the project root
-     * and is dropped, or the restriction would allow everything again.
+     * Without a public/ folder public_path() is the project root, which would allow everything.
      *
      * @return array<int, string>
      */
@@ -599,9 +546,6 @@ class PDFWrapper extends PDF
         )));
     }
 
-    /**
-     * A schemeless app URL such as myapp.test parses to no host at all.
-     */
     protected static function hostOf(string $url): string
     {
         return (string) (parse_url($url, PHP_URL_HOST) ?: parse_url('//' . ltrim($url, '/'), PHP_URL_HOST));

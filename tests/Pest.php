@@ -40,8 +40,6 @@ function actingAsPdfUserWith(array $permissions): User
 }
 
 /**
- * A user holding every DynamicPDF permission, except the given ones.
- *
  * @param  array<int, string>  $except  codes without the plugin prefix
  */
 function actingAsPdfManager(array $except = []): User

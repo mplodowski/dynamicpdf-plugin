@@ -82,11 +82,6 @@ class Templates extends Controller
         $this->vars['activeTab'] = $canManageLayouts && $tab ? $tab : 'templates';
     }
 
-    /**
-     * A template created in the backend is customised. A stored one is detached from its
-     * view only by a change to what the view file provides; editing the sample data alone
-     * keeps it view-driven.
-     */
     public function formBeforeSave(Template $model): void
     {
         if (! $model->exists) {
@@ -229,8 +224,6 @@ class Templates extends Controller
     }
 
     /**
-     * A row opens the first page the user may see, so a preview-only role never lands on a 403.
-     *
      * @param  Template|Layout  $record
      * @param  string|null  $definition
      * @return string|array<string, bool>|null

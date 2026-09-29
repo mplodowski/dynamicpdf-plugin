@@ -11,11 +11,9 @@ use Renatio\DynamicPDF\Models\Template;
 trait DetectsViewChanges
 {
     /**
-     * The posted values are compared with the model because the form data is applied to it
-     * only after formBeforeSave. A form editing a translation writes translated fields to the
-     * translation row, so only a change to a shared field counts.
+     * The form data reaches the model only after formBeforeSave, so the posted values are compared.
      *
-     * @param  array<string, string>  $fields  form field => model attribute
+     * @param  array<string, string>  $fields
      */
     protected function postedViewFieldChanged(Layout|Template $model, array $fields): bool
     {

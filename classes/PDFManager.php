@@ -23,10 +23,6 @@ class PDFManager
 
     protected bool $loaded = false;
 
-    /**
-     * Collects the registrations of every plugin once; direct register*() calls made before
-     * that are kept alongside them.
-     */
     public function loadRegisteredTemplates(): void
     {
         if ($this->loaded) {
@@ -75,8 +71,6 @@ class PDFManager
     }
 
     /**
-     * Variables every template and layout receives. A closure value is resolved at render time.
-     *
      * @return array<string, mixed>
      */
     public function listRegisteredVariables(): array
@@ -102,10 +96,6 @@ class PDFManager
         $this->registeredTemplates = array_combine($definitions, $definitions) + $this->registeredTemplates;
     }
 
-    /**
-     * The sibling view under a locale segment, pdf.invoice giving pdf.de.invoice, taking the
-     * most specific key of the locale chain that has a file.
-     */
     public function findLocalizedView(string $view, string $locale): ?string
     {
         foreach (SiteManager::instance()->getLocaleKeyChain($locale) as $localeKey) {

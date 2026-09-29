@@ -6,10 +6,8 @@ use Cms\Classes\Controller;
 use Cms\Classes\Theme;
 
 /**
- * The core constructor registers itself as the controller of the request, which would
- * leave the page being rendered without its controller once a PDF is built mid-request.
- * This one is the current controller only while a PDF renders, because core helpers
- * (media tags in |content, page URLs) need one outside a front-end request too.
+ * The core constructor takes over the request's current controller, which would detach the
+ * page being rendered when a PDF is built mid-request; this one is current only while rendering.
  */
 class PDFTwigController extends Controller
 {

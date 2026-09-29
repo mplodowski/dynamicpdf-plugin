@@ -15,10 +15,6 @@ use System\Models\SiteDefinition;
 
 abstract class TestCase extends OctoberPestTestCase
 {
-    /**
-     * Keeps the suite out of the host project's storage/logs and of storage/temp/log.htm,
-     * which the preview writes in debug mode.
-     */
     public function setUpOctoberPlugin(): void
     {
         config([
@@ -68,9 +64,6 @@ abstract class TestCase extends OctoberPestTestCase
         ]);
     }
 
-    /**
-     * The install already carries the primary site the default locale comes from.
-     */
     public function enableTranslation(string $locale = 'de'): SiteDefinition
     {
         config(['multisite.features.renatio_dynamicpdf_template' => true]);
@@ -108,8 +101,6 @@ abstract class TestCase extends OctoberPestTestCase
     }
 
     /**
-     * The caller deletes the returned directory.
-     *
      * @param  array<string, string>  $files  view name without extension => file content
      */
     public function registerViewTemplates(string $namespace, array $files, ?string $directory = null): string
@@ -134,8 +125,6 @@ abstract class TestCase extends OctoberPestTestCase
     }
 
     /**
-     * Writes view files without registering them, for the localized siblings of a registered view.
-     *
      * @param  array<string, string>  $files  view name without extension => file content
      */
     public function writeViewFiles(string $namespace, array $files, ?string $directory = null): string

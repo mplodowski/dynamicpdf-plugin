@@ -84,12 +84,8 @@ class SyncTemplates
     }
 
     /**
-     * Template::afterFetch() has already refilled a non-customised row from its view file, so a row
-     * whose file changed comes back dirty. Storing it keeps list search and sort off the stale values,
-     * but a file that parsed to no content at all (a deploy window, a botched edit) must not wipe it,
-     * and neither must a layout code that momentarily resolves to nothing. The comparison runs on
-     * the base values, or a row differing from its view only by a translation would be rewritten
-     * on every request.
+     * A view file read mid-deploy can parse to no content or a layout that does not resolve
+     * yet; neither may wipe the stored row.
      *
      * @param  array<string, string>  $registeredTemplates
      */
@@ -132,11 +128,6 @@ class SyncTemplates
         }
     }
 
-    /**
-     * One registered code that cannot be written must not stop the others from syncing, and a code
-     * that keeps failing is logged once per process rather than per request. A callback returning
-     * false wrote nothing and is left out of the report.
-     */
     protected function write(string $code, string $outcome, callable $write): void
     {
         if (isset(self::$failed[$code])) {
@@ -150,7 +141,6 @@ class SyncTemplates
                 $this->report[$outcome][] = $code;
             }
         } catch (UniqueConstraintViolationException) {
-            // Another request synced the same code a moment earlier; the row exists.
         } catch (Throwable $e) {
             self::$failed[$code] = true;
             $this->report['failed'][] = $code;
