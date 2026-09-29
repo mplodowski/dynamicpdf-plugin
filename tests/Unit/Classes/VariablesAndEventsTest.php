@@ -45,6 +45,14 @@ describe('Global variables and events', function () {
             ->and(PDFManager::instance()->listRegisteredTemplates())->toHaveKey('renatio.dynamicpdf::pdf.invoice');
     });
 
+    it('still loads plugin registrations through the pre-8.1 method name', function () {
+        Parameter::set(Plugin::DEMO_PARAMETER, 1);
+        PDFManager::instance()->loadRegisteredTemplates();
+        Parameter::set(Plugin::DEMO_PARAMETER, 0);
+
+        expect(PDFManager::instance()->listRegisteredTemplates())->toHaveKey('renatio.dynamicpdf::pdf.invoice');
+    });
+
     it('ignores reserved names coming from variables and listeners', function () {
         PDFManager::instance()->registerVariables(['content_html' => 'hijacked', 'css' => 'hijacked']);
         Event::listen(Events::BEFORE_RENDER, fn (): array => ['content_html' => 'hijacked']);

@@ -33,11 +33,13 @@ describe('SyncTemplates', function () {
     it('removes stored templates that are no longer registered unless customised', function () {
         $this->createTemplate(['code' => 'gone::pdf.stale', 'is_custom' => false]);
         $this->createTemplate(['code' => 'kept::pdf.custom', 'is_custom' => true]);
+        $sync = new SyncTemplates;
 
-        (new SyncTemplates)->handle();
+        $sync->handle();
 
         expect(Template::whereCode('gone::pdf.stale')->exists())->toBeFalse()
-            ->and(Template::whereCode('kept::pdf.custom')->exists())->toBeTrue();
+            ->and(Template::whereCode('kept::pdf.custom')->exists())->toBeTrue()
+            ->and($sync->report()['deleted'])->toBe(['gone::pdf.stale']);
     });
 
     it('skips a registered code without a view file, logs it and still creates the others', function () {

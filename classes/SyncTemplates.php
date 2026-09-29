@@ -143,6 +143,7 @@ class SyncTemplates
                 $this->report[$outcome][] = $code;
             }
         } catch (UniqueConstraintViolationException) {
+            // Another request synced the same code a moment earlier; the row exists.
         } catch (Throwable $e) {
             self::$failed[$code] = true;
             $this->report['failed'][] = $code;

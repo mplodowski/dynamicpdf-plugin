@@ -15,6 +15,9 @@ use October\Rain\Exception\ApplicationException;
  */
 class LessCompiler
 {
+    /**
+     * Hyphen-less, because less.php accepts both forms and names are compared with hyphens stripped.
+     */
     protected const FILE_FUNCTIONS = ['datauri', 'imagesize', 'imagewidth', 'imageheight'];
 
     /**
@@ -42,7 +45,7 @@ class LessCompiler
     }
 
     /**
-     * Walks every property rather than each node's accept(), which skips imports nested in
+     * Walks every public property rather than each node's accept(), which skips imports nested in
      * mixins, media blocks and detached rulesets.
      *
      * @param  array<int, true>  $seen

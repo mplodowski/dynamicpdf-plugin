@@ -23,6 +23,14 @@ class PDFManager
 
     protected bool $loaded = false;
 
+    /**
+     * @deprecated Use loadRegistrations().
+     */
+    public function loadRegisteredTemplates(): void
+    {
+        $this->loadRegistrations();
+    }
+
     public function loadRegistrations(): void
     {
         if ($this->loaded) {
