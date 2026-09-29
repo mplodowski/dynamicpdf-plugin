@@ -32,6 +32,7 @@ describe('Translated template form', function () {
 
         File::deleteDirectory($directory);
     });
+
     it('keeps a change to a shared field saved from another site', function () {
         $site = $this->enableTranslation('de');
         $directory = $this->registerViewTemplates('acme', ['invoice' => "title = \"Invoice\"\n==\n<p>English invoice</p>"]);
