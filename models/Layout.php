@@ -11,6 +11,7 @@ use Renatio\DynamicPDF\Classes\LessCompiler;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
+use Renatio\DynamicPDF\Traits\DescribesViewStatus;
 use Renatio\DynamicPDF\Traits\Duplicates;
 use Renatio\DynamicPDF\Traits\TranslatesContent;
 use Renatio\DynamicPDF\Traits\ValidatesCodeFormat;
@@ -30,6 +31,7 @@ use System\Models\File;
  */
 class Layout extends Model
 {
+    use DescribesViewStatus;
     use Duplicates;
     use TranslatesContent;
     use ValidatesCodeFormat;
@@ -81,6 +83,14 @@ class Layout extends Model
     protected function prepareDuplicate(self $copy): void
     {
         $copy->is_locked = false;
+    }
+
+    /**
+     * @param  object  $fields
+     */
+    public function filterFields($fields, ?string $context = null): void
+    {
+        $this->describeViewStatus($fields);
     }
 
     public function beforeValidate(): void

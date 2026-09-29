@@ -51,6 +51,8 @@ return [
         'create_template' => 'Vytvoření PDF šablony',
         'edit_template' => 'Úprava PDF šablony',
         'not_found' => 'Nebyla nalezena registrovaná šablona s kódem',
+        'view_follows' => 'Tato šablona vychází ze souboru pohledu `:view` a dostává jeho aktualizace z pluginu. Uložením změn názvu, popisu, obsahu, layoutu nebo nastavení papíru se od těchto aktualizací odpojí.',
+        'view_detached' => 'Tato šablona už nevychází ze souboru pohledu `:view`, takže se na ni aktualizace pluginu nevztahují. **:reset** obnoví verzi ze souboru pohledu.',
     ],
     'layouts' => [
         'label' => 'PDF layouty',
@@ -61,6 +63,8 @@ return [
         'create_layout' => 'Vytvoření PDF layoutu',
         'edit_layout' => 'Úprava PDF layoutu',
         'not_found' => 'Nebyl nalezen registrovaný layout s kódem',
+        'view_follows' => 'Tento layout vznikl ze souboru pohledu `:view` a nebyl upraven. Pozdější změny tohoto souboru se do něj automaticky nepřenášejí; **:reset** načte aktuální verzi. Uložením změn názvu, HTML nebo CSS se označí jako upravený.',
+        'view_detached' => 'Tento layout vznikl ze souboru pohledu `:view` a od té doby byl upraven. **:reset** obnoví verzi ze souboru pohledu.',
         'delete_in_use' => 'Tento layout nelze smazat, protože ho používají tyto šablony: :templates. Nejprve jim přiřaďte jiný layout.',
         'used_by' => 'Použito v',
         'css_reads_files' => 'CSS nesmí číst soubory na serveru. Odstraňte @import souborů LESS, @import (inline) a funkce data-uri(), image-size(), image-width() a image-height(); běžné importy CSS jsou povoleny.',

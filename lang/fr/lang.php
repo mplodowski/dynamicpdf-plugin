@@ -51,6 +51,8 @@ return [
         'create_template' => 'Créer un modèle',
         'edit_template' => 'Modifier le modèle',
         'not_found' => 'Impossible de trouver un modèle enregistré avec le code',
+        'view_follows' => 'Ce modèle suit le fichier de vue `:view` et reçoit ses mises à jour du plugin. Enregistrer des modifications du titre, de la description, du contenu, de la mise en page ou des paramètres du papier le détache de ces mises à jour.',
+        'view_detached' => 'Ce modèle ne suit plus le fichier de vue `:view`, les mises à jour du plugin ne s\'y appliquent donc pas. **:reset** restaure la version du fichier de vue.',
     ],
     'layouts' => [
         'label' => 'Mises en page',
@@ -61,6 +63,8 @@ return [
         'create_layout' => 'Créer une mise en page',
         'edit_layout' => 'Modifier la mise en page',
         'not_found' => 'Impossible de trouver une mise en page enregistrée avec le code',
+        'view_follows' => 'Cette mise en page a été créée à partir du fichier de vue `:view` et n\'a pas été modifiée. Les modifications ultérieures de ce fichier n\'y sont pas copiées automatiquement ; **:reset** charge la version actuelle. Enregistrer des modifications du nom, du HTML ou du CSS la marque comme modifiée.',
+        'view_detached' => 'Cette mise en page a été créée à partir du fichier de vue `:view` et a été modifiée depuis. **:reset** restaure la version du fichier de vue.',
         'delete_in_use' => 'Cette mise en page ne peut pas être supprimée car ces modèles l\'utilisent : :templates. Attribuez-leur d\'abord une autre mise en page.',
         'used_by' => 'Utilisée par',
         'css_reads_files' => 'Le CSS ne doit pas lire de fichiers du serveur. Supprimez les @import de fichiers LESS, @import (inline) ainsi que les fonctions data-uri(), image-size(), image-width() et image-height() ; les imports CSS simples sont autorisés.',

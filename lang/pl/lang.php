@@ -51,6 +51,8 @@ return [
         'create_template' => 'Utwórz szablon',
         'edit_template' => 'Edytuj szablon',
         'not_found' => 'Nie znaleziono zarejestrowanego szablonu o kodzie',
+        'view_follows' => 'Ten szablon korzysta z pliku widoku `:view` i otrzymuje jego aktualizacje z pluginu. Zapisanie zmian w tytule, opisie, treści, układzie lub ustawieniach papieru odłączy go od tych aktualizacji.',
+        'view_detached' => 'Ten szablon nie korzysta już z pliku widoku `:view`, więc aktualizacje pluginu go nie obejmują. **:reset** przywraca wersję z pliku widoku.',
     ],
     'layouts' => [
         'label' => 'Układy',
@@ -61,6 +63,8 @@ return [
         'create_layout' => 'Utwórz układ',
         'edit_layout' => 'Edytuj układ',
         'not_found' => 'Nie znaleziono zarejestrowanego układu o kodzie',
+        'view_follows' => 'Ten układ powstał z pliku widoku `:view` i nie był edytowany. Późniejsze zmiany w tym pliku nie są do niego przenoszone automatycznie; **:reset** wczyta aktualną wersję. Zapisanie zmian w nazwie, HTML lub CSS oznaczy go jako edytowany.',
+        'view_detached' => 'Ten układ powstał z pliku widoku `:view`, ale od tego czasu był edytowany. **:reset** przywraca wersję z pliku widoku.',
         'delete_in_use' => 'Tego układu nie można usunąć, ponieważ używają go szablony: :templates. Najpierw przypisz im inny układ.',
         'used_by' => 'Używany przez',
         'css_reads_files' => 'CSS nie może odczytywać plików serwera. Usuń @import plików LESS, @import (inline) oraz funkcje data-uri(), image-size(), image-width() i image-height(); zwykłe importy CSS są dozwolone.',

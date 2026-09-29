@@ -51,6 +51,8 @@ return [
         'create_template' => 'Vorlage erstellen',
         'edit_template' => 'Vorlage bearbeiten',
         'not_found' => 'Keine registrierte Vorlage mit dem Code gefunden',
+        'view_follows' => 'Diese Vorlage folgt der View-Datei `:view` und erhält deren Updates aus dem Plugin. Wenn Sie Änderungen an Titel, Beschreibung, Inhalt, Layout oder Papiereinstellungen speichern, wird sie von diesen Updates getrennt.',
+        'view_detached' => 'Diese Vorlage folgt der View-Datei `:view` nicht mehr, Plugin-Updates werden daher nicht übernommen. **:reset** stellt die Version aus der View-Datei wieder her.',
     ],
     'layouts' => [
         'label' => 'Layouts',
@@ -61,6 +63,8 @@ return [
         'create_layout' => 'Layout erstellen',
         'edit_layout' => 'Layout bearbeiten',
         'not_found' => 'Kein registriertes Layout mit dem Code gefunden',
+        'view_follows' => 'Dieses Layout wurde aus der View-Datei `:view` erstellt und nicht bearbeitet. Spätere Änderungen an dieser Datei werden nicht automatisch übernommen; **:reset** lädt die aktuelle Version. Wenn Sie Änderungen an Name, HTML oder CSS speichern, gilt es als bearbeitet.',
+        'view_detached' => 'Dieses Layout wurde aus der View-Datei `:view` erstellt und seitdem bearbeitet. **:reset** stellt die Version aus der View-Datei wieder her.',
         'delete_in_use' => 'Dieses Layout kann nicht gelöscht werden, weil diese Vorlagen es verwenden: :templates. Weisen Sie ihnen zuerst ein anderes Layout zu.',
         'used_by' => 'Verwendet von',
         'css_reads_files' => 'Das CSS darf keine Dateien vom Server lesen. Entfernen Sie @import von LESS-Dateien, @import (inline) sowie die Funktionen data-uri(), image-size(), image-width() und image-height(); einfache CSS-Importe sind erlaubt.',

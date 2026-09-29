@@ -51,6 +51,8 @@ return [
         'create_template' => 'Create Template',
         'edit_template' => 'Edit Template',
         'not_found' => 'Unable to find a registered template with code',
+        'view_follows' => 'This template follows the view file `:view` and receives its updates from the plugin. Saving changes to its title, description, content, layout or paper settings detaches it from those updates.',
+        'view_detached' => 'This template no longer follows the view file `:view`, so plugin updates to it are not applied. **:reset** restores the version from the view file.',
     ],
     'layouts' => [
         'label' => 'Layouts',
@@ -61,6 +63,8 @@ return [
         'create_layout' => 'Create Layout',
         'edit_layout' => 'Edit Layout',
         'not_found' => 'Unable to find a registered layout with code',
+        'view_follows' => 'This layout was created from the view file `:view` and has not been edited. Later changes to that file are not copied into it automatically; **:reset** loads the current version. Saving changes to its name, HTML or CSS marks it as edited.',
+        'view_detached' => 'This layout was created from the view file `:view` and has been edited since. **:reset** restores the version from the view file.',
         'delete_in_use' => 'This layout cannot be deleted because these templates use it: :templates. Assign them another layout first.',
         'used_by' => 'Used by',
         'css_reads_files' => 'The CSS may not read server files. Remove @import of LESS files, @import (inline) and the data-uri(), image-size(), image-width() and image-height() functions; plain CSS imports are allowed.',

@@ -51,6 +51,8 @@ return [
         'create_template' => 'Crear plantilla PDF',
         'edit_template' => 'Editar plantilla PDF',
         'not_found' => 'No se encontró una plantilla registrada con el código',
+        'view_follows' => 'Esta plantilla sigue el archivo de vista `:view` y recibe sus actualizaciones del plugin. Guardar cambios en el título, la descripción, el contenido, el diseño o la configuración del papel la desvincula de esas actualizaciones.',
+        'view_detached' => 'Esta plantilla ya no sigue el archivo de vista `:view`, por lo que no recibe las actualizaciones del plugin. **:reset** restaura la versión del archivo de vista.',
     ],
     'layouts' => [
         'label' => 'Diseños PDF',
@@ -61,6 +63,8 @@ return [
         'create_layout' => 'Crear diseño PDF',
         'edit_layout' => 'Editar diseño PDF',
         'not_found' => 'No se encontró un diseño registrado con el código',
+        'view_follows' => 'Este diseño se creó a partir del archivo de vista `:view` y no se ha editado. Los cambios posteriores en ese archivo no se copian automáticamente; **:reset** carga la versión actual. Guardar cambios en el nombre, el HTML o el CSS lo marca como editado.',
+        'view_detached' => 'Este diseño se creó a partir del archivo de vista `:view` y se ha editado desde entonces. **:reset** restaura la versión del archivo de vista.',
         'delete_in_use' => 'Este diseño no se puede eliminar porque lo usan estas plantillas: :templates. Asignales otro diseño primero.',
         'used_by' => 'Usado por',
         'css_reads_files' => 'El CSS no puede leer archivos del servidor. Quitá los @import de archivos LESS, @import (inline) y las funciones data-uri(), image-size(), image-width() e image-height(); se permiten las importaciones de CSS simples.',

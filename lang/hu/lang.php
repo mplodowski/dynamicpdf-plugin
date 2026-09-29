@@ -51,6 +51,8 @@ return [
         'create_template' => 'Sablon létrehozása',
         'edit_template' => 'Sablon szerkesztése',
         'not_found' => 'Nem található regisztrált sablon ezzel a kóddal',
+        'view_follows' => 'Ez a sablon a(z) `:view` nézetfájlt követi, és a bővítményből kapja a frissítéseit. A cím, a leírás, a tartalom, az elrendezés vagy a papírbeállítások módosításainak mentése leválasztja ezekről a frissítésekről.',
+        'view_detached' => 'Ez a sablon már nem követi a(z) `:view` nézetfájlt, így a bővítmény frissítései nem vonatkoznak rá. A **:reset** visszaállítja a nézetfájl szerinti változatot.',
     ],
     'layouts' => [
         'label' => 'Elrendezések',
@@ -61,6 +63,8 @@ return [
         'create_layout' => 'Elrendezés létrehozása',
         'edit_layout' => 'Elrendezés szerkesztése',
         'not_found' => 'Nem található regisztrált elrendezés ezzel a kóddal',
+        'view_follows' => 'Ez az elrendezés a(z) `:view` nézetfájlból készült, és nem szerkesztették. A fájl későbbi változásai nem kerülnek át bele automatikusan; a **:reset** betölti az aktuális változatot. A név, a HTML vagy a CSS módosításainak mentése szerkesztettként jelöli meg.',
+        'view_detached' => 'Ez az elrendezés a(z) `:view` nézetfájlból készült, és azóta szerkesztették. A **:reset** visszaállítja a nézetfájl szerinti változatot.',
         'delete_in_use' => 'Ez az elrendezés nem törölhető, mert ezek a sablonok használják: :templates. Előbb rendeljen hozzájuk másik elrendezést.',
         'used_by' => 'Használja',
         'css_reads_files' => 'A CSS nem olvashat fájlokat a szerverről. Távolítsa el a LESS-fájlok @importját, az @import (inline) utasítást, valamint a data-uri(), image-size(), image-width() és image-height() függvényeket; az egyszerű CSS-importok engedélyezettek.',

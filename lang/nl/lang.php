@@ -51,6 +51,8 @@ return [
         'create_template' => 'Sjabloon aanmaken',
         'edit_template' => 'Sjabloon bewerken',
         'not_found' => 'Geen geregistreerd sjabloon gevonden met de code',
+        'view_follows' => 'Dit sjabloon volgt het view-bestand `:view` en krijgt de updates ervan uit de plugin. Wijzigingen in titel, omschrijving, inhoud, lay-out of papierinstellingen opslaan koppelt het los van die updates.',
+        'view_detached' => 'Dit sjabloon volgt het view-bestand `:view` niet meer, dus plugin-updates worden er niet op toegepast. **:reset** zet de versie uit het view-bestand terug.',
     ],
     'layouts' => [
         'label' => 'Lay-outs',
@@ -61,6 +63,8 @@ return [
         'create_layout' => 'Lay-out aanmaken',
         'edit_layout' => 'Lay-out bewerken',
         'not_found' => 'Geen geregistreerde lay-out gevonden met de code',
+        'view_follows' => 'Deze lay-out is gemaakt uit het view-bestand `:view` en is niet bewerkt. Latere wijzigingen in dat bestand worden er niet automatisch in overgenomen; **:reset** laadt de huidige versie. Wijzigingen in naam, HTML of CSS opslaan markeert haar als bewerkt.',
+        'view_detached' => 'Deze lay-out is gemaakt uit het view-bestand `:view` en is sindsdien bewerkt. **:reset** zet de versie uit het view-bestand terug.',
         'delete_in_use' => 'Deze lay-out kan niet worden verwijderd omdat deze sjablonen hem gebruiken: :templates. Wijs ze eerst een andere lay-out toe.',
         'used_by' => 'Gebruikt door',
         'css_reads_files' => 'De CSS mag geen bestanden van de server lezen. Verwijder @import van LESS-bestanden, @import (inline) en de functies data-uri(), image-size(), image-width() en image-height(); gewone CSS-imports zijn toegestaan.',

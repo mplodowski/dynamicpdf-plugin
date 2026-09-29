@@ -51,6 +51,8 @@ return [
         'create_template' => 'Crea modello',
         'edit_template' => 'Modifica modello',
         'not_found' => 'Nessun modello registrato con il codice',
+        'view_follows' => 'Questo modello segue il file di vista `:view` e riceve i suoi aggiornamenti dal plugin. Salvare modifiche a titolo, descrizione, contenuto, layout o impostazioni della carta lo scollega da questi aggiornamenti.',
+        'view_detached' => 'Questo modello non segue più il file di vista `:view`, quindi gli aggiornamenti del plugin non vengono applicati. **:reset** ripristina la versione del file di vista.',
     ],
     'layouts' => [
         'label' => 'Layout',
@@ -61,6 +63,8 @@ return [
         'create_layout' => 'Crea layout',
         'edit_layout' => 'Modifica layout',
         'not_found' => 'Nessun layout registrato con il codice',
+        'view_follows' => 'Questo layout è stato creato dal file di vista `:view` e non è stato modificato. Le modifiche successive a quel file non vengono copiate automaticamente; **:reset** carica la versione attuale. Salvare modifiche a nome, HTML o CSS lo segna come modificato.',
+        'view_detached' => 'Questo layout è stato creato dal file di vista `:view` ed è stato modificato da allora. **:reset** ripristina la versione del file di vista.',
         'delete_in_use' => 'Questo layout non può essere eliminato perché lo usano questi modelli: :templates. Assegna loro prima un altro layout.',
         'used_by' => 'Usato da',
         'css_reads_files' => 'Il CSS non può leggere file dal server. Rimuovi gli @import di file LESS, @import (inline) e le funzioni data-uri(), image-size(), image-width() e image-height(); gli import CSS semplici sono consentiti.',
