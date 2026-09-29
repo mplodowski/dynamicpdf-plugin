@@ -15,11 +15,13 @@ use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Traits\ChecksFormPermissions;
+use Renatio\DynamicPDF\Traits\DetectsViewChanges;
 use System\Classes\SettingsManager;
 
 class Layouts extends Controller
 {
     use ChecksFormPermissions;
+    use DetectsViewChanges;
 
     /** @var array<int, string> */
     public $requiredPermissions = ['renatio.dynamicpdf.manage_layouts'];
@@ -47,34 +49,9 @@ class Layouts extends Controller
 
     public function formBeforeSave(Layout $model): void
     {
-        if (! $model->is_locked) {
-            return;
+        if ($model->is_locked && $this->postedViewFieldChanged($model, Layout::VIEW_FIELDS)) {
+            $model->is_locked = false;
         }
-
-        $widget = $this->formGetWidget();
-
-        if ($widget === null) {
-            return;
-        }
-
-        $posted = (array) $widget->getSaveData();
-
-        $fields = $model->shouldTranslate()
-            ? array_diff(Layout::VIEW_FIELDS, $model->getTranslatableAttributes())
-            : Layout::VIEW_FIELDS;
-
-        foreach ($fields as $field) {
-            if (array_key_exists($field, $posted) && $this->normalize($posted[$field]) !== $this->normalize($model->getAttribute($field))) {
-                $model->is_locked = false;
-
-                return;
-            }
-        }
-    }
-
-    protected function normalize(mixed $value): string
-    {
-        return str_replace("\r\n", "\n", trim((string) $value));
     }
 
     public function previewpdf(int|string $id): ?Response

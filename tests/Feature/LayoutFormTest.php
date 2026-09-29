@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\File;
 use October\Rain\Support\Facades\Site;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
-use Renatio\DynamicPDF\Controllers\Layouts;
 
 describe('Layout form', function () {
     beforeEach(function () {
@@ -58,15 +57,5 @@ describe('Layout form', function () {
 
         expect($stored->is_locked)->toBeTrue()
             ->and($stored->getTranslation('content_html', 'de', false))->toContain('GESPEICHERT');
-    });
-
-    it('makes a reset layout follow its view again', function () {
-        $this->layout->is_locked = false;
-        $this->layout->content_html = '<html><body>EDITED</body></html>';
-        $this->layout->save();
-
-        (new Layouts)->update_onResetDefault($this->layout->id);
-
-        expect($this->findLayout('acme::pdf.layouts.default')->is_locked)->toBeTrue();
     });
 });

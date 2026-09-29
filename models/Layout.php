@@ -34,7 +34,7 @@ class Layout extends Model
     /**
      * Form fields the view file provides.
      */
-    public const VIEW_FIELDS = ['name', 'content_html', 'content_css'];
+    public const VIEW_FIELDS = ['name' => 'name', 'content_html' => 'content_html', 'content_css' => 'content_css'];
 
     public $table = 'renatio_dynamicpdf_pdf_layouts';
 

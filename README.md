@@ -290,13 +290,12 @@ context yourself. Every listener runs; the arrays they return are merged in turn
 PDF templates and layouts can be accessed in the back-end area via *Settings > PDF > PDF Templates*.
 
 The list marks templates edited in the back-end as *Customized* (they no longer follow their view file) and layouts
-created from a registered view file as *From view* (they offer *Reset to default* instead of *Delete*), and links to
-the HTML and PDF preview of every record. A template's *Sample data* (a JSON object on
+that still follow their registered view file as *From view*, and links to the HTML and PDF preview of every record. A template's *Sample data* (a JSON object on
 the *Options* tab, nested objects and lists included) is passed to both previews, so `{{ variables }}` render with
 realistic values. A template becomes *Customized* only when a value the view file provides is changed; editing the
 sample data alone keeps it view-driven. Likewise a layout stops being *From view* once its name, markup or CSS is
-changed, and its localized view files are then no longer used. Edits saved with another site selected are
-translations and change neither flag. *Reset to default* makes the record follow its view file again.
+changed, and its localized view files are then no longer used. Translated fields saved with another site selected
+change neither flag. *Reset to default* restores the record from its view file and sets the flag back.
 The *Actions* column of both lists opens the PDF preview and duplicates, resets or deletes the record; a record
 that follows a view file offers *Reset to default* instead of *Delete*. *Duplicate* creates an editable copy with a `_copy` code (`_copy2` and so on when that
 code is taken); the copy of a template is customised and the copy of a layout is not locked.
