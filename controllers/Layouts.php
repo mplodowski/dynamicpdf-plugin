@@ -16,12 +16,15 @@ use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Traits\ChecksFormPermissions;
 use Renatio\DynamicPDF\Traits\DetectsViewChanges;
+use Renatio\DynamicPDF\Traits\RendersPreviewErrors;
 use System\Classes\SettingsManager;
+use Twig\Error\Error as TwigError;
 
 class Layouts extends Controller
 {
     use ChecksFormPermissions;
     use DetectsViewChanges;
+    use RendersPreviewErrors;
 
     /** @var array<int, string> */
     public $requiredPermissions = ['renatio.dynamicpdf.manage_layouts'];
@@ -68,11 +71,17 @@ class Layouts extends Controller
             return null;
         }
 
-        $pdf = PDF::loadLayout($model->code)
-            ->setLogOutputFile(config('app.debug') ? storage_path('temp/log.htm') : '')
-            ->allowRemoteApplicationAssets();
+        try {
+            $pdf = PDF::loadLayout($model->code)
+                ->setLogOutputFile(config('app.debug') ? storage_path('temp/log.htm') : '')
+                ->allowRemoteApplicationAssets();
 
-        $pdf->render();
+            $pdf->render();
+        } catch (TwigError $e) {
+            $this->handleError(new ApplicationException($this->previewFailedMessage($e)));
+
+            return null;
+        }
 
         return $pdf->addInfo(['Title' => $model->name])->stream(Str::slug($model->name) . '.pdf');
     }
@@ -83,7 +92,13 @@ class Layouts extends Controller
 
         $model = $this->formFindModelObject($id);
 
-        return response($model->html)->header('Content-Security-Policy', "sandbox; script-src 'none'; object-src 'none'");
+        try {
+            $html = $model->getHtmlAttribute();
+        } catch (TwigError $e) {
+            $html = '<p>' . e($this->previewFailedMessage($e)) . '</p>';
+        }
+
+        return response($html)->header('Content-Security-Policy', "sandbox; script-src 'none'; object-src 'none'");
     }
 
     public function update_onDuplicate(int|string $recordId): RedirectResponse

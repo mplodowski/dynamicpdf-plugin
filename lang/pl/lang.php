@@ -42,6 +42,8 @@ return [
         'copy_suffix' => '(kopia)',
         'delete_view_refused' => 'Tego rekordu nie można usunąć, ponieważ pochodzi z pliku widoku.',
         'reset_view_only' => 'Tylko rekord pochodzący z pliku widoku można do niego przywrócić.',
+        'twig_invalid' => 'Błąd składni Twig w linii :line: :message',
+        'preview_failed' => 'Nie udało się wygenerować podglądu. :message',
     ],
     'template' => [
         'menu_label' => 'Szablon',
