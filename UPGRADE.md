@@ -74,25 +74,17 @@ always on.
 
 ## Upgrading To 8.1.0
 
-**Security release. Upgrade every installation running 8.0.x.** Requires PHP 8.2 and October CMS 4.4. Run
-`php artisan october:migrate`. Composer keeps sites on October CMS 3 or 4.0–4.3 on 8.0.3 until October is upgraded.
+**Security release. Upgrade every installation running 8.0.x.** Requires PHP 8.2 and October CMS 4.4; Composer keeps
+sites on October CMS 3 or 4.0–4.3 on 8.0.3. Run `php artisan october:migrate`, which adds a unique index on template
+and layout codes and permanently deletes duplicate rows, keeping the customised or locked one.
 
-The backend preview is sandboxed: no inline PHP, remote resources only from the application host and
-`allowed_remote_hosts`, local files only from the asset directories. Reset the demo **Header and Footer** layout to
-drop its page number script. TLS certificates are verified everywhere; set `DYNAMICPDF_ALLOW_SELF_SIGNED=true` on a
-development host with a self-signed certificate. An unknown option setter now throws instead of being ignored.
-Layout CSS may no longer read server files: LESS and `(inline)` imports and the `data-uri()` / `image-size()` family of
-functions are rejected on save and fail the render of a layout stored earlier. Plain CSS imports are left to dompdf.
+Permissions are granular and nobody receives the new ones automatically: **Manage templates** and **Manage layouts**
+now only open the lists, so editors get a 403 on every template or layout form until you grant **Create**,
+**Update**, **Delete** and **Preview** under **Settings → Administrators**, to roles or to individual administrators.
+The *Layouts* tab now also requires **Manage layouts**.
 
-Permissions are granular: creating, updating, deleting and previewing templates and layouts each have their own
-permission. A role keeps only **Manage templates** and **Manage layouts**, so grant the rest under
-**Settings → Administrators → Roles**.
-
-The template and layout `code` columns get a unique index; the migration deletes duplicate rows permanently, keeping
-the customised or locked one. Registered views are synchronised when a backend page opens or `dynamicpdf:sync` runs,
-and a changed view file is written back to templates that were never customised. Use **Reset to default** on a
-template an earlier version flagged *Customized* by mistake.
-
-Templates and layouts can be translated per language, off by default and changing nothing until enabled. Set
-`'renatio_dynamicpdf_template' => true` under `features` in `config/multisite.php` and clear the application cache.
-A registered view may also ship a localized sibling, `pdf.de.invoice` next to `pdf.invoice`, used for that render only.
+Layout CSS may no longer read server files: LESS and `(inline)` imports and the `data-uri()` / `image-size()` family
+of functions are rejected on save and fail the render of an older layout, so remove them. Reset the demo **Header and
+Footer** layout, and use **Reset to default** on a template an earlier version flagged *Customized* by mistake. Set
+`DYNAMICPDF_ALLOW_SELF_SIGNED=true` on a development host with a self-signed certificate; an unknown `set*()` option
+call now throws `UnexpectedValueException`.
