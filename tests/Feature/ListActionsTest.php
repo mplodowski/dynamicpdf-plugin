@@ -57,6 +57,15 @@ describe('List actions', function () {
             ->and(Template::find($template->id))->not->toBeNull();
     });
 
+    it('reports a record that no longer exists with a translated message', function (string $definition, string $model) {
+        $response = $this->listAction('onDeleteRecord', ['id' => 999999, 'definition' => $definition]);
+
+        expect($response->json('__ajax.message'))->toBe(e(trans('backend::lang.model.not_found', ['class' => $model, 'id' => 999999])));
+    })->with([
+        'template' => ['templates', Template::class],
+        'layout' => ['layouts', Layout::class],
+    ]);
+
     it('refuses a layout action without manage_layouts', function () {
         actingAsPdfManager(['manage_layouts']);
         $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);
