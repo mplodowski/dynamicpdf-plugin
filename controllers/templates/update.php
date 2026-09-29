@@ -20,7 +20,7 @@
         <div class="loading-indicator-container">
             <button type="submit"
                     data-request="onSave"
-                    data-change-monitor-commit
+                    data-request-before-update="$(this).trigger('unchange.oc.changeMonitor')"
                     data-request-data="redirect:0"
                     data-hotkey="ctrl+s, cmd+s"
                     data-load-indicator="<?= e(trans('backend::lang.form.saving_name', ['name' => $formRecordName])) ?>"
@@ -30,7 +30,7 @@
 
             <button type="button"
                     data-request="onSave"
-                    data-change-monitor-commit
+                    data-request-before-update="$(this).trigger('unchange.oc.changeMonitor')"
                     data-request-data="close:1"
                     data-hotkey="ctrl+enter, cmd+enter"
                     data-load-indicator="<?= e(trans('backend::lang.form.saving_name', ['name' => $formRecordName])) ?>"
@@ -65,7 +65,7 @@
                 <button type="button"
                         class="btn btn-danger pull-right"
                         data-request="onResetDefault"
-                        data-change-monitor-commit
+                        data-request-before-update="$(this).trigger('unchange.oc.changeMonitor')"
                         data-load-indicator="<?= e(trans('backend::lang.form.resetting')) ?>"
                         data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>">
                     <?= e(trans('backend::lang.form.reset_default')) ?>
@@ -74,7 +74,7 @@
                 <button type="button"
                         class="oc-icon-trash-o btn-icon danger pull-right"
                         data-request="onDelete"
-                        data-change-monitor-commit
+                        data-request-before-update="$(this).trigger('unchange.oc.changeMonitor')"
                         data-load-indicator="<?= e(trans('backend::lang.form.deleting_name',
                             ['name' => $formRecordName])) ?>"
                         data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>">

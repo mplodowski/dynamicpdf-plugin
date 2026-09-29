@@ -20,7 +20,7 @@
         <div class="loading-indicator-container">
             <button type="submit"
                     data-request="onSave"
-                    data-change-monitor-commit
+                    data-request-before-update="$(this).trigger('unchange.oc.changeMonitor')"
                     data-hotkey="ctrl+s, cmd+s"
                     data-load-indicator="<?= e(trans('backend::lang.form.creating_name',
                         ['name' => $formRecordName])) ?>"
@@ -30,7 +30,7 @@
 
             <button type="button"
                     data-request="onSave"
-                    data-change-monitor-commit
+                    data-request-before-update="$(this).trigger('unchange.oc.changeMonitor')"
                     data-request-data="close:1"
                     data-hotkey="ctrl+enter, cmd+enter"
                     data-load-indicator="<?= e(trans('backend::lang.form.creating_name',
