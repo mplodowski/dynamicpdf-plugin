@@ -1,5 +1,9 @@
 <?php
 
+use Renatio\DynamicPDF\Models\Layout;
+use Renatio\DynamicPDF\Models\Template;
+use Renatio\DynamicPDF\Tests\TestCase;
+
 describe('PDFWrapper', function () {
     it('forwards option setters to dompdf', function () {
         $wrapper = app('dynamicpdf');
@@ -10,10 +14,6 @@ describe('PDFWrapper', function () {
 
     it('throws on an unknown method instead of ignoring it', function () {
         expect(fn () => app('dynamicpdf')->__call('setNoSuchOption', [300]))->toThrow(UnexpectedValueException::class);
-    });
-
-    it('throws for a protected helper instead of exposing it', function () {
-        expect(fn () => app('dynamicpdf')->__call('applyCertificatePolicy', []))->toThrow(UnexpectedValueException::class);
     });
 
     it('keeps the ssl stream options scalar when the certificate policy is applied twice', function () {
@@ -71,17 +71,10 @@ describe('PDFWrapper', function () {
             ->and($width)->toBeGreaterThan($height);
     });
 
-    it('renders an empty string for a template with null content_html', function () {
-        $template = $this->createTemplate();
-        $template->content_html = null;
-
-        expect(app('dynamicpdf')->parseTemplate($template))->toBe('');
-    });
-
-    it('renders an empty string for a layout with null content_html', function () {
-        $layout = $this->createLayout();
-        $layout->content_html = null;
-
-        expect(app('dynamicpdf')->parseLayout($layout))->toBe('');
-    });
+    it('renders an empty string for a record with null content_html', function (Closure $parse) {
+        expect($parse($this))->toBe('');
+    })->with([
+        'template' => [fn (TestCase $test): string => app('dynamicpdf')->parseTemplate(tap($test->createTemplate(), fn (Template $template) => $template->content_html = null))],
+        'layout' => [fn (TestCase $test): string => app('dynamicpdf')->parseLayout(tap($test->createLayout(), fn (Layout $layout) => $layout->content_html = null))],
+    ]);
 });

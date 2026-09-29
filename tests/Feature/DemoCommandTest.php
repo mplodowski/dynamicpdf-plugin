@@ -6,14 +6,12 @@ use Renatio\DynamicPDF\Models\Template;
 
 describe('dynamicpdf:demo', function () {
     it('creates the demo templates and layouts and removes them again', function () {
-        Artisan::call('dynamicpdf:demo');
-
-        expect(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeTrue()
+        expect(Artisan::call('dynamicpdf:demo'))->toBe(0)
+            ->and(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeTrue()
             ->and(Layout::whereCode('renatio.dynamicpdf::pdf.layouts.default')->exists())->toBeTrue();
 
-        Artisan::call('dynamicpdf:demo', ['--disable' => true]);
-
-        expect(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeFalse()
+        expect(Artisan::call('dynamicpdf:demo', ['--disable' => true]))->toBe(0)
+            ->and(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeFalse()
             ->and(Layout::whereCode('renatio.dynamicpdf::pdf.layouts.default')->exists())->toBeFalse();
     });
 
@@ -27,5 +25,14 @@ describe('dynamicpdf:demo', function () {
         expect(Layout::find($layout->id))->not->toBeNull()
             ->and($template->fresh()?->layout_id)->toBe($layout->id)
             ->and(Artisan::output())->toContain('Kept renatio.dynamicpdf::pdf.layouts.default');
+    });
+
+    it('fails and lists the codes when a demo template could not be synchronised', function () {
+        Template::creating(fn () => throw new RuntimeException('cannot write'));
+
+        $exitCode = Artisan::call('dynamicpdf:demo');
+
+        expect($exitCode)->toBe(1)
+            ->and(Artisan::output())->toContain('renatio.dynamicpdf::pdf.invoice');
     });
 });
