@@ -6,10 +6,6 @@ use Illuminate\Database\UniqueConstraintViolationException;
 
 trait Duplicates
 {
-    /**
-     * A copy with a free code, its attachments and the label of the copy marked as such. The
-     * code is looked up again once when a concurrent duplicate took it between check and insert.
-     */
     public function duplicate(): static
     {
         $copy = $this->replicateWithRelations();

@@ -10,14 +10,13 @@ use Less_Tree_Import;
 use October\Rain\Exception\ApplicationException;
 
 /**
- * Compiles layout LESS without letting it read server files. less.php resolves imports and
- * the file functions in PHP, before dompdf and its chroot see anything, so the parsed tree
- * is checked first. Plain CSS imports pass: less.php leaves them to dompdf untouched.
+ * less.php resolves imports and file functions before dompdf's chroot applies, so the parsed
+ * tree is checked for them first.
  */
 class LessCompiler
 {
     /**
-     * less.php also accepts these without their hyphens, so names are compared hyphen-less.
+     * Hyphen-less, because less.php accepts both forms and names are compared with hyphens stripped.
      */
     protected const FILE_FUNCTIONS = ['datauri', 'imagesize', 'imagewidth', 'imageheight'];
 
@@ -46,9 +45,8 @@ class LessCompiler
     }
 
     /**
-     * Walks every public property rather than trusting each node's accept(), so an import
-     * nested in a mixin, a media block or a detached ruleset is found as well. An import
-     * less.php leaves as CSS is never read, the same test its ImportVisitor applies.
+     * Walks every public property rather than each node's accept(), which skips imports nested in
+     * mixins, media blocks and detached rulesets.
      *
      * @param  array<int, true>  $seen
      */
@@ -81,9 +79,6 @@ class LessCompiler
         return $this->readsFiles(get_object_vars($value), $seen);
     }
 
-    /**
-     * Only the first line: the parser appends a source excerpt and an internal file name.
-     */
     protected function describe(Exception $e): string
     {
         $message = strtok($e->getMessage(), "\n") ?: '';

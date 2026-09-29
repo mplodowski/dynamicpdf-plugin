@@ -6,9 +6,7 @@ use Renatio\DynamicPDF\Classes\PDF;
 use Twig\Error\Error as TwigError;
 
 /**
- * Markup is parsed but never rendered, so a save needs no sample data and runs no code.
- * The view sync force-saves developer markup, which October still passes through
- * beforeValidate, so a forced save is not checked.
+ * October runs beforeValidate on forceSave() too, so the view sync is skipped explicitly.
  */
 trait ValidatesTwigSyntax
 {

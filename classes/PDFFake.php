@@ -15,10 +15,6 @@ use Symfony\Component\HttpFoundation\HeaderUtils;
 use System\Models\File;
 use UnexpectedValueException;
 
-/**
- * Records what a project renders without touching templates, Twig, dompdf, the database
- * or the filesystem.
- */
 class PDFFake extends PDFWrapper implements Fake
 {
     /** @var array<int, array{code: string, kind: string, data: array<string, mixed>, layout: string|null, locale: string|null}> */
@@ -114,9 +110,6 @@ class PDFFake extends PDFWrapper implements Fake
         return $this->emptyResponse($filename, 'inline');
     }
 
-    /**
-     * Complete enough to be attached and saved without a byte written anywhere.
-     */
     public function toFile(string $filename = 'document.pdf', bool $public = true): File
     {
         $file = new File;

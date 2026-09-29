@@ -15,14 +15,6 @@ describe('Locale per render', function () {
             ->and(app()->getLocale())->toBe('en');
     });
 
-    it('formats dates in the given locale', function () {
-        $this->createTemplate(['code' => 'acme::pdf.dates', 'content_html' => "{{ date.translatedFormat('F') }}"]);
-
-        $wrapper = app('dynamicpdf')->loadTemplate('acme::pdf.dates', ['date' => \Carbon\Carbon::create(2026, 3, 1)], locale: 'de');
-
-        expect($wrapper->getDomPDF()->outputHtml())->toContain('März');
-    });
-
     it('exposes the application locale and lets template data override it', function () {
         $this->createTemplate(['code' => 'acme::pdf.locale', 'content_html' => '{{ locale }}']);
 

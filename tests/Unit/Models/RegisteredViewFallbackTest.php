@@ -34,7 +34,10 @@ describe('Registered view fallback', function () {
             ->and($layout->name)->toBe('Default Layout');
     });
 
-    it('still throws for a code that is neither stored nor registered', function () {
-        expect(fn () => Template::byCode('non.existent::pdf.template'))->toThrow(ModelNotFoundException::class);
-    });
+    it('still throws for a code that is neither stored nor registered', function (Closure $find) {
+        expect($find)->toThrow(ModelNotFoundException::class);
+    })->with([
+        'template' => [fn (): Template => Template::byCode('non.existent::pdf.view')],
+        'layout' => [fn (): Layout => Layout::byCode('non.existent::pdf.view')],
+    ]);
 });

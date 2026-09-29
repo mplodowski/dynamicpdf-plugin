@@ -18,23 +18,15 @@ describe('Backend preview', function () {
 
     afterEach(fn () => app()->forgetInstance('dynamicpdf'));
 
-    it('does not enable inline PHP when previewing a template', function () {
+    it('does not enable inline PHP when previewing', function (string $type) {
         $wrapper = captureWrapper();
-        $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
 
-        (new Templates)->previewpdf($template->id);
+        $type === 'template'
+            ? (new Templates)->previewpdf($this->createTemplate(['content_html' => '<p>Hello</p>'])->id)
+            : (new Layouts)->previewpdf($this->createLayout(['content_html' => '<html><body>Hello</body></html>'])->id);
 
         expect($wrapper->getDomPDF()->getOptions()->getIsPhpEnabled())->toBeFalse();
-    });
-
-    it('does not enable inline PHP when previewing a layout', function () {
-        $wrapper = captureWrapper();
-        $layout = $this->createLayout(['content_html' => '<html><body>Hello</body></html>']);
-
-        (new Layouts)->previewpdf($layout->id);
-
-        expect($wrapper->getDomPDF()->getOptions()->getIsPhpEnabled())->toBeFalse();
-    });
+    })->with(['template', 'layout']);
 
     it('renders the preview with the configured DPI like PDFs generated from code', function (string $type) {
         config(['dompdf.options.dpi' => 120]);

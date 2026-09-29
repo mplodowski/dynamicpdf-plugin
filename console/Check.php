@@ -69,9 +69,7 @@ class Check extends Command
     }
 
     /**
-     * Only reports: creating the directory here would give it the CLI user's ownership and
-     * certify a directory the web server still cannot write to. $createdOnRender is for the
-     * font directory alone, which PDFWrapper::ensureFontDir() creates on the first render.
+     * Only reports: a directory created here would belong to the CLI user, not the web server.
      */
     protected function directory(string $label, mixed $path, bool $createdOnRender = false): void
     {

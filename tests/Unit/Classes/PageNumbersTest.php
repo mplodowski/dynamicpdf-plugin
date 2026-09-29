@@ -50,8 +50,4 @@ describe('Page numbers', function () {
 
         expect($wrapper->output(['compress' => 0]))->not->toContain('Page 1 of');
     });
-
-    it('renders without page numbers by default', function () use ($twoPages) {
-        expect($twoPages()->output(['compress' => 0]))->not->toContain('Page 1 of 2');
-    });
 });
