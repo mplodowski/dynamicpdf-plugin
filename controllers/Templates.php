@@ -173,6 +173,17 @@ class Templates extends Controller
         return redirect()->refresh();
     }
 
+    public function update_onDelete(int|string|null $recordId = null): mixed
+    {
+        $this->requireFormPermission('modelDelete');
+
+        if ($this->formFindModelObject($recordId)->followsView()) {
+            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.templates.delete_view_refused')));
+        }
+
+        return $this->asExtension('FormController')->update_onDelete($recordId);
+    }
+
     public function index_onDuplicateRecord(): RedirectResponse
     {
         $definition = $this->listDefinition();
