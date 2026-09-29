@@ -26,10 +26,12 @@ trait DescribesViewStatus
         }
 
         $customised = $this->isCustomised();
+        $group = strtolower(class_basename(static::class));
+        $key = $customised ? 'view_detached' : 'view_follows';
 
         $fields->_view_status
             ->mode($customised ? 'warning' : 'info')
-            ->comment(trans('renatio.dynamicpdf::lang.templates.' . ($customised ? 'view_detached' : 'view_follows'), [
+            ->comment(trans("renatio.dynamicpdf::lang.{$group}.{$key}", [
                 'view' => $this->getView(),
                 'reset' => trans('backend::lang.form.reset_default'),
             ]));
