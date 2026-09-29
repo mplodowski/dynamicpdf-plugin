@@ -47,12 +47,6 @@ describe('add_unique_code_indexes', function () {
     });
 
     it('runs no schema change inside a transaction', function () {
-        foreach ([1, 2] as $copy) {
-            DB::table('renatio_dynamicpdf_pdf_templates')->insert([
-                'code' => 'acme::invoice', 'title' => 'Copy ' . $copy, 'content_html' => '<p></p>', 'is_custom' => false,
-            ]);
-        }
-
         $baseline = DB::transactionLevel();
         $levels = [];
 
@@ -65,7 +59,21 @@ describe('add_unique_code_indexes', function () {
         $migration = require plugins_path('renatio/dynamicpdf/updates/20260907_0002_add_unique_code_indexes.php');
         $migration->up();
         $migration->down();
+        $migration->up();
 
         expect($levels)->not->toBeEmpty()->each->toBe($baseline);
+    });
+
+    it('replaces the plain code index whatever it is named', function () {
+        Schema::table('renatio_dynamicpdf_pdf_templates', function (Blueprint $table) {
+            $table->index('code', 'legacy_code_idx');
+        });
+
+        $migration = require plugins_path('renatio/dynamicpdf/updates/20260907_0002_add_unique_code_indexes.php');
+        $migration->up();
+        $migration->up();
+
+        expect(collect(Schema::getIndexes('renatio_dynamicpdf_pdf_templates'))->where('columns', ['code'])->pluck('unique')->all())
+            ->toBe([true]);
     });
 });

@@ -24,13 +24,15 @@ return new class extends Migration
         });
 
         foreach ([self::TEMPLATES, self::LAYOUTS] as $name) {
-            Schema::table($name, function (Blueprint $table) use ($name) {
-                if (! Schema::hasIndex($name, $name . '_code_unique')) {
+            $indexes = $this->codeIndexes($name);
+
+            Schema::table($name, function (Blueprint $table) use ($indexes) {
+                if (! isset($indexes['unique'])) {
                     $table->unique('code');
                 }
 
-                if (Schema::hasIndex($name, $name . '_code_index')) {
-                    $table->dropIndex(['code']);
+                if (isset($indexes['plain'])) {
+                    $table->dropIndex($indexes['plain']);
                 }
             });
         }
@@ -39,16 +41,31 @@ return new class extends Migration
     public function down()
     {
         foreach ([self::TEMPLATES, self::LAYOUTS] as $name) {
-            Schema::table($name, function (Blueprint $table) use ($name) {
-                if (Schema::hasIndex($name, $name . '_code_unique')) {
-                    $table->dropUnique(['code']);
+            $indexes = $this->codeIndexes($name);
+
+            Schema::table($name, function (Blueprint $table) use ($indexes) {
+                if (isset($indexes['unique'])) {
+                    $table->dropUnique($indexes['unique']);
                 }
 
-                if (! Schema::hasIndex($name, $name . '_code_index')) {
+                if (! isset($indexes['plain'])) {
                     $table->index('code');
                 }
             });
         }
+    }
+
+    /**
+     * Looked up by column, not by name: a table prefix with prefix_indexes renames the indexes.
+     *
+     * @return array{unique?: string, plain?: string}
+     */
+    protected function codeIndexes(string $table): array
+    {
+        return collect(Schema::getIndexes($table))
+            ->where('columns', ['code'])
+            ->mapWithKeys(fn (array $index) => [$index['unique'] ? 'unique' : 'plain' => $index['name']])
+            ->all();
     }
 
     /**
