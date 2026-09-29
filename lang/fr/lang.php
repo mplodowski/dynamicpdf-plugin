@@ -3,7 +3,7 @@
 return [
     'plugin' => [
         'name' => 'DynamicPDF',
-        'description' => 'Générez des PDF à partir de modèles HTML et Twig édités dans le panneau, avec mises en page, numéros de page, protection par mot de passe et fichier prêt à joindre.',
+        'description' => 'Générez des PDF à partir de modèles HTML et Twig édités dans l\'administration, avec mises en page, numéros de page, protection par mot de passe et fichier prêt à joindre.',
     ],
     'templates' => [
         'label' => 'Modèles',
@@ -27,13 +27,13 @@ return [
         'actions' => 'Actions',
         'created_at' => 'Créé le',
         'updated_at' => 'Modifié le',
-        'background_img_comment' => 'Utilisez une image d\'au moins 96 DPI pour un affichage correct. 300 DPI recommandé.',
+        'background_img_comment' => 'Utilisez une image d\'au moins 96 DPI pour un affichage correct. 300 DPI recommandés.',
         'size' => 'Format du papier',
         'orientation' => 'Orientation du papier',
         'sample_data' => 'Données d\'exemple',
-        'sample_data_comment' => 'Objet JSON avec les variables utilisées par l\'aperçu du panneau, par exemple {"name": "Jean Dupont", "items": [{"qty": 1, "price": 39}]}.',
+        'sample_data_comment' => 'Objet JSON avec les variables utilisées par l\'aperçu dans l\'administration, par exemple {"name": "Jean Dupont", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Personnalisé',
-        'is_locked' => 'Depuis la vue',
+        'is_locked' => 'Issu d\'une vue',
         'duplicate' => 'Dupliquer',
         'duplicating' => 'Duplication...',
         'duplicate_success' => 'La copie a été créée.',
@@ -42,6 +42,8 @@ return [
         'copy_suffix' => '(copie)',
         'delete_view_refused' => "Cet enregistrement ne peut pas être supprimé car il provient d'un fichier de vue.",
         'reset_view_only' => "Seul un enregistrement provenant d'un fichier de vue peut y être réinitialisé.",
+        'twig_invalid' => 'Erreur de syntaxe Twig à la ligne :line : :message',
+        'preview_failed' => 'L\'aperçu n\'a pas pu être généré. :message',
     ],
     'template' => [
         'menu_label' => 'Modèle',
@@ -60,13 +62,23 @@ return [
         'not_found' => 'Impossible de trouver une mise en page enregistrée avec le code',
         'delete_in_use' => 'Cette mise en page ne peut pas être supprimée car ces modèles l\'utilisent : :templates. Attribuez-leur d\'abord une autre mise en page.',
         'used_by' => 'Utilisée par',
+        'css_reads_files' => 'Le CSS ne doit pas lire de fichiers du serveur. Supprimez les @import de fichiers LESS, @import (inline) ainsi que les fonctions data-uri(), image-size(), image-width() et image-height() ; les imports CSS simples sont autorisés.',
+        'css_invalid' => 'Le CSS de la mise en page n\'a pas pu être compilé.',
     ],
     'settings' => [
         'description' => 'Gérer les modèles et les mises en page.',
     ],
     'permissions' => [
         'manage_templates' => 'Gérer les modèles',
+        'create_templates' => 'Créer des modèles',
+        'update_templates' => 'Modifier les modèles',
+        'delete_templates' => 'Supprimer les modèles',
+        'preview_templates' => 'Prévisualiser les modèles',
         'manage_layouts' => 'Gérer les mises en page',
+        'create_layouts' => 'Créer des mises en page',
+        'update_layouts' => 'Modifier les mises en page',
+        'delete_layouts' => 'Supprimer les mises en page',
+        'preview_layouts' => 'Prévisualiser les mises en page',
         'tab' => 'PDF',
     ],
     'menu' => [
