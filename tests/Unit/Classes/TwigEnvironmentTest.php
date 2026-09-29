@@ -1,5 +1,6 @@
 <?php
 
+use Cms\Classes\Controller;
 use Cms\Classes\Theme;
 use Illuminate\Support\Facades\Event;
 use Twig\Environment;
@@ -10,6 +11,7 @@ use Twig\TwigFunction;
 describe('Twig environment', function () {
     afterEach(function () {
         Event::forget('cms.theme.getActiveTheme');
+        Event::forget('cms.extendTwig');
         Theme::resetCache();
         app()->forgetInstance('twig.environment');
     });
@@ -20,6 +22,31 @@ describe('Twig environment', function () {
         $template = $this->createTemplate(['content_html' => "{{ 'assets/css/theme.css'|theme }}"]);
 
         expect(app('dynamicpdf')->parseTemplate($template))->toContain('themes/demo/assets/css/theme.css');
+    });
+
+    it('keeps the CMS controller of the current request', function () {
+        Event::listen('cms.theme.getActiveTheme', fn (): string => 'demo');
+        Theme::resetCache();
+        $controller = new Controller;
+
+        app('dynamicpdf')->parseTemplate($this->createTemplate());
+
+        expect(Controller::getController())->toBe($controller);
+    });
+
+    it('builds a single CMS environment for a template with a layout', function () {
+        Event::listen('cms.theme.getActiveTheme', fn (): string => 'demo');
+        Theme::resetCache();
+        $layout = $this->createLayout();
+        $this->createTemplate(['code' => 'acme::pdf.invoice', 'layout_id' => $layout->id]);
+        $environments = 0;
+        Event::listen('cms.extendTwig', function () use (&$environments) {
+            $environments++;
+        });
+
+        app('dynamicpdf')->loadTemplate('acme::pdf.invoice');
+
+        expect($environments)->toBe(1);
     });
 
     it('renders through the system environment when no theme is active', function () {

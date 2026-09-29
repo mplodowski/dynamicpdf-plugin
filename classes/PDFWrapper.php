@@ -4,7 +4,6 @@ namespace Renatio\DynamicPDF\Classes;
 
 use Barryvdh\DomPDF\PDF;
 use Closure;
-use Cms\Classes\Controller;
 use Cms\Classes\Theme;
 use Dompdf\CanvasFactory;
 use Dompdf\Dompdf;
@@ -38,6 +37,8 @@ class PDFWrapper extends PDF
     protected ?array $pageNumbers = null;
 
     protected bool $pageNumbersStamped = false;
+
+    protected ?Environment $twigEnvironment = null;
 
     public function __construct(Dompdf $dompdf, ConfigRepository $config, Filesystem $files, ViewFactory $view)
     {
@@ -423,18 +424,23 @@ class PDFWrapper extends PDF
         return $this->twig()->createTemplate($markup)->render($data);
     }
 
+    protected function twig(): Environment
+    {
+        return $this->twigEnvironment ??= $this->makeTwig();
+    }
+
     /**
      * The CMS environment adds theme partials and content on top of the system one, so it
      * is used whenever the module is installed and a usable theme is active. Looking the
      * theme up can itself throw (no theme configured, a locked theme), which must not stop
      * a PDF from rendering.
      */
-    protected function twig(): Environment
+    protected function makeTwig(): Environment
     {
         if (System::hasModule('Cms')) {
             try {
                 if (Theme::getActiveTheme() !== null) {
-                    return (new Controller)->getTwig();
+                    return (new PDFTwigController)->getTwig();
                 }
             } catch (Exception) {
             }
