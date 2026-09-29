@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Twig\Error\SyntaxError;
 
 describe('Locale per render', function () {
@@ -33,7 +34,8 @@ describe('Locale per render', function () {
     });
 
     it('restores the previous locale when parsing fails', function () {
-        $this->createTemplate(['code' => 'acme::pdf.broken', 'content_html' => '{{ name']);
+        $template = $this->createTemplate(['code' => 'acme::pdf.broken']);
+        DB::table('renatio_dynamicpdf_pdf_templates')->where('id', $template->id)->update(['content_html' => '{{ name']);
 
         expect(fn () => app('dynamicpdf')->loadTemplate('acme::pdf.broken', locale: 'pl'))->toThrow(SyntaxError::class)
             ->and(app()->getLocale())->toBe('en');

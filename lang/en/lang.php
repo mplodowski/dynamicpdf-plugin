@@ -42,6 +42,8 @@ return [
         'copy_suffix' => '(copy)',
         'delete_view_refused' => 'This record cannot be deleted because it comes from a view file.',
         'reset_view_only' => 'Only a record that comes from a view file can be reset to it.',
+        'twig_invalid' => 'Twig syntax error on line :line: :message',
+        'preview_failed' => 'The preview could not be rendered. :message',
     ],
     'template' => [
         'menu_label' => 'Template',

@@ -108,7 +108,8 @@ describe('Twig environment', function () {
     it('reports a CMS rendering error instead of retrying with the system environment', function () {
         Event::listen('cms.theme.getActiveTheme', fn (): string => 'demo');
         Theme::resetCache();
-        $template = $this->createTemplate(['content_html' => '<p>{{ name </p>']);
+        $template = $this->createTemplate();
+        $template->content_html = '<p>{{ name </p>';
 
         expect(fn () => app('dynamicpdf')->parseTemplate($template))->toThrow(SyntaxError::class);
     });

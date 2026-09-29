@@ -9,11 +9,13 @@ use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Exception\ApplicationException;
+use October\Rain\Exception\ValidationException;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 use Renatio\DynamicPDF\Traits\Duplicates;
 use Renatio\DynamicPDF\Traits\TranslatesContent;
+use Renatio\DynamicPDF\Traits\ValidatesTwigSyntax;
 use Throwable;
 
 /**
@@ -34,6 +36,7 @@ class Template extends Model
 {
     use Duplicates;
     use TranslatesContent;
+    use ValidatesTwigSyntax;
     use Validation;
 
     public const LAYOUT_CACHE = 'renatio.dynamicpdf.layouts';
@@ -76,6 +79,15 @@ class Template extends Model
         $data = json_decode((string) $this->sample_data, true);
 
         return is_array($data) ? $data : [];
+    }
+
+    public function beforeValidate(): void
+    {
+        $errors = $this->twigSyntaxErrors();
+
+        if ($errors !== []) {
+            throw new ValidationException($errors);
+        }
     }
 
     protected function duplicateLabelAttribute(): string

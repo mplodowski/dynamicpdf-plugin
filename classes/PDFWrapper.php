@@ -21,6 +21,9 @@ use System\Facades\System;
 use System\Models\File;
 use System\Models\SiteDefinition;
 use Twig\Environment;
+use Twig\Error\Error as TwigError;
+use Twig\Error\SyntaxError;
+use Twig\Source;
 use UnexpectedValueException;
 
 /**
@@ -265,7 +268,7 @@ class PDFWrapper extends PDF
     public function parseTemplate(Template $template, array $data = []): string
     {
         return $this->renderWithEvents($template, $data, function (array $data) use ($template): string {
-            $html = $this->parseMarkup($template->content_html, $data);
+            $html = $this->parseMarkup($template->content_html, $data, (string) $template->code);
 
             if (! $template->layout) {
                 return $html;
@@ -349,6 +352,7 @@ class PDFWrapper extends PDF
         return $this->parseMarkup(
             $layout->content_html,
             $this->layoutData($layout, $data),
+            (string) $layout->code,
         );
     }
 
@@ -417,17 +421,52 @@ class PDFWrapper extends PDF
     }
 
     /**
+     * Compiles the markup without rendering it, on the environment a render would use, so
+     * filters and tags the CMS and other plugins register are known.
+     *
+     * @throws SyntaxError
+     */
+    public function checkSyntax(string $markup, string $name): void
+    {
+        $twig = $this->twig();
+
+        $this->whileTwigControllerCurrent(function () use ($twig, $markup, $name): string {
+            $twig->parse($twig->tokenize(new Source($markup, $name)));
+
+            return '';
+        });
+    }
+
+    /**
+     * Errors raised in the markup itself are renamed after the template or layout code, as
+     * Twig names string templates by a hash that does not say which record failed.
+     *
      * @param  array<string, mixed>  $data
      */
-    protected function parseMarkup(?string $markup, array $data): string
+    protected function parseMarkup(?string $markup, array $data, string $name): string
     {
         if ($markup === null || $markup === '') {
             return '';
         }
 
         $twig = $this->twig();
-        $render = fn (): string => $twig->createTemplate($markup)->render($data);
 
+        try {
+            return $this->whileTwigControllerCurrent(fn (): string => $twig->createTemplate($markup)->render($data));
+        } catch (TwigError $e) {
+            if (str_starts_with((string) $e->getSourceContext()?->getName(), '__string_template__')) {
+                $e->setSourceContext(new Source($markup, $name));
+            }
+
+            throw $e;
+        }
+    }
+
+    /**
+     * @param  callable(): string  $render
+     */
+    protected function whileTwigControllerCurrent(callable $render): string
+    {
         return $this->twigController ? $this->twigController->whileCurrent($render) : $render();
     }
 

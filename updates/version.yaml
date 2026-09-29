@@ -64,5 +64,6 @@ v8.1.0:
     - Page numbers without inline PHP, PDF::fake() for tests.
     - dynamicpdf:sync and dynamicpdf:check commands.
     - A layout used by templates can no longer be deleted.
+    - Invalid Twig in templates and layouts is rejected on save.
     - 20260907_0001_add_sample_data_to_templates_table.php
     - 20260907_0002_add_unique_code_indexes.php

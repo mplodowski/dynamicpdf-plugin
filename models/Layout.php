@@ -13,6 +13,7 @@ use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 use Renatio\DynamicPDF\Traits\Duplicates;
 use Renatio\DynamicPDF\Traits\TranslatesContent;
+use Renatio\DynamicPDF\Traits\ValidatesTwigSyntax;
 use System\Models\File;
 
 /**
@@ -30,6 +31,7 @@ class Layout extends Model
 {
     use Duplicates;
     use TranslatesContent;
+    use ValidatesTwigSyntax;
     use Validation;
 
     /**
@@ -76,14 +78,18 @@ class Layout extends Model
 
     public function beforeValidate(): void
     {
-        if (! $this->content_css || ! $this->isDirty('content_css')) {
-            return;
+        $errors = $this->twigSyntaxErrors();
+
+        if ($this->content_css && $this->isDirty('content_css')) {
+            try {
+                (new LessCompiler)->compile($this->content_css);
+            } catch (ApplicationException $e) {
+                $errors['content_css'] = $e->getMessage();
+            }
         }
 
-        try {
-            (new LessCompiler)->compile($this->content_css);
-        } catch (ApplicationException $e) {
-            throw new ValidationException(['content_css' => $e->getMessage()]);
+        if ($errors !== []) {
+            throw new ValidationException($errors);
         }
     }
 
