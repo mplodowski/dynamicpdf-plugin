@@ -16,6 +16,12 @@ columns:
         label: renatio.dynamicpdf::lang.templates.is_locked
         type: switch
 
+    templates:
+        label: renatio.dynamicpdf::lang.layout.used_by
+        relation: templates
+        relationCount: true
+        type: number
+        sortable: false
 
     created_at:
         label: renatio.dynamicpdf::lang.templates.created_at

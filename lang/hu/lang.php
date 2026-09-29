@@ -58,6 +58,8 @@ return [
         'create_layout' => 'Elrendezés létrehozása',
         'edit_layout' => 'Elrendezés szerkesztése',
         'not_found' => 'Nem található regisztrált elrendezés ezzel a kóddal',
+        'delete_in_use' => 'Ez az elrendezés nem törölhető, mert ezek a sablonok használják: :templates. Előbb rendeljen hozzájuk másik elrendezést.',
+        'used_by' => 'Használja',
     ],
     'settings' => [
         'description' => 'Sablonok és elrendezések kezelése.',

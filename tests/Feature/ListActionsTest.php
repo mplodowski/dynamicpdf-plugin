@@ -1,5 +1,6 @@
 <?php
 
+use Backend\Facades\Backend;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File as Filesystem;
 use Renatio\DynamicPDF\Classes\PDFManager;
@@ -77,11 +78,38 @@ describe('List actions', function () {
         expect(Layout::find($layout->id))->toBeNull();
     });
 
+    it('refuses to delete a layout that templates use', function (string $path, string $handler) {
+        $layout = $this->createLayout();
+        $this->createTemplate(['title' => 'Customer invoice', 'layout_id' => $layout->id]);
+
+        $response = $this->post(Backend::url(str_replace(':id', (string) $layout->id, $path)), [
+            'id' => $layout->id,
+            'definition' => 'layouts',
+        ], ['X-AJAX-HANDLER' => $handler, 'X-Requested-With' => 'XMLHttpRequest']);
+
+        expect($response->getContent())->toContain('Customer invoice')
+            ->and(Layout::find($layout->id))->not->toBeNull()
+            ->and(Template::whereLayoutId($layout->id)->exists())->toBeTrue();
+    })->with([
+        'from the list' => ['renatio/dynamicpdf/templates', 'onDeleteRecord'],
+        'from the form' => ['renatio/dynamicpdf/layouts/update/:id', 'onDelete'],
+    ]);
+
     it('duplicates a layout from the list with manage_layouts', function () {
         $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);
 
         $this->listAction('onDuplicateRecord', ['id' => $layout->id, 'definition' => 'layouts'])->assertOk();
 
         expect(Layout::whereCode('acme::pdf.layouts.default_copy')->exists())->toBeTrue();
+    });
+
+    it('duplicates a layout that templates use without copying the templates', function () {
+        $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);
+        $this->createTemplate(['layout_id' => $layout->id]);
+
+        $copy = $layout->duplicate();
+
+        expect(Template::count())->toBe(1)
+            ->and(Template::whereLayoutId($copy->id)->exists())->toBeFalse();
     });
 });

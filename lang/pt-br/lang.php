@@ -58,6 +58,8 @@ return [
         'create_layout' => 'Criar Layout',
         'edit_layout' => 'Editar Layout',
         'not_found' => 'Incapaz de encontrar um layout registrado com código',
+        'delete_in_use' => 'Este layout não pode ser excluído porque estes modelos o usam: :templates. Atribua outro layout a eles primeiro.',
+        'used_by' => 'Usado por',
     ],
     'settings' => [
         'description' => 'Gerencie modelos e layouts.',

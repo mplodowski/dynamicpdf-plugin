@@ -58,6 +58,8 @@ return [
         'create_layout' => 'Vytvoření PDF layoutu',
         'edit_layout' => 'Úprava PDF layoutu',
         'not_found' => 'Nebyl nalezen registrovaný layout s kódem',
+        'delete_in_use' => 'Tento layout nelze smazat, protože ho používají tyto šablony: :templates. Nejprve jim přiřaďte jiný layout.',
+        'used_by' => 'Použito v',
     ],
     'settings' => [
         'description' => 'Správa PDF šablon a layoutů.',

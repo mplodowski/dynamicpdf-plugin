@@ -58,6 +58,8 @@ return [
         'create_layout' => 'Utwórz układ',
         'edit_layout' => 'Edycja układu',
         'not_found' => 'Nie znaleziono zarejestrowanego układu o kodzie',
+        'delete_in_use' => 'Tego układu nie można usunąć, ponieważ używają go szablony: :templates. Najpierw przypisz im inny układ.',
+        'used_by' => 'Używany przez',
         'css_reads_files' => 'CSS nie może odczytywać plików serwera. Usuń @import plików LESS, @import (inline) oraz funkcje data-uri(), image-size(), image-width() i image-height(); zwykłe importy CSS są dozwolone.',
         'css_invalid' => 'Nie udało się skompilować CSS układu.',
     ],
