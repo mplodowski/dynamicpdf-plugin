@@ -4,7 +4,6 @@ namespace Renatio\DynamicPDF\Classes;
 
 use Barryvdh\DomPDF\PDF;
 use Closure;
-use Cms\Classes\Controller;
 use Cms\Classes\Theme;
 use Dompdf\CanvasFactory;
 use Dompdf\Dompdf;
@@ -38,6 +37,12 @@ class PDFWrapper extends PDF
     protected ?array $pageNumbers = null;
 
     protected bool $pageNumbersStamped = false;
+
+    protected ?Environment $twigEnvironment = null;
+
+    protected ?PDFTwigController $twigController = null;
+
+    protected ?string $twigTheme = null;
 
     public function __construct(Dompdf $dompdf, ConfigRepository $config, Filesystem $files, ViewFactory $view)
     {
@@ -420,7 +425,27 @@ class PDFWrapper extends PDF
             return '';
         }
 
-        return $this->twig()->createTemplate($markup)->render($data);
+        $twig = $this->twig();
+        $render = fn (): string => $twig->createTemplate($markup)->render($data);
+
+        return $this->twigController ? $this->twigController->whileCurrent($render) : $render();
+    }
+
+    /**
+     * The environment is built once per theme, so a wrapper reused under another site
+     * context does not keep rendering with the first site's theme.
+     */
+    protected function twig(): Environment
+    {
+        $theme = $this->activeTheme();
+
+        if ($this->twigEnvironment === null || $this->twigTheme !== $theme?->getDirName()) {
+            $this->twigTheme = $theme?->getDirName();
+            $this->twigController = $theme ? $this->makeTwigController($theme) : null;
+            $this->twigEnvironment = $this->twigController?->getTwig() ?? app('twig.environment');
+        }
+
+        return $this->twigEnvironment;
     }
 
     /**
@@ -429,18 +454,26 @@ class PDFWrapper extends PDF
      * theme up can itself throw (no theme configured, a locked theme), which must not stop
      * a PDF from rendering.
      */
-    protected function twig(): Environment
+    protected function activeTheme(): ?Theme
     {
-        if (System::hasModule('Cms')) {
-            try {
-                if (Theme::getActiveTheme() !== null) {
-                    return (new Controller)->getTwig();
-                }
-            } catch (Exception) {
-            }
+        if (! System::hasModule('Cms')) {
+            return null;
         }
 
-        return app('twig.environment');
+        try {
+            return Theme::getActiveTheme();
+        } catch (Exception) {
+            return null;
+        }
+    }
+
+    protected function makeTwigController(Theme $theme): ?PDFTwigController
+    {
+        try {
+            return new PDFTwigController($theme);
+        } catch (Exception) {
+            return null;
+        }
     }
 
     /**
