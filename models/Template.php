@@ -4,6 +4,7 @@ namespace Renatio\DynamicPDF\Models;
 
 use ArrayObject;
 use Dompdf\Adapter\CPDF;
+use Dompdf\Options;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Model;
@@ -267,6 +268,26 @@ class Template extends Model
             'portrait' => 'renatio.dynamicpdf::lang.orientation.portrait',
             'landscape' => 'renatio.dynamicpdf::lang.orientation.landscape',
         ];
+    }
+
+    /**
+     * An empty size or orientation falls back to the dompdf defaults, so the empty option names them.
+     *
+     * @param  object  $fields
+     */
+    public function filterFields($fields, ?string $context = null): void
+    {
+        $options = new Options(app('dompdf.options'));
+        $size = $options->getDefaultPaperSize();
+        $orientation = array_get(self::getOrientationOptions(), $options->getDefaultPaperOrientation());
+
+        if (isset($fields->size) && is_string($size)) {
+            $fields->size->emptyOption(trans('renatio.dynamicpdf::lang.options.default', ['value' => ucfirst($size)]));
+        }
+
+        if (isset($fields->orientation) && $orientation) {
+            $fields->orientation->emptyOption(trans('renatio.dynamicpdf::lang.options.default', ['value' => trans($orientation)]));
+        }
     }
 
     public function getView(): ?string

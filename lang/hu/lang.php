@@ -92,6 +92,7 @@ return [
     ],
     'options' => [
         'empty' => '-- válasszon --',
+        'default' => 'Alapértelmezett (:value)',
     ],
     'tab' => [
         'options' => 'Beállítások',

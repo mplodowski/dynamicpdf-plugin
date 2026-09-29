@@ -92,6 +92,7 @@ return [
     ],
     'options' => [
         'empty' => '-- auswählen --',
+        'default' => 'Standard (:value)',
     ],
     'tab' => [
         'options' => 'Optionen',

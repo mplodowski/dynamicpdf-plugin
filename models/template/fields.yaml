@@ -22,7 +22,6 @@ fields:
 
     description:
         label: renatio.dynamicpdf::lang.templates.description
-        tab: renatio.dynamicpdf::lang.tab.options
         type: textarea
         size: tiny
 
