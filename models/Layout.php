@@ -65,8 +65,14 @@ class Layout extends Model
 
     public function beforeValidate(): void
     {
-        if ($this->content_css && LessCompiler::canReadFiles($this->content_css)) {
-            throw new ValidationException(['content_css' => trans('renatio.dynamicpdf::lang.layout.css_reads_files')]);
+        if (! $this->content_css || ! $this->isDirty('content_css')) {
+            return;
+        }
+
+        try {
+            (new LessCompiler)->compile($this->content_css);
+        } catch (ApplicationException $e) {
+            throw new ValidationException(['content_css' => $e->getMessage()]);
         }
     }
 
@@ -109,7 +115,7 @@ class Layout extends Model
             return '';
         }
 
-        return LessCompiler::compile($this->content_css);
+        return (new LessCompiler)->compile($this->content_css);
     }
 
     /**

@@ -33,11 +33,17 @@ describe('Layout', function () {
 
     describe('server-local files', function () {
         beforeEach(function () {
+            $this->documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? null;
+            $_SERVER['DOCUMENT_ROOT'] = '/';
             $this->secret = tempnam(sys_get_temp_dir(), 'dpdf');
-            file_put_contents($this->secret, 'body { color: MARKER_184; }');
+            rename($this->secret, $this->secret .= '.svg');
+            file_put_contents($this->secret, '<svg width="184" height="1"></svg>');
         });
 
-        afterEach(fn () => @unlink($this->secret));
+        afterEach(function () {
+            @unlink($this->secret);
+            $_SERVER['DOCUMENT_ROOT'] = $this->documentRoot;
+        });
 
         dataset('file reading LESS', [
             'inline import' => '@import (inline) "%s";',
@@ -45,7 +51,9 @@ describe('Layout', function () {
             'import inside a media block' => '@media print { @import (inline) "%s"; }',
             'interpolated import' => '@file: "%s"; @import (inline) "@{file}";',
             'data-uri' => 'body { background: DATA-URI("text/plain", "%s"); }',
-            'image-size inside a mixin' => '.m() { width: image-width("%s"); } body { .m(); }',
+            'datauri alias' => 'body { background: datauri("text/plain", "%s"); }',
+            'image-width inside a mixin' => '.m() { width: image-width("%s"); } body { .m(); }',
+            'imagewidth alias' => 'body { width: imagewidth("%s"); }',
         ]);
 
         it('never compiles a stored layout that reads one', function (string $css) {
@@ -60,11 +68,17 @@ describe('Layout', function () {
             expect(fn () => $this->createLayout(['content_css' => sprintf($css, $this->secret)]))->toThrow(ValidationException::class);
         })->with('file reading LESS');
 
-        it('keeps remote CSS imports for dompdf', function () {
-            $layout = $this->createLayout(['content_css' => '@import url("https://fonts.googleapis.com/css?family=Roboto"); @w: 2px; p { border: @w solid; }']);
+        it('leaves plain CSS imports to dompdf', function () {
+            $layout = $this->createLayout(['content_css' => '@import url("https://fonts.googleapis.com/css?family=Roboto"); @import "fonts.css"; @w: 2px; p { border: @w solid; }']);
 
             expect($layout->getCSS())->toContain('@import url("https://fonts.googleapis.com/css?family=Roboto")')
+                ->toContain('@import "fonts.css"')
                 ->toContain('border: 2px solid');
         });
+    });
+
+    it('rejects LESS that does not compile with the line it failed on', function () {
+        expect(fn () => $this->createLayout(['content_css' => "p {\n color: red;\n b: ;;{"]))
+            ->toThrow(ValidationException::class, 'on line 3');
     });
 });
