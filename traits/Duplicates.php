@@ -35,6 +35,7 @@ trait Duplicates
 
     protected function uniqueCopyCode(string $code): string
     {
+        $code = (string) preg_replace('#[^\w.:/-]#', '_', $code);
         $candidate = $code . '_copy';
 
         for ($i = 2; static::whereCode($candidate)->exists(); $i++) {

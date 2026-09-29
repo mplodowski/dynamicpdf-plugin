@@ -228,6 +228,28 @@ class Templates extends Controller
         return $this->listRefresh($definition);
     }
 
+    /**
+     * A row opens the first page the user may see, so a preview-only role never lands on a 403.
+     *
+     * @param  Template|Layout  $record
+     * @param  string|null  $definition
+     * @return string|array<string, bool>|null
+     */
+    public function listOverrideRecordUrl($record, $definition = null): string|array|null
+    {
+        $permission = "renatio.dynamicpdf.manage_{$definition}";
+
+        if (BackendAuth::userHasAccess("{$permission}.update")) {
+            return null;
+        }
+
+        if (BackendAuth::userHasAccess("{$permission}.preview")) {
+            return "renatio/dynamicpdf/{$definition}/preview/{$record->id}";
+        }
+
+        return ['clickable' => false];
+    }
+
     protected function listDefinition(): string
     {
         return post('definition') === 'layouts' ? 'layouts' : 'templates';

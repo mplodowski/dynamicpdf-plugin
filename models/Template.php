@@ -16,6 +16,7 @@ use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 use Renatio\DynamicPDF\Traits\Duplicates;
 use Renatio\DynamicPDF\Traits\TranslatesContent;
+use Renatio\DynamicPDF\Traits\ValidatesCodeFormat;
 use Renatio\DynamicPDF\Traits\ValidatesTwigSyntax;
 use Throwable;
 
@@ -37,6 +38,7 @@ class Template extends Model
 {
     use Duplicates;
     use TranslatesContent;
+    use ValidatesCodeFormat;
     use ValidatesTwigSyntax;
     use Validation;
 
@@ -65,9 +67,14 @@ class Template extends Model
     /** @var array<string, array<string>> */
     public $rules = [
         'title' => ['required'],
-        'code' => ['required', 'unique:renatio_dynamicpdf_pdf_templates'],
+        'code' => ['required', self::CODE_FORMAT, 'unique:renatio_dynamicpdf_pdf_templates'],
         'content_html' => ['required'],
         'sample_data' => ['nullable', 'json'],
+    ];
+
+    /** @var array<string, string> */
+    public $customMessages = [
+        'code.regex' => 'renatio.dynamicpdf::lang.templates.code_format',
     ];
 
     /**
@@ -84,6 +91,8 @@ class Template extends Model
 
     public function beforeValidate(): void
     {
+        $this->exemptStoredCodeFromFormat();
+
         $errors = $this->twigSyntaxErrors();
 
         if ($errors !== []) {

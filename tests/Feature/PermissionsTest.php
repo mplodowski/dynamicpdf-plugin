@@ -270,3 +270,41 @@ function pdfRecordsSnapshot(): array
         DB::table('renatio_dynamicpdf_pdf_layouts')->orderBy('id')->get()->all(),
     ];
 }
+
+describe('Preview-only roles', function () {
+    beforeEach(function () {
+        $this->template = $this->createTemplate();
+        $this->layout = $this->createLayout();
+    });
+
+    it('links each list row to the page the user may open', function (array $permissions, ?string $action) {
+        actingAsPdfUserWith(array_merge(['manage_templates', 'manage_layouts'], $permissions));
+
+        $content = (new Templates)->run('index', ['layouts'])->getContent();
+
+        foreach (['templates' => $this->template->id, 'layouts' => $this->layout->id] as $definition => $id) {
+            foreach (['update', 'preview'] as $candidate) {
+                $url = Backend::url("renatio/dynamicpdf/{$definition}/{$candidate}/{$id}") . '"';
+
+                expect(str_contains($content, $url))->toBe($candidate === $action, "{$definition} {$candidate}");
+            }
+        }
+    })->with([
+        'update' => [['manage_templates.update', 'manage_templates.preview', 'manage_layouts.update', 'manage_layouts.preview'], 'update'],
+        'preview only' => [['manage_templates.preview', 'manage_layouts.preview'], 'preview'],
+        'neither' => [[], null],
+    ]);
+
+    it('closes the preview to the list without the update permission', function (Closure $controller, string $definition, string $list) {
+        actingAsPdfUserWith(['manage_templates', 'manage_templates.preview', 'manage_layouts', 'manage_layouts.preview']);
+        $id = $definition === 'layouts' ? $this->layout->id : $this->template->id;
+
+        $content = $controller()->run('preview', [$id])->getContent();
+
+        expect($content)->not->toContain(Backend::url("renatio/dynamicpdf/{$definition}/update/{$id}") . '"')
+            ->and($content)->toContain('href="' . Backend::url($list) . '"');
+    })->with([
+        'templates' => [fn () => new Templates, 'templates', 'renatio/dynamicpdf/templates'],
+        'layouts' => [fn () => new Layouts, 'layouts', 'renatio/dynamicpdf/templates/index/layouts'],
+    ]);
+});
