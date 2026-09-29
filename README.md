@@ -361,8 +361,8 @@ list with the current defaults is in the published `config/dompdf.php` and in
 [Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php); every option has a matching
 `set*()` method on the wrapper named after the camel-cased key, except the `enable_*` options, which are
 `setIsRemoteEnabled()`, `setIsPhpEnabled()`, `setIsJavascriptEnabled()`, `setIsFontSubsettingEnabled()` and
-`setIsPdfAEnabled()`. A setter that exists on neither dompdf nor its options
-throws `UnexpectedValueException`.
+`setIsPdfAEnabled()`; `enable_html5_parser` has no effect since dompdf 3. A setter that exists on neither dompdf nor
+its options throws `UnexpectedValueException`.
 
 ### Self-signed certificates
 
