@@ -13,6 +13,7 @@ use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use System\Models\File;
+use UnexpectedValueException;
 
 /**
  * Records what a project renders without touching templates, Twig, dompdf, the database
@@ -160,6 +161,10 @@ class PDFFake extends PDFWrapper implements Fake
 
     public function __call($method, $parameters)
     {
+        if (! method_exists($this->dompdf, $method) && ! method_exists($this->dompdf->getOptions(), $method)) {
+            throw new UnexpectedValueException("Method [{$method}] does not exist on PDF instance.");
+        }
+
         return $this;
     }
 

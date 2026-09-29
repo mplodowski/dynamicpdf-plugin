@@ -54,6 +54,16 @@ describe('PDFWrapper', function () {
         'no orientation' => [null, 'portrait', [0.0, 0.0, 419.53, 595.28]],
     ]);
 
+    it('applies the template orientation on the default paper size when no size is set', function () {
+        $this->createTemplate(['code' => 'acme::pdf.paper', 'size' => null, 'orientation' => 'landscape']);
+
+        $dompdf = app('dynamicpdf')->loadTemplate('acme::pdf.paper')->getDomPDF();
+        [, , $width, $height] = $dompdf->getPaperSize();
+
+        expect($dompdf->getPaperOrientation())->toBe('landscape')
+            ->and($width)->toBeGreaterThan($height);
+    });
+
     it('renders an empty string for a template with null content_html', function () {
         $template = $this->createTemplate();
         $template->content_html = null;

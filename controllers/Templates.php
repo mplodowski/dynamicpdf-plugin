@@ -247,10 +247,11 @@ class Templates extends Controller
         }
 
         $id = (int) post('id');
-        $model = $definition === 'layouts' ? Layout::find($id) : Template::find($id);
+        $class = $definition === 'layouts' ? Layout::class : Template::class;
+        $model = $class::find($id);
 
         if (! $model) {
-            throw new ApplicationException(e(trans('backend::lang.form.not_found_message', ['class' => $definition, 'id' => $id])));
+            throw new ApplicationException(e(trans('backend::lang.model.not_found', ['class' => $class, 'id' => $id])));
         }
 
         return $model;

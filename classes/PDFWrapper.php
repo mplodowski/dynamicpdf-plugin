@@ -233,8 +233,8 @@ class PDFWrapper extends PDF
             $encoding,
         );
 
-        if ($template->size) {
-            $this->setPaper($template->size, $template->orientation ?? 'portrait');
+        if ($template->size || $template->orientation) {
+            $this->setPaper($template->size ?: $this->dompdf->getOptions()->getDefaultPaperSize(), $template->orientation ?: 'portrait');
         }
 
         return $this;
