@@ -17,7 +17,7 @@
 
     <div class="form-buttons">
         <a class="btn btn-default"
-           href="<?= Backend::url('renatio/dynamicpdf/templates/update/'.$formModel->id) ?>">
+           href="<?= Backend::url($this->formCheckPermission('modelUpdate') ? 'renatio/dynamicpdf/templates/update/'.$formModel->id : 'renatio/dynamicpdf/templates') ?>">
             <?= e(trans('backend::lang.form.close')) ?>
         </a>
     </div>
