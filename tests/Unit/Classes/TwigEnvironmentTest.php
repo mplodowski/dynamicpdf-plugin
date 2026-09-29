@@ -3,6 +3,8 @@
 use Cms\Classes\Controller;
 use Cms\Classes\Theme;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\File;
+use Renatio\DynamicPDF\Classes\PDFTwigController;
 use Twig\Environment;
 use Twig\Error\SyntaxError;
 use Twig\Loader\ArrayLoader;
@@ -32,6 +34,43 @@ describe('Twig environment', function () {
         app('dynamicpdf')->parseTemplate($this->createTemplate());
 
         expect(Controller::getController())->toBe($controller);
+    });
+
+    it('acts as the CMS controller while rendering outside a front-end request', function () {
+        Event::listen('cms.theme.getActiveTheme', fn (): string => 'demo');
+        Theme::resetCache();
+        (new ReflectionProperty(Controller::class, 'instance'))->setValue(null, null);
+        Event::listen('cms.extendTwig', function (Environment $twig): void {
+            $twig->addFunction(new TwigFunction('current_controller', fn (): string => get_debug_type(Controller::getController())));
+        });
+        $template = $this->createTemplate(['content_html' => '{{ current_controller() }}']);
+
+        expect(app('dynamicpdf')->parseTemplate($template))->toBe(PDFTwigController::class)
+            ->and(Controller::getController())->toBeNull();
+    });
+
+    it('rebuilds the CMS environment when a reused wrapper renders for another theme', function () {
+        $theme = 'dynamicpdf-test-theme';
+        File::makeDirectory(themes_path($theme));
+        File::put(themes_path($theme . '/theme.yaml'), 'name: Test');
+        $active = 'demo';
+        Event::listen('cms.theme.getActiveTheme', function () use (&$active): string {
+            return $active;
+        });
+        Theme::resetCache();
+        $template = $this->createTemplate(['content_html' => "{{ 'style.css'|theme }}"]);
+        $pdf = app('dynamicpdf');
+
+        try {
+            $first = $pdf->parseTemplate($template);
+            $active = $theme;
+            Theme::resetCache();
+
+            expect($first)->toContain('themes/demo/style.css')
+                ->and($pdf->parseTemplate($template))->toContain("themes/{$theme}/style.css");
+        } finally {
+            File::deleteDirectory(themes_path($theme));
+        }
     });
 
     it('builds a single CMS environment for a template with a layout', function () {
