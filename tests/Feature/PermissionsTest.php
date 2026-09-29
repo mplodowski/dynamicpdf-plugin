@@ -29,7 +29,7 @@ describe('Permissions', function () {
     });
 
     it('hides the layouts list without manage_layouts', function () {
-        actingAsBackendUserWith(['manage_templates', 'manage_templates.create']);
+        actingAsPdfUserWith(['manage_templates', 'manage_templates.create']);
         $this->createLayout();
 
         $controller = new Templates;
@@ -42,7 +42,7 @@ describe('Permissions', function () {
     });
 
     it('shows the layouts list with manage_layouts', function () {
-        actingAsBackendUserWith(['manage_templates', 'manage_layouts', 'manage_layouts.create']);
+        actingAsPdfUserWith(['manage_templates', 'manage_layouts', 'manage_layouts.create']);
         $this->createLayout();
 
         $content = (new Templates)->run('index', ['layouts'])->getContent();
@@ -52,7 +52,7 @@ describe('Permissions', function () {
     });
 
     it('serves the template preview with manage_templates', function () {
-        actingAsBackendUserWith(['manage_templates', 'manage_templates.preview']);
+        actingAsPdfUserWith(['manage_templates', 'manage_templates.preview']);
         $template = $this->createTemplate(['content_html' => '<p>allowed</p>']);
 
         $response = (new Templates)->run('html', [$template->id]);
@@ -63,7 +63,7 @@ describe('Permissions', function () {
 
 describe('Granular permissions', function () {
     it('refuses to duplicate a template from the list without the create permission', function () {
-        actingAsBackendUserWith(['manage_templates']);
+        actingAsPdfUserWith(['manage_templates']);
         $template = $this->createTemplate(['code' => 'acme::pdf.invoice']);
 
         $response = $this->listAction('onDuplicateRecord', ['id' => $template->id, 'definition' => 'templates']);
@@ -73,7 +73,7 @@ describe('Granular permissions', function () {
     });
 
     it('duplicates a template from the list with the create permission', function () {
-        actingAsBackendUserWith(['manage_templates', 'manage_templates.create']);
+        actingAsPdfUserWith(['manage_templates', 'manage_templates.create']);
         $template = $this->createTemplate(['code' => 'acme::pdf.invoice']);
 
         $this->listAction('onDuplicateRecord', ['id' => $template->id, 'definition' => 'templates'])->assertOk();
@@ -82,7 +82,7 @@ describe('Granular permissions', function () {
     });
 
     it('refuses to duplicate a layout from the list without the layout create permission', function () {
-        actingAsBackendUserWith(['manage_templates', 'manage_layouts', 'manage_templates.create']);
+        actingAsPdfUserWith(['manage_templates', 'manage_layouts', 'manage_templates.create']);
         $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);
 
         $response = $this->listAction('onDuplicateRecord', ['id' => $layout->id, 'definition' => 'layouts']);
@@ -92,7 +92,7 @@ describe('Granular permissions', function () {
     });
 
     it('refuses to reset a template from the list without the update permission', function () {
-        actingAsBackendUserWith(['manage_templates']);
+        actingAsPdfUserWith(['manage_templates']);
         $template = $this->createTemplate();
 
         $response = $this->listAction('onResetRecord', ['id' => $template->id, 'definition' => 'templates']);
@@ -101,7 +101,7 @@ describe('Granular permissions', function () {
     });
 
     it('refuses to delete a template from the list without the delete permission', function () {
-        actingAsBackendUserWith(['manage_templates']);
+        actingAsPdfUserWith(['manage_templates']);
         $template = $this->createTemplate();
 
         $response = $this->listAction('onDeleteRecord', ['id' => $template->id, 'definition' => 'templates']);
@@ -111,7 +111,7 @@ describe('Granular permissions', function () {
     });
 
     it('deletes a template from the list with the delete permission', function () {
-        actingAsBackendUserWith(['manage_templates', 'manage_templates.delete']);
+        actingAsPdfUserWith(['manage_templates', 'manage_templates.delete']);
         $template = $this->createTemplate();
 
         $this->listAction('onDeleteRecord', ['id' => $template->id, 'definition' => 'templates'])->assertOk();
@@ -120,7 +120,7 @@ describe('Granular permissions', function () {
     });
 
     it('refuses the template previews without the preview permission', function () {
-        actingAsBackendUserWith(['manage_templates']);
+        actingAsPdfUserWith(['manage_templates']);
         $template = $this->createTemplate();
 
         expect(fn () => (new Templates)->run('html', [$template->id]))->toThrow(ForbiddenException::class)
@@ -128,27 +128,25 @@ describe('Granular permissions', function () {
     });
 
     it('refuses the layout previews without the layout preview permission', function () {
-        actingAsBackendUserWith(['manage_layouts']);
+        actingAsPdfUserWith(['manage_layouts']);
         $layout = $this->createLayout();
 
         expect(fn () => (new Layouts)->run('html', [$layout->id]))->toThrow(ForbiddenException::class);
     });
 
     it('hides the delete button of a view-driven template from a user without the update permission', function () {
-        actingAsBackendUserWith(['manage_templates', 'manage_templates.delete']);
+        actingAsPdfUserWith(['manage_templates', 'manage_templates.delete']);
         PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
         $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'is_custom' => false]);
 
         $content = (new Templates)->run('index', ['templates'])->getContent();
-
-        PDFManager::forgetInstance();
 
         expect($content)->not->toContain('onDeleteRecord')
             ->and($content)->not->toContain('onResetRecord');
     });
 
     it('hides the new template button without the create permission', function () {
-        actingAsBackendUserWith(['manage_templates']);
+        actingAsPdfUserWith(['manage_templates']);
 
         $content = (new Templates)->run('index', ['templates'])->getContent();
 
@@ -170,8 +168,6 @@ describe('Guarded controller actions', function () {
 
         (new SyncTemplates)->handle();
     });
-
-    afterEach(fn () => PDFManager::forgetInstance());
 
     it('refuses the action without its permission and leaves the records untouched', function (string $permission, string $path, ?string $handler) {
         actingAsPdfManager([$permission]);

@@ -11,8 +11,6 @@ describe('Registered view fallback', function () {
         PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.default']);
     });
 
-    afterEach(fn () => PDFManager::forgetInstance());
-
     it('builds a template from its registered view when the record does not exist', function () {
         $template = Template::byCode('renatio.dynamicpdf::pdf.invoice');
 

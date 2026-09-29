@@ -15,7 +15,7 @@ pest()->extend(TestCase::class)
 /**
  * @param  array<int, string>  $permissions  codes without the plugin prefix
  */
-function actingAsBackendUserWith(array $permissions): User
+function actingAsPdfUserWith(array $permissions): User
 {
     $granted = ['general.backend' => 1];
 
@@ -46,7 +46,7 @@ function actingAsBackendUserWith(array $permissions): User
  */
 function actingAsPdfManager(array $except = []): User
 {
-    return actingAsBackendUserWith(array_diff([
+    return actingAsPdfUserWith(array_diff([
         'manage_templates',
         'manage_templates.create',
         'manage_templates.update',

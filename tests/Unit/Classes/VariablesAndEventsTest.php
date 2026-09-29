@@ -9,8 +9,6 @@ use System\Models\Parameter;
 
 describe('Global variables and events', function () {
     afterEach(function () {
-        PDFManager::forgetInstance();
-        Parameter::clearInternalCache();
         Event::forget(Events::BEFORE_RENDER);
         Event::forget(Events::AFTER_RENDER);
     });

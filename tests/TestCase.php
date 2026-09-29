@@ -6,6 +6,7 @@ use Backend\Facades\Backend;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\View;
 use Illuminate\Testing\TestResponse;
+use Monolog\Handler\NullHandler;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
@@ -14,6 +15,21 @@ use System\Models\SiteDefinition;
 
 abstract class TestCase extends OctoberPestTestCase
 {
+    /**
+     * Keeps the suite out of the host project's storage/logs and of storage/temp/log.htm,
+     * which the preview writes in debug mode.
+     */
+    public function setUpOctoberPlugin(): void
+    {
+        config([
+            'logging.channels.dynamicpdf-tests' => ['driver' => 'monolog', 'handler' => NullHandler::class],
+            'logging.default' => 'dynamicpdf-tests',
+            'app.debug' => false,
+        ]);
+
+        parent::setUpOctoberPlugin();
+    }
+
     /**
      * @param  array<string, mixed>  $fields
      * @return TestResponse<\Illuminate\Http\Response>
@@ -92,7 +108,7 @@ abstract class TestCase extends OctoberPestTestCase
     }
 
     /**
-     * The caller deletes the returned directory and forgets the PDFManager instance.
+     * The caller deletes the returned directory.
      *
      * @param  array<string, string>  $files  view name without extension => file content
      */

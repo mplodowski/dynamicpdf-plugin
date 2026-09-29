@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\File as Filesystem;
 use October\Rain\Exception\ValidationException;
-use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
 use Renatio\DynamicPDF\Models\Layout;
@@ -76,10 +75,7 @@ describe('View-driven template save', function () {
         actingAsPdfManager();
     });
 
-    afterEach(function () {
-        PDFManager::forgetInstance();
-        Filesystem::deleteDirectory($this->views);
-    });
+    afterEach(fn () => Filesystem::deleteDirectory($this->views));
 
     it('stays view-driven when only the sample data is saved after the view file changed on disk', function () {
         Filesystem::put($this->views . '/pdf/a.htm', "title = \"a\"\n==\n<p>v2</p>");

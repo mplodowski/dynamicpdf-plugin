@@ -1,17 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Artisan;
-use Renatio\DynamicPDF\Classes\PDFManager;
-use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 
 describe('dynamicpdf:demo', function () {
-    afterEach(function () {
-        PDFManager::forgetInstance();
-        SyncTemplates::forgetFailures();
-    });
-
     it('creates the demo templates and layouts and removes them again', function () {
         Artisan::call('dynamicpdf:demo');
 

@@ -1,16 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Artisan;
-use Renatio\DynamicPDF\Classes\PDFManager;
-use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Template;
 
 describe('dynamicpdf:demo', function () {
-    afterEach(function () {
-        PDFManager::forgetInstance();
-        SyncTemplates::forgetFailures();
-    });
-
     it('fails and lists the codes when a demo template could not be synchronised', function () {
         Template::creating(fn () => throw new RuntimeException('cannot write'));
 

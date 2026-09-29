@@ -13,8 +13,6 @@ describe('Reset to default', function () {
         PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.default']);
     });
 
-    afterEach(fn () => PDFManager::forgetInstance());
-
     it('restores a customised template from its view and makes it follow the view again', function () {
         $template = $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'title' => 'Edited', 'content_html' => '<p>edited</p>', 'is_custom' => true]);
 
