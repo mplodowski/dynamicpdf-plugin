@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "october/rain": "^4.0",
+        "october/rain": "^4.4",
         "barryvdh/laravel-dompdf": "^3.1"
     },
     "require-dev": {

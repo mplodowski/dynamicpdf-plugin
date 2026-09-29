@@ -74,8 +74,8 @@ always on.
 
 ## Upgrading To 8.1.0
 
-**Security release. Upgrade every installation running 8.0.x.** Requires PHP 8.2 and October CMS 4.0. Run
-`php artisan october:migrate`. October CMS 3 is no longer supported and stays on 8.0.3.
+**Security release. Upgrade every installation running 8.0.x.** Requires PHP 8.2 and October CMS 4.4. Run
+`php artisan october:migrate`. Composer keeps sites on October CMS 3 or 4.0–4.3 on 8.0.3 until October is upgraded.
 
 The backend preview is sandboxed: no inline PHP, remote resources only from the application host and
 `allowed_remote_hosts`, local files only from the asset directories. Reset the demo **Header and Footer** layout to
