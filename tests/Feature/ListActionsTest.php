@@ -3,7 +3,6 @@
 use Backend\Facades\Backend;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File as Filesystem;
-use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 
@@ -17,8 +16,6 @@ describe('List actions', function () {
         if ($this->views !== '') {
             Filesystem::deleteDirectory($this->views);
         }
-
-        PDFManager::forgetInstance();
     });
 
     it('duplicates a template from the list and redirects to the copy', function () {

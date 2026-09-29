@@ -1,6 +1,5 @@
 <?php
 
-use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Template;
 
@@ -10,16 +9,7 @@ function renderHtml(string $code, ?string $locale = null): string
 }
 
 describe('Localized view files', function () {
-    beforeEach(function () {
-        PDFManager::forgetInstance();
-        SyncTemplates::forgetFailures();
-    });
-
-    afterEach(function () {
-        PDFManager::forgetInstance();
-        SyncTemplates::forgetFailures();
-        File::deleteDirectory($this->directory);
-    });
+    afterEach(fn () => File::deleteDirectory($this->directory));
 
     describe('template', function () {
         beforeEach(function () {

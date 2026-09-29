@@ -13,10 +13,7 @@ describe('Template list queries', function () {
         )));
     });
 
-    afterEach(function () {
-        PDFManager::forgetInstance();
-        File::deleteDirectory($this->views);
-    });
+    afterEach(fn () => File::deleteDirectory($this->views));
 
     it('resolves the layout of view-driven templates once per code, not once per row', function () {
         $this->createLayout(['code' => 'acme::pdf.layouts.default']);

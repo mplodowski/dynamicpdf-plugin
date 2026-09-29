@@ -12,8 +12,11 @@ use October\Tests\Concerns\PerformsMigrations;
 use October\Tests\Concerns\PerformsRegistrations;
 use PDO;
 use ReflectionClass;
+use Renatio\DynamicPDF\Classes\PDFManager;
+use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SiteManager;
+use System\Models\Parameter;
 use TestCase;
 use Throwable;
 
@@ -64,6 +67,9 @@ abstract class OctoberPestTestCase extends TestCase
         $this->rollbackDatabaseTransaction();
         $this->flushModelEventListeners();
         Template::flushLayoutCache();
+        PDFManager::forgetInstance();
+        SyncTemplates::forgetFailures();
+        Parameter::clearInternalCache();
         SiteManager::instance()->resetCache();
     }
 

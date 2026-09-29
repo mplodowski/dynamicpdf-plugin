@@ -4,10 +4,6 @@ use Illuminate\Support\Facades\Artisan;
 use Renatio\DynamicPDF\Classes\PDFManager;
 
 describe('dynamicpdf:check', function () {
-    beforeEach(fn () => PDFManager::forgetInstance());
-
-    afterEach(fn () => PDFManager::forgetInstance());
-
     it('passes with the default configuration', function () {
         expect(Artisan::call('dynamicpdf:check'))->toBe(0)
             ->and(Artisan::output())->toContain('PASS');
@@ -65,7 +61,6 @@ describe('dynamicpdf:check', function () {
     });
 
     it('fails for a registered code without a view file', function () {
-        PDFManager::forgetInstance();
         PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.nowhere']);
 
         expect(Artisan::call('dynamicpdf:check'))->toBe(1)

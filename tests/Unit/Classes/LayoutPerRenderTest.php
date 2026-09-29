@@ -4,8 +4,6 @@ use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Template;
 
 describe('Layout per render', function () {
-    afterEach(fn () => PDFManager::forgetInstance());
-
     it('renders a template with another layout without touching the stored record', function () {
         $default = $this->createLayout(['code' => 'acme::pdf.layouts.default', 'content_html' => '<html><body class="default">{{ content_html|raw }}</body></html>']);
         $this->createLayout(['code' => 'acme::pdf.layouts.other', 'content_html' => '<html><body class="other">{{ content_html|raw }}</body></html>']);
