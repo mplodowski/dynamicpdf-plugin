@@ -102,4 +102,14 @@ describe('List actions', function () {
 
         expect(Layout::whereCode('acme::pdf.layouts.default_copy')->exists())->toBeTrue();
     });
+
+    it('duplicates a layout that templates use without copying the templates', function () {
+        $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);
+        $this->createTemplate(['layout_id' => $layout->id]);
+
+        $copy = $layout->duplicate();
+
+        expect(Template::count())->toBe(1)
+            ->and(Template::whereLayoutId($copy->id)->exists())->toBeFalse();
+    });
 });

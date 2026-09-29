@@ -58,7 +58,7 @@ return [
         'create_layout' => 'Crea layout',
         'edit_layout' => 'Modifica layout',
         'not_found' => 'Nessun layout registrato con il codice',
-        'delete_in_use' => 'Questo layout non può essere eliminato perché lo usano questi modelli: :templates. Assegna prima un altro layout.',
+        'delete_in_use' => 'Questo layout non può essere eliminato perché lo usano questi modelli: :templates. Assegna loro prima un altro layout.',
         'used_by' => 'Usato da',
     ],
     'settings' => [

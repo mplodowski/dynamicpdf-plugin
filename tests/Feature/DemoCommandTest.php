@@ -32,6 +32,7 @@ describe('dynamicpdf:demo', function () {
         Artisan::call('dynamicpdf:demo', ['--disable' => true]);
 
         expect(Layout::find($layout->id))->not->toBeNull()
-            ->and($template->fresh()?->layout_id)->toBe($layout->id);
+            ->and($template->fresh()?->layout_id)->toBe($layout->id)
+            ->and(Artisan::output())->toContain('Kept renatio.dynamicpdf::pdf.layouts.default');
     });
 });

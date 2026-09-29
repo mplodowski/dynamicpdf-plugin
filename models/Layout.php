@@ -54,9 +54,9 @@ class Layout extends Model
         'is_locked' => 'bool',
     ];
 
-    /** @var array<string, class-string> */
+    /** @var array<string, array<int|string, mixed>> */
     public $hasMany = [
-        'templates' => Template::class,
+        'templates' => [Template::class, 'replicate' => false],
     ];
 
     /** @var array<string, array<int|string, mixed>> */
@@ -97,7 +97,7 @@ class Layout extends Model
      */
     public function beforeDelete(): void
     {
-        $titles = $this->templates->pluck('title');
+        $titles = Template::where('layout_id', $this->id)->pluck('title');
 
         if ($titles->isNotEmpty()) {
             throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.layout.delete_in_use', ['templates' => $titles->implode(', ')])));
