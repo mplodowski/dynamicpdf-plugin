@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\File;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
+use Renatio\DynamicPDF\Plugin;
+use System\Models\Parameter;
 
 describe('unlock_edited_layouts', function () {
     beforeEach(function () {
@@ -80,6 +82,14 @@ describe('unlock_edited_layouts', function () {
         ($this->migrate)();
 
         expect(($this->row)($id)->is_locked)->toBeTruthy();
+    });
+
+    it('lets layouts follow their view only once it has run', function () {
+        Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 0);
+
+        ($this->migrate)();
+
+        expect(Parameter::get(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER))->toBeTruthy();
     });
 
     it('gives the same result when it runs twice', function () {

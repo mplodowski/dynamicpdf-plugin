@@ -21,7 +21,10 @@ class SyncTemplates
         $registeredLayouts = PDFManager::instance()->listRegisteredLayouts();
 
         if ($registeredLayouts) {
-            $this->refreshLayouts($registeredLayouts);
+            if (Layout::followsViewUpdates()) {
+                $this->refreshLayouts($registeredLayouts);
+            }
+
             $this->createLayouts($registeredLayouts);
         }
 

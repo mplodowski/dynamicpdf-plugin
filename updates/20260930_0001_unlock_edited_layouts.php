@@ -6,10 +6,13 @@ use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Updates\Migration;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
+use Renatio\DynamicPDF\Plugin;
+use System\Models\Parameter;
 
 /**
  * Before 8.1.0 an edit never cleared is_locked, and locked layouts now follow their view. A locked
  * layout keeps the flag only when it provably holds its current view or a version this plugin shipped.
+ * Layouts follow their view only once this has run, so files deployed ahead of the migration overwrite nothing.
  */
 return new class extends Migration
 {
@@ -52,10 +55,13 @@ return new class extends Migration
         if ($edited->isNotEmpty()) {
             DB::table(self::LAYOUTS)->whereIn('id', $edited->all())->update(['is_locked' => false]);
         }
+
+        Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 1);
     }
 
     public function down()
     {
+        Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 0);
     }
 
     protected function isUnedited(object $row, string $view): bool

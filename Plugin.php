@@ -22,6 +22,8 @@ class Plugin extends PluginBase
 {
     public const DEMO_PARAMETER = 'renatio::dynamicpdf.demo';
 
+    public const LAYOUTS_FOLLOW_VIEWS_PARAMETER = 'renatio::dynamicpdf.layouts_follow_views';
+
     /**
      * @return array<string, string>
      */

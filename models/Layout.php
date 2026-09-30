@@ -12,6 +12,7 @@ use Renatio\DynamicPDF\Classes\LessCompiler;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
+use Renatio\DynamicPDF\Plugin;
 use Renatio\DynamicPDF\Traits\DescribesViewStatus;
 use Renatio\DynamicPDF\Traits\Duplicates;
 use Renatio\DynamicPDF\Traits\FollowsView;
@@ -19,6 +20,7 @@ use Renatio\DynamicPDF\Traits\TranslatesContent;
 use Renatio\DynamicPDF\Traits\ValidatesCodeFormat;
 use Renatio\DynamicPDF\Traits\ValidatesTwigSyntax;
 use System\Models\File;
+use System\Models\Parameter;
 use Throwable;
 
 /**
@@ -156,7 +158,7 @@ class Layout extends Model
 
     public function afterFetch(): void
     {
-        if (! $this->is_locked || ! $this->code || ! $this->getView()) {
+        if (! $this->is_locked || ! $this->code || ! self::followsViewUpdates() || ! $this->getView()) {
             return;
         }
 
@@ -171,6 +173,11 @@ class Layout extends Model
                 Log::error("Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
             }
         });
+    }
+
+    public static function followsViewUpdates(): bool
+    {
+        return (bool) Parameter::get(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER);
     }
 
     protected function markAsFollowingView(): void

@@ -9,6 +9,7 @@ use Renatio\DynamicPDF\Controllers\Templates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Renatio\DynamicPDF\Plugin;
+use System\Models\Parameter;
 
 describe('SyncTemplates', function () {
     beforeEach(function () {
@@ -158,6 +159,27 @@ describe('SyncTemplates', function () {
             ->content_html->toBe('<p>v2</p>')
             ->is_locked->toBeTruthy()
             ->and($sync->report()['updated'])->toBe(['syncviews::pdf.layouts.a']);
+    });
+
+    it('leaves a locked layout on its stored content until the migration has flagged layouts to follow their view', function () {
+        expect(Parameter::get(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER))->toBeTruthy();
+
+        Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 0);
+        $this->views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"Second\"\n==\n<p>v2</p>"]);
+        $this->createLayout(['code' => 'syncviews::pdf.layouts.a', 'name' => 'First', 'content_html' => '<p>v1</p>', 'is_locked' => true]);
+
+        $sync = new SyncTemplates;
+        $sync->handle();
+
+        expect(DB::table('renatio_dynamicpdf_pdf_layouts')->where('code', 'syncviews::pdf.layouts.a')->value('content_html'))->toBe('<p>v1</p>')
+            ->and(Layout::byCode('syncviews::pdf.layouts.a')->content_html)->toBe('<p>v1</p>')
+            ->and($sync->report()['updated'])->toBe([]);
+
+        Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 1);
+        $sync->handle();
+
+        expect(DB::table('renatio_dynamicpdf_pdf_layouts')->where('code', 'syncviews::pdf.layouts.a')->value('content_html'))->toBe('<p>v2</p>')
+            ->and(Layout::byCode('syncviews::pdf.layouts.a')->content_html)->toBe('<p>v2</p>');
     });
 
     it('never refreshes an edited layout from its view', function () {
