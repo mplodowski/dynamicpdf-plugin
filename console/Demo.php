@@ -35,7 +35,7 @@ class Demo extends Command
         $failed = $sync->report()['failed'];
 
         if ($failed === []) {
-            $this->info(e(trans('renatio.dynamicpdf::lang.demo.enabled')));
+            $this->info('The demo templates were enabled.');
 
             return self::SUCCESS;
         }
@@ -65,7 +65,7 @@ class Demo extends Command
 
         Parameter::set(Plugin::DEMO_PARAMETER, 0);
 
-        $this->info(e(trans('renatio.dynamicpdf::lang.demo.disabled')));
+        $this->info('The demo templates were disabled.');
 
         return self::SUCCESS;
     }

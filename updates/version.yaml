@@ -29,7 +29,7 @@ v3.0.5: Support LESS in PDF layouts.
 v4.0.0: Require PHP 7.1. Please see upgrade guide before update.
 v4.0.1: Fix error when active theme is not set.
 v4.0.2:
-    - Allow to register mail templates and layouts.
+    - Allow to register PDF templates and layouts.
     - add_is_custom_to_templates_table.php
     - add_is_locked_to_layouts_table.php
 v4.0.3:
@@ -56,14 +56,11 @@ v8.0.1: Support October 4.
 v8.0.2: Update dependencies.
 v8.0.3: Refactor to use pluck() function.
 v8.1.0:
-    - Security release. Sandboxed backend preview, no inline PHP.
-    - Layout CSS can no longer read server files through LESS imports.
+    - Security release. Sandboxed preview, no inline PHP, layout CSS cannot read server files.
     - Require PHP 8.2 and October CMS 4.4.
     - Granular permissions for templates and layouts.
     - Template and layout translations, localized view files.
-    - Page numbers without inline PHP, PDF::fake() for tests.
-    - dynamicpdf:sync and dynamicpdf:check commands.
-    - A layout used by templates can no longer be deleted.
-    - Invalid Twig and codes with spaces are rejected on save.
+    - Stricter saving. Invalid Twig, duplicate codes and deleting used layouts are rejected.
+    - Page numbers without inline PHP, PDF::fake(), sync and check commands.
     - 20260907_0001_add_sample_data_to_templates_table.php
     - 20260907_0002_add_unique_code_indexes.php

@@ -50,19 +50,20 @@ return [
         'menu_label' => 'Sablon',
         'create_template' => 'Sablon létrehozása',
         'edit_template' => 'Sablon szerkesztése',
-        'not_found' => 'Nem található regisztrált sablon ezzel a kóddal',
+        'not_found' => 'Nem található :code kódú regisztrált sablon.',
         'view_follows' => 'Ez a sablon a(z) `:view` nézetfájlt követi, és a bővítményből kapja a frissítéseit. A cím, a leírás, a tartalom, az elrendezés vagy a papírbeállítások módosításainak mentése leválasztja ezekről a frissítésekről.',
         'view_detached' => 'Ez a sablon már nem követi a(z) `:view` nézetfájlt, így a bővítmény frissítései nem vonatkoznak rá. A **:reset** visszaállítja a nézetfájl szerinti változatot.',
     ],
     'layouts' => [
         'label' => 'Elrendezések',
+        'code_comment' => 'Az elrendezés egyedi kódja, pl. acme.shop::pdf.layouts.default',
         'return' => 'Vissza az elrendezésekhez',
     ],
     'layout' => [
         'menu_label' => 'Elrendezés',
         'create_layout' => 'Elrendezés létrehozása',
         'edit_layout' => 'Elrendezés szerkesztése',
-        'not_found' => 'Nem található regisztrált elrendezés ezzel a kóddal',
+        'not_found' => 'Nem található :code kódú regisztrált elrendezés.',
         'view_follows' => 'Ez az elrendezés a(z) `:view` nézetfájlból készült, és nem szerkesztették. A fájl későbbi változásai nem kerülnek át bele automatikusan; a **:reset** betölti az aktuális változatot. A név, a HTML vagy a CSS módosításainak mentése szerkesztettként jelöli meg.',
         'view_detached' => 'Ez az elrendezés a(z) `:view` nézetfájlból készült, és azóta szerkesztették. A **:reset** visszaállítja a nézetfájl szerinti változatot.',
         'delete_in_use' => 'Ez az elrendezés nem törölhető, mert ezek a sablonok használják: :templates. Előbb rendeljen hozzájuk másik elrendezést.',
@@ -70,16 +71,13 @@ return [
         'css_reads_files' => 'A CSS nem olvashat fájlokat a szerverről. Távolítsa el a LESS-fájlok @importját, az @import (inline) utasítást, valamint a data-uri(), image-size(), image-width() és image-height() függvényeket; az egyszerű CSS-importok engedélyezettek.',
         'css_invalid' => 'Az elrendezés CSS-kódját nem sikerült lefordítani.',
     ],
-    'settings' => [
-        'description' => 'Sablonok és elrendezések kezelése.',
-    ],
     'permissions' => [
-        'manage_templates' => 'Sablonok kezelése',
+        'manage_templates' => 'Hozzáférés a sablonokhoz',
         'create_templates' => 'Sablonok létrehozása',
         'update_templates' => 'Sablonok szerkesztése',
         'delete_templates' => 'Sablonok törlése',
         'preview_templates' => 'Sablonok előnézete',
-        'manage_layouts' => 'Elrendezések kezelése',
+        'manage_layouts' => 'Hozzáférés az elrendezésekhez',
         'create_layouts' => 'Elrendezések létrehozása',
         'update_layouts' => 'Elrendezések szerkesztése',
         'delete_layouts' => 'Elrendezések törlése',
@@ -101,9 +99,5 @@ return [
     ],
     'tab' => [
         'options' => 'Beállítások',
-    ],
-    'demo' => [
-        'enabled' => 'A demó sablonok bekapcsolva.',
-        'disabled' => 'A demó sablonok kikapcsolva.',
     ],
 ];

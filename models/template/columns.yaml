@@ -1,7 +1,7 @@
 columns:
 
     title:
-        label: renatio.dynamicpdf::lang.templates.name
+        label: renatio.dynamicpdf::lang.templates.title
         searchable: true
 
     code:

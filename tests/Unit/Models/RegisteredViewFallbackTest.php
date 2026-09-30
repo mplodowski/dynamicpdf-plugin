@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use October\Rain\Exception\ApplicationException;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
@@ -39,5 +40,22 @@ describe('Registered view fallback', function () {
     })->with([
         'template' => [fn (): Template => Template::byCode('non.existent::pdf.view')],
         'layout' => [fn (): Layout => Layout::byCode('non.existent::pdf.view')],
+    ]);
+
+    it('names a view without a title or name after its code', function () {
+        $this->registerViewTemplates('untitled', ['bare' => "description = \"Bare\"\n==\n<p>Bare</p>"]);
+        $this->registerViewLayouts('untitled', ['frame' => "description = \"Frame\"\n==\n==\n<html>{{ content_html|raw }}</html>"]);
+
+        expect(Template::byCode('untitled::pdf.bare')->title)->toBe('untitled::pdf.bare')
+            ->and(Layout::byCode('untitled::pdf.frame')->name)->toBe('untitled::pdf.frame');
+    });
+
+    it('puts the missing code into the not found message', function (Template|Layout $model, string $message) {
+        $model->code = 'gone::pdf.view';
+
+        expect(fn () => $model->fillFromCode())->toThrow(ApplicationException::class, $message);
+    })->with([
+        'template' => [fn (): Template => new Template, 'Unable to find a registered template with code gone::pdf.view.'],
+        'layout' => [fn (): Layout => new Layout, 'Unable to find a registered layout with code gone::pdf.view.'],
     ]);
 });

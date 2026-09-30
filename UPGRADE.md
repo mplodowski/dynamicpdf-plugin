@@ -78,10 +78,10 @@ always on.
 sites on October CMS 3 or 4.0–4.3 on 8.0.3. Run `php artisan october:migrate`, which adds a unique index on template
 and layout codes and permanently deletes duplicate rows, keeping the customised or locked one.
 
-Permissions are granular and nobody receives the new ones automatically: **Manage templates** and **Manage layouts**
+Permissions are granular and nobody receives the new ones automatically: **Access templates** and **Access layouts**
 now only open the lists, so editors get a 403 on every template or layout form until you grant **Create**,
 **Update**, **Delete** and **Preview** under **Settings → Administrators**, to roles or to individual administrators.
-The *Layouts* tab now also requires **Manage layouts**.
+The *Layouts* tab now also requires **Access layouts**.
 
 Layout CSS may no longer read server files: LESS and `(inline)` imports and the `data-uri()` / `image-size()` family
 of functions are rejected on save and fail the render of an older layout, so remove them. Reset the demo **Header and

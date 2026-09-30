@@ -50,19 +50,20 @@ return [
         'menu_label' => 'PDF šablona',
         'create_template' => 'Vytvoření PDF šablony',
         'edit_template' => 'Úprava PDF šablony',
-        'not_found' => 'Nebyla nalezena registrovaná šablona s kódem',
+        'not_found' => 'Nebyla nalezena registrovaná šablona s kódem :code.',
         'view_follows' => 'Tato šablona vychází ze souboru pohledu `:view` a dostává jeho aktualizace z pluginu. Uložením změn názvu, popisu, obsahu, layoutu nebo nastavení papíru se od těchto aktualizací odpojí.',
         'view_detached' => 'Tato šablona už nevychází ze souboru pohledu `:view`, takže se na ni aktualizace pluginu nevztahují. **:reset** obnoví verzi ze souboru pohledu.',
     ],
     'layouts' => [
         'label' => 'PDF layouty',
+        'code_comment' => 'Unikátní kód patřící pouze tomuto layoutu, např. acme.shop::pdf.layouts.default',
         'return' => 'Zpět na seznam PDF layoutů',
     ],
     'layout' => [
         'menu_label' => 'PDF layout',
         'create_layout' => 'Vytvoření PDF layoutu',
         'edit_layout' => 'Úprava PDF layoutu',
-        'not_found' => 'Nebyl nalezen registrovaný layout s kódem',
+        'not_found' => 'Nebyl nalezen registrovaný layout s kódem :code.',
         'view_follows' => 'Tento layout vznikl ze souboru pohledu `:view` a nebyl upraven. Pozdější změny tohoto souboru se do něj automaticky nepřenášejí; **:reset** načte aktuální verzi. Uložením změn názvu, HTML nebo CSS se označí jako upravený.',
         'view_detached' => 'Tento layout vznikl ze souboru pohledu `:view` a od té doby byl upraven. **:reset** obnoví verzi ze souboru pohledu.',
         'delete_in_use' => 'Tento layout nelze smazat, protože ho používají tyto šablony: :templates. Nejprve jim přiřaďte jiný layout.',
@@ -70,16 +71,13 @@ return [
         'css_reads_files' => 'CSS nesmí číst soubory na serveru. Odstraňte @import souborů LESS, @import (inline) a funkce data-uri(), image-size(), image-width() a image-height(); běžné importy CSS jsou povoleny.',
         'css_invalid' => 'CSS layoutu se nepodařilo zkompilovat.',
     ],
-    'settings' => [
-        'description' => 'Správa PDF šablon a layoutů.',
-    ],
     'permissions' => [
-        'manage_templates' => 'Spravovat šablony',
+        'manage_templates' => 'Přístup k šablonám',
         'create_templates' => 'Vytvářet šablony',
         'update_templates' => 'Upravovat šablony',
         'delete_templates' => 'Mazat šablony',
         'preview_templates' => 'Zobrazit náhled šablon',
-        'manage_layouts' => 'Spravovat layouty',
+        'manage_layouts' => 'Přístup k layoutům',
         'create_layouts' => 'Vytvářet layouty',
         'update_layouts' => 'Upravovat layouty',
         'delete_layouts' => 'Mazat layouty',
@@ -101,9 +99,5 @@ return [
     ],
     'tab' => [
         'options' => 'Možnosti',
-    ],
-    'demo' => [
-        'enabled' => 'Ukázkové šablony byly zapnuty.',
-        'disabled' => 'Ukázkové šablony byly vypnuty.',
     ],
 ];

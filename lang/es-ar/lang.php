@@ -50,19 +50,20 @@ return [
         'menu_label' => 'Plantilla PDF',
         'create_template' => 'Crear plantilla PDF',
         'edit_template' => 'Editar plantilla PDF',
-        'not_found' => 'No se encontró una plantilla registrada con el código',
+        'not_found' => 'No se encontró una plantilla registrada con el código :code.',
         'view_follows' => 'Esta plantilla sigue el archivo de vista `:view` y recibe sus actualizaciones del plugin. Guardar cambios en el título, la descripción, el contenido, el diseño o la configuración del papel la desvincula de esas actualizaciones.',
         'view_detached' => 'Esta plantilla ya no sigue el archivo de vista `:view`, por lo que no recibe las actualizaciones del plugin. **:reset** restaura la versión del archivo de vista.',
     ],
     'layouts' => [
         'label' => 'Diseños PDF',
+        'code_comment' => 'Código único para hacer referencia a este diseño, p. ej. acme.shop::pdf.layouts.default',
         'return' => 'Volver a la lista de diseños PDF',
     ],
     'layout' => [
         'menu_label' => 'Diseño PDF',
         'create_layout' => 'Crear diseño PDF',
         'edit_layout' => 'Editar diseño PDF',
-        'not_found' => 'No se encontró un diseño registrado con el código',
+        'not_found' => 'No se encontró un diseño registrado con el código :code.',
         'view_follows' => 'Este diseño se creó a partir del archivo de vista `:view` y no se ha editado. Los cambios posteriores en ese archivo no se copian automáticamente; **:reset** carga la versión actual. Guardar cambios en el nombre, el HTML o el CSS lo marca como editado.',
         'view_detached' => 'Este diseño se creó a partir del archivo de vista `:view` y se ha editado desde entonces. **:reset** restaura la versión del archivo de vista.',
         'delete_in_use' => 'Este diseño no se puede eliminar porque lo usan estas plantillas: :templates. Asignales otro diseño primero.',
@@ -70,16 +71,13 @@ return [
         'css_reads_files' => 'El CSS no puede leer archivos del servidor. Quitá los @import de archivos LESS, @import (inline) y las funciones data-uri(), image-size(), image-width() e image-height(); se permiten las importaciones de CSS simples.',
         'css_invalid' => 'No se pudo compilar el CSS del diseño.',
     ],
-    'settings' => [
-        'description' => 'Administrar plantillas y diseños PDF.',
-    ],
     'permissions' => [
-        'manage_templates' => 'Gestionar plantillas',
+        'manage_templates' => 'Acceder a las plantillas',
         'create_templates' => 'Crear plantillas',
         'update_templates' => 'Editar plantillas',
         'delete_templates' => 'Eliminar plantillas',
         'preview_templates' => 'Vista previa de plantillas',
-        'manage_layouts' => 'Gestionar diseños',
+        'manage_layouts' => 'Acceder a los diseños',
         'create_layouts' => 'Crear diseños',
         'update_layouts' => 'Editar diseños',
         'delete_layouts' => 'Eliminar diseños',
@@ -101,9 +99,5 @@ return [
     ],
     'tab' => [
         'options' => 'Opciones',
-    ],
-    'demo' => [
-        'enabled' => 'Las plantillas de demostración fueron activadas.',
-        'disabled' => 'Las plantillas de demostración fueron desactivadas.',
     ],
 ];
