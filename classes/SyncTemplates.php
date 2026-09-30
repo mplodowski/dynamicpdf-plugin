@@ -11,14 +11,6 @@ use Throwable;
 
 class SyncTemplates
 {
-    /**
-     * Codes that failed stay skipped for the lifetime of this instance, so a broken
-     * registration is logged once rather than on every handle().
-     *
-     * @var array<string, true>
-     */
-    protected array $failed = [];
-
     /** @var array<string, array<int, string>> */
     protected array $report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
@@ -132,12 +124,6 @@ class SyncTemplates
 
     protected function write(string $code, string $outcome, callable $write): void
     {
-        if (isset($this->failed[$code])) {
-            $this->report['failed'][] = $code;
-
-            return;
-        }
-
         try {
             if ($write() !== false) {
                 $this->report[$outcome][] = $code;
@@ -145,7 +131,6 @@ class SyncTemplates
         } catch (UniqueConstraintViolationException) {
             // Another request synced the same code a moment earlier; the row exists.
         } catch (Throwable $e) {
-            $this->failed[$code] = true;
             $this->report['failed'][] = $code;
 
             Log::error("Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", ['exception' => $e]);
