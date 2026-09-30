@@ -40,7 +40,6 @@ describe('Form buttons', function () {
         expect($html)->toContain('data-change-monitor')
             ->toContain('data-request-before-update="$(this).trigger(\'unchange.oc.changeMonitor\')"')
             ->toContain('data-request="onDuplicate"')
-            ->toContain('href="' . Backend::url("renatio/dynamicpdf/{$definition}/previewpdf/{$record->id}") . '"')
-            ->toContain('target="_blank"');
+            ->toMatch('/<a(?=[^>]*\shref="' . preg_quote(Backend::url("renatio/dynamicpdf/{$definition}/previewpdf/{$record->id}"), '/') . '")(?=[^>]*\starget="_blank")/');
     })->with(['templates', 'layouts']);
 });

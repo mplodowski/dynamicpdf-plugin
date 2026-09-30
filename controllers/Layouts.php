@@ -28,7 +28,6 @@ class Layouts extends Controller
     {
         parent::__construct();
 
-        /** Shares the form partials of Templates. */
         $this->addViewPath($this->guessViewPathFrom(Templates::class), true);
 
         $this->setSettingsContext();
