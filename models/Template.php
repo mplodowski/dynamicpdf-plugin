@@ -194,15 +194,13 @@ class Template extends Model
     }
 
     /**
+     * A disabled plugin registers no binding, so its models run without the cache.
+     *
      * @return ArrayObject<string, array<string, mixed>|false>
      */
     public static function layoutCache(): ArrayObject
     {
-        if (! app()->bound(self::LAYOUT_CACHE)) {
-            app()->scoped(self::LAYOUT_CACHE, fn (): ArrayObject => new ArrayObject);
-        }
-
-        return app(self::LAYOUT_CACHE);
+        return app()->bound(self::LAYOUT_CACHE) ? app(self::LAYOUT_CACHE) : new ArrayObject;
     }
 
     public static function flushLayoutCache(): void

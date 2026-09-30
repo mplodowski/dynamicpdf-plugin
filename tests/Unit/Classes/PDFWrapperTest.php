@@ -23,9 +23,9 @@ describe('PDFWrapper', function () {
 
         $ssl = stream_context_get_options($wrapper->getDomPDF()->getHttpContext())['ssl'];
 
-        expect($ssl['verify_peer'])->toBe(false)
-            ->and($ssl['verify_peer_name'])->toBe(false)
-            ->and($ssl['allow_self_signed'])->toBe(true);
+        expect($ssl['verify_peer'])->toBeFalse()
+            ->and($ssl['verify_peer_name'])->toBeFalse()
+            ->and($ssl['allow_self_signed'])->toBeTrue();
     });
 
     it('renders a template inside its layout with Twig data', function () {
