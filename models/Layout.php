@@ -175,7 +175,7 @@ class Layout extends Model
         $view = $this->getView();
 
         if (! $view) {
-            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.layout.not_found')) . ': ' . $this->code);
+            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.layout.not_found', ['code' => $this->code])));
         }
 
         $this->fillFromView($view);
@@ -186,7 +186,7 @@ class Layout extends Model
         $sections = PDFParser::sections($code);
 
         $this->code = $code;
-        $this->name = Arr::get($sections, 'settings.name', '???');
+        $this->name = Arr::get($sections, 'settings.name') ?: $code;
         $this->content_css = Arr::get($sections, 'css');
         $this->content_html = Arr::get($sections, 'html');
     }

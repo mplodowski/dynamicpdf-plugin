@@ -142,7 +142,7 @@ class Template extends Model
         $view = $this->getView();
 
         if (! $view) {
-            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.template.not_found')) . ': ' . $this->code);
+            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.template.not_found', ['code' => $this->code])));
         }
 
         $this->fillFromView($view);
@@ -152,7 +152,7 @@ class Template extends Model
     {
         $sections = PDFParser::sections($code);
 
-        $this->title = Arr::get($sections, 'settings.title', '???');
+        $this->title = Arr::get($sections, 'settings.title') ?: $code;
         $this->code = $code;
         $this->setAttribute('layout', $this->resolveLayout(Arr::get($sections, 'settings.layout')));
         $this->size = self::lowercaseOption(Arr::get($sections, 'settings.size'));

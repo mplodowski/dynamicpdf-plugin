@@ -50,19 +50,20 @@ return [
         'menu_label' => 'Modello',
         'create_template' => 'Crea modello',
         'edit_template' => 'Modifica modello',
-        'not_found' => 'Nessun modello registrato con il codice',
+        'not_found' => 'Nessun modello registrato con il codice :code.',
         'view_follows' => 'Questo modello segue il file di vista `:view` e riceve i suoi aggiornamenti dal plugin. Salvare modifiche a titolo, descrizione, contenuto, layout o impostazioni della carta lo scollega da questi aggiornamenti.',
         'view_detached' => 'Questo modello non segue più il file di vista `:view`, quindi gli aggiornamenti del plugin non vengono applicati. **:reset** ripristina la versione del file di vista.',
     ],
     'layouts' => [
         'label' => 'Layout',
+        'code_comment' => 'Codice univoco usato per riferirsi a questo layout, ad es. acme.shop::pdf.layouts.default',
         'return' => 'Torna all\'elenco dei layout',
     ],
     'layout' => [
         'menu_label' => 'Layout',
         'create_layout' => 'Crea layout',
         'edit_layout' => 'Modifica layout',
-        'not_found' => 'Nessun layout registrato con il codice',
+        'not_found' => 'Nessun layout registrato con il codice :code.',
         'view_follows' => 'Questo layout è stato creato dal file di vista `:view` e non è stato modificato. Le modifiche successive a quel file non vengono copiate automaticamente; **:reset** carica la versione attuale. Salvare modifiche a nome, HTML o CSS lo segna come modificato.',
         'view_detached' => 'Questo layout è stato creato dal file di vista `:view` ed è stato modificato da allora. **:reset** ripristina la versione del file di vista.',
         'delete_in_use' => 'Questo layout non può essere eliminato perché lo usano questi modelli: :templates. Assegna loro prima un altro layout.',
@@ -70,16 +71,13 @@ return [
         'css_reads_files' => 'Il CSS non può leggere file dal server. Rimuovi gli @import di file LESS, @import (inline) e le funzioni data-uri(), image-size(), image-width() e image-height(); gli import CSS semplici sono consentiti.',
         'css_invalid' => 'Impossibile compilare il CSS del layout.',
     ],
-    'settings' => [
-        'description' => 'Gestisci modelli e layout.',
-    ],
     'permissions' => [
-        'manage_templates' => 'Gestione modelli',
+        'manage_templates' => 'Accesso ai modelli',
         'create_templates' => 'Creazione modelli',
         'update_templates' => 'Modifica modelli',
         'delete_templates' => 'Eliminazione modelli',
         'preview_templates' => 'Anteprima modelli',
-        'manage_layouts' => 'Gestione layout',
+        'manage_layouts' => 'Accesso ai layout',
         'create_layouts' => 'Creazione layout',
         'update_layouts' => 'Modifica layout',
         'delete_layouts' => 'Eliminazione layout',
@@ -101,9 +99,5 @@ return [
     ],
     'tab' => [
         'options' => 'Opzioni',
-    ],
-    'demo' => [
-        'enabled' => 'I modelli demo sono stati attivati.',
-        'disabled' => 'I modelli demo sono stati disattivati.',
     ],
 ];

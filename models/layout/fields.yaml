@@ -13,7 +13,7 @@ fields:
 
     code@create:
         label: renatio.dynamicpdf::lang.templates.code
-        comment: renatio.dynamicpdf::lang.templates.code_comment
+        comment: renatio.dynamicpdf::lang.layouts.code_comment
         preset: name
         span: right
 

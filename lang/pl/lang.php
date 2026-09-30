@@ -50,19 +50,20 @@ return [
         'menu_label' => 'Szablon',
         'create_template' => 'Utwórz szablon',
         'edit_template' => 'Edytuj szablon',
-        'not_found' => 'Nie znaleziono zarejestrowanego szablonu o kodzie',
+        'not_found' => 'Nie znaleziono zarejestrowanego szablonu o kodzie :code.',
         'view_follows' => 'Ten szablon korzysta z pliku widoku `:view` i otrzymuje jego aktualizacje z pluginu. Zapisanie zmian w tytule, opisie, treści, układzie lub ustawieniach papieru odłączy go od tych aktualizacji.',
         'view_detached' => 'Ten szablon nie korzysta już z pliku widoku `:view`, więc aktualizacje pluginu go nie obejmują. **:reset** przywraca wersję z pliku widoku.',
     ],
     'layouts' => [
         'label' => 'Układy',
+        'code_comment' => 'Unikalny kod powiązany z tym układem, np. acme.shop::pdf.layouts.default',
         'return' => 'Powrót do listy układów',
     ],
     'layout' => [
         'menu_label' => 'Układ',
         'create_layout' => 'Utwórz układ',
         'edit_layout' => 'Edytuj układ',
-        'not_found' => 'Nie znaleziono zarejestrowanego układu o kodzie',
+        'not_found' => 'Nie znaleziono zarejestrowanego układu o kodzie :code.',
         'view_follows' => 'Ten układ powstał z pliku widoku `:view` i nie był edytowany. Późniejsze zmiany w tym pliku nie są do niego przenoszone automatycznie; **:reset** wczyta aktualną wersję. Zapisanie zmian w nazwie, HTML lub CSS oznaczy go jako edytowany.',
         'view_detached' => 'Ten układ powstał z pliku widoku `:view`, ale od tego czasu był edytowany. **:reset** przywraca wersję z pliku widoku.',
         'delete_in_use' => 'Tego układu nie można usunąć, ponieważ używają go szablony: :templates. Najpierw przypisz im inny układ.',
@@ -70,16 +71,13 @@ return [
         'css_reads_files' => 'CSS nie może odczytywać plików serwera. Usuń @import plików LESS, @import (inline) oraz funkcje data-uri(), image-size(), image-width() i image-height(); zwykłe importy CSS są dozwolone.',
         'css_invalid' => 'Nie udało się skompilować CSS układu.',
     ],
-    'settings' => [
-        'description' => 'Zarządzaj szablonami i układami.',
-    ],
     'permissions' => [
-        'manage_templates' => 'Zarządzanie szablonami',
+        'manage_templates' => 'Dostęp do szablonów',
         'create_templates' => 'Tworzenie szablonów',
         'update_templates' => 'Edycja szablonów',
         'delete_templates' => 'Usuwanie szablonów',
         'preview_templates' => 'Podgląd szablonów',
-        'manage_layouts' => 'Zarządzanie układami',
+        'manage_layouts' => 'Dostęp do układów',
         'create_layouts' => 'Tworzenie układów',
         'update_layouts' => 'Edycja układów',
         'delete_layouts' => 'Usuwanie układów',
@@ -101,9 +99,5 @@ return [
     ],
     'tab' => [
         'options' => 'Opcje',
-    ],
-    'demo' => [
-        'enabled' => 'Szablony demo zostały włączone.',
-        'disabled' => 'Szablony demo zostały wyłączone.',
     ],
 ];

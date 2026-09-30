@@ -50,19 +50,20 @@ return [
         'menu_label' => 'Modelo',
         'create_template' => 'Criar modelo',
         'edit_template' => 'Editar modelo',
-        'not_found' => 'Não foi possível encontrar um modelo registrado com o código',
+        'not_found' => 'Não foi possível encontrar um modelo registrado com o código :code.',
         'view_follows' => 'Este modelo segue o arquivo de view `:view` e recebe as atualizações dele pelo plugin. Salvar alterações no título, na descrição, no conteúdo, no layout ou nas configurações do papel o desvincula dessas atualizações.',
         'view_detached' => 'Este modelo não segue mais o arquivo de view `:view`, então as atualizações do plugin não são aplicadas. **:reset** restaura a versão do arquivo de view.',
     ],
     'layouts' => [
         'label' => 'Layouts',
+        'code_comment' => 'Código exclusivo usado para se referir a este layout, ex. acme.shop::pdf.layouts.default',
         'return' => 'Voltar à lista de layouts',
     ],
     'layout' => [
         'menu_label' => 'Layout',
         'create_layout' => 'Criar layout',
         'edit_layout' => 'Editar layout',
-        'not_found' => 'Não foi possível encontrar um layout registrado com o código',
+        'not_found' => 'Não foi possível encontrar um layout registrado com o código :code.',
         'view_follows' => 'Este layout foi criado a partir do arquivo de view `:view` e não foi editado. Alterações posteriores nesse arquivo não são copiadas para ele automaticamente; **:reset** carrega a versão atual. Salvar alterações no nome, no HTML ou no CSS o marca como editado.',
         'view_detached' => 'Este layout foi criado a partir do arquivo de view `:view` e foi editado desde então. **:reset** restaura a versão do arquivo de view.',
         'delete_in_use' => 'Este layout não pode ser excluído porque estes modelos o usam: :templates. Atribua outro layout a eles primeiro.',
@@ -70,16 +71,13 @@ return [
         'css_reads_files' => 'O CSS não pode ler arquivos do servidor. Remova @import de arquivos LESS, @import (inline) e as funções data-uri(), image-size(), image-width() e image-height(); importações de CSS simples são permitidas.',
         'css_invalid' => 'Não foi possível compilar o CSS do layout.',
     ],
-    'settings' => [
-        'description' => 'Gerencie modelos e layouts.',
-    ],
     'permissions' => [
-        'manage_templates' => 'Gerenciar modelos',
+        'manage_templates' => 'Acessar modelos',
         'create_templates' => 'Criar modelos',
         'update_templates' => 'Editar modelos',
         'delete_templates' => 'Excluir modelos',
         'preview_templates' => 'Pré-visualizar modelos',
-        'manage_layouts' => 'Gerenciar layouts',
+        'manage_layouts' => 'Acessar layouts',
         'create_layouts' => 'Criar layouts',
         'update_layouts' => 'Editar layouts',
         'delete_layouts' => 'Excluir layouts',
@@ -101,9 +99,5 @@ return [
     ],
     'tab' => [
         'options' => 'Opções',
-    ],
-    'demo' => [
-        'enabled' => 'Os modelos de demonstração foram ativados.',
-        'disabled' => 'Os modelos de demonstração foram desativados.',
     ],
 ];

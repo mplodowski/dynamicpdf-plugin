@@ -314,18 +314,18 @@ Access is granted under **Settings → Administrators**, on the **PDF** tab. Sup
 
 | Permission | What it unlocks |
 | --- | --- |
-| **Manage templates** | The *PDF Templates* page with the template list. |
+| **Access templates** | The *PDF Templates* page with the template list. |
 | **Create templates** | The *New template* form and duplicating a template. |
 | **Update templates** | Opening and saving the template form, and resetting a template to its view file. |
 | **Delete templates** | Deleting a template from the list or the form. |
 | **Preview templates** | The HTML and PDF preview of a template. |
-| **Manage layouts** | The *Layouts* tab on the *PDF Templates* page (which also needs **Manage templates**). |
+| **Access layouts** | The *Layouts* tab on the *PDF Templates* page (which also needs **Access templates**). |
 | **Create layouts** | The *New layout* form and duplicating a layout. |
 | **Update layouts** | Opening and saving the layout form, and resetting a layout to its view file. |
 | **Delete layouts** | Deleting a layout that no template uses. |
 | **Preview layouts** | The HTML and PDF preview of a layout. |
 
-Without **Manage layouts** the *Layouts* tab is hidden on the *PDF Templates* page. Buttons a user cannot use are
+Without **Access layouts** the *Layouts* tab is hidden on the *PDF Templates* page. Buttons a user cannot use are
 hidden, and every action is checked again on the server.
 
 ## Configuration
