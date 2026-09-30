@@ -2,6 +2,7 @@
 
 use October\Rain\Support\Facades\Site;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
+use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 
 describe('Native model translation', function () {
@@ -44,6 +45,28 @@ describe('Native model translation', function () {
 
             expect($sync->report()['updated'])->toBe([]);
         });
+    });
+
+    it('rewrites only the base value of a locked layout when its view file changes under the sync', function () {
+        $site = $this->enableTranslation('de');
+        $directory = $this->registerViewLayouts('acme', ['layouts/base' => "name = \"Base\"\n==\n<p>English layout</p>"]);
+
+        (new SyncTemplates)->handle();
+
+        $layout = $this->findLayout('acme::pdf.layouts.base');
+        $layout->setTranslation('content_html', 'de', '<p>Deutsches Layout</p>');
+        $layout->save();
+
+        File::put("{$directory}/pdf/layouts/base.htm", "name = \"Base\"\n==\n<p>Revised layout</p>");
+
+        Site::withContext($site->id, fn () => (new SyncTemplates)->handle());
+
+        $fetched = Site::withContext($site->id, fn (): Layout => $this->findLayout('acme::pdf.layouts.base'));
+        File::deleteDirectory($directory);
+
+        expect(Db::table('renatio_dynamicpdf_pdf_layouts')->where('code', 'acme::pdf.layouts.base')->value('content_html'))->toBe('<p>Revised layout</p>')
+            ->and($fetched->content_html)->toBe('<p>Deutsches Layout</p>')
+            ->and($fetched->is_locked)->toBeTrue();
     });
 
     it('renders the template and its layout in the requested locale', function () {

@@ -140,6 +140,38 @@ describe('SyncTemplates', function () {
         expect(DB::table('renatio_dynamicpdf_pdf_templates')->where('code', 'syncviews::pdf.a')->value('title'))->toBe('Mine');
     });
 
+    it('writes a changed view file back to the row of a locked layout', function () {
+        $this->views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"First\"\n==\np { color: red; }\n==\n<p>v1</p>"]);
+
+        $sync = new SyncTemplates;
+        $sync->handle();
+
+        File::put($this->views . '/pdf/layouts/a.htm', "name = \"Second\"\n==\np { color: blue; }\n==\n<p>v2</p>");
+
+        $sync->handle();
+
+        $row = DB::table('renatio_dynamicpdf_pdf_layouts')->where('code', 'syncviews::pdf.layouts.a')->first();
+
+        expect($row)
+            ->name->toBe('Second')
+            ->content_css->toBe('p { color: blue; }')
+            ->content_html->toBe('<p>v2</p>')
+            ->is_locked->toBeTruthy()
+            ->and($sync->report()['updated'])->toBe(['syncviews::pdf.layouts.a']);
+    });
+
+    it('never refreshes an edited layout from its view', function () {
+        $this->views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"Second\"\n==\n<p>v2</p>"]);
+        $this->createLayout(['code' => 'syncviews::pdf.layouts.a', 'name' => 'Mine', 'content_html' => '<p>mine</p>', 'is_locked' => false]);
+
+        $sync = new SyncTemplates;
+        $sync->handle();
+
+        expect(DB::table('renatio_dynamicpdf_pdf_layouts')->where('code', 'syncviews::pdf.layouts.a')->value('content_html'))->toBe('<p>mine</p>')
+            ->and(Layout::byCode('syncviews::pdf.layouts.a')->content_html)->toBe('<p>mine</p>')
+            ->and($sync->report()['updated'])->toBe([]);
+    });
+
     it('synchronises before a templates page is displayed', function () {
         (new Templates)->beforeDisplay();
 

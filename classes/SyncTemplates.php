@@ -18,7 +18,12 @@ class SyncTemplates
     {
         $this->report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
-        $this->createLayouts();
+        $registeredLayouts = PDFManager::instance()->listRegisteredLayouts();
+
+        if ($registeredLayouts) {
+            $this->refreshLayouts($registeredLayouts);
+            $this->createLayouts($registeredLayouts);
+        }
 
         $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
 
@@ -41,14 +46,35 @@ class SyncTemplates
         return $this->report;
     }
 
-    protected function createLayouts(): void
+    /**
+     * @param  array<string, string>  $registeredLayouts
+     */
+    protected function refreshLayouts(array $registeredLayouts): void
     {
-        $registeredLayouts = PDFManager::instance()->listRegisteredLayouts();
+        /** @var Collection<int, Layout> $layouts */
+        $layouts = Layout::query()
+            ->where('is_locked', true)
+            ->whereIn('code', array_keys($registeredLayouts))
+            ->get();
 
-        if (! $registeredLayouts) {
-            return;
+        foreach ($layouts as $layout) {
+            $this->write($layout->code, 'updated', fn (): bool => $layout->inDefaultLocale(function () use ($layout): bool {
+                if (! $layout->content_html || ! $layout->isDirty(Layout::VIEW_FIELDS)) {
+                    return false;
+                }
+
+                $layout->forceSave();
+
+                return true;
+            }));
         }
+    }
 
+    /**
+     * @param  array<string, string>  $registeredLayouts
+     */
+    protected function createLayouts(array $registeredLayouts): void
+    {
         $dbLayouts = Layout::query()->pluck('code', 'code')->all();
 
         foreach (array_diff_key($registeredLayouts, $dbLayouts) as $code) {

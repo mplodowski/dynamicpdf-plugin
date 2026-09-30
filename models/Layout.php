@@ -3,6 +3,7 @@
 namespace Renatio\DynamicPDF\Models;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Exception\ApplicationException;
@@ -18,6 +19,7 @@ use Renatio\DynamicPDF\Traits\TranslatesContent;
 use Renatio\DynamicPDF\Traits\ValidatesCodeFormat;
 use Renatio\DynamicPDF\Traits\ValidatesTwigSyntax;
 use System\Models\File;
+use Throwable;
 
 /**
  * @property int $id
@@ -150,6 +152,25 @@ class Layout extends Model
         }
 
         return (new LessCompiler)->compile($this->content_css);
+    }
+
+    public function afterFetch(): void
+    {
+        if (! $this->is_locked || ! $this->code || ! $this->getView()) {
+            return;
+        }
+
+        $this->inDefaultLocale(function (): void {
+            $stored = $this->getAttributes();
+
+            try {
+                $this->fillFromView($this->code);
+            } catch (Throwable $e) {
+                $this->setRawAttributes($stored, true);
+
+                Log::error("Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
+            }
+        });
     }
 
     protected function markAsFollowingView(): void

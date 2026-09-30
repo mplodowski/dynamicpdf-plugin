@@ -76,7 +76,8 @@ always on.
 
 **Security release. Upgrade every installation running 8.0.x.** Requires PHP 8.2 and October CMS 4.4; Composer keeps
 sites on October CMS 3 or 4.0–4.3 on 8.0.3. Run `php artisan october:migrate`, which adds a unique index on template
-and layout codes and permanently deletes duplicate rows, keeping the customised or locked one.
+and layout codes and permanently deletes duplicate rows, keeping the customised or locked one. Layouts now follow their
+view file like templates, so the migration clears *From view* on every layout it cannot prove unedited.
 
 Permissions are granular and nobody receives the new ones automatically: **Access templates** and **Access layouts**
 now only open the lists, so editors get a 403 on every template or layout form until you grant **Create**,
@@ -84,8 +85,8 @@ now only open the lists, so editors get a 403 on every template or layout form u
 The *Layouts* tab now also requires **Access layouts**.
 
 Layout CSS may no longer read server files: LESS and `(inline)` imports and the `data-uri()` / `image-size()` family
-of functions are rejected on save and fail the render of an older layout, so remove them. Reset the demo **Header and
-Footer** layout, and use **Reset to default** on a template an earlier version flagged *Customized* by mistake. Set
+of functions are rejected on save and fail the render of an older layout, so remove them. Use **Reset to default** on
+a template or layout an earlier version flagged *Customized* or edited by mistake. Set
 `DYNAMICPDF_ALLOW_SELF_SIGNED=true` on a development host with a self-signed certificate; an unknown `set*()` option
 call now throws `UnexpectedValueException`.
 

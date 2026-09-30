@@ -59,8 +59,9 @@ v8.1.0:
     - Security release. Sandboxed preview, no inline PHP, layout CSS cannot read server files.
     - Require PHP 8.2 and October CMS 4.4.
     - Granular permissions for templates and layouts.
-    - Template and layout translations, localized view files.
+    - Template and layout translations, localized view files, layouts follow view file updates like templates.
     - Stricter saving. Invalid Twig, duplicate codes and deleting used layouts are rejected.
     - Page numbers without inline PHP, PDF::fake(), sync and check commands.
     - 20260907_0001_add_sample_data_to_templates_table.php
     - 20260907_0002_add_unique_code_indexes.php
+    - 20260930_0001_unlock_edited_layouts.php
