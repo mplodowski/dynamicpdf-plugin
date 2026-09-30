@@ -28,8 +28,6 @@ class PDFWrapper extends PDF
 
     protected ?TwigRenderer $twig = null;
 
-    protected ?TemplateRenderer $renderer = null;
-
     public function __construct(Dompdf $dompdf, ConfigRepository $config, Filesystem $files, ViewFactory $view)
     {
         parent::__construct($dompdf, $config, $files, $view);
@@ -196,7 +194,7 @@ class PDFWrapper extends PDF
      */
     public function parseTemplate(Template $template, array $data = []): string
     {
-        return $this->renderer()->template($template, $data);
+        return $this->renderer()->template($this, $template, $data);
     }
 
     /**
@@ -204,7 +202,7 @@ class PDFWrapper extends PDF
      */
     public function parseLayout(Layout $layout, array $data = []): string
     {
-        return $this->renderer()->layout($layout, $data);
+        return $this->renderer()->layout($this, $layout, $data);
     }
 
     public function allowRemoteApplicationAssets(): self
@@ -228,7 +226,7 @@ class PDFWrapper extends PDF
 
     protected function renderer(): TemplateRenderer
     {
-        return $this->renderer ??= new TemplateRenderer($this, $this->twig());
+        return new TemplateRenderer($this->twig());
     }
 
     protected function ensureFontDir(): void

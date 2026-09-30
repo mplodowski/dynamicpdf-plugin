@@ -11,16 +11,16 @@ class TemplateRenderer
 {
     public const RESERVED_VARIABLES = ['content_html', 'css', 'background_img', 'locale'];
 
-    public function __construct(protected PDFWrapper $pdf, protected TwigRenderer $twig)
+    public function __construct(protected TwigRenderer $twig)
     {
     }
 
     /**
      * @param  array<string, mixed>  $data
      */
-    public function template(Template $template, array $data): string
+    public function template(PDFWrapper $pdf, Template $template, array $data): string
     {
-        return $this->renderWithEvents($template, $data, function (array $data) use ($template): string {
+        return $this->renderWithEvents($pdf, $template, $data, function (array $data) use ($template): string {
             $html = $this->twig->render($template->content_html, $data, (string) $template->code);
 
             if (! $template->layout) {
@@ -37,20 +37,20 @@ class TemplateRenderer
     /**
      * @param  array<string, mixed>  $data
      */
-    public function layout(Layout $layout, array $data): string
+    public function layout(PDFWrapper $pdf, Layout $layout, array $data): string
     {
-        return $this->renderWithEvents($layout, $data, fn (array $data): string => $this->renderLayout($layout, $data));
+        return $this->renderWithEvents($pdf, $layout, $data, fn (array $data): string => $this->renderLayout($layout, $data));
     }
 
     /**
      * @param  array<string, mixed>  $data
      * @param  callable(array<string, mixed>): string  $render
      */
-    protected function renderWithEvents(Template|Layout $model, array $data, callable $render): string
+    protected function renderWithEvents(PDFWrapper $pdf, Template|Layout $model, array $data, callable $render): string
     {
         $data = array_merge($this->withoutReserved($this->registeredVariables()), $data);
 
-        foreach (Event::fire(Events::BEFORE_RENDER, [$this->pdf, $model, $data]) ?? [] as $extra) {
+        foreach (Event::fire(Events::BEFORE_RENDER, [$pdf, $model, $data]) ?? [] as $extra) {
             if (is_array($extra)) {
                 $data = array_merge($data, $this->withoutReserved($extra));
             }
@@ -58,7 +58,7 @@ class TemplateRenderer
 
         $html = $render($data);
 
-        foreach (Event::fire(Events::AFTER_RENDER, [$this->pdf, $model, $html]) ?? [] as $replacement) {
+        foreach (Event::fire(Events::AFTER_RENDER, [$pdf, $model, $html]) ?? [] as $replacement) {
             if (is_string($replacement)) {
                 $html = $replacement;
             }
