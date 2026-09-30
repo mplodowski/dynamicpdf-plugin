@@ -79,10 +79,9 @@ sites on October CMS 3 or 4.0–4.3 on 8.0.3. Run `php artisan october:migrate`,
 and layout codes and permanently deletes duplicate rows, keeping the customised or locked one. Layouts now follow their
 view file like templates, so the migration clears *From view* on every layout it cannot prove unedited.
 
-Permissions are granular and nobody receives the new ones automatically: **Access templates** and **Access layouts**
-now only open the lists, so editors get a 403 on every template or layout form until you grant **Create**,
-**Update**, **Delete** and **Preview** under **Settings → Administrators**, to roles or to individual administrators.
-The *Layouts* tab now also requires **Access layouts**.
+Permissions are granular now, and existing roles and administrators keep their access: the migration grants
+**Create**, **Update**, **Delete** and **Preview** to those holding **Access templates** or **Access layouts**, so you
+can narrow them under **Settings → Administrators**. The *Layouts* tab now also requires **Access layouts**.
 
 Layout CSS may no longer read server files: LESS and `(inline)` imports and the `data-uri()` / `image-size()` family
 of functions are rejected on save and fail the render of an older layout, so remove them. Use **Reset to default** on
