@@ -29,3 +29,18 @@ describe('Template form', function () {
         'form' => ['renatio/dynamicpdf/templates/update/:id'],
     ]);
 });
+
+describe('Form buttons', function () {
+    it('renders the record actions inside a change-monitored form', function (string $definition) {
+        actingAsPdfManager();
+        $record = $definition === 'templates' ? $this->createTemplate() : $this->createLayout();
+
+        $html = $this->get(Backend::url("renatio/dynamicpdf/{$definition}/update/{$record->id}"))->assertOk()->getContent();
+
+        expect($html)->toContain('data-change-monitor')
+            ->toContain('data-request-before-update="$(this).trigger(\'unchange.oc.changeMonitor\')"')
+            ->toContain('data-request="onDuplicate"')
+            ->toContain('href="' . Backend::url("renatio/dynamicpdf/{$definition}/previewpdf/{$record->id}") . '"')
+            ->toContain('target="_blank"');
+    })->with(['templates', 'layouts']);
+});

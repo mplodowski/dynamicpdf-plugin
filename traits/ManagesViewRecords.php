@@ -3,6 +3,8 @@
 namespace Renatio\DynamicPDF\Traits;
 
 use Backend\Facades\BackendMenu;
+use Dompdf\Adapter\CPDF;
+use Dompdf\Options;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
@@ -112,6 +114,25 @@ trait ManagesViewRecords
         }
 
         return $this->asExtension('FormController')->update_onDelete($recordId);
+    }
+
+    /**
+     * CSS pixels of the page the PDF preview renders on (dompdf sizes are in points, 72 per inch).
+     *
+     * @return array{int, int}
+     */
+    protected function previewPageSize(Layout|Template $model): array
+    {
+        $options = new Options(app('dompdf.options'));
+        $template = $model instanceof Template ? $model : null;
+        $size = $template?->size ?: $options->getDefaultPaperSize();
+        $orientation = $template?->orientation ?: $options->getDefaultPaperOrientation();
+        $points = is_array($size) ? $size : (CPDF::$PAPER_SIZES[strtolower((string) $size)] ?? CPDF::$PAPER_SIZES['a4']);
+
+        $width = (int) round($points[2] * 96 / 72);
+        $height = (int) round($points[3] * 96 / 72);
+
+        return strtolower($orientation) === 'landscape' ? [$height, $width] : [$width, $height];
     }
 
     protected function loadPreviewPdf(Layout|Template $model): PDFWrapper
