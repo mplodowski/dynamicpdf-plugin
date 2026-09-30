@@ -10,9 +10,10 @@
 <?php Block::endPut() ?>
 
 <?php if (! $this->fatalError) : ?>
-    <div class="form-preview" style="display: flex; justify-content: center;">
+    <?php [$pageWidth, $pageHeight] = $this->previewPageSize($formModel) ?>
+    <div class="form-preview" style="overflow-x: auto;">
         <iframe sandbox src="<?= Backend::url('renatio/dynamicpdf/layouts/html/'.$formModel->id) ?>"
-                style="width: 793px; height: 1121px; border: 1px solid #9098a2;"></iframe>
+                style="display: block; margin: 0 auto; width: <?= $pageWidth ?>px; height: <?= $pageHeight ?>px; border: 1px solid #9098a2;"></iframe>
     </div>
 
     <div class="form-buttons">

@@ -114,6 +114,25 @@ trait ManagesViewRecords
         return $this->asExtension('FormController')->update_onDelete($recordId);
     }
 
+    /**
+     * CSS pixels of the page the PDF preview renders on (dompdf sizes are in points, 72 per inch).
+     *
+     * @return array{int, int}
+     */
+    protected function previewPageSize(Layout|Template $model): array
+    {
+        $dompdf = app('dompdf');
+        $options = $dompdf->getOptions();
+        $template = $model instanceof Template ? $model : null;
+
+        $points = $dompdf->setPaper(
+            $template?->size ?: $options->getDefaultPaperSize(),
+            $template?->orientation ?: $options->getDefaultPaperOrientation(),
+        )->getPaperSize();
+
+        return [(int) round($points[2] * 96 / 72), (int) round($points[3] * 96 / 72)];
+    }
+
     protected function loadPreviewPdf(Layout|Template $model): PDFWrapper
     {
         return $model instanceof Template
