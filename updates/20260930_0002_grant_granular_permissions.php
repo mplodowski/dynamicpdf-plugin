@@ -1,11 +1,13 @@
 <?php
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use October\Rain\Database\Updates\Migration;
 
 /**
  * Before 8.1.0 the parent permission alone allowed create, update, delete and preview, so roles and administrators
- * granted it keep that access. Granular permissions already set, including a deny, are never overridden.
+ * granted it keep that access. October drops unchecked permissions instead of storing them, so a narrowed role looks
+ * like one never granted: once any granular permission is stored, e.g. on a re-run, nothing is granted.
  */
 return new class extends Migration
 {
@@ -17,24 +19,21 @@ return new class extends Migration
 
     public function up()
     {
-        foreach (self::TABLES as $table) {
-            DB::table($table)
-                ->where('permissions', 'like', '%renatio.dynamicpdf.manage_%')
-                ->get(['id', 'permissions'])
-                ->each(function (object $row) use ($table) {
-                    $permissions = json_decode((string) $row->permissions, true);
+        $rows = collect(self::TABLES)->mapWithKeys(fn (string $table) => [$table => $this->rows($table)]);
 
-                    if (! is_array($permissions)) {
-                        return;
-                    }
-
-                    $granted = $this->grant($permissions);
-
-                    if ($granted !== $permissions) {
-                        DB::table($table)->where('id', $row->id)->update(['permissions' => json_encode($granted)]);
-                    }
-                });
+        if ($rows->flatten(1)->contains(fn (array $permissions) => $this->hasGranular($permissions))) {
+            return;
         }
+
+        $rows->each(fn (Collection $permissions, string $table) => $permissions->each(
+            function (array $permissions, int $id) use ($table) {
+                $granted = $this->grant($permissions);
+
+                if ($granted !== $permissions) {
+                    DB::table($table)->where('id', $id)->update(['permissions' => json_encode($granted)]);
+                }
+            },
+        ));
     }
 
     /**
@@ -45,20 +44,48 @@ return new class extends Migration
     }
 
     /**
+     * @return Collection<int, array<array-key, mixed>>
+     */
+    protected function rows(string $table): Collection
+    {
+        return DB::table($table)
+            ->where('permissions', 'like', '%renatio.dynamicpdf.manage_%')
+            ->pluck('permissions', 'id')
+            ->map(fn (mixed $permissions) => json_decode((string) $permissions, true))
+            ->filter(fn (mixed $permissions) => is_array($permissions));
+    }
+
+    /**
+     * @param  array<array-key, mixed>  $permissions
+     */
+    protected function hasGranular(array $permissions): bool
+    {
+        foreach (self::PARENTS as $parent) {
+            foreach (self::CHILDREN as $child) {
+                if (array_key_exists("{$parent}.{$child}", $permissions)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param  array<array-key, mixed>  $permissions
      * @return array<array-key, mixed>
      */
     protected function grant(array $permissions): array
     {
         foreach (self::PARENTS as $parent) {
-            if (! in_array($permissions[$parent] ?? null, [1, '1'], true)) {
+            $value = $permissions[$parent] ?? null;
+
+            if (! is_scalar($value) || (int) $value !== 1) {
                 continue;
             }
 
             foreach (self::CHILDREN as $child) {
-                if (! array_key_exists("{$parent}.{$child}", $permissions)) {
-                    $permissions["{$parent}.{$child}"] = 1;
-                }
+                $permissions["{$parent}.{$child}"] = 1;
             }
         }
 

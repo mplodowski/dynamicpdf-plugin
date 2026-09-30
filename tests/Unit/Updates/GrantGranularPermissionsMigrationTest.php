@@ -36,22 +36,27 @@ describe('grant_granular_permissions', function () {
         ]);
     });
 
-    it('never overrides a granular permission already set', function () {
-        $id = ($this->role)([
-            'renatio.dynamicpdf.manage_layouts' => 1,
-            'renatio.dynamicpdf.manage_layouts.delete' => 0,
-            'renatio.dynamicpdf.manage_layouts.preview' => -1,
-        ]);
+    it('grants nothing once a granular permission is stored, so a role narrowed later is never widened again', function () {
+        $narrowed = ($this->role)(['renatio.dynamicpdf.manage_templates' => 1]);
+        ($this->role)(['renatio.dynamicpdf.manage_layouts' => 1]);
 
         ($this->migrate)();
 
-        expect(($this->permissions)('backend_user_roles', $id))
-            ->toMatchArray([
-                'renatio.dynamicpdf.manage_layouts.create' => 1,
-                'renatio.dynamicpdf.manage_layouts.update' => 1,
-                'renatio.dynamicpdf.manage_layouts.delete' => 0,
-                'renatio.dynamicpdf.manage_layouts.preview' => -1,
-            ]);
+        DB::table('backend_user_roles')->where('id', $narrowed)->update(['permissions' => json_encode([
+            'renatio.dynamicpdf.manage_templates' => 1,
+        ])]);
+
+        ($this->migrate)();
+
+        expect(($this->permissions)('backend_user_roles', $narrowed))->toBe(['renatio.dynamicpdf.manage_templates' => 1]);
+    });
+
+    it('treats a parent stored as true like October does', function () {
+        $id = ($this->role)(['renatio.dynamicpdf.manage_layouts' => true]);
+
+        ($this->migrate)();
+
+        expect(($this->permissions)('backend_user_roles', $id))->toHaveKey('renatio.dynamicpdf.manage_layouts.update', 1);
     });
 
     it('grants to an administrator allowed the parent directly but not to one denied it', function () {
