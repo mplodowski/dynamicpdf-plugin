@@ -27,6 +27,14 @@ describe('List actions', function () {
         expect((string) $response->json('__ajax.redirect'))->toContain('templates/update/' . $copy->id);
     });
 
+    it('treats a non-string list definition as the templates list', function () {
+        $template = $this->createTemplate(['code' => 'acme::pdf.invoice']);
+
+        $this->listAction('onDuplicateRecord', ['id' => $template->id, 'definition' => ['layouts']])->assertOk();
+
+        expect(Template::whereCode('acme::pdf.invoice_copy')->exists())->toBeTrue();
+    });
+
     it('resets a customised view-driven template from the list', function () {
         $this->views = $this->registerViewTemplates('listactions', ['a' => "title = \"From view\"\n==\n<p>from view</p>"]);
         $template = $this->createTemplate(['code' => 'listactions::pdf.a', 'title' => 'Edited', 'content_html' => '<p>edited</p>', 'is_custom' => true]);

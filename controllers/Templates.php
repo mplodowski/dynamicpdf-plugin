@@ -155,9 +155,9 @@ class Templates extends Controller
 
     protected function listDefinition(): string
     {
-        $definition = (string) post('definition');
+        $definition = post('definition');
 
-        return isset(self::LIST_MODELS[$definition]) ? $definition : 'templates';
+        return is_string($definition) && isset(self::LIST_MODELS[$definition]) ? $definition : 'templates';
     }
 
     protected function checkListPermission(string $definition, string $action): void
