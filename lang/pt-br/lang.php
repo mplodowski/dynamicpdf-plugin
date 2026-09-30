@@ -28,7 +28,7 @@ return [
         'actions' => 'Ações',
         'created_at' => 'Criado em',
         'updated_at' => 'Atualizado em',
-        'background_img_comment' => 'Use uma imagem com pelo menos 96 DPI para exibição correta. Recomendado: 300 DPI.',
+        'background_img_comment' => 'Adicione background-size: 100% 100% e @page { margin: 0 } ao CSS do layout para que a imagem preencha a página. A imagem é redesenhada no tamanho da página com o DPI do dompdf (794 × 1123 px para A4 com o padrão de 96 DPI); uma imagem maior só ajuda se você aumentar o DPI, o que também deixa o PDF maior.',
         'size' => 'Tamanho do papel',
         'orientation' => 'Orientação do papel',
         'sample_data' => 'Dados de exemplo',

@@ -406,16 +406,19 @@ All methods are available through Facade class `Renatio\DynamicPDF\Classes\PDF`.
 
 ### Background image
 
-To display the background image of the layout, use the following code:
+To display the background image of the layout over the whole page, use the following code:
 
 ```html
-<body style="background: url({{ background_img }}) top left no-repeat;">
+<style>@page { margin: 0; }</style>
+<body style="background: url({{ background_img }}) top left no-repeat; background-size: 100% 100%;">
 ```
 
-The background image should be at least 96 DPI (794 x 1123 px for A4).
+Without `@page { margin: 0; }` the background covers only the area inside dompdf's default 1.2 cm page margins.
 
-For a higher-quality image, such as 300 DPI (2480 x 3508 px), set the DPI in code or with `dpi` in the dompdf
-configuration, which the backend preview also uses:
+dompdf redraws the background at the page size in its DPI, 794 x 1123 px for A4 at the default 96 DPI, so a larger
+image adds no sharpness on its own. For a higher-quality background, such as 300 DPI (2480 x 3508 px), use an image
+that large and set the DPI in code or with `dpi` in the dompdf configuration, which the backend preview also uses.
+This also makes the PDF larger:
 
 ```php
 return PDF::loadTemplate($model->code)
