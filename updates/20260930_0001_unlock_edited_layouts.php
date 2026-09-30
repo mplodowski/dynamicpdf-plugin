@@ -10,8 +10,9 @@ use Renatio\DynamicPDF\Plugin;
 use System\Models\Parameter;
 
 /**
- * Before 8.1.0 an edit never cleared is_locked, and locked layouts now follow their view. A locked
- * layout keeps the flag only when it provably holds its current view or a version this plugin shipped.
+ * Before 8.1.0 an edit never cleared is_locked, and locked layouts now follow their view. A locked layout keeps
+ * the flag only when it provably holds its current view or a version this plugin shipped. Layouts whose view is not
+ * registered right now (a disabled plugin or demo) are checked too, their view may come back later.
  * Layouts follow their view only once this has run, so files deployed ahead of the migration overwrite nothing.
  */
 return new class extends Migration
@@ -40,17 +41,15 @@ return new class extends Migration
         try {
             $views = PDFManager::instance()->listRegisteredLayouts();
         } catch (Throwable $e) {
-            Log::warning("Renatio.DynamicPDF could not list the registered layouts, no layout was unlocked: {$e->getMessage()}");
-
-            return;
+            Log::warning("Renatio.DynamicPDF could not list the registered layouts, only layouts matching a shipped view stay locked: {$e->getMessage()}");
+            $views = [];
         }
 
         $rows = DB::table(self::LAYOUTS)
             ->where('is_locked', true)
-            ->whereIn('code', array_keys($views))
             ->get(['id', 'code', 'name', 'content_html', 'content_css']);
 
-        $edited = $rows->reject(fn (object $row): bool => $this->isUnedited($row, $views[$row->code]))->pluck('id');
+        $edited = $rows->reject(fn (object $row): bool => $this->isUnedited($row, $views[$row->code] ?? null))->pluck('id');
 
         if ($edited->isNotEmpty()) {
             DB::table(self::LAYOUTS)->whereIn('id', $edited->all())->update(['is_locked' => false]);
@@ -64,12 +63,16 @@ return new class extends Migration
         Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 0);
     }
 
-    protected function isUnedited(object $row, string $view): bool
+    protected function isUnedited(object $row, ?string $view): bool
     {
         $fingerprint = $this->fingerprint($row->name, $row->content_html, $row->content_css);
 
-        if (str_starts_with($row->code, self::OWN_VIEWS) && in_array($fingerprint, self::SHIPPED_FINGERPRINTS, true)) {
+        if (str_starts_with((string) $row->code, self::OWN_VIEWS) && in_array($fingerprint, self::SHIPPED_FINGERPRINTS, true)) {
             return true;
+        }
+
+        if ($view === null) {
+            return false;
         }
 
         try {

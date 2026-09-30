@@ -26,6 +26,7 @@ describe('unlock_edited_layouts', function () {
     });
 
     afterEach(function () {
+        PDFManager::forgetInstance();
         File::deleteDirectory($this->views);
     });
 
@@ -76,12 +77,41 @@ describe('unlock_edited_layouts', function () {
             ->content_html->toBe('<p>v1</p>');
     });
 
-    it('leaves a layout whose view is not registered untouched', function () {
-        $id = ($this->insertLayout)('gone::pdf.layouts.letter', 'Letter', '<p>v1</p>');
+    it('unlocks an edited layout whose view is registered only after it ran so the sync never overwrites it', function () {
+        $id = ($this->insertLayout)('lateviews::pdf.layouts.letter', 'Letter', '<p>mine</p>');
+
+        ($this->migrate)();
+
+        $views = $this->registerViewLayouts('lateviews', ['layouts/letter' => "name = \"Letter\"\n==\n<p>v2</p>"]);
+        (new SyncTemplates)->handle();
+        File::deleteDirectory($views);
+
+        expect(($this->row)($id))
+            ->is_locked->toBeFalsy()
+            ->content_html->toBe('<p>mine</p>');
+    });
+
+    it('keeps an unedited layout of this plugin locked while its view is not registered', function () {
+        $id = ($this->insertLayout)('renatio.dynamicpdf::pdf.layouts.header_and_footer', ...$this->shipped);
+        PDFManager::forgetInstance();
+        Parameter::set(Plugin::DEMO_PARAMETER, 0);
 
         ($this->migrate)();
 
         expect(($this->row)($id)->is_locked)->toBeTruthy();
+    });
+
+    it('unlocks every edited layout and still lets layouts follow their view when the registered layouts cannot be listed', function () {
+        $id = ($this->insertLayout)('unlockviews::pdf.layouts.letter', 'Letter', '<p>mine</p>');
+        Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 0);
+        $manager = Mockery::mock(PDFManager::class);
+        $manager->shouldReceive('listRegisteredLayouts')->andThrow(new RuntimeException('broken registration'));
+        (new ReflectionProperty(PDFManager::class, 'instance'))->setValue(null, $manager);
+
+        ($this->migrate)();
+
+        expect(($this->row)($id)->is_locked)->toBeFalsy()
+            ->and(Parameter::get(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER))->toBeTruthy();
     });
 
     it('lets layouts follow their view only once it has run', function () {
