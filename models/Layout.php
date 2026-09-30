@@ -2,7 +2,6 @@
 
 namespace Renatio\DynamicPDF\Models;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
@@ -14,6 +13,7 @@ use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 use Renatio\DynamicPDF\Traits\DescribesViewStatus;
 use Renatio\DynamicPDF\Traits\Duplicates;
+use Renatio\DynamicPDF\Traits\FollowsView;
 use Renatio\DynamicPDF\Traits\TranslatesContent;
 use Renatio\DynamicPDF\Traits\ValidatesCodeFormat;
 use Renatio\DynamicPDF\Traits\ValidatesTwigSyntax;
@@ -34,6 +34,7 @@ class Layout extends Model
 {
     use DescribesViewStatus;
     use Duplicates;
+    use FollowsView;
     use TranslatesContent;
     use ValidatesCodeFormat;
     use ValidatesTwigSyntax;
@@ -73,7 +74,7 @@ class Layout extends Model
         'background_img' => [File::class, 'delete' => true],
     ];
 
-    protected function duplicateLabelAttribute(): string
+    public function labelAttribute(): string
     {
         return 'name';
     }
@@ -134,22 +135,12 @@ class Layout extends Model
         return PDF::loadLayout($this->code)->getDompdf()->output_html();
     }
 
-    public static function byCode(string $code): self
+    /**
+     * @return array<string, string>
+     */
+    protected static function registeredViews(): array
     {
-        $layout = static::whereCode($code)->first();
-
-        if ($layout instanceof static) {
-            return $layout;
-        }
-
-        if (! array_key_exists($code, PDFManager::instance()->listRegisteredLayouts())) {
-            throw (new ModelNotFoundException)->setModel(static::class, [$code]);
-        }
-
-        $layout = new self;
-        $layout->fillFromView($code);
-
-        return $layout;
+        return PDFManager::instance()->listRegisteredLayouts();
     }
 
     public function getCSS(): string
@@ -161,24 +152,9 @@ class Layout extends Model
         return (new LessCompiler)->compile($this->content_css);
     }
 
-    public function resetToView(): void
+    protected function markAsFollowingView(): void
     {
-        $this->inDefaultLocale(function (): void {
-            $this->fillFromCode();
-            $this->is_locked = true;
-            $this->save();
-        });
-    }
-
-    public function fillFromCode(): void
-    {
-        $view = $this->getView();
-
-        if (! $view) {
-            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.layout.not_found', ['code' => $this->code])));
-        }
-
-        $this->fillFromView($view);
+        $this->is_locked = true;
     }
 
     public function fillFromView(string $code): void
@@ -191,18 +167,8 @@ class Layout extends Model
         $this->content_html = Arr::get($sections, 'html');
     }
 
-    public function getView(): ?string
-    {
-        return Arr::get(PDFManager::instance()->listRegisteredLayouts(), $this->code);
-    }
-
     public function isCustomised(): bool
     {
         return $this->exists && ! $this->is_locked;
-    }
-
-    public function followsView(): bool
-    {
-        return (bool) $this->getView();
     }
 }

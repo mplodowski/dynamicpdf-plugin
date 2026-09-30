@@ -44,11 +44,12 @@ describe('Backend preview tools', function () {
         $layout->setAttribute('background_img', $image);
         $layout->save();
 
-        (new Layouts)->update_onDuplicate($layout->id);
+        $response = (new Layouts)->update_onDuplicate($layout->id);
         $copy = Layout::whereCode('acme::pdf.layouts.default_copy')->firstOrFail();
         Filesystem::deleteDirectory($uploads);
 
         expect($copy->getAttribute('is_locked'))->toBeFalsy()
+            ->and($response->getTargetUrl())->toContain('layouts/update/' . $copy->id)
             ->and((string) $copy->getAttribute('name'))->toBe('Test Layout (copy)')
             ->and(File::where('attachment_id', $copy->id)->where('field', 'background_img')->count())->toBe(1);
     });
