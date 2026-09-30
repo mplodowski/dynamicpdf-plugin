@@ -52,7 +52,7 @@ class Demo extends Command
     {
         $plugin = PluginManager::instance()->findByNamespace('Renatio.DynamicPDF');
 
-        Template::whereIn('code', $plugin->registerPDFTemplates())->delete();
+        Template::whereIn('code', $plugin->registerPDFTemplates())->get()->each->delete();
 
         foreach ($plugin->registerPDFLayouts() as $layout) {
             Layout::where('code', $layout)->doesntHave('templates')->get()->each->delete();

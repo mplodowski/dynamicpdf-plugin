@@ -102,7 +102,7 @@ class SyncTemplates
             return;
         }
 
-        Template::whereIn('code', $obsolete)->delete();
+        Template::whereIn('code', $obsolete)->get()->each->delete();
         $this->report['deleted'] = $obsolete;
     }
 
