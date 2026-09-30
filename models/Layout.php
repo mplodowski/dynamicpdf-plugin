@@ -159,7 +159,7 @@ class Layout extends Model
 
     public function fillFromView(string $code): void
     {
-        $sections = PDFParser::sections($code);
+        $sections = (new PDFParser)->parseView($code);
 
         $this->code = $code;
         $this->name = Arr::get($sections, 'settings.name') ?: $code;

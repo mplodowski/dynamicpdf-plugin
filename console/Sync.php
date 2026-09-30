@@ -13,8 +13,6 @@ class Sync extends Command
 
     public function handle(): int
     {
-        SyncTemplates::forgetFailures();
-
         $sync = new SyncTemplates;
         $sync->handle();
         $report = $sync->report();

@@ -10,7 +10,7 @@ class PDFParser
     /**
      * @return array{settings: array<string, mixed>, css: string|null, html: string|null}
      */
-    public static function parse(string $content): array
+    public function parseContent(string $content): array
     {
         $sections = preg_split('/^={2,}\s*/m', $content, -1) ?: [];
         $sections = array_map('trim', $sections);
@@ -39,8 +39,28 @@ class PDFParser
     /**
      * @return array{settings: array<string, mixed>, css: string|null, html: string|null}
      */
+    public function parseView(string $path): array
+    {
+        return $this->parseContent(File::get(View::getFinder()->find($path)));
+    }
+
+    /**
+     * @deprecated Use (new PDFParser)->parseContent() instead.
+     *
+     * @return array{settings: array<string, mixed>, css: string|null, html: string|null}
+     */
+    public static function parse(string $content): array
+    {
+        return (new self)->parseContent($content);
+    }
+
+    /**
+     * @deprecated Use (new PDFParser)->parseView() instead.
+     *
+     * @return array{settings: array<string, mixed>, css: string|null, html: string|null}
+     */
     public static function sections(string $path): array
     {
-        return self::parse(File::get(View::getFinder()->find($path)));
+        return (new self)->parseView($path);
     }
 }

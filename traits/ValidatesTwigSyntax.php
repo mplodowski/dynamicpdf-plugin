@@ -2,7 +2,7 @@
 
 namespace Renatio\DynamicPDF\Traits;
 
-use Renatio\DynamicPDF\Classes\PDF;
+use Renatio\DynamicPDF\Classes\TwigRenderer;
 use Twig\Error\Error as TwigError;
 
 /**
@@ -20,7 +20,7 @@ trait ValidatesTwigSyntax
         }
 
         try {
-            PDF::checkSyntax($this->content_html, (string) $this->code);
+            (new TwigRenderer)->checkSyntax($this->content_html, (string) $this->code);
         } catch (TwigError $e) {
             return ['content_html' => trans('renatio.dynamicpdf::lang.templates.twig_invalid', [
                 'line' => $e->getTemplateLine(),

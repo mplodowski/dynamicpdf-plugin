@@ -11,9 +11,6 @@ use Throwable;
 
 class SyncTemplates
 {
-    /** @var array<string, true> */
-    protected static array $failed = [];
-
     /** @var array<string, array<int, string>> */
     protected array $report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
@@ -42,11 +39,6 @@ class SyncTemplates
     public function report(): array
     {
         return $this->report;
-    }
-
-    public static function forgetFailures(): void
-    {
-        self::$failed = [];
     }
 
     protected function createLayouts(): void
@@ -132,12 +124,6 @@ class SyncTemplates
 
     protected function write(string $code, string $outcome, callable $write): void
     {
-        if (isset(self::$failed[$code])) {
-            $this->report['failed'][] = $code;
-
-            return;
-        }
-
         try {
             if ($write() !== false) {
                 $this->report[$outcome][] = $code;
@@ -145,7 +131,6 @@ class SyncTemplates
         } catch (UniqueConstraintViolationException) {
             // Another request synced the same code a moment earlier; the row exists.
         } catch (Throwable $e) {
-            self::$failed[$code] = true;
             $this->report['failed'][] = $code;
 
             Log::error("Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", ['exception' => $e]);
