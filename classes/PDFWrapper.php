@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Log;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Models\File;
-use Twig\Error\Error as TwigError;
 use UnexpectedValueException;
 
 /**
@@ -210,14 +209,6 @@ class PDFWrapper extends PDF
     public function parseLayout(Layout $layout, array $data = []): string
     {
         return $this->renderer()->layout($layout, $data);
-    }
-
-    /**
-     * @throws TwigError
-     */
-    public function checkSyntax(string $markup, string $name): void
-    {
-        $this->twig()->checkSyntax($markup, $name);
     }
 
     public function allowRemoteApplicationAssets(): self
