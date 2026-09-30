@@ -136,7 +136,7 @@ class Template extends Model
 
     public function fillFromView(string $code): void
     {
-        $sections = (new PDFParser)->sections($code);
+        $sections = (new PDFParser)->parseView($code);
 
         $this->title = Arr::get($sections, 'settings.title') ?: $code;
         $this->code = $code;
