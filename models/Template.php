@@ -10,13 +10,13 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
-use October\Rain\Exception\ApplicationException;
 use October\Rain\Exception\ValidationException;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 use Renatio\DynamicPDF\Traits\DescribesViewStatus;
 use Renatio\DynamicPDF\Traits\Duplicates;
+use Renatio\DynamicPDF\Traits\FollowsView;
 use Renatio\DynamicPDF\Traits\TranslatesContent;
 use Renatio\DynamicPDF\Traits\ValidatesCodeFormat;
 use Renatio\DynamicPDF\Traits\ValidatesTwigSyntax;
@@ -40,6 +40,7 @@ class Template extends Model
 {
     use DescribesViewStatus;
     use Duplicates;
+    use FollowsView;
     use TranslatesContent;
     use ValidatesCodeFormat;
     use ValidatesTwigSyntax;
@@ -98,7 +99,7 @@ class Template extends Model
         }
     }
 
-    protected function duplicateLabelAttribute(): string
+    public function labelAttribute(): string
     {
         return 'title';
     }
@@ -128,24 +129,9 @@ class Template extends Model
         });
     }
 
-    public function resetToView(): void
+    protected function markAsFollowingView(): void
     {
-        $this->inDefaultLocale(function (): void {
-            $this->fillFromCode();
-            $this->is_custom = false;
-            $this->save();
-        });
-    }
-
-    public function fillFromCode(): void
-    {
-        $view = $this->getView();
-
-        if (! $view) {
-            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.template.not_found', ['code' => $this->code])));
-        }
-
-        $this->fillFromView($view);
+        $this->is_custom = false;
     }
 
     public function fillFromView(string $code): void
@@ -213,22 +199,12 @@ class Template extends Model
         return PDF::loadTemplate($this->code, $this->sampleData())->getDompdf()->output_html();
     }
 
-    public static function byCode(string $code): self
+    /**
+     * @return array<string, string>
+     */
+    protected static function registeredViews(): array
     {
-        $template = static::whereCode($code)->first();
-
-        if ($template instanceof static) {
-            return $template;
-        }
-
-        if (! array_key_exists($code, PDFManager::instance()->listRegisteredTemplates())) {
-            throw (new ModelNotFoundException)->setModel(static::class, [$code]);
-        }
-
-        $template = new self;
-        $template->fillFromView($code);
-
-        return $template;
+        return PDFManager::instance()->listRegisteredTemplates();
     }
 
     /**
@@ -272,18 +248,8 @@ class Template extends Model
         }
     }
 
-    public function getView(): ?string
-    {
-        return Arr::get(PDFManager::instance()->listRegisteredTemplates(), $this->code);
-    }
-
     public function isCustomised(): bool
     {
         return $this->is_custom;
-    }
-
-    public function followsView(): bool
-    {
-        return (bool) $this->getView();
     }
 }

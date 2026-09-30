@@ -10,7 +10,7 @@ trait Duplicates
     {
         $copy = $this->replicateWithRelations();
         $copy->code = $this->uniqueCopyCode((string) $this->code);
-        $copy->{$this->duplicateLabelAttribute()} = $this->{$this->duplicateLabelAttribute()} . ' ' . trans('renatio.dynamicpdf::lang.templates.copy_suffix');
+        $copy->{$this->labelAttribute()} = $this->{$this->labelAttribute()} . ' ' . trans('renatio.dynamicpdf::lang.templates.copy_suffix');
         $this->prepareDuplicate($copy);
 
         try {
@@ -23,7 +23,7 @@ trait Duplicates
         return $copy;
     }
 
-    abstract protected function duplicateLabelAttribute(): string;
+    abstract public function labelAttribute(): string;
 
     protected function prepareDuplicate(self $copy): void
     {

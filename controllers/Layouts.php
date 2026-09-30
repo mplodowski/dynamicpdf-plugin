@@ -4,27 +4,14 @@ namespace Renatio\DynamicPDF\Controllers;
 
 use Backend\Behaviors\FormController;
 use Backend\Classes\Controller;
-use Backend\Facades\Backend;
-use Backend\Facades\BackendMenu;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
-use Illuminate\Support\Str;
-use October\Rain\Exception\ApplicationException;
-use October\Rain\Support\Facades\Flash;
-use Renatio\DynamicPDF\Classes\PDF;
-use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
-use Renatio\DynamicPDF\Traits\ChecksFormPermissions;
 use Renatio\DynamicPDF\Traits\DetectsViewChanges;
-use Renatio\DynamicPDF\Traits\RendersPreviewErrors;
-use System\Classes\SettingsManager;
-use Twig\Error\Error as TwigError;
+use Renatio\DynamicPDF\Traits\ManagesViewRecords;
 
 class Layouts extends Controller
 {
-    use ChecksFormPermissions;
     use DetectsViewChanges;
-    use RendersPreviewErrors;
+    use ManagesViewRecords;
 
     /** @var array<int, string> */
     public $requiredPermissions = ['renatio.dynamicpdf.manage_layouts'];
@@ -41,13 +28,7 @@ class Layouts extends Controller
     {
         parent::__construct();
 
-        BackendMenu::setContext('October.System', 'system', 'settings');
-        SettingsManager::setContext('Renatio.DynamicPDF', 'templates');
-    }
-
-    public function beforeDisplay(): void
-    {
-        (new SyncTemplates)->handle();
+        $this->setSettingsContext();
     }
 
     public function formBeforeSave(Layout $model): void
@@ -55,82 +36,5 @@ class Layouts extends Controller
         if ($model->is_locked && $this->postedViewFieldChanged($model, Layout::VIEW_FIELDS)) {
             $model->is_locked = false;
         }
-    }
-
-    public function previewpdf(int|string $id): ?Response
-    {
-        $this->requireFormPermission('modelPreview');
-
-        $this->pageTitle = e(trans('renatio.dynamicpdf::lang.templates.preview_pdf'));
-
-        try {
-            $model = $this->formFindModelObject($id);
-        } catch (ApplicationException $e) {
-            $this->handleError($e);
-
-            return null;
-        }
-
-        try {
-            $pdf = PDF::loadLayout($model->code)
-                ->setLogOutputFile(config('app.debug') ? storage_path('temp/log.htm') : '')
-                ->allowRemoteApplicationAssets();
-
-            $pdf->render();
-        } catch (TwigError $e) {
-            $this->handleError(new ApplicationException($this->previewFailedMessage($e)));
-
-            return null;
-        }
-
-        return $pdf->addInfo(['Title' => $model->name])->stream(Str::slug($model->name) . '.pdf');
-    }
-
-    public function html(int|string $id): Response
-    {
-        $this->requireFormPermission('modelPreview');
-
-        $model = $this->formFindModelObject($id);
-
-        try {
-            $html = $model->getHtmlAttribute();
-        } catch (TwigError $e) {
-            $html = '<p>' . e($this->previewFailedMessage($e)) . '</p>';
-        }
-
-        return response($html)->header('Content-Security-Policy', "sandbox; script-src 'none'; object-src 'none'");
-    }
-
-    public function update_onDuplicate(int|string $recordId): RedirectResponse
-    {
-        $this->requireFormPermission('modelCreate');
-
-        $copy = $this->formFindModelObject($recordId)->duplicate();
-
-        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.duplicate_success')));
-
-        return Backend::redirect('renatio/dynamicpdf/layouts/update/' . $copy->id);
-    }
-
-    public function update_onResetDefault(int|string $recordId): RedirectResponse
-    {
-        $this->requireFormPermission('modelUpdate');
-
-        $this->formFindModelObject($recordId)->resetToView();
-
-        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.reset_success')));
-
-        return redirect()->refresh();
-    }
-
-    public function update_onDelete(int|string|null $recordId = null): mixed
-    {
-        $this->requireFormPermission('modelDelete');
-
-        if ($this->formFindModelObject($recordId)->followsView()) {
-            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.templates.delete_view_refused')));
-        }
-
-        return $this->asExtension('FormController')->update_onDelete($recordId);
     }
 }
