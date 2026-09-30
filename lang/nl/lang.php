@@ -28,7 +28,7 @@ return [
         'actions' => 'Acties',
         'created_at' => 'Aangemaakt op',
         'updated_at' => 'Bijgewerkt op',
-        'background_img_comment' => 'Voeg background-size: 100% 100% toe aan de CSS van de lay-out om de afbeelding op de pagina te laten passen. De afbeelding wordt opnieuw getekend op paginaformaat met de DPI van dompdf (794 × 1123 px voor A4 bij de standaard 96 DPI); een grotere afbeelding helpt alleen als u de DPI verhoogt, wat ook de PDF groter maakt.',
+        'background_img_comment' => 'Voeg background-size: 100% 100% en @page { margin: 0 } toe aan de CSS van de lay-out zodat de afbeelding de pagina vult. De afbeelding wordt opnieuw getekend op paginaformaat met de DPI van dompdf (794 × 1123 px voor A4 bij de standaard 96 DPI); een grotere afbeelding helpt alleen als u de DPI verhoogt, wat ook de PDF groter maakt.',
         'size' => 'Papierformaat',
         'orientation' => 'Papieroriëntatie',
         'sample_data' => 'Voorbeeldgegevens',
