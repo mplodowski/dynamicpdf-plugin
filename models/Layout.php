@@ -3,6 +3,7 @@
 namespace Renatio\DynamicPDF\Models;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Exception\ApplicationException;
@@ -11,6 +12,7 @@ use Renatio\DynamicPDF\Classes\LessCompiler;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
+use Renatio\DynamicPDF\Plugin;
 use Renatio\DynamicPDF\Traits\DescribesViewStatus;
 use Renatio\DynamicPDF\Traits\Duplicates;
 use Renatio\DynamicPDF\Traits\FollowsView;
@@ -18,6 +20,8 @@ use Renatio\DynamicPDF\Traits\TranslatesContent;
 use Renatio\DynamicPDF\Traits\ValidatesCodeFormat;
 use Renatio\DynamicPDF\Traits\ValidatesTwigSyntax;
 use System\Models\File;
+use System\Models\Parameter;
+use Throwable;
 
 /**
  * @property int $id
@@ -150,6 +154,30 @@ class Layout extends Model
         }
 
         return (new LessCompiler)->compile($this->content_css);
+    }
+
+    public function afterFetch(): void
+    {
+        if (! $this->is_locked || ! $this->code || ! self::followsViewUpdates() || ! $this->getView()) {
+            return;
+        }
+
+        $this->inDefaultLocale(function (): void {
+            $stored = $this->getAttributes();
+
+            try {
+                $this->fillFromView($this->code);
+            } catch (Throwable $e) {
+                $this->setRawAttributes($stored, true);
+
+                Log::error("Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
+            }
+        });
+    }
+
+    public static function followsViewUpdates(): bool
+    {
+        return (bool) Parameter::get(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER);
     }
 
     protected function markAsFollowingView(): void

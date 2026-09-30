@@ -217,11 +217,11 @@ The method should return an array of PDF view names.
 Registered views are synchronized to the database when a *PDF Templates* page (the lists or a template or layout form)
 is displayed and when `php artisan dynamicpdf:sync` or `php artisan dynamicpdf:demo` runs, not on every request.
 Synchronization creates the missing templates and layouts, deletes the templates that are no longer registered and were
-never customized, and writes changed view files back to the rows of templates that are not customized, so list search
-and sort work on the current values. Customized templates and every layout are left alone, so a changed layout view file
-reaches an existing layout only through *Reset to Default*. A code whose view file is missing is skipped and written to
-the application log once per process; a stored template whose view file went missing, parses to no content or whose
-layout code resolves to nothing keeps its stored content. Until a registered view is synchronized, `PDF::loadTemplate()`
+never customized, and writes changed view files back to the rows of templates that are not customized and of layouts
+that are *From view*, so list search and sort work on the current values. Customized templates and layouts that are no
+longer *From view* are left alone. A code whose view file is missing is skipped and written to the application log once
+per process; a stored template or layout whose view file went missing or parses to no content, and a template whose
+layout code resolves to nothing, keep their stored content. Until a registered view is synchronized, `PDF::loadTemplate()`
 renders it straight from the file.
 
 Like templates, PDF layouts can be registered by adding the `registerPDFLayouts` method of the Plugin registration
@@ -697,9 +697,9 @@ the translation to render with:
 PDF::loadTemplate('acme.shop::pdf.invoice', $data, locale: 'pl')->download('faktura.pdf');
 ```
 
-A language with no translation falls back to the stored content, and templates backed by a view file keep following
-that file in the default language, so **Reset to Default** and the synchronization never touch a translation.
-Per-language background images are not supported.
+A language with no translation falls back to the stored content, and templates and layouts backed by a view file
+keep following that file in the default language, so **Reset to Default** and the synchronization never touch a
+translation. Per-language background images are not supported.
 
 A registered view can ship localized siblings: `pdf.invoice` renders from `pdf.de.invoice`, `pdf.layouts.default`
 from `pdf.layouts.de.default`. The locale chain is followed, so `de-AT` takes `pdf.de-AT.invoice` and falls back to

@@ -161,7 +161,7 @@ describe('Guarded controller actions', function () {
 
         $this->records = [
             ':template' => $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'title' => 'Edited', 'is_custom' => true])->id,
-            ':layout' => $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'name' => 'Edited', 'is_locked' => true])->id,
+            ':layout' => $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'name' => 'Edited', 'is_locked' => false])->id,
             ':custom_template' => $this->createTemplate(['code' => 'acme::pdf.custom', 'is_custom' => true])->id,
             ':custom_layout' => $this->createLayout(['code' => 'acme::pdf.layouts.custom'])->id,
         ];
