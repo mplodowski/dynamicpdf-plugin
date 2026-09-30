@@ -28,6 +28,7 @@
             <directory>classes</directory>
             <directory>console</directory>
             <directory>controllers</directory>
+            <directory>listeners</directory>
             <directory>models</directory>
             <directory>traits</directory>
             <file>Plugin.php</file>

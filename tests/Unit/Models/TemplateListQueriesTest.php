@@ -68,6 +68,17 @@ describe('Template list queries', function () {
         expect(Template::byCode('acmetest::pdf.a')->layout)->toBeNull();
     });
 
+    it('resolves layouts without the cache when the plugin registered no binding', function () {
+        app()->offsetUnset(Template::LAYOUT_CACHE);
+        $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);
+        $this->createTemplate(['code' => 'acmetest::pdf.a', 'is_custom' => false]);
+
+        $layout->save();
+
+        expect(Template::byCode('acmetest::pdf.a')->layout?->code)->toBe('acme::pdf.layouts.default')
+            ->and(app()->bound(Template::LAYOUT_CACHE))->toBeFalse();
+    });
+
     it('forgets a remembered layout when it is saved', function () {
         $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default', 'name' => 'Before']);
         $this->createTemplate(['code' => 'acmetest::pdf.a', 'is_custom' => false]);

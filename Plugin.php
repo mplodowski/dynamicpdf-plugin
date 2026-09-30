@@ -7,12 +7,12 @@ use Backend\Facades\Backend;
 use Barryvdh\DomPDF\ServiceProvider;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Event;
-use RainLab\Translate\Classes\ThemeScanner;
+use Illuminate\Support\Facades\Lang;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Console\Check;
 use Renatio\DynamicPDF\Console\Demo;
 use Renatio\DynamicPDF\Console\Sync;
-use Renatio\DynamicPDF\Models\Layout;
+use Renatio\DynamicPDF\Listeners\ImportTranslateMessages;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\PluginBase;
 use System\Classes\PluginManager;
@@ -36,7 +36,7 @@ class Plugin extends PluginBase
         ];
     }
 
-    public function boot(): void
+    public function register(): void
     {
         $this->app->register(ServiceProvider::class);
 
@@ -47,32 +47,20 @@ class Plugin extends PluginBase
             $app->make('view'),
         ));
 
-        if (config('dompdf.public_path') === null) {
-            config(['dompdf.public_path' => public_path()]);
-        }
-
-        Event::listen('rainlab.translate.themeScanner.afterScan', function (ThemeScanner $scanner): void {
-            $messages = [];
-
-            foreach (Layout::all() as $layout) {
-                $messages = array_merge($messages, $scanner->parseContent($layout->content_html));
-            }
-
-            foreach (Template::all() as $template) {
-                $messages = array_merge($messages, $scanner->parseContent($template->content_html));
-            }
-
-            $scanner->importMessages($messages);
-        });
-    }
-
-    public function register(): void
-    {
         $this->app->scoped(Template::LAYOUT_CACHE, fn (): ArrayObject => new ArrayObject);
 
         $this->registerConsoleCommand('dynamicpdf:demo', Demo::class);
         $this->registerConsoleCommand('dynamicpdf:sync', Sync::class);
         $this->registerConsoleCommand('dynamicpdf:check', Check::class);
+    }
+
+    public function boot(): void
+    {
+        if (config('dompdf.public_path') === null) {
+            config(['dompdf.public_path' => public_path()]);
+        }
+
+        Event::listen('rainlab.translate.themeScanner.afterScan', ImportTranslateMessages::class);
     }
 
     /**
@@ -137,8 +125,8 @@ class Plugin extends PluginBase
 
         return [
             'filters' => [
-                '_' => ['Lang', 'get'],
-                '__' => ['Lang', 'choice'],
+                '_' => [Lang::class, 'get'],
+                '__' => [Lang::class, 'choice'],
             ],
         ];
     }
