@@ -91,3 +91,5 @@ call now throws `UnexpectedValueException`.
 
 The backend **Preview PDF** no longer forces 300 DPI and uses `dompdf.options.dpi` like PDFs generated from code, so
 `px` sizes in the preview now match the real output. Check templates whose sizes were tuned to the old preview.
+
+`PDFParser` methods are no longer static; call `(new PDFParser)->sections($view)` instead of `PDFParser::sections($view)`.

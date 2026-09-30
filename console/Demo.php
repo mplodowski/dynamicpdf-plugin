@@ -27,7 +27,6 @@ class Demo extends Command
         Parameter::set(Plugin::DEMO_PARAMETER, 1);
 
         PDFManager::forgetInstance();
-        SyncTemplates::forgetFailures();
 
         $sync = new SyncTemplates;
         $sync->handle();
