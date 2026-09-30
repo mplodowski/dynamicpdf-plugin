@@ -9,6 +9,8 @@ use Renatio\DynamicPDF\Models\Template;
 
 class TemplateRenderer
 {
+    public const RESERVED_VARIABLES = ['content_html', 'css', 'background_img', 'locale'];
+
     public function __construct(protected PDFWrapper $pdf, protected TwigRenderer $twig)
     {
     }
@@ -71,7 +73,7 @@ class TemplateRenderer
      */
     protected function withoutReserved(array $variables): array
     {
-        return array_diff_key($variables, array_flip(PDFWrapper::RESERVED_VARIABLES));
+        return array_diff_key($variables, array_flip(self::RESERVED_VARIABLES));
     }
 
     /**

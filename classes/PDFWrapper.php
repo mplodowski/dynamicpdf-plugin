@@ -22,10 +22,6 @@ use UnexpectedValueException;
  */
 class PDFWrapper extends PDF
 {
-    public const PAGE_NUMBERS_POSITIONS = PageNumbers::POSITIONS;
-
-    public const RESERVED_VARIABLES = ['content_html', 'css', 'background_img', 'locale'];
-
     protected ?PageNumbers $pageNumbers = null;
 
     protected bool $pageNumbersStamped = false;
