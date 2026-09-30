@@ -28,7 +28,7 @@ return [
         'actions' => 'Akce',
         'created_at' => 'Vytvořeno',
         'updated_at' => 'Upraveno',
-        'background_img_comment' => 'Pro správné zobrazení použijte obrázek s rozlišením alespoň 96 DPI. Doporučeno 300 DPI.',
+        'background_img_comment' => 'Přidejte do CSS layoutu background-size: 100% 100%, aby obrázek vyplnil stránku. Obrázek se překreslí na velikost stránky v DPI dompdf (794 × 1123 px pro A4 při výchozích 96 DPI); větší obrázek pomůže jen po zvýšení DPI, což zvětší i PDF.',
         'size' => 'Formát papíru',
         'orientation' => 'Orientace papíru',
         'sample_data' => 'Ukázková data',
