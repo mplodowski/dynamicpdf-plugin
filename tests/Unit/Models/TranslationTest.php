@@ -1,6 +1,7 @@
 <?php
 
 use October\Rain\Support\Facades\Site;
+use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
@@ -115,6 +116,31 @@ describe('Native model translation', function () {
 
         expect($this->findTemplate($templateCopy->code)->getTranslation('content_html', 'de', false))->toBe('DE-BODY')
             ->and($this->findLayout($layoutCopy->code)->getTranslation('content_html', 'de', false))->toBe('DE-LAYOUT');
+    });
+
+    it('removes the translations of a template the sync deletes', function () {
+        $this->enableTranslation('de');
+        PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
+        $template = $this->createTemplate(['code' => 'gone::pdf.stale', 'is_custom' => false]);
+        $template->setTranslation('content_html', 'de', 'DE-BODY');
+        $template->save();
+
+        (new SyncTemplates)->handle();
+
+        expect(Template::whereCode('gone::pdf.stale')->exists())->toBeFalse()
+            ->and(Db::table('system_translate_attributes')->where('model_type', Template::class)->where('model_id', $template->id)->exists())->toBeFalse();
+    });
+
+    it('removes the translations of the demo templates when the demo is disabled', function () {
+        $this->enableTranslation('de');
+        Artisan::call('dynamicpdf:demo');
+        $template = $this->findTemplate('renatio.dynamicpdf::pdf.invoice');
+        $template->setTranslation('content_html', 'de', 'DE-BODY');
+        $template->save();
+
+        Artisan::call('dynamicpdf:demo', ['--disable' => true]);
+
+        expect(Db::table('system_translate_attributes')->where('model_type', Template::class)->where('model_id', $template->id)->exists())->toBeFalse();
     });
 
     it('restores the model locale when the default-locale callback throws', function () {
