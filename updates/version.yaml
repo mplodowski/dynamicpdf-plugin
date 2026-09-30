@@ -29,7 +29,7 @@ v3.0.5: Support LESS in PDF layouts.
 v4.0.0: Require PHP 7.1. Please see upgrade guide before update.
 v4.0.1: Fix error when active theme is not set.
 v4.0.2:
-    - Allow to register mail templates and layouts.
+    - Allow to register PDF templates and layouts.
     - add_is_custom_to_templates_table.php
     - add_is_locked_to_layouts_table.php
 v4.0.3:
@@ -65,5 +65,6 @@ v8.1.0:
     - dynamicpdf:sync and dynamicpdf:check commands.
     - A layout used by templates can no longer be deleted.
     - Invalid Twig and codes with spaces are rejected on save.
+    - Unique template and layout codes, duplicate rows are deleted.
     - 20260907_0001_add_sample_data_to_templates_table.php
     - 20260907_0002_add_unique_code_indexes.php
