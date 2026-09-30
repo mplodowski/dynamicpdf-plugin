@@ -9,12 +9,12 @@ use Renatio\DynamicPDF\Models\Template;
 class ImportTranslateMessages
 {
     /**
-     * Templates are hydrated rather than plucked: a template that follows its view reads the
-     * markup from the view file, and the stored column lags behind it until the next sync.
+     * Models are hydrated rather than plucked: fetching promotes the active site's translation,
+     * and a template that follows its view reads the markup from the file, not the stale column.
      */
     public function handle(ThemeScanner $scanner): void
     {
-        $contents = Layout::query()->pluck('content_html')
+        $contents = Layout::all()->pluck('content_html')
             ->merge(Template::all()->pluck('content_html'));
 
         $messages = $contents->flatMap(fn (?string $content): array => $scanner->parseContent($content));

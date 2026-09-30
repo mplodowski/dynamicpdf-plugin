@@ -2,7 +2,29 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
+use Mockery\MockInterface;
+use October\Rain\Support\Facades\Site;
 use RainLab\Translate\Classes\ThemeScanner;
+
+/**
+ * @param  array<int, string>  $expected
+ * @param  array<int, string>  $unexpected
+ */
+function expectImportedMessages(array $expected, array $unexpected = []): MockInterface
+{
+    $scanner = Mockery::mock(ThemeScanner::class)->makePartial();
+    $scanner->shouldReceive('importMessages')->once()->with(Mockery::on(function (array $messages) use ($expected, $unexpected): bool {
+        expect($messages)->toContain(...$expected);
+
+        foreach ($unexpected as $message) {
+            expect($messages)->not->toContain($message);
+        }
+
+        return true;
+    }));
+
+    return $scanner;
+}
 
 describe('RainLab.Translate theme scan', function () {
     afterEach(function () {
@@ -17,14 +39,22 @@ describe('RainLab.Translate theme scan', function () {
         $this->createTemplate(['content_html' => "<p>{{ 'Custom template'|_ }}</p>"]);
         $this->createLayout(['content_html' => "<footer>{{ 'Layout footer'|_ }}</footer>{{ content_html }}"]);
 
-        $scanner = Mockery::mock(ThemeScanner::class)->makePartial();
-        $scanner->shouldReceive('importMessages')->once()->with(Mockery::on(function (array $messages): bool {
-            expect($messages)->toContain('From view', 'Custom template', 'Layout footer')
-                ->not->toContain('Stale column');
-
-            return true;
-        }));
-
-        Event::fire('rainlab.translate.themeScanner.afterScan', [$scanner]);
+        Event::fire('rainlab.translate.themeScanner.afterScan', [expectImportedMessages(['From view', 'Custom template', 'Layout footer'], ['Stale column'])]);
     });
-});
+
+    it('imports layouts and templates in the locale of the active site', function () {
+        $site = $this->enableTranslation('de');
+
+        $layout = $this->createLayout(['content_html' => "<footer>{{ 'Layout EN'|_ }}</footer>{{ content_html }}"]);
+        $layout->setTranslation('content_html', 'de', "<footer>{{ 'Layout DE'|_ }}</footer>{{ content_html }}");
+        $layout->save();
+
+        $template = $this->createTemplate(['content_html' => "<p>{{ 'Template EN'|_ }}</p>"]);
+        $template->setTranslation('content_html', 'de', "<p>{{ 'Template DE'|_ }}</p>");
+        $template->save();
+
+        $scanner = expectImportedMessages(['Layout DE', 'Template DE']);
+
+        Site::withContext($site->id, fn () => Event::fire('rainlab.translate.themeScanner.afterScan', [$scanner]));
+    });
+})->skip(fn () => ! class_exists(ThemeScanner::class), 'RainLab.Translate is not installed');
