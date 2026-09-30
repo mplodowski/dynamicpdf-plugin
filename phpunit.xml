@@ -29,6 +29,7 @@
             <directory>console</directory>
             <directory>controllers</directory>
             <directory>models</directory>
+            <directory>traits</directory>
             <file>Plugin.php</file>
         </include>
     </source>

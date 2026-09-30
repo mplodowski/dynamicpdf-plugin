@@ -8,9 +8,8 @@ describe('dynamicpdf:demo', function () {
     it('creates the demo templates and layouts and removes them again', function () {
         expect(Artisan::call('dynamicpdf:demo'))->toBe(0)
             ->and(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeTrue()
-            ->and(Layout::whereCode('renatio.dynamicpdf::pdf.layouts.default')->exists())->toBeTrue();
-
-        expect(Artisan::call('dynamicpdf:demo', ['--disable' => true]))->toBe(0)
+            ->and(Layout::whereCode('renatio.dynamicpdf::pdf.layouts.default')->exists())->toBeTrue()
+            ->and(Artisan::call('dynamicpdf:demo', ['--disable' => true]))->toBe(0)
             ->and(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeFalse()
             ->and(Layout::whereCode('renatio.dynamicpdf::pdf.layouts.default')->exists())->toBeFalse();
     });
