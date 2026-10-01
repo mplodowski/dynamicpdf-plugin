@@ -28,7 +28,7 @@ return [
         'actions' => 'Akcje',
         'created_at' => 'Data utworzenia',
         'updated_at' => 'Data edycji',
-        'background_img_comment' => 'Dodaj background-size: 100% 100% i @page { margin: 0 } do CSS układu, aby obraz wypełnił stronę. Obraz jest przerysowywany do rozmiaru strony w DPI dompdf (794 × 1123 px dla A4 przy domyślnych 96 DPI); większy obraz pomaga tylko po podniesieniu DPI, co zwiększa też rozmiar PDF.',
+        'background_img_comment' => 'Dodaj background-size: 100% 100% i @page { margin: 0 } do CSS układu, aby obraz wypełnił stronę.',
         'size' => 'Rozmiar papieru',
         'orientation' => 'Orientacja papieru',
         'sample_data' => 'Dane przykładowe',

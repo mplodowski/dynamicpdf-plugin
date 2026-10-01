@@ -28,7 +28,7 @@ return [
         'actions' => 'Műveletek',
         'created_at' => 'Létrehozva',
         'updated_at' => 'Módosítva',
-        'background_img_comment' => 'Adja hozzá a background-size: 100% 100% és a @page { margin: 0 } szabályt az elrendezés CSS-éhez, hogy a kép kitöltse az oldalt. A kép az oldal méretére, a dompdf DPI-értékével újrarajzolódik (A4 esetén 794 × 1123 px az alapértelmezett 96 DPI-nél); nagyobb kép csak a DPI növelésével segít, ami a PDF méretét is növeli.',
+        'background_img_comment' => 'Adja hozzá a background-size: 100% 100% és a @page { margin: 0 } szabályt az elrendezés CSS-éhez, hogy a kép kitöltse az oldalt.',
         'size' => 'Papír mérete',
         'orientation' => 'Papír tájolása',
         'sample_data' => 'Mintaadatok',

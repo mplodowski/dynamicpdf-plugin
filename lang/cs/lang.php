@@ -28,7 +28,7 @@ return [
         'actions' => 'Akce',
         'created_at' => 'Vytvořeno',
         'updated_at' => 'Upraveno',
-        'background_img_comment' => 'Přidejte do CSS layoutu background-size: 100% 100% a @page { margin: 0 }, aby obrázek vyplnil stránku. Obrázek se překreslí na velikost stránky v DPI dompdf (794 × 1123 px pro A4 při výchozích 96 DPI); větší obrázek pomůže jen po zvýšení DPI, což zvětší i PDF.',
+        'background_img_comment' => 'Přidejte do CSS layoutu background-size: 100% 100% a @page { margin: 0 }, aby obrázek vyplnil stránku.',
         'size' => 'Formát papíru',
         'orientation' => 'Orientace papíru',
         'sample_data' => 'Ukázková data',

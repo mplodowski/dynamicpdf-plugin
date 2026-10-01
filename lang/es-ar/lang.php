@@ -28,7 +28,7 @@ return [
         'actions' => 'Acciones',
         'created_at' => 'Creado el',
         'updated_at' => 'Modificado el',
-        'background_img_comment' => 'Agregá background-size: 100% 100% y @page { margin: 0 } al CSS del diseño para que la imagen cubra la página. La imagen se vuelve a dibujar al tamaño de la página con los DPI de dompdf (794 × 1123 px para A4 con los 96 DPI predeterminados); una imagen más grande solo sirve si subís los DPI, lo que también agranda el PDF.',
+        'background_img_comment' => 'Agregá background-size: 100% 100% y @page { margin: 0 } al CSS del diseño para que la imagen cubra la página.',
         'size' => 'Tamaño de papel',
         'orientation' => 'Orientación del papel',
         'sample_data' => 'Datos de ejemplo',
