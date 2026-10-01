@@ -28,7 +28,7 @@ return [
         'actions' => 'Aktionen',
         'created_at' => 'Erstellt am',
         'updated_at' => 'Aktualisiert am',
-        'background_img_comment' => 'Fügen Sie background-size: 100% 100% und @page { margin: 0 } zum Layout-CSS hinzu, damit das Bild die Seite ausfüllt. Das Bild wird in der Seitengröße mit der dompdf-DPI neu gezeichnet (794 × 1123 px für A4 bei standardmäßig 96 DPI); ein größeres Bild hilft nur, wenn Sie die DPI erhöhen, was auch das PDF vergrößert.',
+        'background_img_comment' => 'Fügen Sie background-size: 100% 100% und @page { margin: 0 } zum Layout-CSS hinzu, damit das Bild die Seite ausfüllt.',
         'size' => 'Papierformat',
         'orientation' => 'Papierausrichtung',
         'sample_data' => 'Beispieldaten',
