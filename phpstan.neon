@@ -28,7 +28,7 @@ parameters:
         analyseAndScan:
             - controllers/layouts
             - controllers/templates
-            - .phpunit.cache
+            - .phpunit.cache (?)
 
     treatPhpDocTypesAsCertain: false
 
