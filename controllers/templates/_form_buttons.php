@@ -2,7 +2,8 @@
     $unchange = "$(this).trigger('unchange.oc.changeMonitor')";
     $confirmUnsaved = fn (string $message): string => e("var form = $(this).closest('[data-change-monitor]');"
         . " if (!form.hasClass('oc-data-changed')) return;"
-        . ' oc.confirmPromise(' . json_encode($message) . ").then(() => { form.trigger('unchange.oc.changeMonitor'); oc.request(this); }, () => {});"
+        . ' oc.confirmPromise(' . json_encode($message) . ')'
+        . ".then(() => oc.request(this, null, { beforeSendFunc: null, beforeUpdateFunc: () => { {$unchange} } }), () => {});"
         . ' return false;');
 ?>
 <div>
