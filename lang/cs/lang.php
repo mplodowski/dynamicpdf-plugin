@@ -37,6 +37,8 @@ return [
         'is_locked' => 'Ze souboru',
         'duplicate' => 'Duplikovat',
         'duplicating' => 'Duplikuje se...',
+        'duplicate_unsaved' => 'Kopie vznikne z uložené verze. Neuložené změny budou ztraceny. Pokračovat?',
+        'cancel_unsaved' => 'Opustit formulář? Neuložené změny budou ztraceny.',
         'duplicate_success' => 'Kopie byla vytvořena.',
         'reset_success' => 'Položka byla obnovena ze souboru pohledu.',
         'delete_success' => 'Položka byla smazána.',

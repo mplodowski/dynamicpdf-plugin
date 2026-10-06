@@ -1,5 +1,10 @@
 <?php
     $unchange = "$(this).trigger('unchange.oc.changeMonitor')";
+    $confirmUnsaved = fn (string $message): string => e("var form = $(this).closest('[data-change-monitor]');"
+        . " if (!form.hasClass('oc-data-changed')) return;"
+        . ' oc.confirmPromise(' . json_encode($message) . ')'
+        . ".then(() => oc.request(this, null, { beforeSendFunc: null, beforeUpdateFunc: () => { {$unchange} } }), () => {});"
+        . ' return false;');
 ?>
 <div>
     <?php if (! $formModel->exists): ?>
@@ -65,6 +70,7 @@
                 label: trans('renatio.dynamicpdf::lang.templates.duplicate'),
                 handler: 'onDuplicate',
                 class: 'btn-default',
+                dataRequestBeforeSend: $confirmUnsaved(trans('renatio.dynamicpdf::lang.templates.duplicate_unsaved')),
                 dataRequestMessage: trans('renatio.dynamicpdf::lang.templates.duplicating')
             ) ?>
         <?php endif ?>
@@ -105,6 +111,7 @@
             class: 'btn-link p-0',
             dataBrowserRedirectBack: true,
             dataRequestData: 'close: true',
+            dataRequestBeforeSend: $confirmUnsaved(trans('renatio.dynamicpdf::lang.templates.cancel_unsaved')),
             dataRequestMessage: __('Loading...')
         ) ?>
     </span>

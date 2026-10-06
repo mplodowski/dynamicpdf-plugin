@@ -37,6 +37,8 @@ return [
         'is_locked' => 'Do arquivo de view',
         'duplicate' => 'Duplicar',
         'duplicating' => 'Duplicando...',
+        'duplicate_unsaved' => 'A cópia é criada a partir da versão salva. As alterações não salvas serão perdidas. Continuar?',
+        'cancel_unsaved' => 'Sair do formulário? As alterações não salvas serão perdidas.',
         'duplicate_success' => 'A cópia foi criada.',
         'reset_success' => 'O registro foi restaurado do arquivo de view.',
         'delete_success' => 'O registro foi excluído.',

@@ -37,6 +37,8 @@ return [
         'is_locked' => 'Nézetből',
         'duplicate' => 'Duplikálás',
         'duplicating' => 'Duplikálás...',
+        'duplicate_unsaved' => 'A másolat a mentett változatból készül. A nem mentett módosítások elvesznek. Folytatja?',
+        'cancel_unsaved' => 'Elhagyja az űrlapot? A nem mentett módosítások elvesznek.',
         'duplicate_success' => 'A másolat létrejött.',
         'reset_success' => 'A rekord visszaállt a nézetfájlból.',
         'delete_success' => 'A rekord törlése sikerült.',

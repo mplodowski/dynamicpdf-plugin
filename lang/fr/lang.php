@@ -37,6 +37,8 @@ return [
         'is_locked' => 'Issu d\'une vue',
         'duplicate' => 'Dupliquer',
         'duplicating' => 'Duplication...',
+        'duplicate_unsaved' => 'La copie est créée à partir de la version enregistrée. Les modifications non enregistrées seront perdues. Continuer ?',
+        'cancel_unsaved' => 'Quitter le formulaire ? Les modifications non enregistrées seront perdues.',
         'duplicate_success' => 'La copie a été créée.',
         'reset_success' => 'L\'enregistrement a été restauré depuis son fichier de vue.',
         'delete_success' => 'L\'enregistrement a été supprimé.',
