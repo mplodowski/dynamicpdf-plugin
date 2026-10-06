@@ -30,6 +30,16 @@ describe('Localized view files', function () {
                 ->and(renderHtml('localized::pdf.invoice'))->toContain('English invoice');
         });
 
+        it('renders a view that is not synchronized yet', function (bool $translated, string $expected) {
+            Template::whereCode('localized::pdf.invoice')->delete();
+            config(['multisite.features.renatio_dynamicpdf_template' => $translated]);
+
+            expect(renderHtml('localized::pdf.invoice', 'de'))->toContain($expected);
+        })->with([
+            'with translations' => [true, 'Deutsche Rechnung'],
+            'without translations' => [false, 'English invoice'],
+        ]);
+
         it('falls back along the locale chain', function () {
             expect(renderHtml('localized::pdf.invoice', 'de-AT'))->toContain('Deutsche Rechnung');
         });

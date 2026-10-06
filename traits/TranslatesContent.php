@@ -22,7 +22,7 @@ trait TranslatesContent
 
     public function fillFromLocalizedView(?string $locale): void
     {
-        if (! $locale || $this->isCustomised() || ! $this->isTranslatableEnabled()) {
+        if (! $locale || ! $this->isTranslatableEnabled() || $this->isCustomised()) {
             return;
         }
 

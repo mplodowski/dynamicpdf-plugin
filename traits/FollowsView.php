@@ -33,6 +33,7 @@ trait FollowsView
         }
 
         $model = new self;
+        $model->markAsFollowingView();
         $model->fillFromView($code);
 
         return $model;

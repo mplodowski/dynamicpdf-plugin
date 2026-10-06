@@ -250,6 +250,6 @@ class Template extends Model
 
     public function isCustomised(): bool
     {
-        return $this->is_custom;
+        return (bool) $this->is_custom;
     }
 }
