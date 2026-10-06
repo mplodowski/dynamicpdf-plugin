@@ -66,3 +66,4 @@ v8.1.0:
     - 20260907_0002_add_unique_code_indexes.php
     - 20260930_0001_unlock_edited_layouts.php
     - 20260930_0002_grant_granular_permissions.php
+    - 20261006_0001_widen_content_columns.php

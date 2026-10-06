@@ -53,8 +53,8 @@ class Layout extends Model
 
     /** @var array<string, array<string>> */
     public $rules = [
-        'name' => ['required'],
-        'code' => ['required', self::CODE_FORMAT, 'unique'],
+        'name' => ['required', 'max:255'],
+        'code' => ['required', 'max:255', self::CODE_FORMAT, 'unique'],
         'content_html' => ['required'],
     ];
 
