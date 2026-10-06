@@ -16,6 +16,7 @@ describe('Registered view fallback', function () {
         $template = Template::byCode('renatio.dynamicpdf::pdf.invoice');
 
         expect($template->exists)->toBeFalse()
+            ->and($template->is_custom)->toBeFalse()
             ->and($template->title)->toBe('Invoice')
             ->and($template->layout?->name)->toBe('Default Layout');
     });
