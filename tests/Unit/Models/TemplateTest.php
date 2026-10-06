@@ -12,6 +12,6 @@ describe('Template', function () {
 
     it('rejects a title or code longer than its column', function (string $field) {
         expect(fn () => $this->createTemplate([$field => str_repeat('a', 256)]))
-            ->toThrow(ValidationException::class);
+            ->toThrow(ValidationException::class, 'greater than 255');
     })->with(['title', 'code']);
 });

@@ -58,6 +58,6 @@ describe('Layout', function () {
 
     it('rejects a name or code longer than its column', function (string $field) {
         expect(fn () => $this->createLayout([$field => str_repeat('a', 256)]))
-            ->toThrow(ValidationException::class);
+            ->toThrow(ValidationException::class, 'greater than 255');
     })->with(['name', 'code']);
 });
