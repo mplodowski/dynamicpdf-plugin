@@ -28,7 +28,7 @@ return [
         'actions' => 'Ações',
         'created_at' => 'Criado em',
         'updated_at' => 'Atualizado em',
-        'background_img_comment' => 'Adicione background-size: 100% 100% e @page { margin: 0 } ao CSS do layout para que a imagem preencha a página.',
+        'background_img_comment' => 'Exibida por meio de {{ background_img }} no HTML do layout, como no HTML padrão. Adicione @page { margin: 0 } ao CSS do layout para que a imagem preencha a página.',
         'size' => 'Tamanho do papel',
         'orientation' => 'Orientação do papel',
         'sample_data' => 'Dados de exemplo',

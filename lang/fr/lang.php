@@ -28,7 +28,7 @@ return [
         'actions' => 'Actions',
         'created_at' => 'Créé le',
         'updated_at' => 'Modifié le',
-        'background_img_comment' => 'Ajoutez background-size: 100% 100% et @page { margin: 0 } au CSS de la mise en page pour que l\'image couvre la page.',
+        'background_img_comment' => 'Affichée via {{ background_img }} dans le HTML de la mise en page, comme dans le HTML par défaut. Ajoutez @page { margin: 0 } au CSS de la mise en page pour que l\'image couvre la page.',
         'size' => 'Format du papier',
         'orientation' => 'Orientation du papier',
         'sample_data' => 'Données d\'exemple',

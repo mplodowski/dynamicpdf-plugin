@@ -406,11 +406,12 @@ All methods are available through Facade class `Renatio\DynamicPDF\Classes\PDF`.
 
 ### Background image
 
-To display the background image of the layout over the whole page, use the following code:
+The default HTML of a new layout already displays the background image on `<body>`. In your own layout HTML, use the
+following code to display it over the whole page:
 
 ```html
 <style>@page { margin: 0; }</style>
-<body style="background: url({{ background_img }}) top left no-repeat; background-size: 100% 100%;">
+<body style="background: url('{{ background_img }}') top left no-repeat; background-size: 100% 100%;">
 ```
 
 Without `@page { margin: 0; }` the background covers only the area inside dompdf's default 1.2 cm page margins.

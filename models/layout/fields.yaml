@@ -37,7 +37,7 @@ secondaryTabs:
                             {{ css|raw }}
                         </style>
                     </head>
-                    <body>
+                    <body{% if background_img %} style="background: url('{{ background_img }}') top left no-repeat; background-size: 100% 100%;"{% endif %}>
                         {{ content_html|raw }}
                     </body>
                 </html>

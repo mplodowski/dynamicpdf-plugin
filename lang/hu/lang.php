@@ -28,7 +28,7 @@ return [
         'actions' => 'Műveletek',
         'created_at' => 'Létrehozva',
         'updated_at' => 'Módosítva',
-        'background_img_comment' => 'Adja hozzá a background-size: 100% 100% és a @page { margin: 0 } szabályt az elrendezés CSS-éhez, hogy a kép kitöltse az oldalt.',
+        'background_img_comment' => 'Az elrendezés HTML-jében a {{ background_img }} jeleníti meg, ahogy az alapértelmezett HTML-ben. Adja hozzá a @page { margin: 0 } szabályt az elrendezés CSS-éhez, hogy a kép kitöltse az oldalt.',
         'size' => 'Papír mérete',
         'orientation' => 'Papír tájolása',
         'sample_data' => 'Mintaadatok',
