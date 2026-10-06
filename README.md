@@ -406,8 +406,9 @@ All methods are available through Facade class `Renatio\DynamicPDF\Classes\PDF`.
 
 ### Background image
 
-The default HTML of a new layout already displays the background image on `<body>`. In your own layout HTML, use the
-following code to display it over the whole page:
+The background image is shown only where the layout HTML uses `{{ background_img }}`. The default HTML of a layout
+created in the backend does it on `<body>`; in other layouts, such as ones from view files, use the following code to
+display it over the whole page:
 
 ```html
 <style>@page { margin: 0; }</style>

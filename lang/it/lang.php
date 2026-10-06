@@ -28,7 +28,7 @@ return [
         'actions' => 'Azioni',
         'created_at' => 'Creato il',
         'updated_at' => 'Aggiornato il',
-        'background_img_comment' => 'Viene mostrata tramite {{ background_img }} nell\'HTML del layout, come nell\'HTML predefinito. Aggiungi @page { margin: 0 } al CSS del layout perché l\'immagine copra la pagina.',
+        'background_img_comment' => 'Mostrala con {{ background_img }} nell\'HTML del layout, come fa l\'HTML predefinito di un nuovo layout. Aggiungi @page { margin: 0 } al CSS del layout perché l\'immagine copra la pagina.',
         'size' => 'Formato carta',
         'orientation' => 'Orientamento carta',
         'sample_data' => 'Dati di esempio',

@@ -28,7 +28,7 @@ return [
         'actions' => 'Actions',
         'created_at' => 'Created at',
         'updated_at' => 'Updated at',
-        'background_img_comment' => 'Shown on the page through {{ background_img }} in the layout HTML, as the default HTML does. Add @page { margin: 0 } to the layout CSS so the image fills the page.',
+        'background_img_comment' => 'Display it with {{ background_img }} in the layout HTML, as the default HTML of a new layout does. Add @page { margin: 0 } to the layout CSS so the image fills the page.',
         'size' => 'Paper size',
         'orientation' => 'Paper orientation',
         'sample_data' => 'Sample data',

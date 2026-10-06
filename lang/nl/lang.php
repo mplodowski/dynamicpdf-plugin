@@ -28,7 +28,7 @@ return [
         'actions' => 'Acties',
         'created_at' => 'Aangemaakt op',
         'updated_at' => 'Bijgewerkt op',
-        'background_img_comment' => 'Wordt getoond via {{ background_img }} in de HTML van de lay-out, zoals in de standaard-HTML. Voeg @page { margin: 0 } toe aan de CSS van de lay-out zodat de afbeelding de pagina vult.',
+        'background_img_comment' => 'Toon deze met {{ background_img }} in de HTML van de lay-out, zoals de standaard-HTML van een nieuwe lay-out doet. Voeg @page { margin: 0 } toe aan de CSS van de lay-out zodat de afbeelding de pagina vult.',
         'size' => 'Papierformaat',
         'orientation' => 'Papieroriëntatie',
         'sample_data' => 'Voorbeeldgegevens',
