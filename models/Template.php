@@ -67,8 +67,8 @@ class Template extends Model
 
     /** @var array<string, array<string>> */
     public $rules = [
-        'title' => ['required'],
-        'code' => ['required', self::CODE_FORMAT, 'unique'],
+        'title' => ['required', 'max:255'],
+        'code' => ['required', 'max:255', self::CODE_FORMAT, 'unique'],
         'content_html' => ['required'],
         'sample_data' => ['nullable', 'json'],
     ];

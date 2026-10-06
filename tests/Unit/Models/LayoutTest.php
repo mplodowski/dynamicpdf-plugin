@@ -55,4 +55,9 @@ describe('Layout', function () {
         expect(fn () => $this->createLayout(['content_css' => "p {\n color: red;\n b: ;;{"]))
             ->toThrow(ValidationException::class, 'on line 3');
     });
+
+    it('rejects a name or code longer than its column', function (string $field) {
+        expect(fn () => $this->createLayout([$field => str_repeat('a', 256)]))
+            ->toThrow(ValidationException::class, 'greater than 255');
+    })->with(['name', 'code']);
 });
