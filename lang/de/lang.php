@@ -28,7 +28,7 @@ return [
         'actions' => 'Aktionen',
         'created_at' => 'Erstellt am',
         'updated_at' => 'Aktualisiert am',
-        'background_img_comment' => 'Fügen Sie background-size: 100% 100% und @page { margin: 0 } zum Layout-CSS hinzu, damit das Bild die Seite ausfüllt.',
+        'background_img_comment' => 'Zeigen Sie es mit {{ background_img }} im Layout-HTML an, wie es das Standard-HTML eines neuen Layouts tut. Fügen Sie @page { margin: 0 } zum Layout-CSS hinzu, damit das Bild die Seite ausfüllt.',
         'size' => 'Papierformat',
         'orientation' => 'Papierausrichtung',
         'sample_data' => 'Beispieldaten',

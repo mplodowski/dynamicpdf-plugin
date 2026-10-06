@@ -28,7 +28,7 @@ return [
         'actions' => 'Akce',
         'created_at' => 'Vytvořeno',
         'updated_at' => 'Upraveno',
-        'background_img_comment' => 'Přidejte do CSS layoutu background-size: 100% 100% a @page { margin: 0 }, aby obrázek vyplnil stránku.',
+        'background_img_comment' => 'Zobrazte jej pomocí {{ background_img }} v HTML layoutu, jako to dělá výchozí HTML nového layoutu. Přidejte do CSS layoutu @page { margin: 0 }, aby obrázek vyplnil stránku.',
         'size' => 'Formát papíru',
         'orientation' => 'Orientace papíru',
         'sample_data' => 'Ukázková data',

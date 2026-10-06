@@ -28,7 +28,7 @@ return [
         'actions' => 'Acciones',
         'created_at' => 'Creado el',
         'updated_at' => 'Modificado el',
-        'background_img_comment' => 'Añada background-size: 100% 100% y @page { margin: 0 } al CSS del diseño para que la imagen cubra la página.',
+        'background_img_comment' => 'Muéstrela con {{ background_img }} en el HTML del diseño, como hace el HTML predeterminado de un diseño nuevo. Añada @page { margin: 0 } al CSS del diseño para que la imagen cubra la página.',
         'size' => 'Tamaño de papel',
         'orientation' => 'Orientación del papel',
         'sample_data' => 'Datos de ejemplo',

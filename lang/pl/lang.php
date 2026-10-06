@@ -28,7 +28,7 @@ return [
         'actions' => 'Akcje',
         'created_at' => 'Data utworzenia',
         'updated_at' => 'Data edycji',
-        'background_img_comment' => 'Dodaj background-size: 100% 100% i @page { margin: 0 } do CSS układu, aby obraz wypełnił stronę.',
+        'background_img_comment' => 'Wyświetl go przez {{ background_img }} w HTML układu, tak jak domyślny HTML nowego układu. Dodaj @page { margin: 0 } do CSS układu, aby obraz wypełnił stronę.',
         'size' => 'Rozmiar papieru',
         'orientation' => 'Orientacja papieru',
         'sample_data' => 'Dane przykładowe',

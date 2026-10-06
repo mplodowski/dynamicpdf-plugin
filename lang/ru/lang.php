@@ -28,7 +28,7 @@ return [
         'actions' => 'Действия',
         'created_at' => 'Создано',
         'updated_at' => 'Обновлено',
-        'background_img_comment' => 'Добавьте background-size: 100% 100% и @page { margin: 0 } в CSS макета, чтобы изображение заполнило страницу.',
+        'background_img_comment' => 'Выведите его через {{ background_img }} в HTML макета, как это делает HTML по умолчанию нового макета. Добавьте @page { margin: 0 } в CSS макета, чтобы изображение заполнило страницу.',
         'size' => 'Формат бумаги',
         'orientation' => 'Ориентация бумаги',
         'sample_data' => 'Пример данных',
