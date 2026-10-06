@@ -37,6 +37,8 @@ return [
         'is_locked' => 'Z widoku',
         'duplicate' => 'Duplikuj',
         'duplicating' => 'Duplikowanie...',
+        'duplicate_unsaved' => 'Kopia powstanie z zapisanej wersji. Niezapisane zmiany zostaną utracone. Kontynuować?',
+        'cancel_unsaved' => 'Opuścić formularz? Niezapisane zmiany zostaną utracone.',
         'duplicate_success' => 'Kopia została utworzona.',
         'reset_success' => 'Rekord został przywrócony z pliku widoku.',
         'delete_success' => 'Rekord został usunięty.',

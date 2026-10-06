@@ -37,6 +37,8 @@ return [
         'is_locked' => 'Da file di vista',
         'duplicate' => 'Duplica',
         'duplicating' => 'Duplicazione...',
+        'duplicate_unsaved' => 'La copia viene creata dalla versione salvata. Le modifiche non salvate andranno perse. Continuare?',
+        'cancel_unsaved' => 'Uscire dal modulo? Le modifiche non salvate andranno perse.',
         'duplicate_success' => 'La copia è stata creata.',
         'reset_success' => 'Il record è stato ripristinato dal suo file di vista.',
         'delete_success' => 'Il record è stato eliminato.',

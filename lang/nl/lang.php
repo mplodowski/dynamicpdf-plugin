@@ -37,6 +37,8 @@ return [
         'is_locked' => 'Uit view',
         'duplicate' => 'Dupliceren',
         'duplicating' => 'Dupliceren...',
+        'duplicate_unsaved' => 'De kopie wordt gemaakt van de opgeslagen versie. Niet-opgeslagen wijzigingen gaan verloren. Doorgaan?',
+        'cancel_unsaved' => 'Formulier verlaten? Niet-opgeslagen wijzigingen gaan verloren.',
         'duplicate_success' => 'De kopie is aangemaakt.',
         'reset_success' => 'Het item is hersteld uit het view-bestand.',
         'delete_success' => 'Het item is verwijderd.',

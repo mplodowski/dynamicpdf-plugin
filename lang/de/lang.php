@@ -37,6 +37,8 @@ return [
         'is_locked' => 'Aus View',
         'duplicate' => 'Duplizieren',
         'duplicating' => 'Wird dupliziert...',
+        'duplicate_unsaved' => 'Die Kopie wird aus der gespeicherten Version erstellt. Nicht gespeicherte Änderungen gehen verloren. Fortfahren?',
+        'cancel_unsaved' => 'Formular verlassen? Nicht gespeicherte Änderungen gehen verloren.',
         'duplicate_success' => 'Die Kopie wurde erstellt.',
         'reset_success' => 'Der Eintrag wurde aus seiner View-Datei wiederhergestellt.',
         'delete_success' => 'Der Eintrag wurde gelöscht.',

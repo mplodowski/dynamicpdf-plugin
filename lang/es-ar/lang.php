@@ -37,6 +37,8 @@ return [
         'is_locked' => 'Desde vista',
         'duplicate' => 'Duplicar',
         'duplicating' => 'Duplicando...',
+        'duplicate_unsaved' => 'La copia se crea a partir de la versión guardada. Se van a perder los cambios no guardados. ¿Continuar?',
+        'cancel_unsaved' => '¿Salir del formulario? Se van a perder los cambios no guardados.',
         'duplicate_success' => 'La copia fue creada.',
         'reset_success' => 'El registro fue restaurado desde su archivo de vista.',
         'delete_success' => 'El registro fue eliminado.',

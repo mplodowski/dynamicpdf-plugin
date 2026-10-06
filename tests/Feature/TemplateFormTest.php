@@ -42,4 +42,14 @@ describe('Form buttons', function () {
             ->toContain('data-request="onDuplicate"')
             ->toMatch('/<a(?=[^>]*\shref="' . preg_quote(Backend::url("renatio/dynamicpdf/{$definition}/previewpdf/{$record->id}"), '/') . '")(?=[^>]*\starget="_blank")/');
     })->with(['templates', 'layouts']);
+
+    it('asks before Cancel or Duplicate leaves unsaved changes', function (string $definition) {
+        actingAsPdfManager();
+        $record = $definition === 'templates' ? $this->createTemplate() : $this->createLayout();
+        $confirm = fn (string $key): string => e('oc.confirmPromise(' . json_encode(trans("renatio.dynamicpdf::lang.templates.{$key}")) . ')');
+
+        expect($this->get(Backend::url("renatio/dynamicpdf/{$definition}/update/{$record->id}"))->assertOk()->getContent())
+            ->toContain($confirm('cancel_unsaved'))
+            ->toContain($confirm('duplicate_unsaved'));
+    })->with(['templates', 'layouts']);
 });

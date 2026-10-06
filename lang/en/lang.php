@@ -37,6 +37,8 @@ return [
         'is_locked' => 'From view',
         'duplicate' => 'Duplicate',
         'duplicating' => 'Duplicating...',
+        'duplicate_unsaved' => 'The copy is made from the saved version. Unsaved changes will be lost. Continue?',
+        'cancel_unsaved' => 'Leave the form? Unsaved changes will be lost.',
         'duplicate_success' => 'The copy was created.',
         'reset_success' => 'The record was restored from its view file.',
         'delete_success' => 'The record was deleted.',
