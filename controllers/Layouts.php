@@ -33,7 +33,7 @@ class Layouts extends Controller
         $this->addViewPath($this->guessViewPathFrom(Templates::class), true);
 
         $this->setSettingsContext();
-        $this->addJs('/plugins/renatio/dynamicpdf/assets/js/preview.js?v=1');
+        $this->addJs('/plugins/renatio/dynamicpdf/assets/js/preview.js?v=3');
     }
 
     public function index(): RedirectResponse

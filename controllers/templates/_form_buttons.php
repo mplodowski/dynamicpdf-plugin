@@ -77,16 +77,30 @@
             ) ?>
         <?php endif ?>
 
-        <?php if ($formModel->followsView() && $this->formCheckPermission('modelUpdate')): ?>
-            <?= Ui::ajaxButton(
-                label: trans('backend::lang.form.reset_default'),
-                handler: 'onResetDefault',
-                class: 'btn-warning pull-right',
-                dataRequestConfirm: trans('backend::lang.form.action_confirm'),
-                dataRequestBeforeUpdate: $unchange,
-                dataRequestMessage: trans('backend::lang.form.resetting')
-            ) ?>
-        <?php elseif (! $formModel->followsView() && $this->formCheckPermission('modelDelete')): ?>
+        <?php $name = ['name' => $formModel->{$formModel->labelAttribute()}] ?>
+        <?php $usedBy = $formModel instanceof Renatio\DynamicPDF\Models\Layout && ! $formModel->followsView() ? $formModel->usedByCount() : 0 ?>
+        <?php if ($formModel->followsView()): ?>
+            <?php if ($formModel->isCustomised() && $this->formCheckPermission('modelUpdate')): ?>
+                <?= Ui::ajaxButton(
+                    label: trans('backend::lang.form.reset_default'),
+                    handler: 'onResetDefault',
+                    class: 'btn-warning pull-right',
+                    dataRequestConfirm: trans('renatio.dynamicpdf::lang.templates.reset_confirm', $name),
+                    dataRequestBeforeUpdate: $unchange,
+                    dataRequestMessage: trans('backend::lang.form.resetting')
+                ) ?>
+            <?php endif ?>
+        <?php elseif ($usedBy > 0 && $this->formCheckPermission('modelDelete')): ?>
+            <?php $usedByText = trans('renatio.dynamicpdf::lang.layout.delete_used_by', ['count' => $usedBy]) ?>
+            <span class="pull-right" data-tooltip-text="<?= e($usedByText) ?>">
+                <?= Ui::iconButton(
+                    icon: 'oc-icon-delete',
+                    danger: true,
+                    disabled: true,
+                    ariaLabel: trans('backend::lang.form.delete') . ' (' . $usedByText . ')'
+                ) ?>
+            </span>
+        <?php elseif ($this->formCheckPermission('modelDelete')): ?>
             <?= Ui::iconButton(
                 label: trans('backend::lang.form.delete'),
                 icon: 'oc-icon-delete',
@@ -96,7 +110,7 @@
                 class: 'pull-right',
                 ariaLabel: trans('backend::lang.form.delete'),
                 dataBrowserRedirectBack: true,
-                dataRequestConfirm: trans('backend::lang.form.action_confirm'),
+                dataRequestConfirm: trans('renatio.dynamicpdf::lang.templates.delete_confirm', $name),
                 dataRequestBeforeUpdate: $unchange,
                 dataRequestMessage: trans('backend::lang.form.deleting')
             ) ?>

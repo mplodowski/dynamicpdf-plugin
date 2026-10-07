@@ -13,7 +13,8 @@
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>
     <p>
         <a href="<?= Backend::url('renatio/dynamicpdf/templates') ?>"
-           class="btn btn-default">
+           class="btn btn-default"
+           data-control="dynamicpdf-close-tab">
             <?= e(trans('renatio.dynamicpdf::lang.templates.return')) ?>
         </a>
     </p>

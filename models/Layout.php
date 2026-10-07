@@ -41,6 +41,7 @@ use Throwable;
  * @property-read File|null $background_img
  * @property-read \October\Rain\Database\Collection<int, Template> $templates
  * @property-read string $html
+ * @property-read int|null $templates_count
  *
  * @method \October\Rain\Database\Relations\AttachOne background_img()
  * @method \October\Rain\Database\Relations\MorphMany translations()
@@ -167,6 +168,11 @@ class Layout extends Model
         if ($titles->isNotEmpty()) {
             throw new ApplicationException(trans('renatio.dynamicpdf::lang.layout.delete_in_use', ['templates' => $titles->implode(', ')]));
         }
+    }
+
+    public function usedByCount(): int
+    {
+        return $this->templates_count ?? Template::where('layout_id', $this->id)->count();
     }
 
     public function afterDelete(): void
