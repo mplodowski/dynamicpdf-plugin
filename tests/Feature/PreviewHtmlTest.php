@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\File;
+use Renatio\DynamicPDF\Classes\PreviewFonts;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
 
@@ -84,7 +85,22 @@ describe('HTML preview fonts', function () {
         'not a font' => '/plugins/renatio/dynamicpdf/assets/img/october.png',
         'config file' => '/config/app.php',
         'missing file' => '/plugins/renatio/dynamicpdf/assets/fonts/Missing.ttf',
+        'plugin file the web server does not serve' => '/plugins/renatio/dynamicpdf/tests/fixtures/not-served.ttf',
     ]);
+
+    it('keeps the HTML when the font rewrite gives up on a huge document', function () {
+        $html = "<style>@font-face { src: url('/plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf'); }</style>";
+        $backtrackLimit = (string) ini_get('pcre.backtrack_limit');
+        ini_set('pcre.backtrack_limit', '10');
+
+        try {
+            $inlined = (new PreviewFonts)->inline($html);
+        } finally {
+            ini_set('pcre.backtrack_limit', $backtrackLimit);
+        }
+
+        expect($inlined)->toBe($html);
+    });
 
     it('leaves url() outside @font-face untouched', function () {
         expect(($this->preview)("url('/plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf')"))

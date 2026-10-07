@@ -10,20 +10,25 @@ use Illuminate\Support\Facades\URL;
  */
 class PreviewFonts
 {
-    const MAX_BYTES = 5 * 1024 * 1024;
+    protected const MAX_BYTES = 5 * 1024 * 1024;
 
-    const MIME_TYPES = [
+    protected const MAX_TOTAL_BYTES = 20 * 1024 * 1024;
+
+    protected const MIME_TYPES = [
         'ttf' => 'font/ttf',
         'otf' => 'font/otf',
         'woff' => 'font/woff',
         'woff2' => 'font/woff2',
     ];
 
-    const PUBLIC_DIRECTORIES = [
-        'plugins/',
-        'themes/',
-        'storage/app/media/',
-        'storage/app/uploads/public/',
+    /**
+     * The directories October's web server rules serve; anything else stays a plain URL.
+     */
+    protected const PUBLIC_DIRECTORIES = [
+        '~^plugins/[^/]+/[^/]+/(assets|resources)/~',
+        '~^themes/[^/]+/(assets|resources)/~',
+        '~^storage/app/media/~',
+        '~^storage/app/uploads/public/~',
     ];
 
     /**
@@ -31,27 +36,35 @@ class PreviewFonts
      */
     protected ?array $hosts = null;
 
+    /** @var array<string, string|null> */
+    protected array $dataUris = [];
+
+    protected int $inlinedBytes = 0;
+
+    /**
+     * A regex that gives up on a huge document (backtrack limit) leaves the HTML unchanged.
+     */
     public function inline(string $html): string
     {
-        return (string) preg_replace_callback(
+        return preg_replace_callback(
             '~(<style\b[^>]*>)(.*?)(</style>)~is',
             fn (array $style): string => $style[1] . $this->inlineStyle($style[2]) . $style[3],
             $html,
-        );
+        ) ?? $html;
     }
 
     protected function inlineStyle(string $css): string
     {
-        return (string) preg_replace_callback(
+        return preg_replace_callback(
             '~@font-face\s*\{[^}]*\}~i',
             fn (array $rule): string => $this->inlineFontFace($rule[0]),
             $css,
-        );
+        ) ?? $css;
     }
 
     protected function inlineFontFace(string $rule): string
     {
-        return (string) preg_replace_callback(
+        return preg_replace_callback(
             '~url\(\s*(["\']?)([^"\')\s]+)\1\s*\)~i',
             function (array $match): string {
                 [$declaration, $quote, $url] = $match;
@@ -60,7 +73,7 @@ class PreviewFonts
                 return $data === null ? $declaration : "url({$quote}{$data}{$quote})";
             },
             $rule,
-        );
+        ) ?? $rule;
     }
 
     protected function dataUri(string $url): ?string
@@ -71,14 +84,28 @@ class PreviewFonts
             return null;
         }
 
+        return $this->dataUris[$path] ??= $this->readFont($path);
+    }
+
+    protected function readFont(string $path): ?string
+    {
         $mime = self::MIME_TYPES[strtolower(pathinfo($path, PATHINFO_EXTENSION))] ?? null;
         $file = base_path($path);
+        $size = is_file($file) && is_readable($file) ? filesize($file) : false;
 
-        if ($mime === null || ! is_file($file) || filesize($file) > self::MAX_BYTES) {
+        if ($mime === null || $size === false || $size > self::MAX_BYTES || $this->inlinedBytes + $size > self::MAX_TOTAL_BYTES) {
             return null;
         }
 
-        return "data:{$mime};base64," . base64_encode((string) file_get_contents($file));
+        $contents = @file_get_contents($file);
+
+        if ($contents === false) {
+            return null;
+        }
+
+        $this->inlinedBytes += $size;
+
+        return "data:{$mime};base64," . base64_encode($contents);
     }
 
     /**
@@ -93,7 +120,7 @@ class PreviewFonts
         }
 
         if (isset($parts['host'])) {
-            if (! in_array($this->authority($parts), $this->hosts(), true)) {
+            if (! in_array(strtolower((string) $parts['host']), $this->hosts(), true)) {
                 return null;
             }
         } elseif (! str_starts_with($url, '/')) {
@@ -114,7 +141,7 @@ class PreviewFonts
         }
 
         foreach (self::PUBLIC_DIRECTORIES as $directory) {
-            if (str_starts_with($path, $directory)) {
+            if (preg_match($directory, $path)) {
                 return $path;
             }
         }
@@ -127,25 +154,10 @@ class PreviewFonts
      */
     protected function hosts(): array
     {
-        if ($this->hosts === null) {
-            $urls = [URL::to('/'), (string) config('app.url'), request()->getSchemeAndHttpHost()];
-            $authorities = array_map(fn (string $url): ?string => $this->authority(parse_url($url)), $urls);
-
-            $this->hosts = array_values(array_unique(array_filter($authorities)));
-        }
-
-        return $this->hosts;
-    }
-
-    /**
-     * @param  array<string, int|string>|false  $parts
-     */
-    protected function authority(array|false $parts): ?string
-    {
-        if (empty($parts['host'])) {
-            return null;
-        }
-
-        return strtolower((string) $parts['host']) . (isset($parts['port']) ? ':' . $parts['port'] : '');
+        return $this->hosts ??= array_values(array_unique(array_filter([
+            ...(new RemoteAssetPolicy)->applicationHosts(),
+            strtolower((string) parse_url(URL::to('/'), PHP_URL_HOST)),
+            strtolower(request()->getHost()),
+        ])));
     }
 }
