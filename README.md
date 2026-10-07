@@ -384,13 +384,13 @@ PDF::loadTemplate('renatio::invoice')
 ```
 
 The options most often changed are `dpi`, `default_font`, `default_paper_size`, `enable_remote` (off by default;
-required for images, stylesheets and fonts loaded by URL, see [Plugin assets](#plugin-assets) for local ones), `allowed_remote_hosts`, `chroot` and `font_dir`. The full
-list with the current defaults is in the published `config/dompdf.php` and in
-[Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php); every option has a matching
-`set*()` method on the wrapper named after the camel-cased key, except the `enable_*` options, which are
+required for images, stylesheets and fonts loaded by URL, see [Plugin assets](#plugin-assets) for local ones),
+`allowed_remote_hosts`, `chroot` and `font_dir`. The full list with the current defaults is in the published
+`config/dompdf.php` and in [Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php); every option
+has a matching `set*()` method on the wrapper named after the camel-cased key, except the `enable_*` options, which are
 `setIsRemoteEnabled()`, `setIsPhpEnabled()`, `setIsJavascriptEnabled()`, `setIsFontSubsettingEnabled()` and
-`setIsPdfAEnabled()`; `enable_html5_parser` has no effect since dompdf 3. A setter that exists on neither dompdf nor
-its options throws `UnexpectedValueException`.
+`setIsPdfAEnabled()`; `enable_html5_parser` has no effect since dompdf 3. A setter that exists on neither dompdf nor its
+options throws `UnexpectedValueException`.
 
 ### Self-signed certificates
 
@@ -448,9 +448,10 @@ display it over the whole page:
 
 Without `@page { margin: 0; }` the background covers only the area inside dompdf's default 1.2 cm page margins.
 
-In a PDF `{{ background_img }}` is the local path of the uploaded file, so the background shows without
-`enable_remote`. A file on a remote disk, such as S3, is copied to `storage/temp/dynamicpdf` and the copy is deleted
-together with the PDF object. In the backend HTML preview it is the URL of the file.
+In a PDF `{{ background_img }}` is the local path of the uploaded file, so the background shows without `enable_remote`.
+A file on a remote disk, such as S3, is copied to `storage/temp/dynamicpdf` and the copy is deleted together with the
+PDF object. A file outside the dompdf `chroot` (the project root by default) keeps its URL, which loads only with
+`enable_remote` and its host in `allowed_remote_hosts`. In the backend HTML preview it is the URL of the file.
 
 dompdf redraws the background at the page size in its DPI, 794 x 1123 px for A4 at the default 96 DPI, so a larger
 image adds no sharpness on its own. For a higher-quality background, such as 300 DPI (2480 x 3508 px), use an image
@@ -488,10 +489,10 @@ You can use the CSS page-break-before/page-break-after properties to create a ne
 <h1>Page 2</h1>
 ```
 
-### Open basedir restriction error
+### Render log
 
-Some hosting providers report `open_basedir` restriction errors for the log file. You can change the default log file
-destination like so:
+dompdf writes no log by default (`log_output_file` is `null`). To see the frame count, memory, time and dompdf's debug
+output of a render, set `log_output_file` in the dompdf configuration or for a single document:
 
 ```php
 return PDF::loadTemplate('renatio::invoice')
@@ -499,31 +500,42 @@ return PDF::loadTemplate('renatio::invoice')
     ->stream();
 ```
 
+The file is overwritten on every render. The backend PDF preview writes `storage/temp/log.htm` only when `app.debug` is
+on.
+
 ### Embed image inside PDF template
 
-Use an absolute URL for the image, e.g. `https://app.dev/path_to_your_image`.
+Prefer local files, which dompdf reads without `enable_remote`: the local path of an attachment, `|pdfasset` for an
+image shipped with a plugin, or a data URI for a small generated image. `$file` is an instance of
+`October\Rain\Database\Attach\File`:
 
-For this to work you must set `isRemoteEnabled` option.
+```php
+return PDF::loadTemplate('renatio::invoice', ['file' => $file])->stream();
+```
+
+```twig
+<img src="{{ file.getLocalPath }}">
+<img src="{{ 'plugins/acme/shop/assets/img/logo.png'|pdfasset }}">
+<img src="data:image/png;base64,{{ logo_base64 }}">
+```
+
+`getLocalPath` copies a file from a remote disk, such as S3, to `storage/temp/uploads` first and October does not delete
+the copy. Local paths must lie inside the dompdf `chroot`, the project root by default; the backend PDF preview narrows
+it to the public directories, so a protected upload renders from code but not in the preview.
+
+A URL, such as `file.getPath` or `file.getThumb(200, 200, {'mode': 'crop'})`, is a remote file. Enable remote files
+only together with the hosts they may come from, never with `setIsRemoteEnabled(true)` alone: with
+`allowed_remote_hosts` left at `null` or set to an empty array dompdf fetches any address the HTML names.
 
 ```php
 return PDF::loadTemplate('renatio::invoice', ['file' => $file])
     ->setIsRemoteEnabled(true)
+    ->setAllowedRemoteHosts(['cdn.example.com'])
     ->stream();
 ```
 
-`$file` is an instance of `October\Rain\Database\Attach\File`.
-
-Then in the template you can use the following example code:
-
-```twig
-{{ file.getPath }}
-
-{{ file.getLocalPath }}
-
-{{ file.getThumb(200, 200, {'mode': 'crop'}) }}
-```
-
-> Fetching stylesheets or images over HTTP requires the `allow_url_fopen` PHP setting.
+The same is set for every PDF with `enable_remote` and `allowed_remote_hosts` in the dompdf configuration. dompdf
+fetches `http(s)` addresses with cURL when the extension is available, and needs `allow_url_fopen` only without it.
 
 > The backend PDF preview fetches remote resources only from the hosts listed in `allowed_remote_hosts` of the dompdf
 > configuration plus the application host (`app.url` and the custom site URLs); when no host can be resolved at all it
@@ -531,9 +543,6 @@ Then in the template you can use the following example code:
 > plugins, themes, app assets, public uploads, media and the resize cache) unless `chroot` is set in the
 > configuration, and writes the dompdf log file only when `app.debug` is on. A schemeless `APP_URL` such as
 > `myapp.test` is understood.
-
-When `allow_url_fopen` is disabled, use a local path. You can use October `getLocalPath` function on the file object to
-retrieve it.
 
 ### Attach the PDF to a model
 
@@ -598,12 +607,13 @@ return PDF::loadTemplate('renatio::invoice')
 with `@font-face` in the layout; the dompdf default font otherwise), `margin` (points) and `color` (RGB between 0
 and 1) are optional. Requires the CPDF or PDFLib backend; the GD backend cannot draw page text.
 
-Call `pageNumbers()` after loading the document; it applies to that document only and overrides the layout setting. Inline PHP
-(`setIsPhpEnabled(true)`) is no longer needed for page numbers and should stay off.
+Call `pageNumbers()` after loading the document; it applies to that document only and overrides the layout setting.
+Inline PHP (`setIsPhpEnabled(true)`) is no longer needed for page numbers and should stay off.
 
 > **Security warning:** only enable `setIsPhpEnabled(true)` when the template content is fully trusted. Any
 > `<script type="text/php">` block in the HTML is executed on the server, so enabling it for templates that can be
-> edited by backend users allows remote code execution. The backend HTML and PDF preview never enables it.
+> edited by backend users allows remote code execution. The backend HTML preview never runs PHP; the backend PDF preview
+> does not turn it on itself, it follows `enable_php` in the dompdf configuration.
 
 ## Testing
 
@@ -882,3 +892,15 @@ body {
 The sandboxed backend HTML preview embeds the `ttf`, `otf`, `woff` and `woff2` fonts of `@font-face` rules in `<style>`
 elements when they are public files of the application (plugins, themes, media or public uploads, up to 5 MB each);
 fonts in stylesheets linked with `<link>` are not embedded and show a fallback font in that preview.
+
+dompdf embeds every font file in full unless `enable_font_subsetting` is on (off by default), which keeps only the
+glyphs the document uses. A one-page document in the four Open Sans styles above shrinks from about 525 KB to about
+30 KB:
+
+```php
+return PDF::loadTemplate('renatio::invoice')
+    ->setIsFontSubsettingEnabled(true)
+    ->stream();
+```
+
+Set `enable_font_subsetting` to `true` in the dompdf configuration to apply it to every PDF.

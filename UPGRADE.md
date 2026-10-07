@@ -74,10 +74,12 @@ always on.
 
 ## Upgrading To 8.1.0
 
-**Security release. Upgrade every installation running 8.0.x.** Requires PHP 8.2 and October CMS 4.4; Composer keeps
-sites on October CMS 3 or 4.0–4.3 on 8.0.3. Run `php artisan october:migrate`, which adds a unique index on template
-and layout codes and permanently deletes duplicate rows, keeping the customised or locked one. Layouts now follow their
-view file like templates, so the migration clears *From view* on every layout it cannot prove unedited.
+**Security release. Upgrade every installation running 8.0.x.** Requires PHP 8.2 and October CMS 4.4; sites on October
+CMS 3 or 4.0–4.3 stay on 8.0.3 until October is upgraded to 4.4; until then keep `enable_php` off, set
+`allowed_remote_hosts` and give the template and layout permissions to trusted administrators only. Run `php artisan
+october:migrate`, which adds a unique index on template and layout codes and permanently deletes duplicate rows, keeping
+the customised or locked one. Layouts now follow their view file like templates, so the migration clears *From view* on
+every layout it cannot prove unedited.
 
 Permissions are granular now, and existing roles and administrators keep their access: the migration grants
 **Create**, **Update**, **Delete** and **Preview** to those holding **Access templates** or **Access layouts**, so you
@@ -89,8 +91,10 @@ a template or layout an earlier version flagged *Customized* or edited by mistak
 `DYNAMICPDF_ALLOW_SELF_SIGNED=true` on a development host with a self-signed certificate; an unknown `set*()` option
 call now throws `UnexpectedValueException`.
 
-The backend **Preview PDF** no longer forces 300 DPI and uses `dompdf.options.dpi` like PDFs generated from code, so
-`px` sizes in the preview now match the real output. Check templates whose sizes were tuned to the old preview.
+The backend **Preview PDF** no longer enables inline PHP, fetches remote files only from the application host and
+`allowed_remote_hosts`, and uses `dompdf.options.dpi` instead of 300 DPI. Replace `<script type="text/php">` page
+numbers with `->pageNumbers()` or the layout's *Page numbers* option, add CDN hosts to `allowed_remote_hosts` or use
+`|pdfasset` and local files, and check templates whose `px` sizes were tuned to the old preview.
 
 Synchronization no longer deletes non-customised templates whose view is no longer registered; delete them with
 `php artisan dynamicpdf:sync --prune`.
