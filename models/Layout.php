@@ -207,6 +207,7 @@ class Layout extends Model
 
             try {
                 $this->fillFromView($this->code);
+                $this->viewReadFailed = false;
             } catch (Throwable $e) {
                 $this->setRawAttributes($stored, true);
 
@@ -236,7 +237,7 @@ class Layout extends Model
 
         $this->code = $code;
         $this->name = Arr::get($sections, 'settings.name') ?: $code;
-        $this->content_css = Arr::get($sections, 'css');
+        $this->content_css = $sections['css'] === '' ? null : $sections['css'];
         $this->content_html = Arr::get($sections, 'html');
 
         foreach (self::PAGE_NUMBERS_SETTINGS as $attribute => $setting) {

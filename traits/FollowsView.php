@@ -13,7 +13,7 @@ use Throwable;
  */
 trait FollowsView
 {
-    protected ?Throwable $viewError = null;
+    protected bool $viewReadFailed = false;
 
     /**
      * @return array<string, string>
@@ -67,19 +67,17 @@ trait FollowsView
 
     protected function failedToReadView(Throwable $e): void
     {
-        $this->viewError = $e;
+        $this->viewReadFailed = true;
 
-        PDFManager::instance()->logFailureOnce($this->code, "Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", $e);
+        PDFManager::instance()->logFailureOnce(static::class, $this->code, "Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", $e);
     }
 
     /**
      * The stored values stand in for an unreadable view, so a sync must not report them as current.
      */
-    public function throwViewError(): void
+    public function viewReadFailed(): bool
     {
-        if ($this->viewError !== null) {
-            throw $this->viewError;
-        }
+        return $this->viewReadFailed;
     }
 
     public function getView(): ?string

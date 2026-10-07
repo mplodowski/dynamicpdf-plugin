@@ -126,6 +126,7 @@ class Template extends Model
 
             try {
                 $this->fillFromView($this->code);
+                $this->viewReadFailed = false;
             } catch (Throwable $e) {
                 $this->setRawAttributes($stored, true);
                 $this->unsetRelation('layout');
@@ -149,7 +150,8 @@ class Template extends Model
         $this->setAttribute('layout', $this->resolveLayout(Arr::get($sections, 'settings.layout')));
         $this->size = self::lowercaseOption(Arr::get($sections, 'settings.size'));
         $this->orientation = self::lowercaseOption(Arr::get($sections, 'settings.orientation'));
-        $this->description = Arr::get($sections, 'settings.description');
+        $description = Arr::get($sections, 'settings.description');
+        $this->description = $description === '' ? null : $description;
         $this->content_html = Arr::get($sections, 'html');
     }
 

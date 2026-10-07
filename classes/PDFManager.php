@@ -112,13 +112,15 @@ class PDFManager
     /**
      * Every backend list display and every fetch of the record hit the same broken view again.
      */
-    public function logFailureOnce(string $code, string $message, Throwable $e): void
+    public function logFailureOnce(string $model, string $code, string $message, Throwable $e): void
     {
-        if (isset($this->loggedFailures[$code])) {
+        $key = "{$model}|{$code}|{$message}";
+
+        if (isset($this->loggedFailures[$key])) {
             return;
         }
 
-        $this->loggedFailures[$code] = true;
+        $this->loggedFailures[$key] = true;
 
         Log::error($message, ['exception' => $e]);
     }

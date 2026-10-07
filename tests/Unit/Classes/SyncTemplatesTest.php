@@ -241,6 +241,26 @@ describe('SyncTemplates', function () {
             ->and(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeTrue();
     });
 
+    it('does not synchronise on a preview page', function (string $action) {
+        $template = $this->createTemplate();
+        actingAsPdfManager();
+
+        $this->get(Backend::url("renatio/dynamicpdf/templates/{$action}/{$template->id}"))->assertOk();
+
+        expect(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeFalse();
+    })->with(['previewpdf', 'html', 'preview']);
+
+    it('reports no update for a view with empty optional sections on the next sync', function () {
+        $this->views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"First\"\n==\n\n==\n<p>v1</p>"]);
+        $this->registerViewTemplates('syncviews', ['a' => "title = \"First\"\ndescription = \"\"\n==\n<p>v1</p>"], $this->views);
+        $sync = new SyncTemplates;
+
+        $sync->handle();
+        $sync->handle();
+
+        expect($sync->report()['updated'])->toBe([]);
+    });
+
     it('logs a registered code whose view cannot be read once per process', function () {
         PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.missing']);
         PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.gone']);
@@ -248,9 +268,9 @@ describe('SyncTemplates', function () {
         actingAsPdfManager();
         $log = Log::spy();
 
-        foreach (range(1, 3) as $load) {
-            $this->get(Backend::url('renatio/dynamicpdf/templates'))->assertOk();
-        }
+        $this->get(Backend::url('renatio/dynamicpdf/templates'))->assertOk();
+        $this->get(Backend::url('renatio/dynamicpdf/templates'))->assertOk();
+        $this->get(Backend::url('renatio/dynamicpdf/templates'))->assertOk();
 
         $log->shouldHaveReceived('error')->withArgs(fn (string $message): bool => str_contains($message, 'pdf.layouts.missing'))->once();
         $log->shouldHaveReceived('error')->withArgs(fn (string $message): bool => str_contains($message, 'pdf.gone'))->once();

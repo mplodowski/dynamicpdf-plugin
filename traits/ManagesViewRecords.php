@@ -37,7 +37,7 @@ trait ManagesViewRecords
 
     public function beforeDisplay(): void
     {
-        if ($this->getAjaxHandler() === null) {
+        if ($this->getAjaxHandler() === null && in_array($this->action, ['index', 'create', 'update'], true)) {
             (new SyncTemplates)->handle();
         }
     }
