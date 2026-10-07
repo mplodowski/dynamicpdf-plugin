@@ -79,6 +79,7 @@ class Demo extends Command
         }
 
         Parameter::set(Plugin::DEMO_PARAMETER, 0);
+
         PDFManager::forgetInstance();
 
         $this->info('The demo templates were disabled.');

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Artisan;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use Renatio\DynamicPDF\Plugin;
+use System\Models\Parameter;
 
 describe('dynamicpdf:demo', function () {
     it('creates the demo templates and layouts and removes them again', function () {
@@ -51,7 +53,7 @@ describe('dynamicpdf:demo', function () {
         Artisan::call('dynamicpdf:demo');
         Artisan::call('dynamicpdf:demo', ['--disable' => true]);
         Artisan::call('dynamicpdf:demo');
-        \System\Models\Parameter::set(\Renatio\DynamicPDF\Plugin::DEMO_PARAMETER, 0);
+        Parameter::set(Plugin::DEMO_PARAMETER, 0);
 
         Artisan::call('dynamicpdf:demo', ['--disable' => true]);
 
