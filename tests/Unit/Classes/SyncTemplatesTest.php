@@ -91,6 +91,14 @@ describe('SyncTemplates', function () {
         expect(Template::byCode('renatio.dynamicpdf::pdf.gone')->content_html)->toBe('<p>stored</p>');
     });
 
+    it('keeps a stored layout whose view file went missing', function () {
+        PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.gone']);
+        $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.gone', 'is_locked' => true, 'content_html' => '<p>stored</p>']);
+        Log::spy();
+
+        expect(Layout::byCode('renatio.dynamicpdf::pdf.layouts.gone')->content_html)->toBe('<p>stored</p>');
+    });
+
     it('writes a changed view file back to the row of a non-customised template', function () {
         $this->views = $this->registerViewTemplates('syncviews', ['a' => "title = \"First\"\n==\n<p>v1</p>"]);
 

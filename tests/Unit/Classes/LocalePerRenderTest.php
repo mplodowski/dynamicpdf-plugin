@@ -25,6 +25,13 @@ describe('Locale per render', function () {
             ->and($overridden)->toContain('custom');
     });
 
+    it('treats an empty locale as no locale', function () {
+        app()->setLocale('pl');
+        $this->createTemplate(['code' => 'acme::pdf.invoice', 'content_html' => "{{ 'renatio.dynamicpdf::lang.templates.label'|trans }} [{{ locale }}]"]);
+
+        expect(app('dynamicpdf')->loadTemplate('acme::pdf.invoice', locale: '')->getDomPDF()->outputHtml())->toContain('Szablony [pl]');
+    });
+
     it('restores the previous locale when parsing fails', function () {
         $template = $this->createTemplate(['code' => 'acme::pdf.broken']);
         DB::table('renatio_dynamicpdf_pdf_templates')->where('id', $template->id)->update(['content_html' => '{{ name']);

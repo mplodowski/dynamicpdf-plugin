@@ -6,6 +6,8 @@ use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Models\Template;
 use Renatio\DynamicPDF\Plugin;
+use System\Classes\PluginBase;
+use System\Classes\PluginManager;
 use System\Models\Parameter;
 
 describe('Global variables and events', function () {
@@ -35,6 +37,31 @@ describe('Global variables and events', function () {
         $template = $this->createTemplate(['content_html' => '<p>{{ stamp }}</p>']);
 
         expect(app('dynamicpdf')->parseTemplate($template))->toBe('<p>COPY</p><!-- audited -->');
+    });
+
+    it('exposes the variables a plugin registers with registerPDFVariables', function () {
+        $plugin = new class(app()) extends PluginBase
+        {
+            /**
+             * @return array<string, string>
+             */
+            public function registerPDFVariables(): array
+            {
+                return ['company' => 'Acme'];
+            }
+        };
+        (fn () => $this->plugins['Acme.Variables'] = $plugin)->call(PluginManager::instance());
+        PDFManager::forgetInstance();
+
+        try {
+            $html = app('dynamicpdf')->parseTemplate($this->createTemplate(['content_html' => '<p>{{ company }}</p>']));
+        } finally {
+            (function () {
+                unset($this->plugins['Acme.Variables']);
+            })->call(PluginManager::instance());
+        }
+
+        expect($html)->toBe('<p>Acme</p>');
     });
 
     it('keeps plugin registrations when a variable was registered before the plugins were read', function () {
