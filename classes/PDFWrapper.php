@@ -9,6 +9,7 @@ use Dompdf\Dompdf;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Mail\Attachment;
 use Illuminate\Support\Facades\Log;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
@@ -237,6 +238,14 @@ class PDFWrapper extends PDF
             $this->pageNumbers->stamp($this->dompdf);
             $this->pageNumbersStamped = true;
         }
+    }
+
+    /**
+     * The document is rendered only when the message is built, so a queued mailable renders it in the worker.
+     */
+    public function attachment(string $filename = 'document.pdf'): Attachment
+    {
+        return Attachment::fromData(fn (): string => $this->output(), $filename)->withMime('application/pdf');
     }
 
     public function toFile(string $filename = 'document.pdf', bool $public = true): File

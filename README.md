@@ -456,6 +456,7 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 | setWarnings($warnings)                                  | Show or hide warnings                                    |
 | output()                                                | Output the PDF as a string                               |
 | toFile($filename = 'document.pdf', $public = true)      | Return the PDF as a System\Models\File to attach to a model |
+| attachment($filename = 'document.pdf')                  | Return the PDF as an e-mail attachment                   |
 | encrypt($password, $ownerPassword = '', $permissions = []) | Password-protect the PDF (CPDF backend)               |
 | fake()                                                  | Static: replace the wrapper with a recorder for tests    |
 | addInfo(array $info)                                    | Set PDF metadata such as Title or Author                 |
@@ -590,6 +591,31 @@ Pass `public: false` for a relation declared with `'public' => false`, otherwise
 directory. The file is written to the uploads disk as soon as `toFile()` returns, so attach and save it, or call
 `$file->delete()` when you abandon it.
 
+### Attach the PDF to an e-mail
+
+`attachment()` returns an `Illuminate\Mail\Attachment` with the `application/pdf` type. The document is rendered when
+the attachment is added to the message:
+
+```php
+Mail::send('acme.shop::mail.invoice', $data, function ($message) use ($order) {
+    $message->to($order->email);
+    $message->attach(PDF::loadTemplate('acme.shop::pdf.invoice', ['order' => $order])->attachment('invoice.pdf'));
+});
+```
+
+In a mailable, return it from `attachments()`:
+
+```php
+public function attachments(): array
+{
+    return [PDF::loadTemplate('acme.shop::pdf.invoice', ['order' => $this->order])->attachment('invoice.pdf')];
+}
+```
+
+Laravel calls `attachments()` while sending, so a queued mailable renders the PDF in the queue worker. Call
+`attachment()` there rather than in the constructor: the attachment holds a closure and cannot be serialized into a
+queued job, and `Mailable::attach()` renders it right away.
+
 ### Save to a storage disk and set metadata
 
 ```php
@@ -651,9 +677,9 @@ Inline PHP (`setIsPhpEnabled(true)`) is no longer needed for page numbers and sh
 
 `PDF::fake()` replaces the wrapper for the rest of the test: no template is looked up, no Twig, dompdf, database or
 filesystem work happens, `stream()` and `download()` return an empty `application/pdf` response, `output()` returns an
-empty string, `save()` writes nothing and `toFile()` returns a record that can be attached and saved. The fake records
-every `loadTemplate()`, `loadLayout()`, `loadView()`, `loadFile()`, `parseTemplate()` and `parseLayout()` call with its
-data, layout and locale:
+empty string, `save()` writes nothing, `toFile()` returns a record that can be attached and saved and `attachment()` an
+empty attachment. The fake records every `loadTemplate()`, `loadLayout()`, `loadView()`, `loadFile()`,
+`parseTemplate()` and `parseLayout()` call with its data, layout and locale:
 
 ```php
 $fake = PDF::fake();
