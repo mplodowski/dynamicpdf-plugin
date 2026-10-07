@@ -27,34 +27,56 @@ describe('PDFWrapper', function () {
             ->and($wrapper->output())->toStartWith('%PDF');
     });
 
-    it('leaves loadFile() to the chroot of dompdf', function () {
-        $tempFile = tempnam(sys_get_temp_dir(), 'dpdf');
-        $file = $tempFile . '.html';
-        rename($tempFile, $file);
-        file_put_contents($file, '<p>outside</p>');
+    describe('loadFile()', function () {
+        beforeEach(function () {
+            $this->wrapper = app('dynamicpdf');
+            $this->presetBase = $this->wrapper->getDomPDF()->getBasePath();
+            $this->directory = storage_path('temp/dynamicpdf-' . uniqid());
+            File::ensureDirectoryExists($this->directory);
+            file_put_contents($this->directory . '/document.html', '<p>From file</p>');
+        });
 
-        try {
-            expect(fn () => app('dynamicpdf')->loadFile($file))->toThrow(DompdfException::class);
-        } finally {
-            unlink($file);
-        }
-    });
+        afterEach(fn () => File::deleteDirectory($this->directory));
 
-    it('restores the base path for the next HTML after a file', function () {
-        $wrapper = app('dynamicpdf');
-        $basePath = $wrapper->getDomPDF()->getBasePath();
-        $file = storage_path('temp/dynamicpdf-' . uniqid() . '.html');
-        File::ensureDirectoryExists(dirname($file));
-        file_put_contents($file, '<p>file</p>');
+        it('refuses a file outside the chroot and keeps the preset base', function () {
+            $tempFile = tempnam(sys_get_temp_dir(), 'dpdf');
+            $file = $tempFile . '.html';
+            rename($tempFile, $file);
 
-        try {
-            $wrapper->loadFile($file);
-        } finally {
-            unlink($file);
-        }
+            try {
+                expect(fn () => $this->wrapper->loadFile($file))->toThrow(DompdfException::class, 'Options::chroot');
+            } finally {
+                unlink($file);
+            }
 
-        expect($wrapper->getDomPDF()->getBasePath())->toBe(realpath(storage_path('temp')) . '/')
-            ->and($wrapper->loadHTML('<p>html</p>')->getDomPDF()->getBasePath())->toBe($basePath);
+            expect($this->wrapper->getDomPDF()->getBasePath())->toBe($this->presetBase);
+        });
+
+        it('resolves assets next to the file and restores the preset base for the next HTML', function () {
+            $this->wrapper->loadFile($this->directory . '/document.html');
+
+            expect($this->wrapper->getDomPDF()->getBasePath())->toBe($this->directory . '/')
+                ->and($this->wrapper->loadHTML('<p>html</p>')->getDomPDF()->getBasePath())->toBe($this->presetBase);
+        });
+
+        it('resolves a relative path against the base path', function () {
+            $this->wrapper->setBasePath($this->directory);
+
+            expect($this->wrapper->loadFile('document.html')->getDomPDF()->outputHtml())->toContain('From file');
+        });
+
+        it('keeps a protocol and base path the caller set', function () {
+            $this->wrapper->setProtocol('file://')->setBasePath($this->directory . '/');
+
+            expect($this->wrapper->loadFile('document.html')->getDomPDF()->outputHtml())->toContain('From file')
+                ->and($this->wrapper->loadHTML('<p>html</p>')->getDomPDF()->getBasePath())->toBe($this->directory . '/');
+        });
+
+        it('keeps a base path set after the file for the next HTML', function () {
+            $this->wrapper->loadFile($this->directory . '/document.html')->setBasePath('/custom/');
+
+            expect($this->wrapper->loadHTML('<p>html</p>')->getDomPDF()->getBasePath())->toBe('/custom/');
+        });
     });
 
     it('throws on an unknown method instead of ignoring it', function () {
