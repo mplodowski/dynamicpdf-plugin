@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use October\Rain\Exception\ApplicationException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Controllers\Layouts;
@@ -36,6 +37,13 @@ describe('Reset to default', function () {
 
         expect($stored->name)->toBe('Default Layout')
             ->and($stored->is_locked)->toBeTrue();
+    });
+
+    it('refuses to reset a template without a view with the same message as the list', function () {
+        $template = $this->createTemplate();
+
+        expect(fn () => (new Templates)->update_onResetDefault($template->id))
+            ->toThrow(ApplicationException::class, trans('renatio.dynamicpdf::lang.templates.reset_view_only'));
     });
 
     it('flashes the reset message unescaped because the backend layout escapes it after the redirect', function () {

@@ -57,7 +57,17 @@ class Templates extends Controller
 
     protected static function canManageLayouts(): bool
     {
-        return (bool) BackendAuth::userHasAccess('renatio.dynamicpdf.manage_layouts');
+        return (bool) BackendAuth::userHasAccess(self::permission('layouts'));
+    }
+
+    protected static function permission(string $definition): string
+    {
+        return "renatio.dynamicpdf.manage_{$definition}";
+    }
+
+    protected static function definitionOf(Template|Layout $record): string
+    {
+        return $record instanceof Layout ? 'layouts' : 'templates';
     }
 
     public function index(?string $tab = null): void
@@ -102,13 +112,7 @@ class Templates extends Controller
     {
         $definition = $this->listDefinition();
         $this->checkListPermission($definition, 'update');
-        $model = $this->findListRecord($definition);
-
-        if (! $model->followsView()) {
-            throw new ApplicationException(trans('renatio.dynamicpdf::lang.templates.reset_view_only'));
-        }
-
-        $model->resetToView();
+        $this->resetToView($this->findListRecord($definition));
 
         Flash::success(e(trans('renatio.dynamicpdf::lang.templates.reset_success')));
 
@@ -142,7 +146,7 @@ class Templates extends Controller
      */
     public function listOverrideRecordUrl($record, $definition = null): string|array|null
     {
-        $permission = "renatio.dynamicpdf.manage_{$definition}";
+        $permission = self::permission((string) $definition);
 
         if (BackendAuth::userHasAccess("{$permission}.update")) {
             return null;
@@ -164,7 +168,7 @@ class Templates extends Controller
 
     protected function checkListPermission(string $definition, string $action): void
     {
-        if (! BackendAuth::userHasAccess("renatio.dynamicpdf.manage_{$definition}.{$action}")) {
+        if (! BackendAuth::userHasAccess(self::permission($definition) . ".{$action}")) {
             throw new ForbiddenException;
         }
     }

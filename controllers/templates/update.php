@@ -1,8 +1,8 @@
 <?php Block::put('breadcrumb') ?>
     <ul>
         <li>
-            <a href="<?= Backend::url('renatio/dynamicpdf/templates') ?>">
-                <?= e(trans('renatio.dynamicpdf::lang.templates.label')) ?>
+            <a href="<?= e($this->listUrl()) ?>">
+                <?= e($this->listLabel('label')) ?>
             </a>
         </li>
         <li><?= e($this->pageTitle) ?></li>

@@ -330,9 +330,7 @@ class PDFWrapper extends PDF
         $this->pageNumbers = $template->layout?->pageNumbers($locale);
 
         if ($template->size || $template->orientation) {
-            $options = $this->dompdf->getOptions();
-
-            $this->setPaper($template->size ?: $options->getDefaultPaperSize(), $template->orientation ?: $options->getDefaultPaperOrientation());
+            $this->setPaper(...$template->paper($this->dompdf->getOptions()));
         }
 
         return $this;
