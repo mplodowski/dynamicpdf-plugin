@@ -49,7 +49,8 @@ describe('PDFWrapper', function () {
                 unlink($file);
             }
 
-            expect($this->wrapper->getDomPDF()->getBasePath())->toBe($this->presetBase);
+            expect($this->wrapper->getDomPDF()->getBasePath())->toBe($this->presetBase)
+                ->and($this->wrapper->getDomPDF()->getProtocol())->toBe('');
         });
 
         it('resolves assets next to the file and restores the preset base for the next HTML', function () {

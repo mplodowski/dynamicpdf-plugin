@@ -103,9 +103,9 @@ class PDFWrapper extends PDF
             $this->dompdf->setBasePath('');
 
             try {
-                parent::loadFile($this->isRelativePath($file) ? rtrim($basePath, '/\\') . '/' . $file : $file);
+                parent::loadFile($basePath !== '' && $this->isRelativePath($file) ? rtrim($basePath, '/\\') . '/' . $file : $file);
             } catch (Throwable $e) {
-                $this->dompdf->setProtocol('')->setBaseHost('')->setBasePath($basePath);
+                $this->restorePresetBase($basePath);
 
                 throw $e;
             }
@@ -129,15 +129,20 @@ class PDFWrapper extends PDF
     protected function restoreBaseBeforeFile(): void
     {
         if ($this->baseBeforeFile !== null && $this->currentBase() === $this->baseBeforeFile['file']) {
-            $this->dompdf->setProtocol('')->setBaseHost('')->setBasePath($this->baseBeforeFile['before']);
+            $this->restorePresetBase($this->baseBeforeFile['before']);
         }
 
         $this->baseBeforeFile = null;
     }
 
+    protected function restorePresetBase(string $basePath): void
+    {
+        $this->dompdf->setProtocol('')->setBaseHost('')->setBasePath($basePath);
+    }
+
     protected function isRelativePath(string $file): bool
     {
-        return ! str_contains($file, '://') && ! str_starts_with($file, '/') && ! preg_match('~^[a-z]:[\\\\/]~i', $file);
+        return ! str_contains($file, '://') && ! preg_match('~^([/\\\\]|[a-z]:[/\\\\])~i', $file);
     }
 
     /**
