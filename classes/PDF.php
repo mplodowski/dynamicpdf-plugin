@@ -17,6 +17,14 @@ use RuntimeException;
  * @method static PDFWrapper encrypt(string $password, string $ownerPassword = '', array<int, string> $permissions = [])
  * @method static PDFWrapper allowRemoteApplicationAssets()
  * @method static PDFWrapper allowSelfSignedCertificates()
+ * @method static PDFWrapper loadHTML(string $string, ?string $encoding = null)
+ * @method static PDFWrapper loadFile(string $file)
+ * @method static PDFWrapper loadView(string $view, array<string, mixed> $data = [], array<string, mixed> $mergeData = [], ?string $encoding = null)
+ * @method static PDFWrapper setPaper(string|float[] $paper, string $orientation = 'portrait')
+ * @method static PDFWrapper setOption(array<string, mixed>|string $attribute, mixed $value = null)
+ * @method static PDFWrapper setOptions(array<string, mixed> $options, bool $mergeWithDefaults = false)
+ * @method static PDFWrapper addInfo(array<string, string> $info)
+ * @method static PDFWrapper setWarnings(bool $warnings)
  */
 class PDF extends PdfFacade
 {

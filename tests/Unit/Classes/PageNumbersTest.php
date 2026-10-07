@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\File;
+
 describe('Page numbers', function () {
     $twoPages = function (): \Renatio\DynamicPDF\Classes\PDFWrapper {
         $wrapper = app('dynamicpdf');
@@ -49,5 +51,22 @@ describe('Page numbers', function () {
         $wrapper->loadHTML('<p>second document</p>');
 
         expect($wrapper->output(['compress' => 0]))->not->toContain('Page 1 of');
+    });
+
+    it('forgets page numbers when a file is loaded', function () use ($twoPages) {
+        $wrapper = $twoPages();
+        $wrapper->pageNumbers('Page {PAGE_NUM} of {PAGE_COUNT}');
+        $wrapper->output(['compress' => 0]);
+        $file = storage_path('temp/dynamicpdf-' . uniqid() . '.html');
+        File::ensureDirectoryExists(dirname($file));
+        file_put_contents($file, '<p>second document</p>');
+
+        try {
+            $output = $wrapper->loadFile($file)->output(['compress' => 0]);
+        } finally {
+            unlink($file);
+        }
+
+        expect($output)->toContain('second document')->not->toContain('Page 1 of');
     });
 });

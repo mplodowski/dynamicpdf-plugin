@@ -15,6 +15,17 @@ use System\Models\File;
 use UnexpectedValueException;
 
 /**
+ * @method self loadView(string $view, array<string, mixed> $data = [], array<string, mixed> $mergeData = [], ?string $encoding = null)
+ * @method self setPaper(string|float[] $paper, string $orientation = 'portrait')
+ * @method self setOption(array<string, mixed>|string $attribute, mixed $value = null)
+ * @method self addInfo(array<string, string> $info)
+ * @method self setWarnings(bool $warnings)
+ * @method self setDefaultFont(string $font)
+ * @method self setBasePath(string $basePath)
+ * @method self setBaseHost(string $baseHost)
+ * @method self setProtocol(string $protocol)
+ * @method self setHttpContext(resource|array<string, mixed> $httpContext)
+ * @method self setCallbacks(array<string, mixed> $callbacks)
  * @method self setDpi(int $dpi)
  * @method self setIsPhpEnabled(bool $enabled)
  * @method self setIsRemoteEnabled(bool $enabled)
@@ -27,6 +38,9 @@ class PDFWrapper extends PDF
     protected bool $pageNumbersStamped = false;
 
     protected ?TwigRenderer $twig = null;
+
+    /** @var array{string, string, string}|null */
+    protected ?array $baseBeforeFile = null;
 
     public function __construct(Dompdf $dompdf, ConfigRepository $config, Filesystem $files, ViewFactory $view)
     {
@@ -66,12 +80,45 @@ class PDFWrapper extends PDF
 
     public function loadHTML(string $string, ?string $encoding = null): self
     {
-        $this->pageNumbers = null;
-        $this->pageNumbersStamped = false;
+        $this->restoreBaseBeforeFile();
+        $this->forgetPreviousDocument();
         parent::loadHTML($string, $encoding);
         $this->resetCanvas();
 
         return $this;
+    }
+
+    /**
+     * dompdf derives the protocol and base path from the file only while all three are empty,
+     * and the service provider presets the base path, so they are cleared for the load.
+     */
+    public function loadFile(string $file): self
+    {
+        $this->restoreBaseBeforeFile();
+        $this->forgetPreviousDocument();
+        $this->baseBeforeFile = [$this->dompdf->getProtocol(), $this->dompdf->getBaseHost(), $this->dompdf->getBasePath()];
+        $this->dompdf->setProtocol('')->setBaseHost('')->setBasePath('');
+        parent::loadFile($file);
+        $this->resetCanvas();
+
+        return $this;
+    }
+
+    protected function forgetPreviousDocument(): void
+    {
+        $this->pageNumbers = null;
+        $this->pageNumbersStamped = false;
+    }
+
+    protected function restoreBaseBeforeFile(): void
+    {
+        if ($this->baseBeforeFile === null) {
+            return;
+        }
+
+        [$protocol, $host, $path] = $this->baseBeforeFile;
+        $this->dompdf->setProtocol($protocol)->setBaseHost($host)->setBasePath($path);
+        $this->baseBeforeFile = null;
     }
 
     /**
