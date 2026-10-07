@@ -24,7 +24,7 @@ class TemplateVariables
     ];
 
     /**
-     * Names a generated loop variable must not take: Twig's own loop variables, word operators, tests and literals.
+     * Twig's own loop variables, word operators, tests and literals: never a loop variable, and a key with one of these names is read through ['…'].
      */
     protected const TWIG_RESERVED = [
         'loop', '_key', '_seq', '_parent', '_context', '_self', '_charset',
@@ -50,7 +50,7 @@ class TemplateVariables
         $this->taken = array_fill_keys(array_map('strval', [
             ...array_keys($sample instanceof stdClass ? get_object_vars($sample) : []),
             ...array_keys($globals),
-            'locale',
+            ...TemplateRenderer::RESERVED_VARIABLES,
         ]), true);
 
         return [
@@ -72,7 +72,7 @@ class TemplateVariables
         $entries = [];
         $this->walk($sample, '', '', [], $entries);
 
-        return $entries;
+        return $entries === [] ? null : $entries;
     }
 
     /**
@@ -165,7 +165,7 @@ class TemplateVariables
             $current = $merged->{$key} ?? null;
 
             $merged->{$key} = match (true) {
-                $current instanceof stdClass && $value instanceof stdClass => $this->mergeObjects($current, $value),
+                $current instanceof stdClass && $value instanceof stdClass => $this->mergeObjects(clone $current, $value),
                 is_array($current) && is_array($value) => array_merge($current, $value),
                 default => $value,
             };

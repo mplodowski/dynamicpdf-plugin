@@ -58,6 +58,13 @@ describe('Template variables', function () {
         ]);
     });
 
+    it('shows the sample data hint when only empty objects are given', function () {
+        $template = new Template;
+        $template->sample_data = '{"meta": {}, "a": {"b": {}}}';
+
+        expect((new TemplateVariables)->forTemplate($template)['sample'])->toBeNull();
+    });
+
     it('lists registered global variables without resolving closures', function () {
         PDFManager::instance()->registerVariables([
             'company' => ['name' => 'Acme'],

@@ -108,6 +108,7 @@ return [
         'copy' => 'Kopírovat :snippet',
         'copied' => 'Zkopírováno do schránky.',
         'copy_failed' => 'Prohlížeč kopírování zablokoval. Kód je označen v poli pod položkou, zkopírujte jej stisknutím Ctrl+C (⌘C na Macu).',
+        'manual_copy' => 'Kód Twig ke zkopírování',
         'locale' => 'Jazyk, ve kterém se dokument vykresluje.',
         'filter' => [
             'pdfasset' => 'Místní cesta k souboru pluginu, kterou dompdf čte z disku.',

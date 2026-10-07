@@ -11,7 +11,8 @@
      aria-labelledby="<?= $field->getId('label') ?>"
      data-source-field="sample_data"
      data-copied-text="<?= e(trans('renatio.dynamicpdf::lang.variables.copied')) ?>"
-     data-copy-failed-text="<?= e(trans('renatio.dynamicpdf::lang.variables.copy_failed')) ?>">
+     data-copy-failed-text="<?= e(trans('renatio.dynamicpdf::lang.variables.copy_failed')) ?>"
+     data-manual-copy-label="<?= e(trans('renatio.dynamicpdf::lang.variables.manual_copy')) ?>">
     <span class="form-label d-block" id="<?= $field->getId('label') ?>"><?= e(trans('renatio.dynamicpdf::lang.variables.label')) ?></span>
     <p class="form-text mt-0"><?= e(trans('renatio.dynamicpdf::lang.variables.comment')) ?></p>
 

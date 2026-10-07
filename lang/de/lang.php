@@ -108,6 +108,7 @@ return [
         'copy' => ':snippet kopieren',
         'copied' => 'In die Zwischenablage kopiert.',
         'copy_failed' => 'Der Browser hat das Kopieren blockiert. Der Code ist im Feld unter dem Eintrag markiert, drücken Sie Strg+C (⌘C auf dem Mac), um ihn zu kopieren.',
+        'manual_copy' => 'Twig-Code zum Kopieren',
         'locale' => 'Sprache, in der das Dokument gerendert wird.',
         'filter' => [
             'pdfasset' => 'Lokaler Pfad einer Plugin-Datei, den dompdf von der Festplatte liest.',

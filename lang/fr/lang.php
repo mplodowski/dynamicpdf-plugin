@@ -108,6 +108,7 @@ return [
         'copy' => 'Copier :snippet',
         'copied' => 'Copié dans le presse-papiers.',
         'copy_failed' => 'Le navigateur a bloqué la copie. Le code est sélectionné dans le champ sous l\'entrée, appuyez sur Ctrl+C (⌘C sur Mac) pour le copier.',
+        'manual_copy' => 'Code Twig à copier',
         'locale' => 'Langue dans laquelle le document est généré.',
         'filter' => [
             'pdfasset' => 'Chemin local d\'un fichier de plugin, lu par dompdf depuis le disque.',

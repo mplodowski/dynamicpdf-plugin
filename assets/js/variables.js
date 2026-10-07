@@ -17,6 +17,8 @@ oc.registerControl('dynamicpdf-variables', class extends oc.ControlBase {
         const { copiedText, copyFailedText } = this.element.dataset;
 
         if (await this.copy(snippet)) {
+            button.parentElement.querySelector('[data-manual-copy]')?.remove();
+            button.focus();
             oc.flashMsg({ text: copiedText, class: 'success', interval: 2 });
             return;
         }
@@ -26,6 +28,10 @@ oc.registerControl('dynamicpdf-variables', class extends oc.ControlBase {
     }
 
     async copy(text) {
+        if (!navigator.clipboard || !window.isSecureContext) {
+            return this.copyWithSelection(text);
+        }
+
         try {
             await navigator.clipboard.writeText(text);
             return true;
@@ -61,7 +67,7 @@ oc.registerControl('dynamicpdf-variables', class extends oc.ControlBase {
             input.readOnly = true;
             input.dataset.manualCopy = '';
             input.className = 'form-control form-control-sm font-monospace w-100 mt-1';
-            input.setAttribute('aria-label', button.getAttribute('aria-label'));
+            input.setAttribute('aria-label', this.element.dataset.manualCopyLabel);
             button.parentElement.appendChild(input);
         }
 

@@ -108,6 +108,7 @@ return [
         'copy' => 'Kopiuj :snippet',
         'copied' => 'Skopiowano do schowka.',
         'copy_failed' => 'Przeglądarka zablokowała kopiowanie. Kod jest zaznaczony w polu pod pozycją, naciśnij Ctrl+C (⌘C na Macu), aby go skopiować.',
+        'manual_copy' => 'Kod Twig do skopiowania',
         'locale' => 'Język, w którym renderowany jest dokument.',
         'filter' => [
             'pdfasset' => 'Lokalna ścieżka pliku pluginu, odczytywana przez dompdf z dysku.',

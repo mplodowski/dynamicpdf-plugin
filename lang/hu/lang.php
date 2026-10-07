@@ -108,6 +108,7 @@ return [
         'copy' => ':snippet másolása',
         'copied' => 'Vágólapra másolva.',
         'copy_failed' => 'A böngésző letiltotta a másolást. A kód ki van jelölve az elem alatti mezőben, a másoláshoz nyomja meg a Ctrl+C (Macen ⌘C) billentyűket.',
+        'manual_copy' => 'Másolandó Twig-kód',
         'locale' => 'A dokumentum megjelenítésének nyelve.',
         'filter' => [
             'pdfasset' => 'Egy bővítményfájl helyi útvonala, amelyet a dompdf a lemezről olvas.',

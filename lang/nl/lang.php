@@ -108,6 +108,7 @@ return [
         'copy' => ':snippet kopiëren',
         'copied' => 'Gekopieerd naar het klembord.',
         'copy_failed' => 'De browser heeft het kopiëren geblokkeerd. De code is geselecteerd in het veld onder het item, druk op Ctrl+C (⌘C op een Mac) om hem te kopiëren.',
+        'manual_copy' => 'Twig-code om te kopiëren',
         'locale' => 'Taal waarin het document wordt gegenereerd.',
         'filter' => [
             'pdfasset' => 'Lokaal pad van een pluginbestand, dat dompdf van de schijf leest.',

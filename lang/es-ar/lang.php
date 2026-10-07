@@ -108,6 +108,7 @@ return [
         'copy' => 'Copiar :snippet',
         'copied' => 'Copiado al portapapeles.',
         'copy_failed' => 'El navegador bloqueó la copia. El código está seleccionado en el campo debajo de la entrada, presioná Ctrl+C (⌘C en Mac) para copiarlo.',
+        'manual_copy' => 'Código Twig para copiar',
         'locale' => 'Idioma en el que se genera el documento.',
         'filter' => [
             'pdfasset' => 'Ruta local de un archivo del plugin, que dompdf lee del disco.',
