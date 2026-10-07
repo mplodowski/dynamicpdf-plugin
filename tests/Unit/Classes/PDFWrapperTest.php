@@ -1,5 +1,6 @@
 <?php
 
+use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Renatio\DynamicPDF\Tests\TestCase;
@@ -10,6 +11,18 @@ describe('PDFWrapper', function () {
 
         expect($wrapper->setDpi(300))->toBe($wrapper)
             ->and($wrapper->getDomPDF()->getOptions()->getDpi())->toBe(300);
+    });
+
+    it('keeps the wrapper through the inherited and forwarded setters of a facade chain', function () {
+        $wrapper = PDF::loadHTML('<p>Chained</p>')
+            ->setPaper('a5', 'landscape')
+            ->setOption('dpi', 120)
+            ->addInfo(['Title' => 'Chained'])
+            ->setDefaultFont('serif')
+            ->pageNumbers();
+
+        expect($wrapper->getDomPDF()->getOptions()->getDpi())->toBe(120)
+            ->and($wrapper->output())->toStartWith('%PDF');
     });
 
     it('throws on an unknown method instead of ignoring it', function () {

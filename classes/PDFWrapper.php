@@ -15,6 +15,12 @@ use System\Models\File;
 use UnexpectedValueException;
 
 /**
+ * @method self loadView(string $view, array<string, mixed> $data = [], array<string, mixed> $mergeData = [], ?string $encoding = null)
+ * @method self setPaper(string|float[] $paper, string $orientation = 'portrait')
+ * @method self setOption(array<string, mixed>|string $attribute, mixed $value = null)
+ * @method self addInfo(array<string, string> $info)
+ * @method self setWarnings(bool $warnings)
+ * @method self setDefaultFont(string $font)
  * @method self setDpi(int $dpi)
  * @method self setIsPhpEnabled(bool $enabled)
  * @method self setIsRemoteEnabled(bool $enabled)
@@ -72,6 +78,11 @@ class PDFWrapper extends PDF
         $this->resetCanvas();
 
         return $this;
+    }
+
+    public function loadFile(string $file): self
+    {
+        return $this->loadHTML($this->files->get($file));
     }
 
     /**

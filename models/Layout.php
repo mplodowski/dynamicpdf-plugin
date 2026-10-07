@@ -136,7 +136,7 @@ class Layout extends Model
 
     public function getHtmlAttribute(): string
     {
-        return PDF::loadLayout($this->code)->getDompdf()->output_html();
+        return PDF::loadLayout($this->code)->getDomPDF()->outputHtml();
     }
 
     /**
