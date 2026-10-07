@@ -61,14 +61,14 @@ There are two ways to install this plugin.
 
 ## Upgrading
 
-Read the [upgrade guide](https://github.com/mplodowski/dynamicpdf-plugin/blob/master/UPGRADE.md) before updating; it
-lists the steps a version needs, and versions not listed there need no action.
+Read the [upgrade guide](UPGRADE.md) before updating; it lists the steps a version needs, and versions not listed
+there need no action.
 
 ## Quick start
 
 Create a template under *Settings > PDF > PDF Templates* (or run `php artisan dynamicpdf:demo` for ready-made ones),
 for example with the code `acme.shop::pdf.invoice` and the markup `<h1>Invoice {{ number }}</h1>`, then render it from
-a controller, an AJAX handler or a CMS page:
+a controller or a CMS page:
 
 ```php
 use Renatio\DynamicPDF\Classes\PDF;
@@ -76,8 +76,8 @@ use Renatio\DynamicPDF\Classes\PDF;
 return PDF::loadTemplate('acme.shop::pdf.invoice', ['number' => '2026/1'])->stream('invoice.pdf');
 ```
 
-`download()` sends the file as an attachment instead, and `save()` writes it to disk. A plugin can ship the template as
-a view file instead of creating it in the backend, see [Registering PDF templates and
+`download()` sends the file as an attachment instead, which an AJAX handler needs, and `save()` writes it to disk. A
+plugin can ship the template as a view file instead of creating it in the backend, see [Registering PDF templates and
 layouts](#registering-pdf-templates-and-layouts).
 
 ## PDF content
@@ -130,7 +130,7 @@ body {
 </html>
 ```
 
-> **Note:** The HTML markup of a PDF view is rendered with the full Twig environment described in
+> **Note:** The HTML markup of a PDF view is rendered with the CMS or system Twig environment described in
 > [Twig environment](#twig-environment), including the filters and functions registered by plugins.
 
 The **CSS/LESS** section is optional and a view can contain only the configuration and HTML markup sections.
@@ -200,7 +200,7 @@ orientation = "portrait"
 <h1>Invoice</h1>
 ```
 
-> **Note:** The markup is rendered with the full Twig environment, see [Twig environment](#twig-environment).
+> **Note:** The markup is rendered with the CMS or system Twig environment, see [Twig environment](#twig-environment).
 
 ### Configuration section
 
@@ -212,7 +212,7 @@ The configuration section sets the PDF view parameters. The following configurat
 | **layout**      | the layout code, optional.                                                                                   |
 | **description** | the template description, optional.                                                                          |
 | **size**        | the template paper size, optional; without it `default_paper_size` of the dompdf configuration applies.      |
-| **orientation** | the template paper orientation, optional; applies without **size** too; without it `default_paper_orientation` of the dompdf configuration applies. |
+| **orientation** | the template paper orientation, optional, also without **size**; defaults to dompdf `default_paper_orientation`. |
 
 > **Note:** **size** and **orientation** are read case-insensitively; `A4` is stored as `a4`.
 
@@ -443,7 +443,7 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 | pageNumbers($text = 'Page {PAGE_NUM} of {PAGE_COUNT}', $position = 'bottom-center', $size = 9, $font = null, $margin = 20, $color = [0, 0, 0]) | Stamp page numbers on every page of the loaded document |
 | forBrowser($forBrowser = true)                          | Render HTML for a browser, with URLs from `\|pdfasset` and `background_img` instead of local paths |
 | allowSelfSignedCertificates()                           | Accept self-signed TLS certificates for remote resources |
-| allowRemoteApplicationAssets()                          | Enable remote resources, restricted to the configured and application hosts, and narrow a default `chroot` to the public asset directories, as the backend preview does |
+| allowRemoteApplicationAssets()                          | Enable remote resources, restricted to the configured and application hosts (disabled when there are none), and narrow a default `chroot` to the public asset directories, as the backend preview does |
 | loadHTML($string, $encoding = null)                     | Load HTML string                                         |
 | loadFile($file)                                         | Load HTML string from a file                             |
 | loadView($view, array $data = [], array $mergeData = [], $encoding = null) | Load a Laravel view                   |
@@ -825,9 +825,9 @@ translation. Per-language background images are not supported.
 
 With the feature above turned on, a registered view can ship localized siblings, used when a `locale` argument is
 passed: `pdf.invoice` renders from `pdf.de.invoice`, `pdf.layouts.default` from `pdf.layouts.de.default`. Without the
-feature or the argument the siblings are ignored. The locale chain is followed, so `de-AT` takes `pdf.de-AT.invoice` and falls back to
-`pdf.de.invoice`. The sibling is read for that render only and never changes the stored row; a customized template,
-a layout that is no longer *From view* or a stored translation wins over it.
+feature or the argument the siblings are ignored. The locale chain is followed, so `de-AT` takes `pdf.de-AT.invoice`
+and falls back to `pdf.de.invoice`. The sibling is read for that render only and never changes the stored row; a
+customized template, a layout that is no longer *From view* or a stored translation wins over it.
 
 ```text
 plugins/acme/shop/views/pdf/
