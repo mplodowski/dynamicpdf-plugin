@@ -72,6 +72,21 @@ describe('Form buttons', function () {
             ->toContain('"Guardando..."')
             ->not->toContain('Save &amp; Close');
     });
+
+    it('uses the same record wording in the layout save flash', function () {
+        actingAsPdfManager();
+        $this->withSession(['locale' => 'es']);
+        $layout = $this->createLayout();
+
+        $this->saveLayoutForm($layout->id, [
+            'name' => 'Diseño',
+            'code' => $layout->code,
+            'content_html' => (string) $layout->content_html,
+            'content_css' => '',
+        ])->assertOk();
+
+        expect(Flash::all())->toBe(['success' => 'El registro fue guardado.']);
+    });
 });
 
 describe('Variables list', function () {
