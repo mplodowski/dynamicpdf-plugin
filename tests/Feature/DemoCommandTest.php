@@ -25,7 +25,7 @@ describe('dynamicpdf:demo', function () {
 
         expect(Layout::find($layout->id))->not->toBeNull()
             ->and($template->fresh()?->layout_id)->toBe($layout->id)
-            ->and(Layout::whereKey($layout->id)->first()?->getAttribute('from_view'))->toBeFalsy()
+            ->and((bool) Layout::whereKey($layout->id)->first()?->getAttribute('from_view'))->toBeFalse()
             ->and(Artisan::output())->toContain('Kept renatio.dynamicpdf::pdf.layouts.default');
     });
 
@@ -74,6 +74,6 @@ describe('dynamicpdf:demo', function () {
         expect(Layout::whereCode('renatio.dynamicpdf::pdf.layouts.header_and_footer')->exists())->toBeTrue()
             ->and($output)->toContain('Kept renatio.dynamicpdf::pdf.layouts.header_and_footer, it was customized.')
             ->and($output)->toContain('Kept renatio.dynamicpdf::pdf.layouts.default, templates still use it.')
-            ->and(Layout::whereKey($used->id)->first()?->getAttribute('from_view'))->toBeTruthy();
+            ->and((bool) Layout::whereKey($used->id)->first()?->getAttribute('from_view'))->toBeTrue();
     });
 });

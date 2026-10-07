@@ -7,7 +7,7 @@ parameters:
 
     phpVersion:
         min: 80200
-        max: 80499
+        max: 80599
 
     paths:
         - classes
