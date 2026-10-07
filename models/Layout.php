@@ -173,7 +173,7 @@ class Layout extends Model
 
     public function getHtmlAttribute(): string
     {
-        return PDF::loadLayout($this->code)->getDomPDF()->outputHtml();
+        return PDF::forBrowser()->loadLayout($this->code)->getDomPDF()->outputHtml();
     }
 
     /**

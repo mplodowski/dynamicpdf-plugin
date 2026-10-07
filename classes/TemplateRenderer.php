@@ -20,7 +20,7 @@ class TemplateRenderer
      */
     public function template(PDFWrapper $pdf, Template $template, array $data): string
     {
-        return $this->renderWithEvents($pdf, $template, $data, function (array $data) use ($template): string {
+        return $this->renderWithEvents($pdf, $template, $data, function (array $data) use ($pdf, $template): string {
             $html = $this->twig->render($template->content_html, $data, (string) $template->code);
 
             if (! $template->layout) {
@@ -28,6 +28,7 @@ class TemplateRenderer
             }
 
             return $this->renderLayout(
+                $pdf,
                 $template->layout,
                 array_merge(['content_html' => $html], $data),
             );
@@ -39,7 +40,7 @@ class TemplateRenderer
      */
     public function layout(PDFWrapper $pdf, Layout $layout, array $data): string
     {
-        return $this->renderWithEvents($pdf, $layout, $data, fn (array $data): string => $this->renderLayout($layout, $data));
+        return $this->renderWithEvents($pdf, $layout, $data, fn (array $data): string => $this->renderLayout($pdf, $layout, $data));
     }
 
     /**
@@ -56,7 +57,7 @@ class TemplateRenderer
             }
         }
 
-        $html = $render($data);
+        $html = PDFAsset::whileRendering($pdf, fn (): string => $render($data));
 
         foreach (Event::fire(Events::AFTER_RENDER, [$pdf, $model, $html]) ?? [] as $replacement) {
             if (is_string($replacement)) {
@@ -90,11 +91,28 @@ class TemplateRenderer
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function renderLayout(Layout $layout, array $data): string
+    protected function renderLayout(PDFWrapper $pdf, Layout $layout, array $data): string
     {
         return $this->twig->render($layout->content_html, array_merge([
-            'background_img' => $layout->background_img?->getPath(),
+            'background_img' => $this->backgroundImage($pdf, $layout),
             'css' => $layout->getCSS(),
         ], $data), (string) $layout->code);
+    }
+
+    protected function backgroundImage(PDFWrapper $pdf, Layout $layout): ?string
+    {
+        $image = $layout->background_img;
+
+        if ($image === null) {
+            return null;
+        }
+
+        if ($pdf->isForBrowser()) {
+            return $image->getPath();
+        }
+
+        $path = $pdf->localPath($image);
+
+        return $path !== '' && $pdf->insideChroot($path) ? $path : $image->getPath();
     }
 }

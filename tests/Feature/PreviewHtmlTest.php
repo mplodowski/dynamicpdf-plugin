@@ -27,4 +27,12 @@ describe('HTML preview', function () {
 
         expect($response->headers->get('Content-Security-Policy'))->toBe("sandbox; script-src 'none'; object-src 'none'");
     });
+
+    it('links plugin assets by URL so the browser can load them', function () {
+        $layout = $this->createLayout(['content_html' => "<html><body><img src=\"{{ 'plugins/renatio/dynamicpdf/assets/img/october.png'|pdfasset }}\">{{ content_html|raw }}</body></html>"]);
+        $template = $this->createTemplate(['layout_id' => $layout->id]);
+
+        expect((new Templates)->html($template->id)->getContent())->toContain(url('plugins/renatio/dynamicpdf/assets/img/october.png'))
+            ->and((new Layouts)->html($layout->id)->getContent())->toContain(url('plugins/renatio/dynamicpdf/assets/img/october.png'));
+    });
 });

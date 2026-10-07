@@ -253,6 +253,23 @@ that loads only the System and Backend modules, the system Twig environment is u
 by plugins through `registerMarkupTags` work in both. Filters and tags provided by the Cms module itself (`|theme`,
 `|page`, `{% partial %}`) are unavailable without it.
 
+### Plugin assets
+
+dompdf treats every `http(s)://` address, including the one `|app` returns, as a remote file, and remote files are
+not loaded while `enable_remote` is off, which is the default. Stylesheets, fonts and images shipped with a plugin are
+better referenced with the `|pdfasset` filter, which takes a path relative to the project root and returns the
+absolute path of the file on disk, so dompdf reads it locally:
+
+```twig
+<link href="{{ 'plugins/acme/shop/assets/css/pdf.css'|pdfasset }}" rel="stylesheet">
+<img src="{{ 'plugins/acme/shop/assets/img/logo.png'|pdfasset }}">
+```
+
+Only existing files inside the `plugins` directory and the dompdf `chroot` are resolved. Any other path (one leaving
+the directory with `..`, an absolute path, a URL) returns an empty string and writes a warning to the log. In the
+backend HTML preview, which the browser shows, and outside a DynamicPDF render the filter returns the same URL as
+`|app`. Quote the value inside CSS `url('...')`, since a path may contain spaces.
+
 ## Global variables
 
 Variables every template and layout should receive, such as company details or a logo URL, are registered in the
@@ -362,7 +379,7 @@ PDF::loadTemplate('renatio::invoice')
 ```
 
 The options most often changed are `dpi`, `default_font`, `default_paper_size`, `enable_remote` (off by default;
-required for images, stylesheets and fonts loaded by URL), `allowed_remote_hosts`, `chroot` and `font_dir`. The full
+required for images, stylesheets and fonts loaded by URL, see [Plugin assets](#plugin-assets) for local ones), `allowed_remote_hosts`, `chroot` and `font_dir`. The full
 list with the current defaults is in the published `config/dompdf.php` and in
 [Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php); every option has a matching
 `set*()` method on the wrapper named after the camel-cased key, except the `enable_*` options, which are
@@ -385,6 +402,7 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 | loadTemplate($code, array $data = [], $encoding = null, $layout = null, $locale = null) | Load backend template, optionally with another layout and locale |
 | loadLayout($code, array $data = [], $encoding = null, $locale = null) | Load backend layout, optionally in another locale |
 | pageNumbers($text = 'Page {PAGE_NUM} of {PAGE_COUNT}', $position = 'bottom-center', $size = 9, $font = null, $margin = 20, $color = [0, 0, 0]) | Stamp page numbers on every page of the loaded document |
+| forBrowser($forBrowser = true)                          | Render HTML for a browser, with URLs from `\|pdfasset` and `background_img` instead of local paths |
 | allowSelfSignedCertificates()                           | Accept self-signed TLS certificates for remote resources |
 | allowRemoteApplicationAssets()                          | Limit remote resources to the configured and application hosts and local files to the asset directories |
 | loadHTML($string, $encoding = null)                     | Load HTML string                                         |
@@ -422,6 +440,10 @@ display it over the whole page:
 ```
 
 Without `@page { margin: 0; }` the background covers only the area inside dompdf's default 1.2 cm page margins.
+
+In a PDF `{{ background_img }}` is the local path of the uploaded file, so the background shows without
+`enable_remote`. A file on a remote disk, such as S3, is copied to `storage/temp/dynamicpdf` and the copy is deleted
+together with the PDF object. In the backend HTML preview it is the URL of the file.
 
 dompdf redraws the background at the page size in its DPI, 794 x 1123 px for A4 at the default 96 DPI, so a larger
 image adds no sharpness on its own. For a higher-quality background, such as 300 DPI (2480 x 3508 px), use an image
@@ -782,35 +804,38 @@ function onStart()
 
 ### Using custom fonts
 
-The plugin ships the Open Sans font, which can be imported in the layout CSS section.
+The plugin ships the Open Sans font. Declare it in a `<style>` element of the layout HTML: the *CSS* tab is compiled as
+LESS and does not run Twig, so `|pdfasset` works only in the HTML.
 
-```css
+```html
+<style>
 @font-face {
     font-family: 'Open Sans';
-    src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf'|app }});
+    src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf'|pdfasset }}');
 }
 
 @font-face {
     font-family: 'Open Sans';
     font-weight: bold;
-    src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf'|app }});
+    src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf'|pdfasset }}');
 }
 
 @font-face {
     font-family: 'Open Sans';
     font-style: italic;
-    src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf'|app }});
+    src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf'|pdfasset }}');
 }
 
 @font-face {
     font-family: 'Open Sans';
     font-style: italic;
     font-weight: bold;
-    src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf'|app }});
+    src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf'|pdfasset }}');
 }
 
 body {
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
 }
+</style>
 ```
