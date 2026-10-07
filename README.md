@@ -519,12 +519,13 @@ return PDF::loadTemplate('renatio::invoice', ['file' => $file])->stream();
 <img src="data:image/png;base64,{{ logo_base64 }}">
 ```
 
-`getLocalPath` copies a file from a remote disk, such as S3, to `storage/temp` first. Local paths must lie inside the
-dompdf `chroot`, the project root by default.
+`getLocalPath` copies a file from a remote disk, such as S3, to `storage/temp/uploads` first and October does not delete
+the copy. Local paths must lie inside the dompdf `chroot`, the project root by default; the backend PDF preview narrows
+it to the public directories, so a protected upload renders from code but not in the preview.
 
 A URL, such as `file.getPath` or `file.getThumb(200, 200, {'mode': 'crop'})`, is a remote file. Enable remote files
 only together with the hosts they may come from, never with `setIsRemoteEnabled(true)` alone: with
-`allowed_remote_hosts` left at `null` dompdf fetches any address the HTML names.
+`allowed_remote_hosts` left at `null` or set to an empty array dompdf fetches any address the HTML names.
 
 ```php
 return PDF::loadTemplate('renatio::invoice', ['file' => $file])
@@ -611,8 +612,8 @@ Inline PHP (`setIsPhpEnabled(true)`) is no longer needed for page numbers and sh
 
 > **Security warning:** only enable `setIsPhpEnabled(true)` when the template content is fully trusted. Any
 > `<script type="text/php">` block in the HTML is executed on the server, so enabling it for templates that can be
-> edited by backend users allows remote code execution. The backend PDF preview does not turn it on itself, it follows
-> `enable_php` in the dompdf configuration.
+> edited by backend users allows remote code execution. The backend HTML preview never runs PHP; the backend PDF preview
+> does not turn it on itself, it follows `enable_php` in the dompdf configuration.
 
 ## Testing
 

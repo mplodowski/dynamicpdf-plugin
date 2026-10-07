@@ -75,9 +75,11 @@ always on.
 ## Upgrading To 8.1.0
 
 **Security release. Upgrade every installation running 8.0.x.** Requires PHP 8.2 and October CMS 4.4; sites on October
-CMS 3 or 4.0–4.3 stay on 8.0.3 until October is upgraded to 4.4. Run `php artisan october:migrate`, which adds a unique
-index on template and layout codes and permanently deletes duplicate rows, keeping the customised or locked one. Layouts
-now follow their view file like templates, so the migration clears *From view* on every layout it cannot prove unedited.
+CMS 3 or 4.0–4.3 stay on 8.0.3 until October is upgraded to 4.4; until then keep `enable_php` off, set
+`allowed_remote_hosts` and give the template and layout permissions to trusted administrators only. Run `php artisan
+october:migrate`, which adds a unique index on template and layout codes and permanently deletes duplicate rows, keeping
+the customised or locked one. Layouts now follow their view file like templates, so the migration clears *From view* on
+every layout it cannot prove unedited.
 
 Permissions are granular now, and existing roles and administrators keep their access: the migration grants
 **Create**, **Update**, **Delete** and **Preview** to those holding **Access templates** or **Access layouts**, so you
