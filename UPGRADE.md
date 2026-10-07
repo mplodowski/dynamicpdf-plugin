@@ -78,7 +78,7 @@ always on.
 CMS 3 or 4.0–4.3 stay on 8.0.3 until October is upgraded to 4.4; until then keep `enable_php` off, set
 `allowed_remote_hosts` and give the template and layout permissions to trusted administrators only. Run `php artisan
 october:migrate`, which adds a unique index on template and layout codes and permanently deletes duplicate rows, keeping
-the customised or locked one. Layouts now follow their view file like templates, so the migration clears *From view* on
+the customized or locked one. Layouts now follow their view file like templates, so the migration clears *From view* on
 every layout it cannot prove unedited.
 
 Permissions are granular now, and existing roles and administrators keep their access: the migration grants
@@ -96,5 +96,5 @@ The backend **Preview PDF** never runs inline PHP, fetches remote files only fro
 numbers with `->pageNumbers()` or the layout's *Page numbers* option, add CDN hosts to `allowed_remote_hosts` or use
 `|pdfasset` and local files, and check templates whose `px` sizes were tuned to the old preview.
 
-Synchronization no longer deletes non-customised templates whose view is no longer registered; delete them with
+Synchronization no longer deletes non-customized templates whose view is no longer registered; delete them with
 `php artisan dynamicpdf:sync --prune`.
