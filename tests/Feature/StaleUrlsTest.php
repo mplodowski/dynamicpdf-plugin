@@ -22,15 +22,24 @@ describe('Stale and unknown URLs', function () {
             ->assertRedirect(Backend::url('renatio/dynamicpdf/templates/index/layouts'));
     });
 
-    it('answers a preview of a missing record without a server error', function (string $path) {
-        $response = $this->get(Backend::url("renatio/dynamicpdf/{$path}"));
+    it('answers the HTML preview of a deleted record with a 404 that names it', function (string $definition) {
+        $response = $this->get(Backend::url("renatio/dynamicpdf/{$definition}/html/999999"));
 
-        expect($response->status())->toBeLessThan(500);
-    })->with([
-        'template HTML of a deleted record' => 'templates/html/999999',
-        'layout HTML of a deleted record' => 'layouts/html/999999',
-        'template HTML without an id' => 'templates/html',
-        'template PDF without an id' => 'templates/previewpdf',
-        'layout PDF without an id' => 'layouts/previewpdf',
-    ]);
+        expect($response->status())->toBe(404)
+            ->and($response->getContent())->toContain('999999');
+    })->with(['templates', 'layouts']);
+
+    it('answers the HTML preview without an id with a 404 that says so', function () {
+        $response = $this->get(Backend::url('renatio/dynamicpdf/templates/html'));
+
+        expect($response->status())->toBe(404)
+            ->and($response->getContent())->toContain(e(trans('backend::lang.form.missing_id')));
+    });
+
+    it('shows the PDF preview error page for a URL without an id', function (string $definition) {
+        $response = $this->get(Backend::url("renatio/dynamicpdf/{$definition}/previewpdf"));
+
+        expect($response->status())->toBe(200)
+            ->and($response->getContent())->toContain(e(trans('backend::lang.form.missing_id')));
+    })->with(['templates', 'layouts']);
 });
