@@ -34,46 +34,34 @@ class PDFAsset
         $pdf = static::$rendering;
 
         if ($pdf === null || $pdf->isForBrowser()) {
-            return URL::to($path);
+            return e(URL::to($path));
         }
 
-        $local = $this->pluginFile($path);
+        $file = $this->pluginFile($path);
 
-        if ($local === null || ! $this->insideChroot($local, $pdf)) {
-            Log::warning("Renatio.DynamicPDF pdfasset ignored [{$path}], it is not a file inside the plugins directory and the dompdf chroot.");
+        if ($file === null) {
+            Log::warning("Renatio.DynamicPDF pdfasset ignored [{$path}], it is not a file inside the plugins directory.");
 
             return '';
         }
 
-        return $local;
+        return e($file);
     }
 
+    /**
+     * The path is checked before symlinks are resolved, so a symlinked plugin is accepted;
+     * dompdf still applies its chroot to the real location.
+     */
     protected function pluginFile(string $path): ?string
     {
-        if ($path === '' || str_contains($path, '://') || str_contains($path, "\0") || preg_match('~^([/\\\\]|[a-z]:)~i', $path)) {
+        $segments = preg_split('~[/\\\\]~', $path) ?: [];
+
+        if ($path === '' || str_contains($path, '://') || str_contains($path, "\0") || preg_match('~^([/\\\\]|[a-z]:)~i', $path) || in_array('..', $segments, true)) {
             return null;
         }
 
-        $file = realpath(base_path($path));
-        $plugins = realpath(plugins_path());
+        $file = base_path($path);
 
-        if ($file === false || $plugins === false || ! is_file($file) || ! str_starts_with($file, $plugins . DIRECTORY_SEPARATOR)) {
-            return null;
-        }
-
-        return $file;
-    }
-
-    protected function insideChroot(string $file, PDFWrapper $pdf): bool
-    {
-        foreach ($pdf->getDomPDF()->getOptions()->getChroot() as $directory) {
-            $directory = realpath((string) $directory);
-
-            if ($directory !== false && str_starts_with($file, rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR)) {
-                return true;
-            }
-        }
-
-        return false;
+        return str_starts_with($file, plugins_path() . DIRECTORY_SEPARATOR) && is_file($file) ? $file : null;
     }
 }

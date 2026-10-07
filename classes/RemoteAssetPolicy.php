@@ -66,7 +66,7 @@ class RemoteAssetPolicy
             storage_path('app/media'),
             storage_path('app/resources'),
             storage_path('temp/public'),
-            (new LocalFiles)->directory(),
+            LocalFiles::directory(),
         ];
 
         return array_values(array_filter($paths, fn (string $path): bool => realpath($path) !== $base));

@@ -42,6 +42,8 @@ class PDFWrapper extends PDF
 
     protected bool $forBrowser = false;
 
+    protected bool $loadingDocument = false;
+
     protected ?LocalFiles $localFiles = null;
 
     /** @var array{before: string, file: array{string, string, string}}|null */
@@ -74,9 +76,32 @@ class PDFWrapper extends PDF
         return $this;
     }
 
+    /**
+     * Only HTML that this wrapper loads into dompdf gets local paths; HTML returned by
+     * parseTemplate()/parseLayout() is used elsewhere and outlives the background copies.
+     */
     public function isForBrowser(): bool
     {
-        return $this->forBrowser;
+        return $this->forBrowser || ! $this->loadingDocument;
+    }
+
+    public function insideChroot(string $path): bool
+    {
+        $path = realpath($path);
+
+        if ($path === false) {
+            return false;
+        }
+
+        foreach ($this->dompdf->getOptions()->getChroot() as $directory) {
+            $directory = realpath((string) $directory);
+
+            if ($directory !== false && str_starts_with($path, rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function localPath(File $file): string
@@ -269,7 +294,7 @@ class PDFWrapper extends PDF
         $html = (new LocaleScope($locale))->render(
             [$template, $template->layout],
             $data,
-            fn (array $data): string => $this->parseTemplate($template, $data),
+            fn (array $data): string => $this->whileLoadingDocument(fn (): string => $this->parseTemplate($template, $data)),
         );
 
         $this->loadHTML($html, $encoding);
@@ -298,7 +323,7 @@ class PDFWrapper extends PDF
         $html = (new LocaleScope($locale))->render(
             [$layout],
             $data,
-            fn (array $data): string => $this->parseLayout($layout, $data),
+            fn (array $data): string => $this->whileLoadingDocument(fn (): string => $this->parseLayout($layout, $data)),
         );
 
         $this->loadHTML($html, $encoding);
@@ -321,6 +346,20 @@ class PDFWrapper extends PDF
     public function parseLayout(Layout $layout, array $data = []): string
     {
         return $this->renderer()->layout($this, $layout, $data);
+    }
+
+    /**
+     * @param  callable(): string  $render
+     */
+    protected function whileLoadingDocument(callable $render): string
+    {
+        $this->loadingDocument = true;
+
+        try {
+            return $render();
+        } finally {
+            $this->loadingDocument = false;
+        }
     }
 
     public function allowRemoteApplicationAssets(): self

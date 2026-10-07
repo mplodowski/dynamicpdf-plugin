@@ -34,15 +34,21 @@ class LocalFiles
             return '';
         }
 
-        $directory = $this->directory();
+        $directory = static::directory();
         $copy = $directory . '/' . Str::random(40) . '.' . $file->getExtension();
         $this->copies[] = $copy;
 
         try {
             Files::ensureDirectoryExists($directory);
-            file_put_contents($copy, $stream);
+            $written = file_put_contents($copy, $stream);
         } finally {
             fclose($stream);
+        }
+
+        if ($written === false) {
+            Log::warning("Renatio.DynamicPDF could not copy {$file->getDiskPath()} for the PDF.");
+
+            return '';
         }
 
         return $copy;
@@ -56,12 +62,9 @@ class LocalFiles
 
         Files::delete($this->copies);
         $this->copies = [];
-
-        /** rmdir() refuses a directory another render is still writing to. */
-        @rmdir($this->directory());
     }
 
-    public function directory(): string
+    public static function directory(): string
     {
         return storage_path('temp/dynamicpdf');
     }

@@ -107,6 +107,12 @@ class TemplateRenderer
             return null;
         }
 
-        return $pdf->isForBrowser() ? $image->getPath() : $pdf->localPath($image);
+        if ($pdf->isForBrowser()) {
+            return $image->getPath();
+        }
+
+        $path = $pdf->localPath($image);
+
+        return $path !== '' && $pdf->insideChroot($path) ? $path : $image->getPath();
     }
 }

@@ -30,25 +30,40 @@ describe('Default layout HTML', function () {
 
             return $this->layout->fresh();
         };
+        $this->loadLayout = function (Layout $layout, ?array $chroot = null): string {
+            $pdf = app('dynamicpdf');
+            $pdf->getDomPDF()->getOptions()->setChroot($chroot ?? [base_path(), $this->uploads]);
+
+            return $pdf->loadLayout($layout->code)->getDomPDF()->outputHtml();
+        };
     });
 
     afterEach(function () {
         Storage::forgetDisk('uploads');
         Filesystem::deleteDirectory($this->uploads);
+        Filesystem::deleteDirectory(LocalFiles::directory());
     });
 
     it('puts the local file of the background image on the body for the PDF', function () {
         $layout = ($this->withBackground)();
 
-        expect(app('dynamicpdf')->parseLayout($layout))
+        expect(($this->loadLayout)($layout))
             ->toContain("<body style=\"background: url('" . $this->uploads . '/' . $layout->background_img->getDiskPath() . "')");
     });
 
-    it('puts the URL of the background image on the body for the browser preview', function () {
+    it('keeps the URL of a background outside the dompdf chroot', function () {
         $layout = ($this->withBackground)();
 
-        expect(app('dynamicpdf')->forBrowser()->parseLayout($layout))
+        expect(($this->loadLayout)($layout, [base_path()]))
             ->toContain("<body style=\"background: url('" . $layout->background_img->getPath() . "')");
+    });
+
+    it('puts the URL of the background image on the body for the browser preview and for parsed HTML', function () {
+        $layout = ($this->withBackground)();
+        $url = "<body style=\"background: url('" . $layout->background_img->getPath() . "')";
+
+        expect(app('dynamicpdf')->forBrowser()->loadLayout($layout->code)->getDomPDF()->outputHtml())->toContain($url)
+            ->and(tap(app('dynamicpdf'), fn ($pdf) => $pdf->getDomPDF()->getOptions()->setChroot([base_path(), $this->uploads]))->parseLayout($layout))->toContain($url);
     });
 
     it('copies a background image from a remote disk and deletes the copy with the PDF', function () {
@@ -59,19 +74,18 @@ describe('Default layout HTML', function () {
         Storage::set('uploads', new FilesystemAdapter(new Flysystem($remote), $remote));
 
         $pdf = app('dynamicpdf');
-        preg_match("/url\\('([^']+)'\\)/", $pdf->parseLayout($layout), $match);
+        preg_match("/url\\('([^']+)'\\)/", $pdf->loadLayout($layout->code)->getDomPDF()->outputHtml(), $match);
         $copy = $match[1] ?? '';
 
-        expect(dirname($copy))->toBe((new LocalFiles)->directory())
+        expect(dirname($copy))->toBe(LocalFiles::directory())
             ->and(file_get_contents($copy))->toBe($layout->background_img->getContents());
 
         unset($pdf);
 
-        expect(file_exists($copy))->toBeFalse()
-            ->and(is_dir((new LocalFiles)->directory()))->toBeFalse();
+        expect(file_exists($copy))->toBeFalse();
     });
 
     it('leaves the body unstyled without one', function () {
-        expect(app('dynamicpdf')->parseLayout($this->layout))->toContain('<body>');
+        expect(app('dynamicpdf')->loadLayout($this->layout->code)->getDomPDF()->outputHtml())->toContain('<body>');
     });
 });

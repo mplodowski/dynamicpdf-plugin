@@ -804,9 +804,11 @@ function onStart()
 
 ### Using custom fonts
 
-The plugin ships the Open Sans font, which can be imported in the layout CSS section.
+The plugin ships the Open Sans font. Declare it in a `<style>` element of the layout HTML: the *CSS* tab is compiled as
+LESS and does not run Twig, so `|pdfasset` works only in the HTML.
 
-```css
+```html
+<style>
 @font-face {
     font-family: 'Open Sans';
     src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf'|pdfasset }}');
@@ -835,4 +837,5 @@ body {
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
 }
+</style>
 ```
