@@ -3,12 +3,12 @@
 namespace Renatio\DynamicPDF\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Renatio\DynamicPDF\Plugin;
-use System\Classes\PluginManager;
 use System\Models\Parameter;
 
 class Demo extends Command
@@ -50,19 +50,36 @@ class Demo extends Command
 
     protected function disableDemo(): int
     {
-        $plugin = PluginManager::instance()->findByNamespace('Renatio.DynamicPDF');
+        /** @var Collection<int, Template> $templates */
+        $templates = Template::whereIn('code', Plugin::DEMO_TEMPLATES)->get();
 
-        Template::whereIn('code', $plugin->registerPDFTemplates())->get()->each->delete();
+        foreach ($templates as $template) {
+            if ($template->is_custom) {
+                $this->warn("Kept {$template->code}, it was customized.");
 
-        foreach ($plugin->registerPDFLayouts() as $layout) {
-            Layout::where('code', $layout)->doesntHave('templates')->get()->each->delete();
-
-            if (Layout::where('code', $layout)->exists()) {
-                $this->warn("Kept {$layout}, templates still use it.");
+                continue;
             }
+
+            $template->delete();
+        }
+
+        /** @var Collection<int, Layout> $layouts */
+        $layouts = Layout::whereIn('code', Plugin::DEMO_LAYOUTS)->get();
+
+        foreach ($layouts as $layout) {
+            if (! $layout->is_locked || Template::where('layout_id', $layout->id)->exists()) {
+                $layout->is_locked = false;
+                $layout->forceSave();
+                $this->warn("Kept {$layout->code}, templates still use it or it was customized.");
+
+                continue;
+            }
+
+            $layout->delete();
         }
 
         Parameter::set(Plugin::DEMO_PARAMETER, 0);
+        PDFManager::forgetInstance();
 
         $this->info('The demo templates were disabled.');
 

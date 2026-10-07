@@ -27,6 +27,10 @@ class Plugin extends PluginBase
 
     public const LAYOUTS_FOLLOW_VIEWS_PARAMETER = 'renatio::dynamicpdf.layouts_follow_views';
 
+    public const DEMO_TEMPLATES = ['renatio.dynamicpdf::pdf.invoice', 'renatio.dynamicpdf::pdf.header_and_footer'];
+
+    public const DEMO_LAYOUTS = ['renatio.dynamicpdf::pdf.layouts.default', 'renatio.dynamicpdf::pdf.layouts.header_and_footer'];
+
     /**
      * @return array<string, string>
      */
@@ -158,14 +162,7 @@ class Plugin extends PluginBase
      */
     public function registerPDFTemplates(): array
     {
-        if (! Parameter::get(self::DEMO_PARAMETER)) {
-            return [];
-        }
-
-        return [
-            'renatio.dynamicpdf::pdf.invoice',
-            'renatio.dynamicpdf::pdf.header_and_footer',
-        ];
+        return Parameter::get(self::DEMO_PARAMETER) ? self::DEMO_TEMPLATES : [];
     }
 
     /**
@@ -173,13 +170,6 @@ class Plugin extends PluginBase
      */
     public function registerPDFLayouts(): array
     {
-        if (! Parameter::get(self::DEMO_PARAMETER)) {
-            return [];
-        }
-
-        return [
-            'renatio.dynamicpdf::pdf.layouts.default',
-            'renatio.dynamicpdf::pdf.layouts.header_and_footer',
-        ];
+        return Parameter::get(self::DEMO_PARAMETER) ? self::DEMO_LAYOUTS : [];
     }
 }
