@@ -101,13 +101,13 @@ return [
     ],
     'variables' => [
         'label' => 'Variabili disponibili',
-        'comment' => 'Fai clic su una voce per copiarne il codice Twig. L\'elenco riflette i dati di esempio salvati.',
-        'sample_data_empty' => 'Ancora nessuna variabile. Aggiungi un oggetto JSON in Dati di esempio e salva il modello per vederne qui le chiavi.',
+        'comment' => 'Fai clic su una voce per copiarne il codice Twig. L\'elenco segue il campo Dati di esempio mentre lo modifichi.',
+        'sample_data_empty' => 'Ancora nessuna variabile. Aggiungi un oggetto JSON in Dati di esempio per vederne qui le chiavi.',
         'globals' => 'Variabili globali',
         'filters' => 'Filtri',
         'copy' => 'Copia :snippet',
         'copied' => 'Copiato negli appunti.',
-        'copy_failed' => 'Impossibile copiare il codice. Selezionalo nel suggerimento e copialo a mano.',
+        'copy_failed' => 'Il browser ha bloccato la copia. Il codice è selezionato nel campo sotto la voce, premi Ctrl+C (⌘C su Mac) per copiarlo.',
         'locale' => 'Lingua in cui viene generato il documento.',
         'filter' => [
             'pdfasset' => 'Percorso locale di un file del plugin, letto da dompdf dal disco.',

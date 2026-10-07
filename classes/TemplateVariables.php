@@ -2,9 +2,9 @@
 
 namespace Renatio\DynamicPDF\Classes;
 
-use Closure;
 use Illuminate\Support\Str;
 use Renatio\DynamicPDF\Models\Template;
+use stdClass;
 
 /**
  * @phpstan-type Entry array{label: string, snippet: string, description: string|null}
@@ -24,13 +24,38 @@ class TemplateVariables
     ];
 
     /**
+     * Names a generated loop variable must not take: Twig's own loop variables, word operators, tests and literals.
+     */
+    protected const TWIG_RESERVED = [
+        'loop', '_key', '_seq', '_parent', '_context', '_self', '_charset',
+        'in', 'not', 'and', 'or', 'xor', 'is', 'matches', 'starts', 'ends', 'with', 'has', 'some', 'every',
+        'b-and', 'b-or', 'b-xor', 'same', 'as', 'divisible', 'by', 'defined', 'empty', 'even', 'odd',
+        'iterable', 'constant', 'true', 'false', 'null', 'none',
+    ];
+
+    /** @var array<string, true> */
+    protected array $taken = [];
+
+    /**
      * @return array{sample: list<Entry>|null, globals: list<Entry>, filters: list<Entry>}
      */
     public function forTemplate(Template $template): array
     {
+        $sample = json_decode((string) $template->sample_data);
+        $globals = array_diff_key(
+            PDFManager::instance()->listRegisteredVariables(),
+            array_flip(TemplateRenderer::RESERVED_VARIABLES),
+        );
+
+        $this->taken = array_fill_keys(array_map('strval', [
+            ...array_keys($sample instanceof stdClass ? get_object_vars($sample) : []),
+            ...array_keys($globals),
+            'locale',
+        ]), true);
+
         return [
-            'sample' => $this->sampleEntries($template->sample_data),
-            'globals' => $this->globalEntries(),
+            'sample' => $this->sampleEntries($sample),
+            'globals' => $this->globalEntries($globals),
             'filters' => $this->filterEntries(),
         ];
     }
@@ -38,38 +63,47 @@ class TemplateVariables
     /**
      * @return list<Entry>|null
      */
-    protected function sampleEntries(?string $json): ?array
+    protected function sampleEntries(mixed $sample): ?array
     {
-        $data = json_decode((string) $json, true);
-
-        if (! is_array($data) || $data === [] || array_is_list($data)) {
+        if (! $sample instanceof stdClass || get_object_vars($sample) === []) {
             return null;
         }
 
         $entries = [];
-        $this->walk($data, '', '', [], $entries);
+        $this->walk($sample, '', '', [], $entries);
 
         return $entries;
     }
 
     /**
+     * @param  array<string, mixed>  $globals
      * @return list<Entry>
      */
-    protected function globalEntries(): array
+    protected function globalEntries(array $globals): array
     {
         $entries = [];
-        $variables = array_diff_key(
-            PDFManager::instance()->listRegisteredVariables(),
-            array_flip(TemplateRenderer::RESERVED_VARIABLES),
-        );
 
-        foreach ($variables as $name => $value) {
-            $this->walk($value instanceof Closure ? null : $value, (string) $name, $this->access('', $name), [], $entries);
+        foreach ($globals as $name => $value) {
+            $this->walk($this->toJsonShape($value), (string) $name, $this->access('', $name), [], $entries);
         }
 
         $entries[] = $this->entry('locale', '{{ locale }}', trans('renatio.dynamicpdf::lang.variables.locale'));
 
         return $entries;
+    }
+
+    /**
+     * Gives a registered PHP value the shape json_decode() gives sample data; closures and objects stay opaque.
+     */
+    protected function toJsonShape(mixed $value): mixed
+    {
+        if (! is_array($value)) {
+            return is_object($value) ? null : $value;
+        }
+
+        $value = array_map($this->toJsonShape(...), $value);
+
+        return array_is_list($value) ? $value : (object) $value;
     }
 
     /**
@@ -92,14 +126,8 @@ class TemplateVariables
      */
     protected function walk(mixed $value, string $label, string $expression, array $loops, array &$entries): void
     {
-        if (! is_array($value)) {
-            $entries[] = $this->entry($label, $this->wrap($loops, "{{ {$expression} }}"));
-
-            return;
-        }
-
-        if ($value !== [] && ! array_is_list($value)) {
-            foreach ($value as $key => $child) {
+        if ($value instanceof stdClass) {
+            foreach (get_object_vars($value) as $key => $child) {
                 $childLabel = $label === '' ? (string) $key : "{$label}.{$key}";
                 $this->walk($child, $childLabel, $this->access($expression, $key), $loops, $entries);
             }
@@ -107,16 +135,48 @@ class TemplateVariables
             return;
         }
 
+        if (! is_array($value)) {
+            $entries[] = $this->entry($label, $this->wrap($loops, "{{ {$expression} }}"));
+
+            return;
+        }
+
         $variable = $this->loopVariable($label, $loops);
         $loops[] = [$variable, $expression];
-        $rows = array_filter($value, is_array(...));
+        $objects = array_values(array_filter($value, fn (mixed $item): bool => $item instanceof stdClass));
+        $lists = array_values(array_filter($value, is_array(...)));
 
-        $this->walk($rows === [] ? null : array_replace_recursive(...$rows), $label . '[]', $variable, $loops, $entries);
+        if (count($objects) + count($lists) < count($value) || $value === []) {
+            $this->walk(null, $label . '[]', $variable, $loops, $entries);
+        }
+
+        if ($objects !== []) {
+            $this->walk(array_reduce($objects, $this->mergeObjects(...), new stdClass), $label . '[]', $variable, $loops, $entries);
+        }
+
+        if ($lists !== []) {
+            $this->walk(array_merge(...$lists), $label . '[]', $variable, $loops, $entries);
+        }
+    }
+
+    protected function mergeObjects(stdClass $merged, stdClass $item): stdClass
+    {
+        foreach (get_object_vars($item) as $key => $value) {
+            $current = $merged->{$key} ?? null;
+
+            $merged->{$key} = match (true) {
+                $current instanceof stdClass && $value instanceof stdClass => $this->mergeObjects($current, $value),
+                is_array($current) && is_array($value) => array_merge($current, $value),
+                default => $value,
+            };
+        }
+
+        return $merged;
     }
 
     protected function access(string $expression, int|string $key): string
     {
-        if (is_string($key) && preg_match(self::IDENTIFIER, $key)) {
+        if (is_string($key) && preg_match(self::IDENTIFIER, $key) && ! $this->isReserved($key)) {
             return $expression === '' ? $key : "{$expression}.{$key}";
         }
 
@@ -132,15 +192,31 @@ class TemplateVariables
     {
         $name = Str::afterLast(str_replace('[]', '', $label), '.');
         $singular = Str::singular($name);
-        $variable = $singular !== $name && preg_match(self::IDENTIFIER, $singular) ? $singular : 'item';
-        $taken = array_column($loops, 0);
-        $candidate = $variable;
+        $taken = $this->taken + array_fill_keys(array_column($loops, 0), true);
+        $candidates = ['item'];
 
-        for ($i = 2; in_array($candidate, $taken, true); $i++) {
-            $candidate = $variable . $i;
+        if (preg_match(self::IDENTIFIER, $singular)) {
+            $candidates = $singular === $name ? [$singular . '_item', 'item'] : [$singular, $singular . '_item', 'item'];
         }
 
-        return $candidate;
+        foreach ($candidates as $candidate) {
+            if (! isset($taken[$candidate]) && ! $this->isReserved($candidate)) {
+                return $candidate;
+            }
+        }
+
+        $i = 2;
+
+        while (isset($taken["item{$i}"])) {
+            $i++;
+        }
+
+        return "item{$i}";
+    }
+
+    protected function isReserved(string $name): bool
+    {
+        return in_array(strtolower($name), self::TWIG_RESERVED, true);
     }
 
     /**

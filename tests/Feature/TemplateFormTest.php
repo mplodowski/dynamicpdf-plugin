@@ -64,6 +64,9 @@ describe('Variables list', function () {
         $html = $this->get(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id))->assertOk()->getContent();
 
         expect($html)->toContain('data-control="dynamicpdf-variables"')
+            ->toContain('aria-labelledby="Form-field-Template-_variables-label"')
+            ->toContain('id="Form-field-Template-_variables-label"')
+            ->toContain('data-field-depends="[&quot;sample_data&quot;]"')
             ->toContain('data-snippet="{{ order.number }}"')
             ->toContain('>&lt;b&gt;x&lt;/b&gt;</button>')
             ->not->toContain('<b>x</b>');
@@ -76,5 +79,20 @@ describe('Variables list', function () {
         $html = $this->get(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id))->assertOk()->getContent();
 
         expect($html)->toContain(e(trans('renatio.dynamicpdf::lang.variables.sample_data_empty')));
+    });
+
+    it('rebuilds the list from the unsaved sample data when the field refreshes', function () {
+        $template = $this->createTemplate(['sample_data' => '{"order": {"number": "FV/1"}}']);
+
+        $response = $this->post(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id), [
+            'Template' => ['sample_data' => '{"invoice": {"total": 10}}'],
+            'fields' => ['_variables'],
+        ], [
+            'X-AJAX-HANDLER' => 'form::onRefresh',
+            'X-Requested-With' => 'XMLHttpRequest',
+        ])->assertOk();
+
+        expect($response->getContent())->toContain('{{ invoice.total }}')
+            ->not->toContain('{{ order.number }}');
     });
 });

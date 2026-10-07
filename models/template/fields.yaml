@@ -58,8 +58,7 @@ secondaryTabs:
             size: large
 
         _variables:
-            label: renatio.dynamicpdf::lang.variables.label
-            commentAbove: renatio.dynamicpdf::lang.variables.comment
             tab: renatio.dynamicpdf::lang.tab.options
             type: partial
             path: field_variables
+            dependsOn: sample_data
