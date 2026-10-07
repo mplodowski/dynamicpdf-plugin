@@ -50,6 +50,9 @@ class Demo extends Command
 
     protected function disableDemo(): int
     {
+        Parameter::set(Plugin::DEMO_PARAMETER, 0);
+        PDFManager::forgetInstance();
+
         /** @var Collection<int, Template> $templates */
         $templates = Template::whereIn('code', Plugin::DEMO_TEMPLATES)->get();
 
@@ -67,20 +70,14 @@ class Demo extends Command
         $layouts = Layout::whereIn('code', Plugin::DEMO_LAYOUTS)->get();
 
         foreach ($layouts as $layout) {
-            if (! $layout->is_locked || Template::where('layout_id', $layout->id)->exists()) {
-                $layout->is_locked = false;
-                $layout->forceSave();
-                $this->warn("Kept {$layout->code}, templates still use it or it was customized.");
-
-                continue;
+            if (Template::where('layout_id', $layout->id)->exists()) {
+                $this->warn("Kept {$layout->code}, templates still use it.");
+            } elseif (! $layout->is_locked) {
+                $this->warn("Kept {$layout->code}, it was customized.");
+            } else {
+                $layout->delete();
             }
-
-            $layout->delete();
         }
-
-        Parameter::set(Plugin::DEMO_PARAMETER, 0);
-
-        PDFManager::forgetInstance();
 
         $this->info('The demo templates were disabled.');
 

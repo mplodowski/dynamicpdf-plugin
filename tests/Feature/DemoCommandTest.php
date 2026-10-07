@@ -25,7 +25,7 @@ describe('dynamicpdf:demo', function () {
 
         expect(Layout::find($layout->id))->not->toBeNull()
             ->and($template->fresh()?->layout_id)->toBe($layout->id)
-            ->and((bool) Layout::whereKey($layout->id)->value('is_locked'))->toBeFalse()
+            ->and((bool) Layout::whereKey($layout->id)->first()?->getAttribute('from_view'))->toBeFalse()
             ->and(Artisan::output())->toContain('Kept renatio.dynamicpdf::pdf.layouts.default');
     });
 
@@ -59,5 +59,21 @@ describe('dynamicpdf:demo', function () {
 
         expect(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeFalse()
             ->and(Layout::whereCode('renatio.dynamicpdf::pdf.layouts.default')->exists())->toBeFalse();
+    });
+
+    it('keeps a customised demo layout and lets a kept layout follow its view again once the demo is back', function () {
+        Artisan::call('dynamicpdf:demo');
+        Layout::whereCode('renatio.dynamicpdf::pdf.layouts.header_and_footer')->update(['is_locked' => false]);
+        $used = Layout::whereCode('renatio.dynamicpdf::pdf.layouts.default')->firstOrFail();
+        $this->createTemplate(['layout_id' => $used->id]);
+
+        Artisan::call('dynamicpdf:demo', ['--disable' => true]);
+        $output = Artisan::output();
+        Artisan::call('dynamicpdf:demo');
+
+        expect(Layout::whereCode('renatio.dynamicpdf::pdf.layouts.header_and_footer')->exists())->toBeTrue()
+            ->and($output)->toContain('Kept renatio.dynamicpdf::pdf.layouts.header_and_footer, it was customized.')
+            ->and($output)->toContain('Kept renatio.dynamicpdf::pdf.layouts.default, templates still use it.')
+            ->and((bool) Layout::whereKey($used->id)->first()?->getAttribute('from_view'))->toBeTrue();
     });
 });

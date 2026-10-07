@@ -38,6 +38,7 @@ use Throwable;
  * @property string|null $page_numbers_color
  * @property string|null $page_numbers_font
  * @property float|string|null $page_numbers_margin
+ * @property-read bool $from_view
  * @property-read File|null $background_img
  * @property-read \October\Rain\Database\Collection<int, Template> $templates
  * @property-read string $html
@@ -213,6 +214,11 @@ class Layout extends Model
                 Log::error("Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
             }
         });
+    }
+
+    public function getFromViewAttribute(): bool
+    {
+        return $this->is_locked && $this->followsView();
     }
 
     public static function followsViewUpdates(): bool
