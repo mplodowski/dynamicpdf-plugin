@@ -101,13 +101,14 @@ return [
     ],
     'variables' => [
         'label' => 'Beschikbare variabelen',
-        'comment' => 'Klik op een item om de Twig-code ervan te kopiëren. De lijst toont de opgeslagen voorbeeldgegevens.',
-        'sample_data_empty' => 'Nog geen variabelen. Voeg een JSON-object toe aan Voorbeeldgegevens en sla de template op om de sleutels hier te zien.',
+        'comment' => 'Klik op een item om de Twig-code ervan te kopiëren. De lijst volgt het veld Voorbeeldgegevens terwijl u het bewerkt.',
+        'sample_data_empty' => 'Nog geen variabelen. Voeg een JSON-object toe aan Voorbeeldgegevens om de sleutels hier te zien.',
         'globals' => 'Globale variabelen',
         'filters' => 'Filters',
         'copy' => ':snippet kopiëren',
         'copied' => 'Gekopieerd naar het klembord.',
-        'copy_failed' => 'De code kon niet worden gekopieerd. Selecteer hem in de tooltip en kopieer hem met de hand.',
+        'copy_failed' => 'De browser heeft het kopiëren geblokkeerd. De code is geselecteerd in het veld onder het item, druk op Ctrl+C (⌘C op een Mac) om hem te kopiëren.',
+        'manual_copy' => 'Twig-code om te kopiëren',
         'locale' => 'Taal waarin het document wordt gegenereerd.',
         'filter' => [
             'pdfasset' => 'Lokaal pad van een pluginbestand, dat dompdf van de schijf leest.',

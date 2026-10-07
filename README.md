@@ -291,8 +291,8 @@ Every closure is resolved on every render, whether or not the template uses it, 
 
 The *Options* tab of the template form lists the variables a template can use: the keys of its saved sample data
 (`order.number`, `items[].title` for a loop), the registered global variables with `locale`, and the most useful
-filters. Clicking an entry copies its Twig code to the clipboard. The list follows the saved sample data, so save the
-template after changing it.
+filters. Clicking an entry copies its Twig code to the clipboard. The list follows the sample data field as you edit
+it, without saving.
 
 ## Events
 

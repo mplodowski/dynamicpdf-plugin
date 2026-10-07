@@ -101,13 +101,14 @@ return [
     ],
     'variables' => [
         'label' => 'Dostupné proměnné',
-        'comment' => 'Kliknutím na položku zkopírujete její kód Twig. Seznam odpovídá uloženým ukázkovým datům.',
-        'sample_data_empty' => 'Zatím žádné proměnné. Přidejte do pole Ukázková data objekt JSON a uložte šablonu, aby se zde zobrazily jeho klíče.',
+        'comment' => 'Kliknutím na položku zkopírujete její kód Twig. Seznam se průběžně řídí polem Ukázková data.',
+        'sample_data_empty' => 'Zatím žádné proměnné. Přidejte do pole Ukázková data objekt JSON, aby se zde zobrazily jeho klíče.',
         'globals' => 'Globální proměnné',
         'filters' => 'Filtry',
         'copy' => 'Kopírovat :snippet',
         'copied' => 'Zkopírováno do schránky.',
-        'copy_failed' => 'Kód se nepodařilo zkopírovat. Označte jej v nápovědě a zkopírujte ručně.',
+        'copy_failed' => 'Prohlížeč kopírování zablokoval. Kód je označen v poli pod položkou, zkopírujte jej stisknutím Ctrl+C (⌘C na Macu).',
+        'manual_copy' => 'Kód Twig ke zkopírování',
         'locale' => 'Jazyk, ve kterém se dokument vykresluje.',
         'filter' => [
             'pdfasset' => 'Místní cesta k souboru pluginu, kterou dompdf čte z disku.',

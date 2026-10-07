@@ -2,6 +2,7 @@
 
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\TemplateVariables;
+use Renatio\DynamicPDF\Classes\TwigRenderer;
 use Renatio\DynamicPDF\Models\Template;
 
 /**
@@ -21,6 +22,7 @@ describe('Template variables', function () {
             'tags' => ['new', 'sale'],
             'orders' => [['lines' => [['qty' => 2]]]],
             'first name' => 'Jan',
+            'mixed' => [1, ['a' => 2]],
         ])]);
 
         expect(snippetsByLabel((new TemplateVariables)->forTemplate($template)['sample']))->toBe([
@@ -30,9 +32,37 @@ describe('Template variables', function () {
             'items[].qty' => '{% for item in items %}{{ item.qty }}{% endfor %}',
             'items[].price' => '{% for item in items %}{{ item.price }}{% endfor %}',
             'tags[]' => '{% for tag in tags %}{{ tag }}{% endfor %}',
-            'orders[].lines[].qty' => '{% for order in orders %}{% for line in order.lines %}{{ line.qty }}{% endfor %}{% endfor %}',
+            'orders[].lines[].qty' => '{% for order_item in orders %}{% for line in order_item.lines %}{{ line.qty }}{% endfor %}{% endfor %}',
             'first name' => "{{ _context['first name'] }}",
+            'mixed[]' => '{% for mixed_item in mixed %}{{ mixed_item }}{% endfor %}',
+            'mixed[].a' => '{% for mixed_item in mixed %}{{ mixed_item.a }}{% endfor %}',
         ]);
+    });
+
+    it('gives snippets that render the sample value, whatever the keys are named', function () {
+        PDFManager::instance()->registerVariables(['tag' => 'global']);
+        $json = '{"0": "zero", "true": "yes", "meta": {}, "loops": [1], "ins": [{"in": "x"}], "tags": ["a"]}';
+        $template = new Template(['sample_data' => $json]);
+
+        $rendered = array_map(
+            fn (string $snippet): string => (new TwigRenderer)->render($snippet, $template->sampleData(), 'snippet'),
+            snippetsByLabel((new TemplateVariables)->forTemplate($template)['sample']),
+        );
+
+        expect($rendered)->toBe([
+            '0' => 'zero',
+            'true' => 'yes',
+            'loops[]' => '1',
+            'ins[].in' => 'x',
+            'tags[]' => 'a',
+        ]);
+    });
+
+    it('shows the sample data hint when only empty objects are given', function () {
+        $template = new Template;
+        $template->sample_data = '{"meta": {}, "a": {"b": {}}}';
+
+        expect((new TemplateVariables)->forTemplate($template)['sample'])->toBeNull();
     });
 
     it('lists registered global variables without resolving closures', function () {

@@ -1,25 +1,46 @@
 oc.registerControl('dynamicpdf-variables', class extends oc.ControlBase {
     connect() {
         this.listen('click', '[data-snippet]', this.onCopy);
+
+        /** The code editor announces edits with a jQuery event on its textarea, never a change on the field, so dependsOn would not see them. */
+        this.$source = $(this.element.closest('form')).find(`[data-field-name="${this.element.dataset.sourceField}"]`);
+        this.$source.on('oc.codeEditorChange.dynamicpdfVariables', () => this.$source.trigger('change'));
+    }
+
+    disconnect() {
+        this.$source.off('.dynamicpdfVariables');
     }
 
     async onCopy(event) {
-        const snippet = event.delegateTarget.dataset.snippet;
+        const button = event.delegateTarget;
+        const snippet = button.dataset.snippet;
         const { copiedText, copyFailedText } = this.element.dataset;
 
-        try {
-            await this.copy(snippet);
+        if (await this.copy(snippet)) {
+            button.parentElement.querySelector('[data-manual-copy]')?.remove();
+            button.focus();
             oc.flashMsg({ text: copiedText, class: 'success', interval: 2 });
-        } catch {
-            oc.flashMsg({ text: copyFailedText, class: 'error' });
+            return;
         }
+
+        this.showForManualCopy(button, snippet);
+        oc.flashMsg({ text: copyFailedText, class: 'warning' });
     }
 
     async copy(text) {
-        if (navigator.clipboard && window.isSecureContext) {
-            return navigator.clipboard.writeText(text);
+        if (!navigator.clipboard || !window.isSecureContext) {
+            return this.copyWithSelection(text);
         }
 
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } catch {
+            return this.copyWithSelection(text);
+        }
+    }
+
+    copyWithSelection(text) {
         const textarea = document.createElement('textarea');
         textarea.value = text;
         textarea.setAttribute('readonly', '');
@@ -29,11 +50,29 @@ oc.registerControl('dynamicpdf-variables', class extends oc.ControlBase {
         textarea.select();
 
         try {
-            if (!document.execCommand('copy')) {
-                throw new Error('Copy command was rejected');
-            }
+            return document.execCommand('copy');
+        } catch {
+            return false;
         } finally {
             textarea.remove();
         }
+    }
+
+    showForManualCopy(button, snippet) {
+        let input = button.parentElement.querySelector('[data-manual-copy]');
+
+        if (!input) {
+            input = document.createElement('input');
+            input.type = 'text';
+            input.readOnly = true;
+            input.dataset.manualCopy = '';
+            input.className = 'form-control form-control-sm font-monospace w-100 mt-1';
+            input.setAttribute('aria-label', this.element.dataset.manualCopyLabel);
+            button.parentElement.appendChild(input);
+        }
+
+        input.value = snippet;
+        input.focus();
+        input.select();
     }
 });

@@ -101,13 +101,14 @@ return [
     ],
     'variables' => [
         'label' => 'Elérhető változók',
-        'comment' => 'Kattintson egy elemre a Twig-kódja másolásához. A lista a mentett mintaadatokat tükrözi.',
-        'sample_data_empty' => 'Még nincsenek változók. Adjon meg egy JSON-objektumot a Mintaadatok mezőben, és mentse a sablont, hogy itt lássa a kulcsait.',
+        'comment' => 'Kattintson egy elemre a Twig-kódja másolásához. A lista szerkesztés közben követi a Mintaadatok mezőt.',
+        'sample_data_empty' => 'Még nincsenek változók. Adjon meg egy JSON-objektumot a Mintaadatok mezőben, hogy itt lássa a kulcsait.',
         'globals' => 'Globális változók',
         'filters' => 'Szűrők',
         'copy' => ':snippet másolása',
         'copied' => 'Vágólapra másolva.',
-        'copy_failed' => 'A kódot nem sikerült másolni. Jelölje ki az elemleírásban, és másolja kézzel.',
+        'copy_failed' => 'A böngésző letiltotta a másolást. A kód ki van jelölve az elem alatti mezőben, a másoláshoz nyomja meg a Ctrl+C (Macen ⌘C) billentyűket.',
+        'manual_copy' => 'Másolandó Twig-kód',
         'locale' => 'A dokumentum megjelenítésének nyelve.',
         'filter' => [
             'pdfasset' => 'Egy bővítményfájl helyi útvonala, amelyet a dompdf a lemezről olvas.',

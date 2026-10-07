@@ -101,13 +101,14 @@ return [
     ],
     'variables' => [
         'label' => 'Available variables',
-        'comment' => 'Click an entry to copy its Twig code. The list reflects the saved sample data.',
-        'sample_data_empty' => 'No variables yet. Add a JSON object to Sample data and save the template to list its keys here.',
+        'comment' => 'Click an entry to copy its Twig code. The list follows the Sample data field as you edit it.',
+        'sample_data_empty' => 'No variables yet. Add a JSON object to Sample data to list its keys here.',
         'globals' => 'Global variables',
         'filters' => 'Filters',
         'copy' => 'Copy :snippet',
         'copied' => 'Copied to the clipboard.',
-        'copy_failed' => 'The code could not be copied. Select it in the tooltip and copy it by hand.',
+        'copy_failed' => 'The browser blocked copying. The code is selected in the field below the entry, press Ctrl+C (⌘C on a Mac) to copy it.',
+        'manual_copy' => 'Twig code to copy',
         'locale' => 'Language the document is rendered in.',
         'filter' => [
             'pdfasset' => 'Local path of a plugin file, read by dompdf from disk.',
