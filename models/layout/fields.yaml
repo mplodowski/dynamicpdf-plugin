@@ -25,7 +25,7 @@ secondaryTabs:
             type: codeeditor
             size: giant
             tab: renatio.dynamicpdf::lang.templates.content_html
-            language: html
+            language: twig
             stretch: true
             default: |
                 <!DOCTYPE html>
@@ -46,7 +46,7 @@ secondaryTabs:
             tab: renatio.dynamicpdf::lang.templates.content_css
             type: codeeditor
             size: giant
-            language: css
+            language: less
             stretch: true
 
         background_img:
