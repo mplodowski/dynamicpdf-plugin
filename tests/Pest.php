@@ -7,8 +7,11 @@ use Renatio\DynamicPDF\Tests\TestCase;
 pest()->extend(TestCase::class)
     ->beforeEach(fn () => $this->setUpOctoberPlugin())
     ->afterEach(function () {
-        BackendAuth::logout();
-        $this->tearDownOctoberPlugin();
+        try {
+            BackendAuth::logout();
+        } finally {
+            $this->tearDownOctoberPlugin();
+        }
     })
     ->in(__DIR__);
 

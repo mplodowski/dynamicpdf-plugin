@@ -12,6 +12,7 @@ use October\Tests\Concerns\PerformsMigrations;
 use October\Tests\Concerns\PerformsRegistrations;
 use PDO;
 use ReflectionClass;
+use ReflectionProperty;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SiteManager;
@@ -48,8 +49,11 @@ abstract class OctoberPestTestCase extends TestCase
             if ($this->usingInMemoryDatabase()) {
                 self::$inMemoryConnection = DB::connection()->getPdo();
             }
+
+            $this->forgetDatabaseCheck();
         }
 
+        $this->resetStaticState();
         $this->beginDatabaseTransaction();
 
         Model::unguard();
@@ -59,16 +63,32 @@ abstract class OctoberPestTestCase extends TestCase
 
     public function tearDownOctoberPlugin(): void
     {
-        if (class_exists(Mockery::class)) {
-            Mockery::close();
+        try {
+            if (class_exists(Mockery::class)) {
+                Mockery::close();
+            }
+        } finally {
+            $this->rollbackDatabaseTransaction();
+            $this->flushModelEventListeners();
+            $this->resetStaticState();
         }
+    }
 
-        $this->rollbackDatabaseTransaction();
-        $this->flushModelEventListeners();
+    protected function resetStaticState(): void
+    {
         Template::flushLayoutCache();
         PDFManager::forgetInstance();
         Parameter::clearInternalCache();
         SiteManager::instance()->resetCache();
+    }
+
+    /**
+     * System::hasDatabase() memoised false while the database was still empty,
+     * which makes Parameter::get() skip the table for the rest of the first test.
+     */
+    protected function forgetDatabaseCheck(): void
+    {
+        (new ReflectionProperty(app('system.helper'), 'hasDatabaseCache'))->setValue(app('system.helper'), null);
     }
 
     protected function usingInMemoryDatabase(): bool
@@ -81,7 +101,7 @@ abstract class OctoberPestTestCase extends TestCase
         $connection = DB::connection();
 
         if ($connection->getPdo()->inTransaction()) {
-            return;
+            $connection->getPdo()->rollBack();
         }
 
         $dispatcher = $connection->getEventDispatcher();
