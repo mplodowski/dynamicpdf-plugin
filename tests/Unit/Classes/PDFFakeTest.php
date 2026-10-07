@@ -11,10 +11,11 @@ describe('PDF::fake()', function () {
 
         expect($response->headers->get('Content-Type'))->toBe('application/pdf')
             ->and(PDF::loadTemplate('acme::pdf.invoice')->output())->toBeEmpty()
+            ->and(PDF::loadTemplate('acme::pdf.invoice')->attachment()->as)->toBe('document.pdf')
             ->and(app('dynamicpdf'))->toBe($fake);
 
         $fake->assertRendered('acme::pdf.invoice', fn (array $data, array $render): bool => ($data['order'] ?? null) === 7 && $render['layout'] === 'acme::pdf.layouts.b' && $render['locale'] === 'de');
-        $fake->assertRenderedTimes('acme::pdf.invoice', 2);
+        $fake->assertRenderedTimes('acme::pdf.invoice', 3);
         $fake->assertNotRendered('acme::pdf.other');
     });
 

@@ -1,7 +1,9 @@
 <?php
 
+use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Mime\Email;
 
 describe('Output helpers', function () {
     beforeEach(function () {
@@ -24,6 +26,17 @@ describe('Output helpers', function () {
             ->and((int) $file->getAttribute('file_size'))->toBeGreaterThan(0)
             ->and($stored)->toHaveCount(1)
             ->and(file_get_contents($stored[0]->getPathname()))->toStartWith('%PDF');
+    });
+
+    it('attaches the rendered document to an e-mail as a PDF', function () {
+        $message = new Message(new Email);
+
+        $message->attach(app('dynamicpdf')->loadHTML('<p>Hello</p>')->attachment('invoice.pdf'));
+        $attachment = $message->getSymfonyMessage()->getAttachments()[0];
+
+        expect($attachment->getFilename())->toBe('invoice.pdf')
+            ->and($attachment->getContentType())->toBe('application/pdf')
+            ->and($attachment->getBody())->toStartWith('%PDF');
     });
 
     it('stores a protected file where a protected relation expects it', function () {
