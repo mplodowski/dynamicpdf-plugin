@@ -4,6 +4,11 @@ form: $/renatio/dynamicpdf/models/template/fields.yaml
 
 modelClass: Renatio\DynamicPDF\Models\Template
 
+customMessages:
+    flashCreate: renatio.dynamicpdf::lang.templates.create_success
+    flashUpdate: renatio.dynamicpdf::lang.templates.update_success
+    flashDelete: renatio.dynamicpdf::lang.templates.delete_success
+
 defaultRedirect: renatio/dynamicpdf/templates
 
 create:

@@ -3,7 +3,7 @@
 return [
     'plugin' => [
         'name' => 'DynamicPDF',
-        'description' => 'Generuj pliki PDF z szablonów HTML i Twig edytowanych w panelu, z układami, numeracją stron, ochroną hasłem i plikiem gotowym do załączenia.',
+        'description' => 'Generowanie plików PDF z szablonów HTML i Twig edytowanych w panelu, z układami, numeracją stron, ochroną hasłem i plikiem gotowym do załączenia.',
     ],
     'templates' => [
         'label' => 'Szablony',
@@ -39,13 +39,15 @@ return [
         'duplicating' => 'Duplikowanie...',
         'duplicate_unsaved' => 'Kopia powstanie z zapisanej wersji. Niezapisane zmiany zostaną utracone. Kontynuować?',
         'cancel_unsaved' => 'Opuścić formularz? Niezapisane zmiany zostaną utracone.',
+        'create_success' => 'Rekord został utworzony.',
+        'update_success' => 'Rekord został zapisany.',
         'duplicate_success' => 'Kopia została utworzona.',
         'reset_success' => 'Rekord został przywrócony z pliku widoku.',
         'delete_success' => 'Rekord został usunięty.',
         'copy_suffix' => '(kopia)',
         'delete_view_refused' => 'Tego rekordu nie można usunąć, ponieważ pochodzi z pliku widoku.',
         'reset_view_only' => 'Do pliku widoku można przywrócić tylko rekord, który z niego pochodzi.',
-        'twig_invalid' => 'Błąd składni Twig w linii :line: :message',
+        'twig_invalid' => 'Błąd składni Twig w wierszu :line: :message',
         'preview_failed' => 'Nie udało się wygenerować podglądu. :message',
     ],
     'template' => [

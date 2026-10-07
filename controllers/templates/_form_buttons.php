@@ -14,18 +14,18 @@
             primary: true,
             hotkey: ['ctrl+s', 'cmd+s'],
             dataRequestBeforeUpdate: $unchange,
-            dataRequestMessage: __('Creating :name...', ['name' => $formRecordName])
+            dataRequestMessage: trans('backend::lang.form.creating')
         ) ?>
 
         <?= Ui::ajaxButton(
-            label: __('Create & Close'),
+            label: trans('backend::lang.form.create_and_close'),
             handler: 'onSave',
             secondary: true,
             hotkey: ['ctrl+enter', 'cmd+enter'],
             dataBrowserRedirectBack: true,
             dataRequestData: 'close: true',
             dataRequestBeforeUpdate: $unchange,
-            dataRequestMessage: __('Creating :name...', ['name' => $formRecordName])
+            dataRequestMessage: trans('backend::lang.form.creating')
         ) ?>
     <?php else: ?>
         <?= Ui::ajaxButton(
@@ -35,18 +35,18 @@
             hotkey: ['ctrl+s', 'cmd+s'],
             dataRequestData: 'redirect: false',
             dataRequestBeforeUpdate: $unchange,
-            dataRequestMessage: __('Saving :name...', ['name' => $formRecordName])
+            dataRequestMessage: trans('backend::lang.form.saving')
         ) ?>
 
         <?= Ui::ajaxButton(
-            label: __('Save & Close'),
+            label: trans('backend::lang.form.save_and_close'),
             handler: 'onSave',
             secondary: true,
             hotkey: ['ctrl+enter', 'cmd+enter'],
             dataBrowserRedirectBack: true,
             dataRequestData: 'close: true',
             dataRequestBeforeUpdate: $unchange,
-            dataRequestMessage: __('Saving :name...', ['name' => $formRecordName])
+            dataRequestMessage: trans('backend::lang.form.saving')
         ) ?>
     <?php endif ?>
 
@@ -98,7 +98,7 @@
                 dataBrowserRedirectBack: true,
                 dataRequestConfirm: trans('backend::lang.form.action_confirm'),
                 dataRequestBeforeUpdate: $unchange,
-                dataRequestMessage: __('Deleting :name...', ['name' => $formRecordName])
+                dataRequestMessage: trans('backend::lang.form.deleting')
             ) ?>
         <?php endif ?>
     <?php endif ?>
@@ -114,7 +114,7 @@
             dataBrowserRedirectBack: true,
             dataRequestData: 'close: true',
             dataRequestBeforeSend: $confirmUnsaved(trans('renatio.dynamicpdf::lang.templates.cancel_unsaved')),
-            dataRequestMessage: __('Loading...')
+            dataRequestMessage: trans('backend::lang.list.loading')
         ) ?>
     </span>
 </div>
