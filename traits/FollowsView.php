@@ -59,7 +59,7 @@ trait FollowsView
         if (! $view) {
             $group = strtolower(class_basename(static::class));
 
-            throw new ApplicationException(e(trans("renatio.dynamicpdf::lang.{$group}.not_found", ['code' => $this->code])));
+            throw new ApplicationException(trans("renatio.dynamicpdf::lang.{$group}.not_found", ['code' => $this->code]));
         }
 
         $this->fillFromView($view);

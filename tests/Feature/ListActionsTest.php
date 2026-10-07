@@ -68,7 +68,7 @@ describe('List actions', function () {
     it('reports a record that no longer exists with a translated message', function (string $definition, string $model) {
         $response = $this->listAction('onDeleteRecord', ['id' => 999999, 'definition' => $definition]);
 
-        expect($response->json('__ajax.message'))->toBe(e(trans('backend::lang.model.not_found', ['class' => $model, 'id' => 999999])));
+        expect($response->json('__ajax.message'))->toBe(trans('backend::lang.model.not_found', ['class' => $model, 'id' => 999999]));
     })->with([
         'template' => ['templates', Template::class],
         'layout' => ['layouts', Layout::class],
@@ -94,14 +94,14 @@ describe('List actions', function () {
 
     it('refuses to delete a layout that templates use', function (string $path, string $handler) {
         $layout = $this->createLayout();
-        $this->createTemplate(['title' => 'Customer invoice', 'layout_id' => $layout->id]);
+        $this->createTemplate(['title' => "O'Brien & Sons <b>invoice</b>", 'layout_id' => $layout->id]);
 
         $response = $this->post(Backend::url(str_replace(':id', (string) $layout->id, $path)), [
             'id' => $layout->id,
             'definition' => 'layouts',
         ], ['X-AJAX-HANDLER' => $handler, 'X-Requested-With' => 'XMLHttpRequest']);
 
-        expect($response->getContent())->toContain('Customer invoice')
+        expect($response->json('__ajax.message'))->toContain("O'Brien & Sons <b>invoice</b>")
             ->and(Layout::find($layout->id))->not->toBeNull()
             ->and(Template::whereLayoutId($layout->id)->exists())->toBeTrue();
     })->with([
