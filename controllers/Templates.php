@@ -51,6 +51,7 @@ class Templates extends Controller
         parent::__construct();
 
         $this->setSettingsContext();
+        $this->addJs('/plugins/renatio/dynamicpdf/assets/js/preview.js?v=1');
     }
 
     protected static function canManageLayouts(): bool

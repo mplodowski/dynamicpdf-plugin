@@ -314,8 +314,8 @@ PDF templates and layouts can be accessed in the back-end area via *Settings > P
 
 The list marks templates edited in the back-end as *Customized* (they no longer follow their view file) and layouts
 that still follow their registered view file as *From view*; the layout list also counts the templates using each layout
-(*Used by*). The HTML preview opens from the form, the PDF preview from the form and the list, both with the **Preview**
-permission. A template's *Sample data* (a JSON object on the *Options* tab, nested objects and lists included) is passed
+(*Used by*). The HTML and PDF preview buttons of the form show the current, unsaved form values in a popup without
+saving them, and the list opens the PDF preview of the saved record, all with the **Preview** permission. A template's *Sample data* (a JSON object on the *Options* tab, nested objects and lists included) is passed
 to both previews, so `{{ variables }}` render with realistic values. A template becomes *Customized* only when a value
 the view file provides is changed; editing the sample data alone keeps it view-driven. Likewise a layout stops being
 *From view* once its name, markup or CSS is changed, and its localized view files are then no longer used. Translated
@@ -401,6 +401,8 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 |---------------------------------------------------------|----------------------------------------------------------|
 | loadTemplate($code, array $data = [], $encoding = null, $layout = null, $locale = null) | Load backend template, optionally with another layout and locale |
 | loadLayout($code, array $data = [], $encoding = null, $locale = null) | Load backend layout, optionally in another locale |
+| loadTemplateModel(Template $template, array $data = [], $encoding = null, $locale = null) | Load a template model as it is, unsaved changes included |
+| loadLayoutModel(Layout $layout, array $data = [], $encoding = null, $locale = null) | Load a layout model as it is, unsaved changes included |
 | pageNumbers($text = 'Page {PAGE_NUM} of {PAGE_COUNT}', $position = 'bottom-center', $size = 9, $font = null, $margin = 20, $color = [0, 0, 0]) | Stamp page numbers on every page of the loaded document |
 | forBrowser($forBrowser = true)                          | Render HTML for a browser, with URLs from `\|pdfasset` and `background_img` instead of local paths |
 | allowSelfSignedCertificates()                           | Accept self-signed TLS certificates for remote resources |

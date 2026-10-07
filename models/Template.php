@@ -196,7 +196,7 @@ class Template extends Model
 
     public function getHtmlAttribute(): string
     {
-        return PDF::forBrowser()->loadTemplate($this->code, $this->sampleData())->getDomPDF()->outputHtml();
+        return PDF::forBrowser()->loadTemplateModel($this, $this->sampleData())->getDomPDF()->outputHtml();
     }
 
     /**

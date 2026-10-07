@@ -53,6 +53,20 @@ abstract class TestCase extends OctoberPestTestCase
     }
 
     /**
+     * @param  array<string, mixed>  $fields
+     * @return TestResponse<\Illuminate\Http\Response>
+     */
+    public function previewUnsaved(string $definition, int $id, array $fields, string $mode = 'html'): TestResponse
+    {
+        $model = $definition === 'templates' ? 'Template' : 'Layout';
+
+        return $this->post(Backend::url("renatio/dynamicpdf/{$definition}/update/{$id}"), [$model => $fields, 'mode' => $mode], [
+            'X-AJAX-HANDLER' => 'onPreviewUnsaved',
+            'X-Requested-With' => 'XMLHttpRequest',
+        ]);
+    }
+
+    /**
      * @param  array<string, mixed>  $data
      * @return TestResponse<\Illuminate\Http\Response>
      */

@@ -63,6 +63,7 @@ v8.1.0:
     - Stricter saving. Invalid Twig, duplicate codes and deleting used layouts are rejected.
     - Page numbers set on the layout or from code without inline PHP, PDF::fake(), sync and check commands.
     - New |pdfasset filter, demo and layout backgrounds render without remote assets.
+    - Backend previews show unsaved form changes in a popup.
     - 20260907_0001_add_sample_data_to_templates_table.php
     - 20260907_0002_add_unique_code_indexes.php
     - 20260930_0001_unlock_edited_layouts.php

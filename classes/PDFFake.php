@@ -46,6 +46,22 @@ class PDFFake extends PDFWrapper implements Fake
 
     /**
      * @param  array<string, mixed>  $data
+     */
+    public function loadTemplateModel(Template $template, array $data = [], ?string $encoding = null, ?string $locale = null): self
+    {
+        return $this->record('template', (string) $template->code, $data, null, $locale);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function loadLayoutModel(Layout $layout, array $data = [], ?string $encoding = null, ?string $locale = null): self
+    {
+        return $this->record('layout', (string) $layout->code, $data, null, $locale);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
      * @param  array<string, mixed>  $mergeData
      */
     public function loadView(string $view, array $data = [], array $mergeData = [], ?string $encoding = null): self
