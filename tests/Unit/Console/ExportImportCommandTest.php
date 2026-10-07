@@ -12,7 +12,7 @@ describe('dynamicpdf:export and dynamicpdf:import', function () {
     beforeEach(function () {
         $this->enableTranslation('de');
 
-        $this->directory = sys_get_temp_dir() . '/dynamicpdf-export-' . uniqid();
+        $this->directory = $this->temporaryDirectory('export');
         $this->uploads = "{$this->directory}/uploads";
         $this->path = "{$this->directory}/export.json";
         config(['filesystems.disks.uploads.root' => $this->uploads]);
@@ -59,10 +59,7 @@ describe('dynamicpdf:export and dynamicpdf:import', function () {
         };
     });
 
-    afterEach(function () {
-        Storage::forgetDisk('uploads');
-        Filesystem::deleteDirectory($this->directory);
-    });
+    afterEach(fn () => Storage::forgetDisk('uploads'));
 
     it('moves a template with its layout, translations, sample data and background so it renders identically', function () {
         $before = [($this->render)(), ($this->render)('de')];
@@ -114,7 +111,6 @@ describe('dynamicpdf:export and dynamicpdf:import', function () {
     });
 
     it('rejects a file in an unknown format', function () {
-        Filesystem::ensureDirectoryExists($this->directory);
         Filesystem::put($this->path, json_encode(['format' => 'something-else', 'templates' => []], JSON_THROW_ON_ERROR));
 
         expect(($this->import)())->toBe(1)

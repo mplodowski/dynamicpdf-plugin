@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use October\Rain\Exception\ValidationException;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
@@ -101,14 +100,12 @@ describe('Layout page numbers', function () {
 
     describe('from a view', function () {
         beforeEach(function () {
-            $this->directory = $this->registerViewLayouts('acme', [
+            $this->registerViewLayouts('acme', [
                 'layouts/numbered' => "name = \"Numbered\"\npageNumbers = \"top-right\"\npageNumbersText = \"{PAGE_NUM}\"\npageNumbersMargin = 0\npageNumbersColor = \"#ff0000\"\n==\n<html><body>{{ content_html|raw }}</body></html>",
             ]);
 
             (new SyncTemplates)->handle();
         });
-
-        afterEach(fn () => File::deleteDirectory($this->directory));
 
         it('reads the page numbers from the view settings', function () {
             $layout = $this->findLayout('acme::pdf.layouts.numbered');
@@ -142,14 +139,12 @@ describe('Layout page numbers', function () {
 
 describe('Layout page numbers form', function () {
     beforeEach(function () {
-        $this->directory = $this->registerViewLayouts('acme', [
+        $this->registerViewLayouts('acme', [
             'layouts/numbered' => "name = \"Numbered\"\npageNumbers = \"bottom-center\"\npageNumbersColor = \"#6b7280\"\npageNumbersSize = 9\n==\n<html><body>{{ content_html|raw }}</body></html>",
         ]);
         (new SyncTemplates)->handle();
         actingAsPdfManager();
     });
-
-    afterEach(fn () => File::deleteDirectory($this->directory));
 
     it('keeps the layout following its view when the form posts the same values in another notation', function () {
         $layout = $this->findLayout('acme::pdf.layouts.numbered');

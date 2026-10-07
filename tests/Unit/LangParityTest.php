@@ -12,30 +12,32 @@ dataset('locales', function () {
     return $files;
 });
 
-it('gives every locale exactly the keys of the English file', function (string $file) {
-    $expected = array_keys(Arr::dot(require __DIR__ . '/../../lang/en/lang.php'));
-    $actual = array_keys(Arr::dot(require $file));
+describe('Language files', function () {
+    it('gives every locale exactly the keys of the English file', function (string $file) {
+        $expected = array_keys(Arr::dot(require __DIR__ . '/../../lang/en/lang.php'));
+        $actual = array_keys(Arr::dot(require $file));
 
-    expect(array_values(array_diff($expected, $actual)))->toBe([], 'missing')
-        ->and(array_values(array_diff($actual, $expected)))->toBe([], 'extra');
-})->with('locales');
+        expect(array_values(array_diff($expected, $actual)))->toBe([], 'missing')
+            ->and(array_values(array_diff($actual, $expected)))->toBe([], 'extra');
+    })->with('locales');
 
-it('keeps the placeholders and the Markdown of the English texts', function (string $file) {
-    $translations = Arr::dot(require $file);
+    it('keeps the placeholders and the Markdown of the English texts', function (string $file) {
+        $translations = Arr::dot(require $file);
 
-    $signature = function (string $text): array {
-        preg_match_all('/(?<![:\w]):([a-zA-Z_]\w*)/', $text, $matches);
-        $placeholders = $matches[1];
-        sort($placeholders);
+        $signature = function (string $text): array {
+            preg_match_all('/(?<![:\w]):([a-zA-Z_]\w*)/', $text, $matches);
+            $placeholders = $matches[1];
+            sort($placeholders);
 
-        return [
-            'placeholders' => $placeholders,
-            'bold' => substr_count($text, '**'),
-            'code' => substr_count($text, '`'),
-        ];
-    };
+            return [
+                'placeholders' => $placeholders,
+                'bold' => substr_count($text, '**'),
+                'code' => substr_count($text, '`'),
+            ];
+        };
 
-    foreach (Arr::dot(require __DIR__ . '/../../lang/en/lang.php') as $key => $english) {
-        expect($signature($translations[$key] ?? ''))->toBe($signature($english), $key);
-    }
-})->with('locales');
+        foreach (Arr::dot(require __DIR__ . '/../../lang/en/lang.php') as $key => $english) {
+            expect($signature($translations[$key] ?? ''))->toBe($signature($english), $key);
+        }
+    })->with('locales');
+});

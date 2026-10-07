@@ -19,8 +19,6 @@ describe('Native model translation', function () {
             $template->save();
         });
 
-        afterEach(fn () => File::deleteDirectory($this->directory));
-
         it('keeps the translation when the view refills the template on fetch', function () {
             $fetched = Site::withContext($this->site->id, fn (): Template => $this->findTemplate('acme::pdf.invoice'));
 
@@ -63,7 +61,6 @@ describe('Native model translation', function () {
         Site::withContext($site->id, fn () => (new SyncTemplates)->handle());
 
         $fetched = Site::withContext($site->id, fn (): Layout => $this->findLayout('acme::pdf.layouts.base'));
-        File::deleteDirectory($directory);
 
         expect(Db::table('renatio_dynamicpdf_pdf_layouts')->where('code', 'acme::pdf.layouts.base')->value('content_html'))->toBe('<p>Revised layout</p>')
             ->and($fetched->content_html)->toBe('<p>Deutsches Layout</p>')

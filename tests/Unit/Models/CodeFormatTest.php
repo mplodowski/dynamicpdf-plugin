@@ -4,15 +4,8 @@ use October\Rain\Exception\ValidationException;
 
 describe('Code format', function () {
     it('refuses a code with spaces', function (string $create) {
-        try {
-            $this->{$create}(['code' => 'review test code with spaces']);
-        } catch (ValidationException $e) {
-            expect($e->getErrors()->first('code'))->toBe(trans('renatio.dynamicpdf::lang.templates.code_format'));
-
-            return;
-        }
-
-        $this->fail('The code with spaces was saved.');
+        expect(fn () => $this->{$create}(['code' => 'review test code with spaces']))
+            ->toThrow(ValidationException::class, trans('renatio.dynamicpdf::lang.templates.code_format'));
     })->with(['createTemplate', 'createLayout']);
 
     it('accepts the codes registered views and their copies use', function (string $create, string $code) {

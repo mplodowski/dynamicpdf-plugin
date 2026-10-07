@@ -11,7 +11,10 @@ use Twig\Loader\ArrayLoader;
 use Twig\TwigFunction;
 
 describe('Twig environment', function () {
+    beforeEach(fn () => $this->themesPath = themes_path());
+
     afterEach(function () {
+        $this->useThemesPath($this->themesPath);
         Event::forget('cms.theme.getActiveTheme');
         Event::forget('cms.extendTwig');
         Theme::resetCache();
@@ -50,10 +53,15 @@ describe('Twig environment', function () {
     });
 
     it('rebuilds the CMS environment when a reused wrapper renders for another theme', function () {
-        $theme = 'dynamicpdf-test-theme';
-        File::makeDirectory(themes_path($theme));
-        File::put(themes_path($theme . '/theme.yaml'), 'name: Test');
-        $active = 'demo';
+        $themes = $this->temporaryDirectory('themes');
+
+        foreach (['first', 'second'] as $theme) {
+            File::ensureDirectoryExists("{$themes}/{$theme}");
+            File::put("{$themes}/{$theme}/theme.yaml", 'name: ' . $theme);
+        }
+
+        $this->useThemesPath($themes);
+        $active = 'first';
         Event::listen('cms.theme.getActiveTheme', function () use (&$active): string {
             return $active;
         });
@@ -61,16 +69,12 @@ describe('Twig environment', function () {
         $template = $this->createTemplate(['content_html' => "{{ 'style.css'|theme }}"]);
         $pdf = app('dynamicpdf');
 
-        try {
-            $first = $pdf->parseTemplate($template);
-            $active = $theme;
-            Theme::resetCache();
+        $first = $pdf->parseTemplate($template);
+        $active = 'second';
+        Theme::resetCache();
 
-            expect($first)->toContain('themes/demo/style.css')
-                ->and($pdf->parseTemplate($template))->toContain("themes/{$theme}/style.css");
-        } finally {
-            File::deleteDirectory(themes_path($theme));
-        }
+        expect($first)->toContain('themes/first/style.css')
+            ->and($pdf->parseTemplate($template))->toContain('themes/second/style.css');
     });
 
     it('builds a single CMS environment for a template with a layout', function () {

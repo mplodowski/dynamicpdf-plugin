@@ -22,12 +22,7 @@ describe('unlock_edited_layouts', function () {
         $this->shipped = [$shipped['settings']['name'], $shipped['html'], $shipped['css']];
 
         PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.header_and_footer']);
-        $this->views = $this->registerViewLayouts('unlockviews', ['layouts/letter' => "name = \"Letter\"\n==\np { color: red; }\n==\n<p>v2</p>"]);
-    });
-
-    afterEach(function () {
-        PDFManager::forgetInstance();
-        File::deleteDirectory($this->views);
+        $this->registerViewLayouts('unlockviews', ['layouts/letter' => "name = \"Letter\"\n==\np { color: red; }\n==\n<p>v2</p>"]);
     });
 
     it('keeps a layout that holds its current view locked, whatever its line endings', function () {
@@ -82,9 +77,8 @@ describe('unlock_edited_layouts', function () {
 
         ($this->migrate)();
 
-        $views = $this->registerViewLayouts('lateviews', ['layouts/letter' => "name = \"Letter\"\n==\n<p>v2</p>"]);
+        $this->registerViewLayouts('lateviews', ['layouts/letter' => "name = \"Letter\"\n==\n<p>v2</p>"]);
         (new SyncTemplates)->handle();
-        File::deleteDirectory($views);
 
         expect(($this->row)($id))
             ->is_locked->toBeFalsy()
@@ -112,14 +106,6 @@ describe('unlock_edited_layouts', function () {
 
         expect(($this->row)($id)->is_locked)->toBeFalsy()
             ->and(Parameter::get(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER))->toBeTruthy();
-    });
-
-    it('lets layouts follow their view only once it has run', function () {
-        Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 0);
-
-        ($this->migrate)();
-
-        expect(Parameter::get(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER))->toBeTruthy();
     });
 
     it('gives the same result when it runs twice', function () {
