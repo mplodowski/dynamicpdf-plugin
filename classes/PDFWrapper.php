@@ -3,6 +3,7 @@
 namespace Renatio\DynamicPDF\Classes;
 
 use Barryvdh\DomPDF\PDF;
+use Dompdf\Adapter\CPDF;
 use Dompdf\CanvasFactory;
 use Dompdf\Dompdf;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
@@ -11,6 +12,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Log;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use RuntimeException;
 use System\Models\File;
 use Throwable;
 use UnexpectedValueException;
@@ -249,11 +251,28 @@ class PDFWrapper extends PDF
     /**
      * @param  array<int, string>  $permissions
      */
-    public function encrypt(string $password, string $ownerPassword = '', array $permissions = []): self
+    public function encrypt(#[\SensitiveParameter] string $password, #[\SensitiveParameter] string $ownerPassword = '', array $permissions = []): self
     {
         $this->setEncryption($password, $ownerPassword, $permissions);
 
         return $this;
+    }
+
+    /**
+     * Repeats the parent instead of calling it, because the parent frame would still show the passwords.
+     *
+     * @param  array<string>  $pc
+     */
+    public function setEncryption(#[\SensitiveParameter] string $password, #[\SensitiveParameter] string $ownerpassword = '', array $pc = []): void
+    {
+        $this->render();
+        $canvas = $this->dompdf->getCanvas();
+
+        if (! $canvas instanceof CPDF) {
+            throw new RuntimeException('Encryption is only supported when using CPDF');
+        }
+
+        $canvas->get_cpdf()->setEncryption($password, $ownerpassword, $pc);
     }
 
     public function __call($method, $parameters)
