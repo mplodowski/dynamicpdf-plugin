@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
 describe('dynamicpdf:render', function () {
+    afterEach(fn () => $GLOBALS['_dompdf_warnings'] = []);
+
     beforeEach(function () {
         $this->directory = $this->temporaryDirectory('render');
         $this->template = $this->createTemplate([
@@ -48,6 +50,9 @@ describe('dynamicpdf:render', function () {
     })->with([
         'unknown template' => [['code' => 'acme::pdf.nowhere'], 'The template acme::pdf.nowhere does not exist.'],
         'invalid JSON' => [['code' => 'acme::pdf.letter', '--data' => '{"name": '], 'The --data value is not valid JSON'],
+        'JSON array' => [['code' => 'acme::pdf.letter', '--data' => '[]'], 'The --data value must be a JSON object.'],
+        'unknown layout' => [['code' => 'acme::pdf.letter', '--layout' => 'acme::pdf.layouts.nowhere'], 'The layout acme::pdf.layouts.nowhere does not exist.'],
+        'unwritable output' => [['code' => 'acme::pdf.letter', '--output' => '/'], 'ErrorException'],
         'missing data file' => [['code' => 'acme::pdf.letter', '--data' => '@/nowhere/data.json'], 'The data file /nowhere/data.json does not exist'],
     ]);
 
@@ -55,6 +60,6 @@ describe('dynamicpdf:render', function () {
         DB::table($this->template->getTable())->where('id', $this->template->id)->update(['content_html' => '<p>{{ name </p>']);
 
         expect(Artisan::call('dynamicpdf:render', ['code' => 'acme::pdf.letter', '--output' => "{$this->directory}/broken.pdf"]))->toBe(1)
-            ->and(Artisan::output())->toContain('acme::pdf.letter');
+            ->and(Artisan::output())->toContain('SyntaxError')->toContain('line 1');
     });
 });

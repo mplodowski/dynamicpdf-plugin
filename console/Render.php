@@ -10,6 +10,7 @@ use JsonException;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use stdClass;
 use Throwable;
 
 class Render extends Command
@@ -21,7 +22,7 @@ class Render extends Command
         {--layout= : Layout code to render with instead of the template\'s own}
         {--locale= : Locale to render in}
         {--output= : File to write; defaults to storage/temp/<code>.pdf}
-        {--html : Write the HTML passed to dompdf instead of the PDF}';
+        {--html : Write the HTML passed to dompdf, with asset URLs, instead of the PDF}';
 
     protected $description = 'Render a PDF template to a file with the production configuration.';
 
@@ -34,15 +35,17 @@ class Render extends Command
         $GLOBALS['_dompdf_warnings'] = [];
 
         try {
-            $pdf = PDF::loadTemplate($code, $this->data($code), layout: $this->stringOption('layout'), locale: $this->stringOption('locale'));
-            $contents = $html ? $pdf->getDomPDF()->outputHtml() : $pdf->output();
-        } catch (ModelNotFoundException $e) {
-            $type = $e->getModel() === Layout::class ? 'layout' : 'template';
-            $this->components->error(sprintf('The %s %s does not exist.', $type, implode(', ', $e->getIds())));
+            $pdf = PDF::forBrowser($html)
+                ->loadTemplate($code, $this->data($code), layout: $this->stringOption('layout'), locale: $this->stringOption('locale'));
 
-            return self::FAILURE;
+            File::ensureDirectoryExists(dirname($path));
+            File::put($path, $html ? $pdf->getDomPDF()->outputHtml() : $pdf->output());
         } catch (Throwable $e) {
-            $this->components->error($e->getMessage());
+            if ($this->output->isVerbose()) {
+                throw $e;
+            }
+
+            $this->components->error($this->failureMessage($e));
 
             return self::FAILURE;
         }
@@ -51,12 +54,24 @@ class Render extends Command
             $this->components->warn((string) $warning);
         }
 
-        File::ensureDirectoryExists(dirname($path));
-        File::put($path, $contents);
-
         $this->components->info("Rendered {$code} to {$path}.");
 
         return self::SUCCESS;
+    }
+
+    protected function failureMessage(Throwable $e): string
+    {
+        if ($e instanceof ModelNotFoundException && in_array($e->getModel(), [Template::class, Layout::class], true)) {
+            $type = $e->getModel() === Layout::class ? 'layout' : 'template';
+
+            return sprintf('The %s %s does not exist.', $type, implode(', ', $e->getIds()));
+        }
+
+        if ($e instanceof InvalidArgumentException) {
+            return $e->getMessage();
+        }
+
+        return trim(class_basename($e) . ': ' . $e->getMessage(), ': ') . ' Run with -v for the trace.';
     }
 
     protected function defaultPath(string $code, bool $html): string
@@ -96,15 +111,15 @@ class Render extends Command
         }
 
         try {
-            $data = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
+            $data = json_decode($json, flags: JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
             throw new InvalidArgumentException("The --data value is not valid JSON: {$e->getMessage()}.");
         }
 
-        if (! is_array($data) || ($data !== [] && array_is_list($data))) {
+        if (! $data instanceof stdClass) {
             throw new InvalidArgumentException('The --data value must be a JSON object.');
         }
 
-        return array_replace($sample, $data);
+        return array_replace($sample, (array) json_decode($json, true));
     }
 }

@@ -713,9 +713,10 @@ commands after `october:migrate`.
 it to `--output`, by default `storage/temp/<code>.pdf`. Pass the variables with `--data` as a JSON object or as
 `@path/to/file.json`; `--sample` uses the template's *Sample data*, and keys from `--data` override it. `--layout`
 and `--locale` work like the arguments of `PDF::loadTemplate()`, and `--html` writes the HTML that dompdf lays out
-instead of the PDF. The command prints the written path and every dompdf warning, such as an image that could not be
-loaded or an unknown CSS property. It exits with code 1 on an unknown code, invalid data, a Twig error or a dompdf
-failure.
+instead of the PDF, with asset URLs as in the backend HTML preview so it opens in a browser. The command prints the
+written path and the dompdf warnings of the PDF render, such as an image that could not be loaded or an unknown CSS
+property; `--html` skips that render, so it prints almost none. It exits with code 1 and a short message on an unknown
+code, invalid data, a Twig error, a dompdf failure or an unwritable output path; `-v` shows the full exception.
 
 ```bash
 php artisan dynamicpdf:render acme.shop::pdf.invoice --sample --output=invoice.pdf
