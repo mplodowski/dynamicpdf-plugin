@@ -58,6 +58,7 @@ return [
         'edit_template' => 'Vorlage bearbeiten',
         'not_found' => 'Keine registrierte Vorlage mit dem Code :code gefunden.',
         'view_follows' => 'Diese Vorlage folgt der View-Datei `:view` und erhält deren Updates aus dem Plugin. Wenn Sie Änderungen an Titel, Beschreibung, Inhalt, Layout oder Papiereinstellungen speichern, wird sie von diesen Updates getrennt.',
+        'view_follows_translation' => 'Diese Vorlage folgt der View-Datei `:view` und erhält deren Updates aus dem Plugin. Auf dieser Website werden Titel und Inhalt als Übersetzung gespeichert; wenn Sie Änderungen an Beschreibung, Layout oder Papiereinstellungen speichern, wird sie von diesen Updates getrennt.',
         'view_detached' => 'Diese Vorlage folgt der View-Datei `:view` nicht mehr, Plugin-Updates werden daher nicht übernommen. **:reset** stellt die Version aus der View-Datei wieder her.',
     ],
     'layouts' => [
@@ -71,8 +72,9 @@ return [
         'edit_layout' => 'Layout bearbeiten',
         'not_found' => 'Kein registriertes Layout mit dem Code :code gefunden.',
         'view_follows' => 'Dieses Layout folgt der View-Datei `:view` und erhält deren Updates aus dem Plugin. Wenn Sie Änderungen am Namen, HTML, CSS oder Seitenzahlen speichern, wird es von diesen Updates getrennt.',
+        'view_follows_translation' => 'Dieses Layout folgt der View-Datei `:view` und erhält deren Updates aus dem Plugin. Auf dieser Website werden HTML, CSS und der Text der Seitenzahlen als Übersetzung gespeichert; wenn Sie Änderungen am Namen oder an den übrigen Seitenzahl-Einstellungen speichern, wird es von diesen Updates getrennt.',
         'view_detached' => 'Dieses Layout folgt der View-Datei `:view` nicht mehr, Plugin-Updates werden daher nicht übernommen. **:reset** stellt die Version aus der View-Datei wieder her.',
-        'delete_in_use' => 'Dieses Layout kann nicht gelöscht werden, weil diese Vorlagen es verwenden: :templates. Weisen Sie ihnen zuerst ein anderes Layout zu.',
+        'delete_in_use' => '{1} Dieses Layout kann nicht gelöscht werden, weil die Vorlage :templates es verwendet. Weisen Sie ihr zuerst ein anderes Layout zu.|[2,*] Dieses Layout kann nicht gelöscht werden, weil diese Vorlagen es verwenden: :templates. Weisen Sie ihnen zuerst ein anderes Layout zu.',
         'used_by' => 'Verwendet von',
         'delete_used_by' => 'Von Vorlagen verwendet: :count',
         'css_reads_files' => 'Das CSS darf keine Dateien vom Server lesen. Entfernen Sie @import von LESS-Dateien, @import (inline) sowie die Funktionen data-uri(), image-size(), image-width() und image-height(); einfache CSS-Importe sind erlaubt.',

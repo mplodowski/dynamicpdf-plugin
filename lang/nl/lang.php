@@ -58,6 +58,7 @@ return [
         'edit_template' => 'Sjabloon bewerken',
         'not_found' => 'Geen geregistreerd sjabloon gevonden met de code :code.',
         'view_follows' => 'Dit sjabloon volgt het view-bestand `:view` en krijgt de updates ervan uit de plugin. Door wijzigingen in titel, omschrijving, inhoud, lay-out of papierinstellingen op te slaan, wordt het van die updates losgekoppeld.',
+        'view_follows_translation' => 'Dit sjabloon volgt het view-bestand `:view` en krijgt de updates ervan uit de plugin. Op deze site worden titel en inhoud als vertaling opgeslagen; door wijzigingen in omschrijving, lay-out of papierinstellingen op te slaan, wordt het van die updates losgekoppeld.',
         'view_detached' => 'Dit sjabloon volgt het view-bestand `:view` niet meer, dus plugin-updates worden er niet op toegepast. **:reset** zet de versie uit het view-bestand terug.',
     ],
     'layouts' => [
@@ -71,8 +72,9 @@ return [
         'edit_layout' => 'Lay-out bewerken',
         'not_found' => 'Geen geregistreerde lay-out gevonden met de code :code.',
         'view_follows' => 'Deze lay-out volgt het view-bestand `:view` en krijgt de updates ervan uit de plugin. Door wijzigingen in naam, HTML, CSS of paginanummers op te slaan, wordt hij van die updates losgekoppeld.',
+        'view_follows_translation' => 'Deze lay-out volgt het view-bestand `:view` en krijgt de updates ervan uit de plugin. Op deze site worden HTML, CSS en de tekst van de paginanummers als vertaling opgeslagen; door wijzigingen in naam of de overige paginanummerinstellingen op te slaan, wordt hij van die updates losgekoppeld.',
         'view_detached' => 'Deze lay-out volgt het view-bestand `:view` niet meer, dus plugin-updates worden er niet op toegepast. **:reset** zet de versie uit het view-bestand terug.',
-        'delete_in_use' => 'Deze lay-out kan niet worden verwijderd omdat deze sjablonen hem gebruiken: :templates. Wijs ze eerst een andere lay-out toe.',
+        'delete_in_use' => '{1} Deze lay-out kan niet worden verwijderd omdat het sjabloon :templates hem gebruikt. Wijs het eerst een andere lay-out toe.|[2,*] Deze lay-out kan niet worden verwijderd omdat deze sjablonen hem gebruiken: :templates. Wijs ze eerst een andere lay-out toe.',
         'used_by' => 'Gebruikt door',
         'delete_used_by' => 'Gebruikt door sjablonen: :count',
         'css_reads_files' => 'De CSS mag geen bestanden van de server lezen. Verwijder @import van LESS-bestanden, @import (inline) en de functies data-uri(), image-size(), image-width() en image-height(); gewone CSS-imports zijn toegestaan.',

@@ -58,6 +58,7 @@ return [
         'edit_template' => 'Edytuj szablon',
         'not_found' => 'Nie znaleziono zarejestrowanego szablonu o kodzie :code.',
         'view_follows' => 'Ten szablon korzysta z pliku widoku `:view` i otrzymuje jego aktualizacje z pluginu. Zapisanie zmian w tytule, opisie, treści, układzie lub ustawieniach papieru odłączy go od tych aktualizacji.',
+        'view_follows_translation' => 'Ten szablon korzysta z pliku widoku `:view` i otrzymuje jego aktualizacje z pluginu. W tej witrynie tytuł i treść zapisują się jako tłumaczenie; zapisanie zmian w opisie, układzie lub ustawieniach papieru odłączy go od tych aktualizacji.',
         'view_detached' => 'Ten szablon nie korzysta już z pliku widoku `:view`, więc aktualizacje pluginu go nie obejmują. **:reset** przywraca wersję z pliku widoku.',
     ],
     'layouts' => [
@@ -71,8 +72,9 @@ return [
         'edit_layout' => 'Edytuj układ',
         'not_found' => 'Nie znaleziono zarejestrowanego układu o kodzie :code.',
         'view_follows' => 'Ten układ korzysta z pliku widoku `:view` i otrzymuje jego aktualizacje z pluginu. Zapisanie zmian w nazwie, HTML, CSS lub numerach stron odłączy go od tych aktualizacji.',
+        'view_follows_translation' => 'Ten układ korzysta z pliku widoku `:view` i otrzymuje jego aktualizacje z pluginu. W tej witrynie HTML, CSS i tekst numerów stron zapisują się jako tłumaczenie; zapisanie zmian w nazwie lub pozostałych ustawieniach numerów stron odłączy go od tych aktualizacji.',
         'view_detached' => 'Ten układ nie korzysta już z pliku widoku `:view`, więc aktualizacje pluginu go nie obejmują. **:reset** przywraca wersję z pliku widoku.',
-        'delete_in_use' => 'Tego układu nie można usunąć, ponieważ używają go szablony: :templates. Najpierw przypisz im inny układ.',
+        'delete_in_use' => '{1} Tego układu nie można usunąć, ponieważ używa go szablon :templates. Najpierw przypisz mu inny układ.|[2,*] Tego układu nie można usunąć, ponieważ używają go szablony: :templates. Najpierw przypisz im inny układ.',
         'used_by' => 'Używany przez',
         'delete_used_by' => 'Używają go szablony: :count',
         'css_reads_files' => 'CSS nie może odczytywać plików serwera. Usuń @import plików LESS, @import (inline) oraz funkcje data-uri(), image-size(), image-width() i image-height(); zwykłe importy CSS są dozwolone.',

@@ -28,6 +28,9 @@ secondaryTabs:
             tab: renatio.dynamicpdf::lang.templates.content_html
             language: twig
             stretch: true
+            attributes:
+                role: group
+                aria-label: HTML
             default: |
                 <!DOCTYPE html>
                 <html>
@@ -49,6 +52,9 @@ secondaryTabs:
             size: giant
             language: less
             stretch: true
+            attributes:
+                role: group
+                aria-label: CSS/LESS
 
         background_img:
             label: renatio.dynamicpdf::lang.templates.background_img

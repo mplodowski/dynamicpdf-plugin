@@ -58,6 +58,7 @@ return [
         'edit_template' => 'Modifier le modèle',
         'not_found' => 'Impossible de trouver un modèle enregistré avec le code :code.',
         'view_follows' => 'Ce modèle suit le fichier de vue `:view` et reçoit ses mises à jour du plugin. Enregistrer des modifications du titre, de la description, du contenu, de la mise en page ou des paramètres du papier le détache de ces mises à jour.',
+        'view_follows_translation' => 'Ce modèle suit le fichier de vue `:view` et reçoit ses mises à jour du plugin. Sur ce site, le titre et le contenu sont enregistrés comme traduction ; enregistrer des modifications de la description, de la mise en page ou des paramètres du papier le détache de ces mises à jour.',
         'view_detached' => 'Ce modèle ne suit plus le fichier de vue `:view`, les mises à jour du plugin ne s\'y appliquent donc pas. **:reset** restaure la version du fichier de vue.',
     ],
     'layouts' => [
@@ -71,8 +72,9 @@ return [
         'edit_layout' => 'Modifier la mise en page',
         'not_found' => 'Impossible de trouver une mise en page enregistrée avec le code :code.',
         'view_follows' => 'Cette mise en page suit le fichier de vue `:view` et reçoit ses mises à jour du plugin. Enregistrer des modifications du nom, du HTML, du CSS ou des numéros de page la détache de ces mises à jour.',
+        'view_follows_translation' => 'Cette mise en page suit le fichier de vue `:view` et reçoit ses mises à jour du plugin. Sur ce site, le HTML, le CSS et le texte des numéros de page sont enregistrés comme traduction ; enregistrer des modifications du nom ou des autres réglages des numéros de page la détache de ces mises à jour.',
         'view_detached' => 'Cette mise en page ne suit plus le fichier de vue `:view`, les mises à jour du plugin ne s\'y appliquent donc pas. **:reset** restaure la version du fichier de vue.',
-        'delete_in_use' => 'Cette mise en page ne peut pas être supprimée car ces modèles l\'utilisent : :templates. Attribuez-leur d\'abord une autre mise en page.',
+        'delete_in_use' => '{1} Cette mise en page ne peut pas être supprimée car le modèle :templates l\'utilise. Attribuez-lui d\'abord une autre mise en page.|[2,*] Cette mise en page ne peut pas être supprimée car ces modèles l\'utilisent : :templates. Attribuez-leur d\'abord une autre mise en page.',
         'used_by' => 'Utilisée par',
         'delete_used_by' => 'Modèles qui l\'utilisent : :count',
         'css_reads_files' => 'Le CSS ne doit pas lire de fichiers du serveur. Supprimez les @import de fichiers LESS, @import (inline) ainsi que les fonctions data-uri(), image-size(), image-width() et image-height() ; les imports CSS simples sont autorisés.',

@@ -58,6 +58,7 @@ return [
         'edit_template' => 'Sablon szerkesztése',
         'not_found' => 'Nem található :code kódú regisztrált sablon.',
         'view_follows' => 'Ez a sablon a(z) `:view` nézetfájlt követi, és a bővítményből kapja a frissítéseit. A cím, a leírás, a tartalom, az elrendezés vagy a papírbeállítások módosításainak mentése leválasztja ezekről a frissítésekről.',
+        'view_follows_translation' => 'Ez a sablon a(z) `:view` nézetfájlt követi, és a bővítményből kapja a frissítéseit. Ezen a webhelyen a cím és a tartalom fordításként mentődik; a leírás, az elrendezés vagy a papírbeállítások módosításainak mentése leválasztja ezekről a frissítésekről.',
         'view_detached' => 'Ez a sablon már nem követi a(z) `:view` nézetfájlt, így a bővítmény frissítései nem vonatkoznak rá. A(z) **:reset** gomb visszaállítja a nézetfájl szerinti változatot.',
     ],
     'layouts' => [
@@ -71,8 +72,9 @@ return [
         'edit_layout' => 'Elrendezés szerkesztése',
         'not_found' => 'Nem található :code kódú regisztrált elrendezés.',
         'view_follows' => 'Ez az elrendezés a(z) `:view` nézetfájlt követi, és a bővítményből kapja a frissítéseit. A név, a HTML, a CSS vagy az oldalszámok módosításainak mentése leválasztja ezekről a frissítésekről.',
+        'view_follows_translation' => 'Ez az elrendezés a(z) `:view` nézetfájlt követi, és a bővítményből kapja a frissítéseit. Ezen a webhelyen a HTML, a CSS és az oldalszámok szövege fordításként mentődik; a név vagy a többi oldalszám-beállítás módosításainak mentése leválasztja ezekről a frissítésekről.',
         'view_detached' => 'Ez az elrendezés már nem követi a(z) `:view` nézetfájlt, így a bővítmény frissítései nem vonatkoznak rá. A(z) **:reset** gomb visszaállítja a nézetfájl szerinti változatot.',
-        'delete_in_use' => 'Ez az elrendezés nem törölhető, mert ezek a sablonok használják: :templates. Előbb rendeljen hozzájuk másik elrendezést.',
+        'delete_in_use' => '{1} Ez az elrendezés nem törölhető, mert a(z) :templates sablon használja. Előbb rendeljen hozzá másik elrendezést.|[2,*] Ez az elrendezés nem törölhető, mert ezek a sablonok használják: :templates. Előbb rendeljen hozzájuk másik elrendezést.',
         'used_by' => 'Használja',
         'delete_used_by' => 'Ennyi sablon használja: :count',
         'css_reads_files' => 'A CSS nem olvashat fájlokat a szerverről. Távolítsa el a LESS-fájlok @importját, az @import (inline) utasítást, valamint a data-uri(), image-size(), image-width() és image-height() függvényeket; az egyszerű CSS-importok engedélyezettek.',

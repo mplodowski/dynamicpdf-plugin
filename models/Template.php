@@ -80,6 +80,11 @@ class Template extends Model
     ];
 
     /** @var array<string, string> */
+    public $attributeNames = [
+        'content_html' => 'renatio.dynamicpdf::lang.templates.content_html',
+    ];
+
+    /** @var array<string, string> */
     public $customMessages = [
         'code.regex' => 'renatio.dynamicpdf::lang.templates.code_format',
     ];
@@ -222,7 +227,12 @@ class Template extends Model
     {
         $sizes = array_keys(CPDF::$PAPER_SIZES);
 
-        return array_combine($sizes, $sizes);
+        return array_combine($sizes, array_map(self::sizeLabel(...), $sizes));
+    }
+
+    protected static function sizeLabel(string $size): string
+    {
+        return preg_match('/^(\d?[abc]|s?ra)\d+$/', $size) ? strtoupper($size) : ucfirst($size);
     }
 
     /**
@@ -248,7 +258,7 @@ class Template extends Model
         $orientation = Arr::get(self::getOrientationOptions(), $options->getDefaultPaperOrientation());
 
         if (isset($fields->size) && is_string($size)) {
-            $fields->size->emptyOption(trans('renatio.dynamicpdf::lang.options.default', ['value' => ucfirst($size)]));
+            $fields->size->emptyOption(trans('renatio.dynamicpdf::lang.options.default', ['value' => self::sizeLabel($size)]));
         }
 
         if (isset($fields->orientation) && $orientation) {

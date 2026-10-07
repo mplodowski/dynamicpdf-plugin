@@ -1,5 +1,6 @@
 <?php
 
+use October\Rain\Support\Facades\Site;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
@@ -41,6 +42,21 @@ describe('View status notice', function () {
         expect((new Layouts)->run('update', [$layout->id])->getContent())
             ->toContain('This layout no longer follows the view file')
             ->toContain('callout-warning');
+    });
+
+    it('does not warn a translator that translated fields detach the record', function () {
+        $site = $this->enableTranslation('de');
+        $template = $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'is_custom' => false]);
+        $layout = $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'is_locked' => true]);
+
+        $render = fn (Templates|Layouts $controller, int $id): string => Site::withContext($site->id, fn () => $controller->run('update', [$id])->getContent());
+
+        expect($render(new Templates, $template->id))
+            ->toContain('title and content are saved as a translation')
+            ->not->toContain('title, description, content')
+            ->and($render(new Layouts, $layout->id))
+            ->toContain('HTML, CSS and page number text are saved as a translation')
+            ->not->toContain('name, HTML, CSS');
     });
 
     it('shows no notice on a record created in the backend', function () {

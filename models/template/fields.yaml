@@ -39,6 +39,9 @@ secondaryTabs:
             tab: renatio.dynamicpdf::lang.templates.content_html
             language: twig
             stretch: true
+            attributes:
+                role: group
+                aria-label: HTML
 
         size:
             label: renatio.dynamicpdf::lang.templates.size

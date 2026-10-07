@@ -13,6 +13,7 @@
     <?php [$pageWidth, $pageHeight] = $this->previewPageSize($formModel) ?>
     <div class="form-preview" style="overflow-x: auto;">
         <iframe sandbox src="<?= Backend::url('renatio/dynamicpdf/layouts/html/'.$formModel->id) ?>"
+                title="<?= e($this->pageTitle) ?>"
                 style="display: block; margin: 0 auto; width: <?= $pageWidth ?>px; height: <?= $pageHeight ?>px; border: 1px solid #9098a2;"></iframe>
     </div>
 

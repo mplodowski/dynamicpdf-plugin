@@ -11,6 +11,11 @@ trait DescribesViewStatus
     abstract public function getView(): ?string;
 
     /**
+     * @return bool
+     */
+    abstract public function shouldTranslate();
+
+    /**
      * @param  object  $fields
      */
     protected function describeViewStatus($fields): void
@@ -27,7 +32,11 @@ trait DescribesViewStatus
 
         $customised = $this->isCustomised();
         $group = strtolower(class_basename(static::class));
-        $key = $customised ? 'view_detached' : 'view_follows';
+        $key = match (true) {
+            $customised => 'view_detached',
+            $this->shouldTranslate() => 'view_follows_translation',
+            default => 'view_follows',
+        };
 
         $fields->_view_status
             ->mode($customised ? 'warning' : 'info')
