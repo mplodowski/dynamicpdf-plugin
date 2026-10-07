@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File as Filesystem;
 use Illuminate\Support\Facades\Storage;
+use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Models\File;
@@ -46,6 +47,15 @@ describe('dynamicpdf:export and dynamicpdf:import', function () {
         };
         $this->import = function (array $options = []): int {
             return Artisan::call('dynamicpdf:import', ['file' => $this->path, ...$options]);
+        };
+        $this->exportAndWipe = function (?callable $change = null): void {
+            Artisan::call('dynamicpdf:export', ['--path' => $this->path]);
+            Template::query()->get()->each->delete();
+            Layout::query()->get()->each->delete();
+
+            if ($change !== null) {
+                Filesystem::put($this->path, json_encode($change(json_decode(Filesystem::get($this->path), true)), JSON_THROW_ON_ERROR));
+            }
         };
     });
 
@@ -111,19 +121,60 @@ describe('dynamicpdf:export and dynamicpdf:import', function () {
             ->and(Artisan::output())->toContain('not a Renatio.DynamicPDF export');
     });
 
-    it('rolls back the whole import and its background files when one record is invalid', function () {
-        Artisan::call('dynamicpdf:export', ['--path' => $this->path]);
-        Template::query()->get()->each->delete();
-        Layout::query()->get()->each->delete();
+    it('imports a record whose view the target does not register as customized, so the sync keeps it', function () {
+        ($this->exportAndWipe)(function (array $payload): array {
+            $payload['layouts'][0]['is_locked'] = true;
+            $payload['templates'][0]['is_custom'] = false;
 
-        $payload = json_decode(Filesystem::get($this->path), true);
-        $payload['templates'][0]['content_html'] = '<p>{% if %}</p>';
-        Filesystem::put($this->path, json_encode($payload, JSON_THROW_ON_ERROR));
+            return $payload;
+        });
+        ($this->import)();
+        $views = $this->registerViewTemplates('other', ['letter' => "title = \"Letter\"\n==\n<p>Letter</p>"]);
+
+        (new SyncTemplates)->handle();
+        Filesystem::deleteDirectory($views);
+
+        expect($this->findTemplate('acme::pdf.invoice')->is_custom)->toBeTrue()
+            ->and($this->findLayout('acme::pdf.layouts.base')->is_locked)->toBeFalse();
+    });
+
+    it('exports a layout whose background file is missing without the background and warns about it', function () {
+        $layout = $this->findLayout('acme::pdf.layouts.base');
+        Filesystem::delete($this->uploads . '/' . $layout->background_img->getDiskPath());
+
+        expect(Artisan::call('dynamicpdf:export', ['--path' => $this->path]))->toBe(0)
+            ->and(Artisan::output())->toContain('acme::pdf.layouts.base')
+            ->and(json_decode(Filesystem::get($this->path), true)['layouts'][0]['background'])->toBeNull();
+    });
+
+    it('reports an unexpected error without a stack trace and imports nothing', function () {
+        ($this->exportAndWipe)();
+        Template::saving(fn () => throw new RuntimeException('Disk full'));
 
         expect(($this->import)())->toBe(1)
-            ->and(Artisan::output())->toContain('acme::pdf.invoice')
+            ->and(Artisan::output())->toContain('Disk full Nothing was imported.')
+            ->and(Layout::query()->count())->toBe(0);
+    });
+
+    it('rolls back the whole import and its background files when one record is invalid', function (Closure $change, string $error) {
+        ($this->exportAndWipe)($change);
+
+        expect(($this->import)())->toBe(1)
+            ->and(Artisan::output())->toContain($error)
             ->and(Layout::query()->count())->toBe(0)
             ->and(File::query()->count())->toBe(0)
             ->and(Filesystem::allFiles($this->uploads))->toBe([]);
-    });
+    })->with([
+        'invalid Twig' => [fn (array $payload) => data_set($payload, 'templates.0.content_html', '<p>{% if %}</p>'), 'acme::pdf.invoice'],
+        'invalid Twig in a translation' => [fn (array $payload) => data_set($payload, 'templates.0.translations.de.content_html', '<p>{% if %}</p>'), 'de translation is invalid'],
+        'too long translated title' => [fn (array $payload) => data_set($payload, 'templates.0.translations.de.title', str_repeat('a', 256)), 'de translation is invalid'],
+        'background with a non-image extension' => [fn (array $payload) => data_set($payload, 'layouts.0.background.file_name', 'bg.php'), 'must be a jpg'],
+        'background content not matching its extension' => [fn (array $payload) => data_set($payload, 'layouts.0.background.file_name', 'bg.gif'), 'not image/gif'],
+        'empty background' => [fn (array $payload) => data_set($payload, 'layouts.0.background', []), 'invalid structure'],
+        'duplicate codes' => [function (array $payload) {
+            $payload['templates'][] = $payload['templates'][0];
+
+            return $payload;
+        }, 'duplicate'],
+    ]);
 });

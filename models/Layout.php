@@ -43,6 +43,7 @@ use Throwable;
  * @property-read string $html
  *
  * @method \October\Rain\Database\Relations\AttachOne background_img()
+ * @method \October\Rain\Database\Relations\MorphMany translations()
  */
 class Layout extends Model
 {

@@ -18,12 +18,18 @@ class Export extends Command
 
     public function handle(): int
     {
+        $export = new ExportTemplates;
+
         try {
-            $payload = (new ExportTemplates)->handle($this->argument('codes'));
+            $payload = $export->handle($this->argument('codes'));
         } catch (ApplicationException $e) {
             $this->components->error($e->getMessage());
 
             return self::FAILURE;
+        }
+
+        if ($export->missingBackgrounds() !== []) {
+            $this->components->warn('Exported without the background image, its file is missing: ' . implode(', ', $export->missingBackgrounds()));
         }
 
         $json = json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);

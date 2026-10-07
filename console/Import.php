@@ -5,8 +5,8 @@ namespace Renatio\DynamicPDF\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use JsonException;
-use October\Rain\Exception\ApplicationException;
 use Renatio\DynamicPDF\Classes\ImportTemplates;
+use Throwable;
 
 class Import extends Command
 {
@@ -35,7 +35,7 @@ class Import extends Command
             $this->components->error("The file {$path} is not valid JSON.");
 
             return self::FAILURE;
-        } catch (ApplicationException $e) {
+        } catch (Throwable $e) {
             $this->components->error($e->getMessage() . ' Nothing was imported.');
 
             return self::FAILURE;

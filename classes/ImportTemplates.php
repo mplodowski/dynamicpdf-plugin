@@ -11,10 +11,17 @@ use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Models\File;
 use Throwable;
-use Twig\Error\Error as TwigError;
 
 class ImportTemplates
 {
+    public const BACKGROUND_TYPES = [
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png' => 'image/png',
+        'gif' => 'image/gif',
+        'webp' => 'image/webp',
+    ];
+
     /** @var array<int, array{string, string, string}> */
     protected array $report = [];
 
@@ -76,13 +83,11 @@ class ImportTemplates
         $rules = [
             'layouts' => 'present|array',
             'layouts.*' => 'array',
-            'layouts.*.code' => 'required|string',
+            'layouts.*.code' => 'required|string|distinct',
             'layouts.*.background' => 'nullable|array',
-            'layouts.*.background.file_name' => 'required_with:layouts.*.background|string',
-            'layouts.*.background.data' => 'required_with:layouts.*.background|string',
             'templates' => 'present|array',
             'templates.*' => 'array',
-            'templates.*.code' => 'required|string',
+            'templates.*.code' => 'required|string|distinct',
             'templates.*.layout' => 'nullable|string',
         ];
 
@@ -98,6 +103,13 @@ class ImportTemplates
             $rules["{$group}.*.translations"] = 'array';
             $rules["{$group}.*.translations.*"] = 'array';
             $rules["{$group}.*.translations.*.*"] = 'nullable|string';
+        }
+
+        foreach (is_array($payload['layouts'] ?? null) ? $payload['layouts'] : [] as $index => $layout) {
+            if (is_array($layout) && isset($layout['background'])) {
+                $rules["layouts.{$index}.background.file_name"] = 'required|string';
+                $rules["layouts.{$index}.background.data"] = 'required|string';
+            }
         }
 
         $validator = Validator::make($payload, $rules);
@@ -135,7 +147,7 @@ class ImportTemplates
             $model->save();
         } catch (ValidationException $e) {
             throw new ApplicationException("The {$type} {$code} is invalid. " . implode(' ', $e->getErrors()->all()));
-        } catch (ApplicationException|TwigError $e) {
+        } catch (ApplicationException $e) {
             throw new ApplicationException("The {$type} {$code} is invalid. {$e->getMessage()}");
         }
 
@@ -148,6 +160,10 @@ class ImportTemplates
     protected function fillLayout(Layout $layout, array $record): void
     {
         $layout->forceFill(Arr::only($record, ExportTemplates::LAYOUT_FIELDS));
+
+        if (! $layout->followsView()) {
+            $layout->is_locked = false;
+        }
 
         if ($layout->background_img !== null) {
             $this->replacedFiles[] = $layout->background_img;
@@ -162,6 +178,10 @@ class ImportTemplates
     protected function fillTemplate(Template $template, array $record): void
     {
         $template->forceFill(Arr::only($record, ExportTemplates::TEMPLATE_FIELDS));
+
+        if (! $template->followsView()) {
+            $template->is_custom = true;
+        }
 
         $layoutCode = $record['layout'] ?? null;
         $layout = $layoutCode === null ? null : Layout::query()->where('code', $layoutCode)->first();
@@ -182,24 +202,33 @@ class ImportTemplates
             return null;
         }
 
+        $extension = strtolower(pathinfo($background['file_name'], PATHINFO_EXTENSION));
+        $type = self::BACKGROUND_TYPES[$extension] ?? null;
+
+        if ($type === null) {
+            throw new ApplicationException('The background image must be a ' . implode(', ', array_keys(self::BACKGROUND_TYPES)) . ' file.');
+        }
+
         $data = base64_decode($background['data'], true);
 
         if ($data === false) {
             throw new ApplicationException('The background image is not valid base64.');
         }
 
-        $file = (new File)->fromData($data, $background['file_name']);
+        $name = preg_replace('/[^\w-]/', '_', pathinfo($background['file_name'], PATHINFO_FILENAME)) ?: 'background';
+        $file = (new File)->fromData($data, "{$name}.{$extension}");
         $this->storedFiles[] = $file;
 
-        if (! str_starts_with((string) $file->getContentType(), 'image/')) {
-            throw new ApplicationException('The background is not an image.');
+        if ($file->getContentType() !== $type) {
+            throw new ApplicationException("The background image content is not {$type}.");
         }
 
         return $file;
     }
 
     /**
-     * Translations bypass the model validation, so their markup is checked here.
+     * Translations bypass the model validation, so each locale is validated on a detached copy
+     * holding the translated values.
      *
      * @param  array<string, array<string, string|null>>  $translations
      */
@@ -214,17 +243,30 @@ class ImportTemplates
         }
 
         foreach (Arr::except($translations, $model->getTranslatableDefault()) as $locale => $values) {
-            foreach (Arr::only($values, $attributes) as $attribute => $value) {
-                if ($value !== null && $value !== '') {
-                    match ($attribute) {
-                        'content_html' => (new TwigRenderer)->checkSyntax($value, "{$model->code} ({$locale})"),
-                        'content_css' => (new LessCompiler)->compile($value),
-                        default => null,
-                    };
-                }
+            $values = Arr::only($values, $attributes);
+            $this->validateTranslation($model, (string) $locale, $values);
 
+            foreach ($values as $attribute => $value) {
                 $model->setTranslation($attribute, $locale, $value);
             }
+        }
+    }
+
+    /**
+     * An empty translation falls back to the default content, so only filled values are checked.
+     *
+     * @param  array<string, string|null>  $values
+     */
+    protected function validateTranslation(Layout|Template $model, string $locale, array $values): void
+    {
+        $copy = $model->newInstance([], $model->exists);
+        $copy->setRawAttributes($model->getAttributes(), true);
+        $copy->forceFill(array_filter($values, fn (?string $value): bool => $value !== null && $value !== ''));
+
+        try {
+            $copy->validate();
+        } catch (ValidationException $e) {
+            throw new ApplicationException("The {$locale} translation is invalid. " . implode(' ', $e->getErrors()->all()));
         }
     }
 

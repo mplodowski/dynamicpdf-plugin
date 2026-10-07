@@ -655,9 +655,11 @@ php artisan dynamicpdf:import pdf-templates.json
 php artisan dynamicpdf:import pdf-templates.json --force
 ```
 
-A template moved this way together with its layout renders identically on the target. The *From view* flags are
-imported as exported: where the target registers the same view, the record keeps following that view file like any
-other; where it does not, the exported content is used. Translations for the target's default language are
+A template moved this way together with its layout renders identically on the target. The *From view* state is kept
+only where the target registers the same view, so the record keeps following that view file; a record whose view the
+target does not register is imported as customized, so the synchronization never deletes or rewrites it. Background
+images must be JPG, PNG, GIF or WebP. A layout whose background file is missing on disk is exported without it and
+listed in a warning. Translations for the target's default language are
 not imported, because they would overwrite the default content.
 
 ## Examples
