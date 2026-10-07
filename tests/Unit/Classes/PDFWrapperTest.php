@@ -1,5 +1,7 @@
 <?php
 
+use Dompdf\Exception as DompdfException;
+use Illuminate\Support\Facades\File;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
@@ -23,6 +25,36 @@ describe('PDFWrapper', function () {
 
         expect($wrapper->getDomPDF()->getOptions()->getDpi())->toBe(120)
             ->and($wrapper->output())->toStartWith('%PDF');
+    });
+
+    it('leaves loadFile() to the chroot of dompdf', function () {
+        $tempFile = tempnam(sys_get_temp_dir(), 'dpdf');
+        $file = $tempFile . '.html';
+        rename($tempFile, $file);
+        file_put_contents($file, '<p>outside</p>');
+
+        try {
+            expect(fn () => app('dynamicpdf')->loadFile($file))->toThrow(DompdfException::class);
+        } finally {
+            unlink($file);
+        }
+    });
+
+    it('restores the base path for the next HTML after a file', function () {
+        $wrapper = app('dynamicpdf');
+        $basePath = $wrapper->getDomPDF()->getBasePath();
+        $file = storage_path('temp/dynamicpdf-' . uniqid() . '.html');
+        File::ensureDirectoryExists(dirname($file));
+        file_put_contents($file, '<p>file</p>');
+
+        try {
+            $wrapper->loadFile($file);
+        } finally {
+            unlink($file);
+        }
+
+        expect($wrapper->getDomPDF()->getBasePath())->toBe(realpath(storage_path('temp')) . '/')
+            ->and($wrapper->loadHTML('<p>html</p>')->getDomPDF()->getBasePath())->toBe($basePath);
     });
 
     it('throws on an unknown method instead of ignoring it', function () {
