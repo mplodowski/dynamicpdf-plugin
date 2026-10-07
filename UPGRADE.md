@@ -91,3 +91,6 @@ call now throws `UnexpectedValueException`.
 
 The backend **Preview PDF** no longer forces 300 DPI and uses `dompdf.options.dpi` like PDFs generated from code, so
 `px` sizes in the preview now match the real output. Check templates whose sizes were tuned to the old preview.
+
+Synchronization no longer deletes non-customised templates whose view is no longer registered; delete them with
+`php artisan dynamicpdf:sync --prune`.

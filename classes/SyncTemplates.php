@@ -14,7 +14,7 @@ class SyncTemplates
     /** @var array<string, array<int, string>> */
     protected array $report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
-    public function handle(): void
+    public function handle(bool $prune = false): void
     {
         $this->report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
@@ -30,13 +30,20 @@ class SyncTemplates
 
         $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
 
-        if (! $registeredTemplates) {
+        if (! $registeredTemplates && ! $prune) {
             return;
+        }
+
+        if ($prune) {
+            $this->deleteOrphanedTemplates();
         }
 
         $dbTemplates = Template::query()->pluck('is_custom', 'code')->all();
 
-        $this->clearNonCustomizedTemplates($dbTemplates, $registeredTemplates);
+        if (! $registeredTemplates) {
+            return;
+        }
+
         $this->refreshTemplates($registeredTemplates);
         $this->createTemplates(array_diff_key($registeredTemplates, $dbTemplates));
     }
@@ -91,19 +98,23 @@ class SyncTemplates
     }
 
     /**
-     * @param  array<string, bool>  $dbTemplates
-     * @param  array<string, string>  $registeredTemplates
+     * @return array<int, string>
      */
-    protected function clearNonCustomizedTemplates(array $dbTemplates, array $registeredTemplates): void
+    public function orphanedTemplates(): array
     {
-        $obsolete = array_keys(array_diff_key(array_filter($dbTemplates, fn (mixed $isCustom): bool => ! $isCustom), $registeredTemplates));
+        return Template::query()
+            ->where('is_custom', false)
+            ->whereNotIn('code', array_keys(PDFManager::instance()->listRegisteredTemplates()))
+            ->orderBy('code')
+            ->pluck('code')
+            ->all();
+    }
 
-        if ($obsolete === []) {
-            return;
+    protected function deleteOrphanedTemplates(): void
+    {
+        foreach (Template::whereIn('code', $this->orphanedTemplates())->get() as $template) {
+            $this->write((string) $template->code, 'deleted', fn (): ?bool => $template->delete());
         }
-
-        Template::whereIn('code', $obsolete)->get()->each->delete();
-        $this->report['deleted'] = $obsolete;
     }
 
     /**
