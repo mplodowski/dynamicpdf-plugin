@@ -61,7 +61,7 @@ v8.1.0:
     - Granular permissions for templates and layouts, existing roles and administrators keep their access.
     - Template and layout translations, localized view files, layouts follow view file updates like templates.
     - Stricter saving. Invalid Twig, duplicate codes and deleting used layouts are rejected.
-    - Page numbers set on the layout or from code without inline PHP, PDF::fake(), sync and check commands.
+    - Page numbers set on the layout or from code without inline PHP, PDF::fake(), sync, check and render commands.
     - New |pdfasset filter, demo and layout backgrounds render without remote assets.
     - Backend previews show unsaved form changes in a popup.
     - Template form lists the available variables and filters, a click copies the Twig code.
