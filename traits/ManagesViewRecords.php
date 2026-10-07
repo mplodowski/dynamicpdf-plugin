@@ -42,14 +42,14 @@ trait ManagesViewRecords
         }
     }
 
-    public function previewpdf(int|string $id): ?Response
+    public function previewpdf(int|string|null $id = null): ?Response
     {
         $this->requireFormPermission('modelPreview');
 
         $this->pageTitle = trans('renatio.dynamicpdf::lang.templates.preview_pdf');
 
         try {
-            $model = $this->formFindModelObject($id);
+            $model = $this->formFindModelObject((string) $id);
         } catch (ApplicationException $e) {
             $this->handleError($e);
 
@@ -73,11 +73,15 @@ trait ManagesViewRecords
         return $pdf->addInfo(['Title' => $title])->stream(Str::slug($title) . '.pdf');
     }
 
-    public function html(int|string $id): Response
+    public function html(int|string|null $id = null): Response
     {
         $this->requireFormPermission('modelPreview');
 
-        $model = $this->formFindModelObject($id);
+        try {
+            $model = $this->formFindModelObject((string) $id);
+        } catch (ApplicationException $e) {
+            return response('<p>' . e($e->getMessage()) . '</p>', 404);
+        }
 
         try {
             $html = (new PreviewFonts)->inline($model->getHtmlAttribute());
