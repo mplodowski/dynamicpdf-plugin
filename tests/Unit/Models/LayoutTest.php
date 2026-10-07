@@ -28,6 +28,8 @@ describe('Layout', function () {
             'datauri alias' => 'body { background: datauri("text/plain", "%s"); }',
             'image-width inside a mixin' => '.m() { width: image-width("%s"); } body { .m(); }',
             'imagewidth alias' => 'body { width: imagewidth("%s"); }',
+            'image-height' => 'body { height: image-height("%s"); }',
+            'image-size' => 'body { background-size: image-size("%s"); }',
         ]);
 
         it('never compiles a stored layout that reads one', function (string $css) {

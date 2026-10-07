@@ -91,14 +91,23 @@ describe('Granular permissions', function () {
             ->and(Layout::whereCode('acme::pdf.layouts.default_copy')->exists())->toBeFalse();
     });
 
-    it('refuses to reset a template from the list without the update permission', function () {
-        actingAsPdfUserWith(['manage_templates']);
-        $template = $this->createTemplate();
+    it('refuses to reset a customised view-driven record from the list without the update permission', function (string $definition, array $permissions) {
+        actingAsPdfUserWith($permissions);
+        PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
+        PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.default']);
+        $record = $definition === 'templates'
+            ? $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'content_html' => '<p>customised</p>', 'is_custom' => true])
+            : $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'content_html' => '<p>customised</p>', 'is_locked' => false]);
 
-        $response = $this->listAction('onResetRecord', ['id' => $template->id, 'definition' => 'templates']);
+        $response = $this->listAction('onResetRecord', ['id' => $record->id, 'definition' => $definition]);
 
-        expect($response->status())->toBeGreaterThanOrEqual(400);
-    });
+        expect($response->status())->toBe(400)
+            ->and($response->getContent())->toContain('Access Denied')
+            ->and(DB::table($record->getTable())->where('id', $record->id)->value('content_html'))->toBe('<p>customised</p>');
+    })->with([
+        'template' => ['templates', ['manage_templates']],
+        'layout' => ['layouts', ['manage_templates', 'manage_layouts']],
+    ]);
 
     it('refuses to delete a template from the list without the delete permission', function () {
         actingAsPdfUserWith(['manage_templates']);

@@ -86,9 +86,23 @@ describe('SyncTemplates', function () {
     it('keeps a stored template whose view file went missing', function () {
         PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.gone']);
         $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.gone', 'is_custom' => false, 'content_html' => '<p>stored</p>']);
-        Log::spy();
+        $log = Log::spy();
 
         expect(Template::byCode('renatio.dynamicpdf::pdf.gone')->content_html)->toBe('<p>stored</p>');
+
+        $log->shouldHaveReceived('error')->once()->withArgs(fn (string $message): bool => str_contains($message, 'could not read the view of renatio.dynamicpdf::pdf.gone'));
+    });
+
+    it('keeps a stored layout whose view file went missing', function () {
+        Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 1);
+        Parameter::clearInternalCache();
+        PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.gone']);
+        $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.gone', 'is_locked' => true, 'content_html' => '<p>stored</p>']);
+        $log = Log::spy();
+
+        expect(Layout::byCode('renatio.dynamicpdf::pdf.layouts.gone')->content_html)->toBe('<p>stored</p>');
+
+        $log->shouldHaveReceived('error')->once()->withArgs(fn (string $message): bool => str_contains($message, 'could not read the view of renatio.dynamicpdf::pdf.layouts.gone'));
     });
 
     it('writes a changed view file back to the row of a non-customised template', function () {
