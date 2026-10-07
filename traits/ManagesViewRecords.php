@@ -78,7 +78,7 @@ trait ManagesViewRecords
             $html = '<p>' . e($this->previewFailedMessage($e)) . '</p>';
         }
 
-        return response($html)->header('Content-Security-Policy', "sandbox; script-src 'none'; object-src 'none'");
+        return response($html)->header('Content-Security-Policy', "sandbox allow-same-origin; script-src 'none'; object-src 'none'");
     }
 
     public function update_onDuplicate(int|string $recordId): RedirectResponse

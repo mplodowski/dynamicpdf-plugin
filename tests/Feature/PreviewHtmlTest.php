@@ -11,20 +11,21 @@ describe('HTML preview', function () {
 
         $response = (new Templates)->html($template->id);
 
-        expect($response->headers->get('Content-Security-Policy'))->toBe("sandbox; script-src 'none'; object-src 'none'")
+        expect($response->headers->get('Content-Security-Policy'))->toBe("sandbox allow-same-origin; script-src 'none'; object-src 'none'")
             ->and($response->getContent())->toContain('<p>Hello</p>');
     });
 
-    it('keeps the preview iframes fully sandboxed', function () {
-        expect(file_get_contents(plugins_path('renatio/dynamicpdf/controllers/templates/preview.php')))->toContain('<iframe sandbox src=')
-            ->and(file_get_contents(plugins_path('renatio/dynamicpdf/controllers/layouts/preview.php')))->toContain('<iframe sandbox src=');
-    });
+    it('lets the preview iframes load fonts but never run scripts', function (string $definition) {
+        expect(file_get_contents(plugins_path("renatio/dynamicpdf/controllers/{$definition}/preview.php")))
+            ->toContain('<iframe sandbox="allow-same-origin" src=')
+            ->not->toContain('allow-scripts');
+    })->with(['templates', 'layouts']);
 
     it('serves the layout HTML sandboxed', function () {
         $layout = $this->createLayout(['content_html' => '<html><body>Hello</body></html>']);
 
         $response = (new Layouts)->html($layout->id);
 
-        expect($response->headers->get('Content-Security-Policy'))->toBe("sandbox; script-src 'none'; object-src 'none'");
+        expect($response->headers->get('Content-Security-Policy'))->toBe("sandbox allow-same-origin; script-src 'none'; object-src 'none'");
     });
 });
