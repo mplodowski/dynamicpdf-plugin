@@ -30,6 +30,8 @@ trait ManagesViewRecords
     use ChecksFormPermissions;
     use RendersPreviewErrors;
 
+    protected const CSS_PIXELS_PER_POINT = 96 / 72;
+
     protected function setSettingsContext(): void
     {
         BackendMenu::setContext('October.System', 'system', 'settings');
@@ -224,8 +226,6 @@ trait ManagesViewRecords
     }
 
     /**
-     * CSS pixels of the page the PDF preview renders on (dompdf sizes are in points, 72 per inch).
-     *
      * @return array{int, int}
      */
     protected function previewPageSize(Layout|Template $model): array
@@ -235,7 +235,7 @@ trait ManagesViewRecords
 
         $points = $dompdf->setPaper(...$paper)->getPaperSize();
 
-        return [(int) round($points[2] * 96 / 72), (int) round($points[3] * 96 / 72)];
+        return [(int) round($points[2] * self::CSS_PIXELS_PER_POINT), (int) round($points[3] * self::CSS_PIXELS_PER_POINT)];
     }
 
     protected function previewHtml(Layout|Template $model): string
