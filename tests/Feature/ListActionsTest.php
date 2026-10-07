@@ -140,8 +140,8 @@ describe('List actions', function () {
 
         expect($list)->toContain($confirm('Free layout'))
             ->not->toContain($confirm('Used layout'))
-            ->toContain('Used by 2 templates')
-            ->and($form)->toContain('Used by 2 templates')
+            ->toContain('Used by templates: 2')
+            ->and($form)->toContain('Used by templates: 2')
             ->not->toContain($confirm('Used layout'));
     });
 

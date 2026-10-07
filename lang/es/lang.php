@@ -74,7 +74,7 @@ return [
         'view_detached' => 'Este diseño ya no sigue el archivo de vista `:view`, por lo que no recibe las actualizaciones del plugin. **:reset** restaura la versión del archivo de vista.',
         'delete_in_use' => 'Este diseño no se puede eliminar porque lo usan estas plantillas: :templates. Asígneles otro diseño primero.',
         'used_by' => 'Usado por',
-        'delete_used_by' => 'Usado por :count plantilla|Usado por :count plantillas',
+        'delete_used_by' => 'Plantillas que lo usan: :count',
         'css_reads_files' => 'El CSS no puede leer archivos del servidor. Quite los @import de archivos LESS, @import (inline) y las funciones data-uri(), image-size(), image-width() e image-height(); se permiten las importaciones de CSS simples.',
         'css_invalid' => 'No se pudo compilar el CSS del diseño.',
     ],

@@ -74,7 +74,7 @@ return [
         'view_detached' => 'Questo layout non segue più il file di vista `:view`, quindi gli aggiornamenti del plugin non vengono applicati. **:reset** ripristina la versione del file di vista.',
         'delete_in_use' => 'Questo layout non può essere eliminato perché lo usano questi modelli: :templates. Assegna loro prima un altro layout.',
         'used_by' => 'Usato da',
-        'delete_used_by' => 'Usato da :count modello|Usato da :count modelli',
+        'delete_used_by' => 'Modelli che lo usano: :count',
         'css_reads_files' => 'Il CSS non può leggere file dal server. Rimuovi gli @import di file LESS, @import (inline) e le funzioni data-uri(), image-size(), image-width() e image-height(); gli import CSS semplici sono consentiti.',
         'css_invalid' => 'Impossibile compilare il CSS del layout.',
     ],

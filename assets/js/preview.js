@@ -19,11 +19,16 @@ oc.registerControl('dynamicpdf-close-tab', class extends oc.ControlBase {
     }
 
     onClick(event) {
-        if (!window.opener && history.length !== 1) {
+        if (!window.opener) {
             return;
         }
 
         event.preventDefault();
         window.close();
+        setTimeout(() => {
+            if (!window.closed) {
+                window.location.href = this.element.href;
+            }
+        }, 200);
     }
 });

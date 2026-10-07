@@ -74,7 +74,7 @@ return [
         'view_detached' => 'Ten układ nie korzysta już z pliku widoku `:view`, więc aktualizacje pluginu go nie obejmują. **:reset** przywraca wersję z pliku widoku.',
         'delete_in_use' => 'Tego układu nie można usunąć, ponieważ używają go szablony: :templates. Najpierw przypisz im inny układ.',
         'used_by' => 'Używany przez',
-        'delete_used_by' => 'Używany przez :count szablon|Używany przez :count szablony|Używany przez :count szablonów',
+        'delete_used_by' => 'Używają go szablony: :count',
         'css_reads_files' => 'CSS nie może odczytywać plików serwera. Usuń @import plików LESS, @import (inline) oraz funkcje data-uri(), image-size(), image-width() i image-height(); zwykłe importy CSS są dozwolone.',
         'css_invalid' => 'Nie udało się skompilować CSS układu.',
     ],

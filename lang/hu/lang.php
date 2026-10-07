@@ -74,7 +74,7 @@ return [
         'view_detached' => 'Ez az elrendezés már nem követi a(z) `:view` nézetfájlt, így a bővítmény frissítései nem vonatkoznak rá. A(z) **:reset** gomb visszaállítja a nézetfájl szerinti változatot.',
         'delete_in_use' => 'Ez az elrendezés nem törölhető, mert ezek a sablonok használják: :templates. Előbb rendeljen hozzájuk másik elrendezést.',
         'used_by' => 'Használja',
-        'delete_used_by' => ':count sablon használja|:count sablon használja',
+        'delete_used_by' => 'Ennyi sablon használja: :count',
         'css_reads_files' => 'A CSS nem olvashat fájlokat a szerverről. Távolítsa el a LESS-fájlok @importját, az @import (inline) utasítást, valamint a data-uri(), image-size(), image-width() és image-height() függvényeket; az egyszerű CSS-importok engedélyezettek.',
         'css_invalid' => 'Az elrendezés CSS-kódját nem sikerült lefordítani.',
     ],

@@ -74,7 +74,7 @@ return [
         'view_detached' => 'Cette mise en page ne suit plus le fichier de vue `:view`, les mises à jour du plugin ne s\'y appliquent donc pas. **:reset** restaure la version du fichier de vue.',
         'delete_in_use' => 'Cette mise en page ne peut pas être supprimée car ces modèles l\'utilisent : :templates. Attribuez-leur d\'abord une autre mise en page.',
         'used_by' => 'Utilisée par',
-        'delete_used_by' => 'Utilisée par :count modèle|Utilisée par :count modèles',
+        'delete_used_by' => 'Modèles qui l\'utilisent : :count',
         'css_reads_files' => 'Le CSS ne doit pas lire de fichiers du serveur. Supprimez les @import de fichiers LESS, @import (inline) ainsi que les fonctions data-uri(), image-size(), image-width() et image-height() ; les imports CSS simples sont autorisés.',
         'css_invalid' => 'Le CSS de la mise en page n\'a pas pu être compilé.',
     ],

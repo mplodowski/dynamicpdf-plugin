@@ -74,7 +74,7 @@ return [
         'view_detached' => 'Tento layout už nevychází ze souboru pohledu `:view`, takže se na něj aktualizace pluginu nevztahují. **:reset** obnoví verzi ze souboru pohledu.',
         'delete_in_use' => 'Tento layout nelze smazat, protože ho používají tyto šablony: :templates. Nejprve jim přiřaďte jiný layout.',
         'used_by' => 'Použito v',
-        'delete_used_by' => 'Použito v :count šabloně|Použito ve :count šablonách|Použito v :count šablonách',
+        'delete_used_by' => 'Používají ho šablony: :count',
         'css_reads_files' => 'CSS nesmí číst soubory na serveru. Odstraňte @import souborů LESS, @import (inline) a funkce data-uri(), image-size(), image-width() a image-height(); běžné importy CSS jsou povoleny.',
         'css_invalid' => 'CSS layoutu se nepodařilo zkompilovat.',
     ],

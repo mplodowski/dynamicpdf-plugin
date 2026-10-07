@@ -74,7 +74,7 @@ return [
         'view_detached' => 'Deze lay-out volgt het view-bestand `:view` niet meer, dus plugin-updates worden er niet op toegepast. **:reset** zet de versie uit het view-bestand terug.',
         'delete_in_use' => 'Deze lay-out kan niet worden verwijderd omdat deze sjablonen hem gebruiken: :templates. Wijs ze eerst een andere lay-out toe.',
         'used_by' => 'Gebruikt door',
-        'delete_used_by' => 'Gebruikt door :count sjabloon|Gebruikt door :count sjablonen',
+        'delete_used_by' => 'Gebruikt door sjablonen: :count',
         'css_reads_files' => 'De CSS mag geen bestanden van de server lezen. Verwijder @import van LESS-bestanden, @import (inline) en de functies data-uri(), image-size(), image-width() en image-height(); gewone CSS-imports zijn toegestaan.',
         'css_invalid' => 'De CSS van de lay-out kon niet worden gecompileerd.',
     ],

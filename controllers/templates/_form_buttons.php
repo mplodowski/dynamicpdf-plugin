@@ -78,7 +78,7 @@
         <?php endif ?>
 
         <?php $name = ['name' => $formModel->{$formModel->labelAttribute()}] ?>
-        <?php $usedBy = $formModel instanceof Renatio\DynamicPDF\Models\Layout ? $formModel->usedByCount() : 0 ?>
+        <?php $usedBy = $formModel instanceof Renatio\DynamicPDF\Models\Layout && ! $formModel->followsView() ? $formModel->usedByCount() : 0 ?>
         <?php if ($formModel->followsView()): ?>
             <?php if ($formModel->isCustomised() && $this->formCheckPermission('modelUpdate')): ?>
                 <?= Ui::ajaxButton(
@@ -91,7 +91,7 @@
                 ) ?>
             <?php endif ?>
         <?php elseif ($usedBy > 0 && $this->formCheckPermission('modelDelete')): ?>
-            <?php $usedByText = trans_choice('renatio.dynamicpdf::lang.layout.delete_used_by', $usedBy, ['count' => $usedBy]) ?>
+            <?php $usedByText = trans('renatio.dynamicpdf::lang.layout.delete_used_by', ['count' => $usedBy]) ?>
             <span class="pull-right" data-tooltip-text="<?= e($usedByText) ?>">
                 <?= Ui::iconButton(
                     icon: 'oc-icon-delete',

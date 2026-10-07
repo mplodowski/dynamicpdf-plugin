@@ -9,6 +9,7 @@
     <?php if (BackendAuth::userHasAccess($permission . '.preview')): ?>
         <a href="<?= Backend::url("renatio/dynamicpdf/{$definition}/previewpdf/{$record->id}") ?>"
            target="_blank"
+           rel="opener"
            class="btn btn-sm btn-primary"
            data-tooltip-text="<?= e(trans('renatio.dynamicpdf::lang.templates.preview_pdf')) ?>"
            aria-label="<?= e(trans('renatio.dynamicpdf::lang.templates.preview_pdf')) ?>"><i class="octo-icon-file-pdf-o icon-lg m-0" aria-hidden="true"></i></a>
@@ -37,7 +38,7 @@
                     aria-label="<?= e(trans('backend::lang.form.reset_default')) ?>"><i class="octo-icon-refresh icon-lg m-0" aria-hidden="true"></i></button>
         <?php endif ?>
     <?php elseif ($usedBy > 0 && BackendAuth::userHasAccess($permission . '.delete')): ?>
-        <?php $usedByText = trans_choice('renatio.dynamicpdf::lang.layout.delete_used_by', $usedBy, ['count' => $usedBy]) ?>
+        <?php $usedByText = trans('renatio.dynamicpdf::lang.layout.delete_used_by', ['count' => $usedBy]) ?>
         <span data-tooltip-text="<?= e($usedByText) ?>">
             <button type="button"
                     class="btn btn-sm btn-danger"
