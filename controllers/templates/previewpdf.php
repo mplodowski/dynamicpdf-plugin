@@ -1,8 +1,8 @@
 <?php Block::put('breadcrumb') ?>
     <ul>
         <li>
-            <a href="<?= Backend::url('renatio/dynamicpdf/templates') ?>">
-                <?= e(trans('renatio.dynamicpdf::lang.templates.label')) ?>
+            <a href="<?= e($this->listUrl()) ?>">
+                <?= e($this->listLabel('label')) ?>
             </a>
         </li>
         <li><?= e($this->pageTitle) ?></li>
@@ -12,10 +12,10 @@
 <?php if ($this->fatalError) : ?>
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>
     <p>
-        <a href="<?= Backend::url('renatio/dynamicpdf/templates') ?>"
+        <a href="<?= e($this->listUrl()) ?>"
            class="btn btn-default"
            data-control="dynamicpdf-close-tab">
-            <?= e(trans('renatio.dynamicpdf::lang.templates.return')) ?>
+            <?= e($this->listLabel('return')) ?>
         </a>
     </p>
 <?php endif ?>

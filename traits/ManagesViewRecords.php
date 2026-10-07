@@ -2,6 +2,7 @@
 
 namespace Renatio\DynamicPDF\Traits;
 
+use Backend\Facades\Backend;
 use Backend\Facades\BackendMenu;
 use Dompdf\Exception as DompdfException;
 use Illuminate\Http\RedirectResponse;
@@ -58,6 +59,16 @@ trait ManagesViewRecords
         return $response;
     }
 
+    protected function listUrl(): string
+    {
+        return Backend::url($this->asExtension('FormController')->getConfig('defaultRedirect'));
+    }
+
+    protected function listLabel(string $key): string
+    {
+        return trans('renatio.dynamicpdf::lang.' . strtolower(class_basename(static::class)) . ".{$key}");
+    }
+
     protected function appendRecordNameToTitle(): void
     {
         $model = $this->formGetModel();
@@ -109,7 +120,7 @@ trait ManagesViewRecords
         }
 
         try {
-            $html = (new PreviewFonts)->inline($model->getHtmlAttribute());
+            $html = $this->previewHtml($model);
         } catch (TwigError $e) {
             $html = '<p>' . e($this->previewFailedMessage($e)) . '</p>';
         }
@@ -153,7 +164,7 @@ trait ManagesViewRecords
         try {
             $preview = $pdf
                 ? base64_encode($this->loadPreviewPdf($model)->allowRemoteApplicationAssets()->output())
-                : (new PreviewFonts)->inline($model->getHtmlAttribute());
+                : $this->previewHtml($model);
         } catch (TwigError $e) {
             throw new ApplicationException($this->previewFailedMessage($e));
         } catch (DompdfException $e) {
@@ -183,11 +194,20 @@ trait ManagesViewRecords
     {
         $this->requireFormPermission('modelUpdate');
 
-        $this->formFindModelObject($recordId)->resetToView();
+        $this->resetToView($this->formFindModelObject($recordId));
 
         Flash::success(trans('renatio.dynamicpdf::lang.templates.reset_success'));
 
         return redirect()->refresh();
+    }
+
+    protected function resetToView(Layout|Template $model): void
+    {
+        if (! $model->followsView()) {
+            throw new ApplicationException(trans('renatio.dynamicpdf::lang.templates.reset_view_only'));
+        }
+
+        $model->resetToView();
     }
 
     public function update_onDelete(int|string|null $recordId = null): mixed
@@ -209,22 +229,25 @@ trait ManagesViewRecords
     protected function previewPageSize(Layout|Template $model): array
     {
         $dompdf = app('dompdf');
-        $options = $dompdf->getOptions();
-        $template = $model instanceof Template ? $model : null;
+        $template = $model instanceof Template ? $model : new Template;
 
-        $points = $dompdf->setPaper(
-            $template?->size ?: $options->getDefaultPaperSize(),
-            $template?->orientation ?: $options->getDefaultPaperOrientation(),
-        )->getPaperSize();
+        $points = $dompdf->setPaper(...$template->paper($dompdf->getOptions()))->getPaperSize();
 
         return [(int) round($points[2] * 96 / 72), (int) round($points[3] * 96 / 72)];
     }
 
-    protected function loadPreviewPdf(Layout|Template $model): PDFWrapper
+    protected function previewHtml(Layout|Template $model): string
     {
+        return (new PreviewFonts)->inline($this->loadPreviewPdf($model, forBrowser: true)->getDomPDF()->outputHtml());
+    }
+
+    protected function loadPreviewPdf(Layout|Template $model, bool $forBrowser = false): PDFWrapper
+    {
+        $pdf = PDF::forBrowser($forBrowser);
+
         $pdf = $model instanceof Template
-            ? PDF::loadTemplateModel($model, $model->sampleData())
-            : PDF::loadLayoutModel($model);
+            ? $pdf->loadTemplateModel($model, $model->sampleData())
+            : $pdf->loadLayoutModel($model);
 
         return $pdf->setIsPhpEnabled(false);
     }

@@ -247,15 +247,27 @@ class Template extends Model
     }
 
     /**
+     * @return array{string|array<int, float>, string}
+     */
+    public function paper(?Options $options = null): array
+    {
+        $options ??= new Options(app('dompdf.options'));
+
+        return [
+            $this->size ?: $options->getDefaultPaperSize(),
+            $this->orientation ?: $options->getDefaultPaperOrientation(),
+        ];
+    }
+
+    /**
      * @param  object  $fields
      */
     public function filterFields($fields, ?string $context = null): void
     {
         $this->describeViewStatus($fields);
 
-        $options = new Options(app('dompdf.options'));
-        $size = $options->getDefaultPaperSize();
-        $orientation = Arr::get(self::getOrientationOptions(), $options->getDefaultPaperOrientation());
+        [$size, $orientation] = (new self)->paper();
+        $orientation = Arr::get(self::getOrientationOptions(), $orientation);
 
         if (isset($fields->size) && is_string($size)) {
             $fields->size->emptyOption(trans('renatio.dynamicpdf::lang.options.default', ['value' => self::sizeLabel($size)]));

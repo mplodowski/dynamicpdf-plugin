@@ -1,7 +1,7 @@
 <?php
-    $definition = $record instanceof Renatio\DynamicPDF\Models\Layout ? 'layouts' : 'templates';
+    $definition = $this->definitionOf($record);
     $requestData = "id: {$record->id}, definition: '{$definition}'";
-    $permission = "renatio.dynamicpdf.manage_{$definition}";
+    $permission = $this->permission($definition);
     $name = ['name' => $record->{$record->labelAttribute()}];
     $usedBy = $definition === 'layouts' ? $record->usedByCount() : 0;
 ?>
