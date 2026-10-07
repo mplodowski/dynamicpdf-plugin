@@ -1,20 +1,32 @@
 <?php
 
+use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
-use Renatio\DynamicPDF\Models\Template;
 
 describe('Demo templates', function () {
-    it('renders the header and footer demo on the two pages its single page break asks for', function () {
-        PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.header_and_footer']);
-        PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.header_and_footer']);
-
-        $wrapper = app('dynamicpdf');
-        $html = $wrapper->parseTemplate(Template::byCode('renatio.dynamicpdf::pdf.header_and_footer'));
-
-        /** The demo references its stylesheet, fonts and background by application URL; read them from disk so the page count is measured styled and offline. */
-        $wrapper->loadHTML(str_replace(url('/') . '/', base_path() . '/', $html));
-        $wrapper->render();
-
-        expect($wrapper->getDomPDF()->getCanvas()->get_page_count())->toBe(2);
+    beforeEach(function () {
+        PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice', 'renatio.dynamicpdf::pdf.header_and_footer']);
+        PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.default', 'renatio.dynamicpdf::pdf.layouts.header_and_footer']);
+        $GLOBALS['_dompdf_warnings'] = [];
     });
+
+    it('renders the header and footer demo on the two pages its single page break asks for', function () {
+        $pdf = PDF::loadTemplate('renatio.dynamicpdf::pdf.header_and_footer');
+        $pdf->render();
+
+        expect($pdf->getDomPDF()->getCanvas()->get_page_count())->toBe(2);
+    });
+
+    it('loads the demo stylesheet, fonts and images with remote assets disabled', function (string $code) {
+        $pdf = PDF::loadTemplate($code);
+
+        expect($pdf->getDomPDF()->getOptions()->getIsRemoteEnabled())->toBeFalse();
+
+        $pdf->render();
+
+        expect(implode("\n", $GLOBALS['_dompdf_warnings']))
+            ->not->toContain('Error loading')
+            ->not->toContain('Permission denied')
+            ->not->toContain('remote file download is disabled');
+    })->with(['renatio.dynamicpdf::pdf.invoice', 'renatio.dynamicpdf::pdf.header_and_footer']);
 });

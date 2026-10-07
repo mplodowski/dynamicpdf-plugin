@@ -8,30 +8,30 @@ pageNumbersColor = "#6b7280"
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title>Header and Footer</title>
-        <link href="{{ 'plugins/renatio/dynamicpdf/assets/css/tailwind.css'|app }}" rel="stylesheet">
+        <link href="{{ 'plugins/renatio/dynamicpdf/assets/css/tailwind.css'|pdfasset }}" rel="stylesheet">
         <style>
             @font-face {
                 font-family: 'Open Sans';
-                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf'|app }});
+                src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf'|pdfasset }}');
             }
 
             @font-face {
                 font-family: 'Open Sans';
                 font-weight: bold;
-                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf'|app }});
+                src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf'|pdfasset }}');
             }
 
             @font-face {
                 font-family: 'Open Sans';
                 font-style: italic;
-                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf'|app }});
+                src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf'|pdfasset }}');
             }
 
             @font-face {
                 font-family: 'Open Sans';
                 font-style: italic;
                 font-weight: bold;
-                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf'|app }});
+                src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf'|pdfasset }}');
             }
 
             @page {
@@ -48,7 +48,7 @@ pageNumbersColor = "#6b7280"
             }
         </style>
     </head>
-    <body style="background-image: url({{ 'plugins/renatio/dynamicpdf/assets/img/bg.jpg'|app }}); background-size: 100% 100%;"
+    <body style="background-image: url('{{ 'plugins/renatio/dynamicpdf/assets/img/bg.jpg'|pdfasset }}'); background-size: 100% 100%;"
           class="bg-left-top bg-no-repeat pt-36">
         <div class="h-32 fixed top-0 px-12 mt-20 w-full text-gray-500">
             This is example header text

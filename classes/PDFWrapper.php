@@ -40,6 +40,10 @@ class PDFWrapper extends PDF
 
     protected ?TwigRenderer $twig = null;
 
+    protected bool $forBrowser = false;
+
+    protected ?LocalFiles $localFiles = null;
+
     /** @var array{before: string, file: array{string, string, string}}|null */
     protected ?array $baseBeforeFile = null;
 
@@ -49,6 +53,35 @@ class PDFWrapper extends PDF
 
         $this->applyCertificatePolicy();
         $this->ensureFontDir();
+    }
+
+    /**
+     * Copies are kept until the wrapper is gone, because a second render() (setEncryption()
+     * calls it) reads the background image again.
+     */
+    public function __destruct()
+    {
+        $this->localFiles?->delete();
+    }
+
+    /**
+     * Renders HTML for a browser: |pdfasset and background_img give URLs instead of local paths.
+     */
+    public function forBrowser(bool $forBrowser = true): self
+    {
+        $this->forBrowser = $forBrowser;
+
+        return $this;
+    }
+
+    public function isForBrowser(): bool
+    {
+        return $this->forBrowser;
+    }
+
+    public function localPath(File $file): string
+    {
+        return ($this->localFiles ??= new LocalFiles)->path($file);
     }
 
     /**
@@ -222,6 +255,8 @@ class PDFWrapper extends PDF
      */
     public function loadTemplate(string $code, array $data = [], ?string $encoding = null, ?string $layout = null, ?string $locale = null): self
     {
+        $this->localFiles?->delete();
+
         $template = Template::byCode($code);
         $template->fillFromLocalizedView($locale);
 
@@ -254,6 +289,8 @@ class PDFWrapper extends PDF
      */
     public function loadLayout(string $code, array $data = [], ?string $encoding = null, ?string $locale = null): self
     {
+        $this->localFiles?->delete();
+
         $layout = Layout::byCode($code);
 
         $layout->fillFromLocalizedView($locale);

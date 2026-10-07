@@ -15,6 +15,7 @@ use RuntimeException;
  * @method static PDFWrapper pageNumbers(string $text = 'Page {PAGE_NUM} of {PAGE_COUNT}', string $position = 'bottom-center', float $size = 9, ?string $font = null, float $margin = 20, array<int, float> $color = [0, 0, 0])
  * @method static \System\Models\File toFile(string $filename = 'document.pdf', bool $public = true)
  * @method static PDFWrapper encrypt(string $password, string $ownerPassword = '', array<int, string> $permissions = [])
+ * @method static PDFWrapper forBrowser(bool $forBrowser = true)
  * @method static PDFWrapper allowRemoteApplicationAssets()
  * @method static PDFWrapper allowSelfSignedCertificates()
  * @method static PDFWrapper loadHTML(string $string, ?string $encoding = null)
