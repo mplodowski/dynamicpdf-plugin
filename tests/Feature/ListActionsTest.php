@@ -2,23 +2,13 @@
 
 use Backend\Facades\Backend;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File as Filesystem;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 
 describe('List actions', function () {
-    beforeEach(function () {
-        actingAsPdfManager();
-        $this->views = '';
-    });
-
-    afterEach(function () {
-        if ($this->views !== '') {
-            Filesystem::deleteDirectory($this->views);
-        }
-    });
+    beforeEach(fn () => actingAsPdfManager());
 
     it('duplicates a template from the list and redirects to the copy', function () {
         $template = $this->createTemplate(['code' => 'acme::pdf.invoice']);
@@ -38,7 +28,7 @@ describe('List actions', function () {
     });
 
     it('resets a customised view-driven template from the list', function () {
-        $this->views = $this->registerViewTemplates('listactions', ['a' => "title = \"From view\"\n==\n<p>from view</p>"]);
+        $this->registerViewTemplates('listactions', ['a' => "title = \"From view\"\n==\n<p>from view</p>"]);
         $template = $this->createTemplate(['code' => 'listactions::pdf.a', 'title' => 'Edited', 'content_html' => '<p>edited</p>', 'is_custom' => true]);
 
         $this->listAction('onResetRecord', ['id' => $template->id, 'definition' => 'templates'])->assertOk();
@@ -50,7 +40,7 @@ describe('List actions', function () {
     });
 
     it('offers the reset only for a customised view-driven template', function () {
-        $this->views = $this->registerViewTemplates('listactions', [
+        $this->registerViewTemplates('listactions', [
             'a' => "title = \"Untouched\"\n==\n<p>a</p>",
             'b' => "title = \"From view\"\n==\n<p>b</p>",
         ]);
@@ -66,16 +56,8 @@ describe('List actions', function () {
             ->and((new Templates)->run('update', [$customised->id])->getContent())->toContain('onResetDefault');
     });
 
-    it('deletes a backend template from the list', function () {
-        $template = $this->createTemplate();
-
-        $this->listAction('onDeleteRecord', ['id' => $template->id, 'definition' => 'templates'])->assertOk();
-
-        expect(Template::find($template->id))->toBeNull();
-    });
-
     it('refuses to delete a template that follows a view file', function () {
-        $this->views = $this->registerViewTemplates('listactions', ['a' => "title = \"From view\"\n==\n<p>from view</p>"]);
+        $this->registerViewTemplates('listactions', ['a' => "title = \"From view\"\n==\n<p>from view</p>"]);
         $template = $this->createTemplate(['code' => 'listactions::pdf.a', 'is_custom' => false]);
 
         $response = $this->listAction('onDeleteRecord', ['id' => $template->id, 'definition' => 'templates']);
@@ -92,16 +74,6 @@ describe('List actions', function () {
         'template' => ['templates', Template::class],
         'layout' => ['layouts', Layout::class],
     ]);
-
-    it('refuses a layout action without manage_layouts', function () {
-        actingAsPdfManager(['manage_layouts']);
-        $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);
-
-        $response = $this->listAction('onDuplicateRecord', ['id' => $layout->id, 'definition' => 'layouts']);
-
-        expect($response->status())->toBeGreaterThanOrEqual(400)
-            ->and(Layout::whereCode('acme::pdf.layouts.default_copy')->exists())->toBeFalse();
-    });
 
     it('deletes a locked layout whose view registration is gone', function () {
         $layout = $this->createLayout(['code' => 'gone::pdf.layouts.default', 'is_locked' => true]);

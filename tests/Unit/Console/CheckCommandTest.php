@@ -57,7 +57,7 @@ describe('dynamicpdf:check', function () {
 
         Artisan::call('dynamicpdf:check');
 
-        expect(Artisan::output())->toContain('WARN');
+        expect(Artisan::output())->toContain('enabled: templates can run PHP on the server');
     });
 
     it('fails for a registered code without a view file', function () {

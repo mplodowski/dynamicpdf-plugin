@@ -9,8 +9,6 @@ function renderHtml(string $code, ?string $locale = null): string
 }
 
 describe('Localized view files', function () {
-    afterEach(fn () => File::deleteDirectory($this->directory));
-
     describe('template', function () {
         beforeEach(function () {
             $this->enableTranslation('de');

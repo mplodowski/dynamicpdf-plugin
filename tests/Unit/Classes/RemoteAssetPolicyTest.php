@@ -6,11 +6,8 @@ use Renatio\DynamicPDF\Classes\RemoteAssetPolicy;
 describe('RemoteAssetPolicy', function () {
     beforeEach(function () {
         $this->basePath = base_path();
-        $this->root = sys_get_temp_dir() . '/dynamicpdf-root-' . uniqid();
-        mkdir($this->root);
+        $this->root = $this->temporaryDirectory('root');
     });
-
-    afterEach(fn () => rmdir($this->root));
 
     it('keeps the project root out of the preview chroot when there is no public folder', function () {
         app()->setBasePath($this->root);

@@ -36,7 +36,7 @@ describe('Backend preview tools', function () {
     });
 
     it('duplicates a layout as an unlocked copy with its background image', function () {
-        $uploads = sys_get_temp_dir() . '/dynamicpdf-uploads-' . uniqid();
+        $uploads = $this->temporaryDirectory('uploads');
         config(['filesystems.disks.uploads.root' => $uploads]);
         $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default', 'is_locked' => true]);
         $image = new File;
@@ -46,7 +46,6 @@ describe('Backend preview tools', function () {
 
         $response = (new Layouts)->update_onDuplicate($layout->id);
         $copy = Layout::whereCode('acme::pdf.layouts.default_copy')->firstOrFail();
-        Filesystem::deleteDirectory($uploads);
 
         expect($copy->getAttribute('is_locked'))->toBeFalsy()
             ->and($response->getTargetUrl())->toContain('layouts/update/' . $copy->id)
@@ -75,8 +74,6 @@ describe('View-driven template save', function () {
         $this->template = $this->createTemplate(['code' => 'viewdriven::pdf.a', 'is_custom' => false, 'content_html' => '<p>v1</p>', 'title' => 'a']);
         actingAsPdfManager();
     });
-
-    afterEach(fn () => Filesystem::deleteDirectory($this->views));
 
     it('stays view-driven when only the sample data is saved after the view file changed on disk', function () {
         Filesystem::put($this->views . '/pdf/a.htm', "title = \"a\"\n==\n<p>v2</p>");

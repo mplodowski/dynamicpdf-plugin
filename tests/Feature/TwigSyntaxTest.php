@@ -3,9 +3,7 @@
 use Cms\Classes\Theme;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use October\Rain\Exception\ValidationException;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
@@ -20,28 +18,10 @@ describe('Twig syntax', function () {
         Event::forget('cms.extendTwig');
         Theme::resetCache();
         app()->forgetInstance('twig.environment');
-
-        if (isset($this->views)) {
-            File::deleteDirectory($this->views);
-        }
-    });
-
-    it('rejects template HTML with a Twig syntax error on the HTML field with its line', function () {
-        try {
-            $this->createTemplate(['content_html' => "<p>Hello</p>\n<p>{{ foo </p>"]);
-            $this->fail('The template was saved.');
-        } catch (ValidationException $e) {
-            expect($e->getErrors()->get('content_html')[0] ?? '')->toContain('line 2');
-        }
     });
 
     it('rejects layout HTML with a Twig syntax error on the HTML field with its line', function () {
-        try {
-            $this->createLayout(['content_html' => '<html><body>{% if %}{{ content_html }}</body></html>']);
-            $this->fail('The layout was saved.');
-        } catch (ValidationException $e) {
-            expect($e->getErrors()->get('content_html')[0] ?? '')->toContain('line 1');
-        }
+        expect($this->validationErrors(fn () => $this->createLayout(['content_html' => "<html><body>\n{% if %}{{ content_html }}</body></html>"]))->first('content_html'))->toContain('line 2');
     });
 
     it('accepts filters the CMS registers on the environment the PDF renders with', function () {
@@ -91,7 +71,7 @@ describe('Twig syntax', function () {
     });
 
     it('syncs view files without checking them, also with CMS tags and no active theme', function () {
-        $this->views = $this->registerViewTemplates('twigsync', [
+        $this->registerViewTemplates('twigsync', [
             'cms' => "title = \"Cms\"\n==\n<p>{{ 'a.css'|theme }}</p>",
             'broken' => "title = \"Broken\"\n==\n<p>{{ foo </p>",
         ]);

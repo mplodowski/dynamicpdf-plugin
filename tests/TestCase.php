@@ -3,10 +3,17 @@
 namespace Renatio\DynamicPDF\Tests;
 
 use Backend\Facades\Backend;
+use Closure;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
+use LogicException;
 use Monolog\Handler\NullHandler;
+use October\Rain\Exception\ValidationException;
+use October\Rain\Foundation\Application;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
@@ -15,15 +22,81 @@ use System\Models\SiteDefinition;
 
 abstract class TestCase extends OctoberPestTestCase
 {
+    protected static ?string $fontDirectory = null;
+
+    /** @var array<int, string> */
+    protected array $temporaryDirectories = [];
+
     public function setUpOctoberPlugin(): void
     {
         config([
             'logging.channels.dynamicpdf-tests' => ['driver' => 'monolog', 'handler' => NullHandler::class],
             'logging.default' => 'dynamicpdf-tests',
             'app.debug' => false,
+            'dompdf.options.font_dir' => self::fontDirectory(),
+            'dompdf.options.font_cache' => self::fontDirectory(),
         ]);
 
         parent::setUpOctoberPlugin();
+    }
+
+    public function tearDownOctoberPlugin(): void
+    {
+        try {
+            parent::tearDownOctoberPlugin();
+        } finally {
+            foreach ($this->temporaryDirectories as $directory) {
+                File::deleteDirectory($directory);
+            }
+
+            $this->temporaryDirectories = [];
+        }
+    }
+
+    public function temporaryDirectory(string $prefix): string
+    {
+        $directory = sys_get_temp_dir() . "/dynamicpdf-{$prefix}-" . Str::uuid();
+        File::ensureDirectoryExists($directory);
+
+        return $this->temporaryDirectories[] = $directory;
+    }
+
+    public function validationErrors(Closure $callback): MessageBag
+    {
+        try {
+            $callback();
+        } catch (ValidationException $e) {
+            return $e->getErrors();
+        }
+
+        $this->fail('No validation error was thrown.');
+    }
+
+    public function useThemesPath(string $path): void
+    {
+        $app = app();
+
+        if (! $app instanceof Application) {
+            throw new LogicException('Switching the themes path needs the October application.');
+        }
+
+        $app->useThemesPath($path);
+    }
+
+    /**
+     * One per process: dompdf fills it with font metrics that are slow to rebuild for every test.
+     */
+    protected static function fontDirectory(): string
+    {
+        if (self::$fontDirectory === null) {
+            $directory = sys_get_temp_dir() . '/dynamicpdf-fonts-' . Str::uuid();
+            File::ensureDirectoryExists($directory);
+            register_shutdown_function(fn () => (new Filesystem)->deleteDirectory($directory));
+
+            self::$fontDirectory = $directory;
+        }
+
+        return self::$fontDirectory;
     }
 
     /**
@@ -144,7 +217,7 @@ abstract class TestCase extends OctoberPestTestCase
     public function writeViewFiles(string $namespace, array $files, ?string $directory = null): string
     {
         if ($directory === null) {
-            $directory = sys_get_temp_dir() . '/dynamicpdf-views-' . uniqid();
+            $directory = $this->temporaryDirectory('views');
             View::addNamespace($namespace, $directory);
         }
 

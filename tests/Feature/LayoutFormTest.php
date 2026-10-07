@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\File;
 use October\Rain\Support\Facades\Site;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 
@@ -24,8 +23,6 @@ describe('Layout form', function () {
 
         actingAsPdfManager();
     });
-
-    afterEach(fn () => File::deleteDirectory($this->directory));
 
     it('renders a layout edited in the backend over its localized view', function () {
         $this->saveLayoutForm($this->layout->id, [

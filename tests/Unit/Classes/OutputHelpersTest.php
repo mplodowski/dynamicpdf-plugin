@@ -5,15 +5,12 @@ use Illuminate\Support\Facades\Storage;
 
 describe('Output helpers', function () {
     beforeEach(function () {
-        $this->uploads = sys_get_temp_dir() . '/dynamicpdf-uploads-' . uniqid();
+        $this->uploads = $this->temporaryDirectory('uploads');
         config(['filesystems.disks.uploads.root' => $this->uploads]);
         Storage::forgetDisk('uploads');
     });
 
-    afterEach(function () {
-        Storage::forgetDisk('uploads');
-        File::deleteDirectory($this->uploads);
-    });
+    afterEach(fn () => Storage::forgetDisk('uploads'));
 
     it('turns the document into an attachable file record', function () {
         $wrapper = app('dynamicpdf');

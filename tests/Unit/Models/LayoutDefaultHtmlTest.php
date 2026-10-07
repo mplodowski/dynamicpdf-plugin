@@ -13,7 +13,7 @@ use System\Models\File;
 
 describe('Default layout HTML', function () {
     beforeEach(function () {
-        $this->uploads = sys_get_temp_dir() . '/dynamicpdf-uploads-' . uniqid();
+        $this->uploads = $this->temporaryDirectory('uploads');
         config(['filesystems.disks.uploads.root' => $this->uploads]);
         Storage::forgetDisk('uploads');
         $fields = Yaml::parseFile(plugins_path('renatio/dynamicpdf/models/layout/fields.yaml'));
@@ -40,7 +40,6 @@ describe('Default layout HTML', function () {
 
     afterEach(function () {
         Storage::forgetDisk('uploads');
-        Filesystem::deleteDirectory($this->uploads);
         Filesystem::deleteDirectory(LocalFiles::directory());
     });
 

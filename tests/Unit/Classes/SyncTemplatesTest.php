@@ -18,12 +18,6 @@ describe('SyncTemplates', function () {
         PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
     });
 
-    afterEach(function () {
-        if (isset($this->views)) {
-            File::deleteDirectory($this->views);
-        }
-    });
-
     it('creates registered layouts and templates from their views', function () {
         (new SyncTemplates)->handle();
 
@@ -107,12 +101,12 @@ describe('SyncTemplates', function () {
     });
 
     it('writes a changed view file back to the row of a non-customised template', function () {
-        $this->views = $this->registerViewTemplates('syncviews', ['a' => "title = \"First\"\n==\n<p>v1</p>"]);
+        $views = $this->registerViewTemplates('syncviews', ['a' => "title = \"First\"\n==\n<p>v1</p>"]);
 
         $sync = new SyncTemplates;
         $sync->handle();
 
-        File::put($this->views . '/pdf/a.htm', "title = \"Second\"\n==\n<p>v2</p>");
+        File::put($views . '/pdf/a.htm', "title = \"Second\"\n==\n<p>v2</p>");
 
         $sync->handle();
 
@@ -125,7 +119,7 @@ describe('SyncTemplates', function () {
 
     it('keeps the stored row when the view of its layout cannot be read', function () {
         PDFManager::instance()->registerLayouts(['syncviews::pdf.layouts.gone']);
-        $this->views = $this->registerViewTemplates('syncviews', ['a' => "title = \"Second\"\nlayout = \"syncviews::pdf.layouts.gone\"\n==\n<p>v2</p>"]);
+        $this->registerViewTemplates('syncviews', ['a' => "title = \"Second\"\nlayout = \"syncviews::pdf.layouts.gone\"\n==\n<p>v2</p>"]);
         $this->createTemplate(['code' => 'syncviews::pdf.a', 'is_custom' => false, 'title' => 'First', 'content_html' => '<p>v1</p>']);
         Log::spy();
 
@@ -140,7 +134,7 @@ describe('SyncTemplates', function () {
     });
 
     it('keeps the stored row when the view file parses to no content', function () {
-        $this->views = $this->registerViewTemplates('syncviews', ['a' => '']);
+        $this->registerViewTemplates('syncviews', ['a' => '']);
         $this->createTemplate(['code' => 'syncviews::pdf.a', 'is_custom' => false, 'title' => 'First', 'content_html' => '<p>v1</p>']);
 
         $sync = new SyncTemplates;
@@ -155,7 +149,7 @@ describe('SyncTemplates', function () {
 
     it('keeps the stored layout when the view resolves its layout code to nothing', function () {
         $layout = $this->createLayout(['code' => 'syncviews::pdf.layouts.kept']);
-        $this->views = $this->registerViewTemplates('syncviews', ['a' => "title = \"Second\"\nlayout = \"syncviews::pdf.layouts.unknown\"\n==\n<p>v2</p>"]);
+        $this->registerViewTemplates('syncviews', ['a' => "title = \"Second\"\nlayout = \"syncviews::pdf.layouts.unknown\"\n==\n<p>v2</p>"]);
         $this->createTemplate(['code' => 'syncviews::pdf.a', 'is_custom' => false, 'title' => 'First', 'content_html' => '<p>v1</p>', 'layout_id' => $layout->id]);
 
         $sync = new SyncTemplates;
@@ -168,7 +162,7 @@ describe('SyncTemplates', function () {
     });
 
     it('leaves a customised template alone when its view file changes', function () {
-        $this->views = $this->registerViewTemplates('syncviews', ['a' => "title = \"Second\"\n==\n<p>v2</p>"]);
+        $this->registerViewTemplates('syncviews', ['a' => "title = \"Second\"\n==\n<p>v2</p>"]);
         $this->createTemplate(['code' => 'syncviews::pdf.a', 'is_custom' => true, 'title' => 'Mine', 'content_html' => '<p>mine</p>']);
 
         (new SyncTemplates)->handle();
@@ -177,12 +171,12 @@ describe('SyncTemplates', function () {
     });
 
     it('writes a changed view file back to the row of a locked layout', function () {
-        $this->views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"First\"\n==\np { color: red; }\n==\n<p>v1</p>"]);
+        $views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"First\"\n==\np { color: red; }\n==\n<p>v1</p>"]);
 
         $sync = new SyncTemplates;
         $sync->handle();
 
-        File::put($this->views . '/pdf/layouts/a.htm', "name = \"Second\"\n==\np { color: blue; }\n==\n<p>v2</p>");
+        File::put($views . '/pdf/layouts/a.htm', "name = \"Second\"\n==\np { color: blue; }\n==\n<p>v2</p>");
 
         $sync->handle();
 
@@ -200,7 +194,7 @@ describe('SyncTemplates', function () {
         expect(Parameter::get(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER))->toBeTruthy();
 
         Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 0);
-        $this->views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"Second\"\n==\n<p>v2</p>"]);
+        $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"Second\"\n==\n<p>v2</p>"]);
         $this->createLayout(['code' => 'syncviews::pdf.layouts.a', 'name' => 'First', 'content_html' => '<p>v1</p>', 'is_locked' => true]);
 
         $sync = new SyncTemplates;
@@ -218,7 +212,7 @@ describe('SyncTemplates', function () {
     });
 
     it('never refreshes an edited layout from its view', function () {
-        $this->views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"Second\"\n==\n<p>v2</p>"]);
+        $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"Second\"\n==\n<p>v2</p>"]);
         $this->createLayout(['code' => 'syncviews::pdf.layouts.a', 'name' => 'Mine', 'content_html' => '<p>mine</p>', 'is_locked' => false]);
 
         $sync = new SyncTemplates;
@@ -251,8 +245,8 @@ describe('SyncTemplates', function () {
     })->with(['previewpdf', 'html', 'preview']);
 
     it('reports no update for a view with empty optional sections on the next sync', function () {
-        $this->views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"First\"\n==\n\n==\n<p>v1</p>"]);
-        $this->registerViewTemplates('syncviews', ['a' => "title = \"First\"\ndescription = \"\"\n==\n<p>v1</p>"], $this->views);
+        $views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"First\"\n==\n\n==\n<p>v1</p>"]);
+        $this->registerViewTemplates('syncviews', ['a' => "title = \"First\"\ndescription = \"\"\n==\n<p>v1</p>"], $views);
         $sync = new SyncTemplates;
 
         $sync->handle();
@@ -278,9 +272,9 @@ describe('SyncTemplates', function () {
 
     it('stores empty form fields of a view-driven record as null so the next sync reports no update', function (string $kind) {
         if ($kind === 'template') {
-            $this->views = $this->registerViewTemplates('syncviews', ['a' => "title = \"First\"\n==\n<p>v1</p>"]);
+            $this->registerViewTemplates('syncviews', ['a' => "title = \"First\"\n==\n<p>v1</p>"]);
         } else {
-            $this->views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"First\"\n==\n<p>v1</p>"]);
+            $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"First\"\n==\n<p>v1</p>"]);
         }
 
         (new SyncTemplates)->handle();
