@@ -8,9 +8,10 @@ columns:
         label: renatio.dynamicpdf::lang.templates.code
         searchable: true
 
-    is_locked:
+    from_view:
         label: renatio.dynamicpdf::lang.templates.is_locked
         type: switch
+        sortable: false
 
     templates:
         label: renatio.dynamicpdf::lang.layout.used_by

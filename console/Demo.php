@@ -3,12 +3,12 @@
 namespace Renatio\DynamicPDF\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Renatio\DynamicPDF\Plugin;
-use System\Classes\PluginManager;
 use System\Models\Parameter;
 
 class Demo extends Command
@@ -50,19 +50,34 @@ class Demo extends Command
 
     protected function disableDemo(): int
     {
-        $plugin = PluginManager::instance()->findByNamespace('Renatio.DynamicPDF');
+        Parameter::set(Plugin::DEMO_PARAMETER, 0);
+        PDFManager::forgetInstance();
 
-        Template::whereIn('code', $plugin->registerPDFTemplates())->get()->each->delete();
+        /** @var Collection<int, Template> $templates */
+        $templates = Template::whereIn('code', Plugin::DEMO_TEMPLATES)->get();
 
-        foreach ($plugin->registerPDFLayouts() as $layout) {
-            Layout::where('code', $layout)->doesntHave('templates')->get()->each->delete();
+        foreach ($templates as $template) {
+            if ($template->is_custom) {
+                $this->warn("Kept {$template->code}, it was customized.");
 
-            if (Layout::where('code', $layout)->exists()) {
-                $this->warn("Kept {$layout}, templates still use it.");
+                continue;
             }
+
+            $template->delete();
         }
 
-        Parameter::set(Plugin::DEMO_PARAMETER, 0);
+        /** @var Collection<int, Layout> $layouts */
+        $layouts = Layout::whereIn('code', Plugin::DEMO_LAYOUTS)->get();
+
+        foreach ($layouts as $layout) {
+            if (Template::where('layout_id', $layout->id)->exists()) {
+                $this->warn("Kept {$layout->code}, templates still use it.");
+            } elseif (! $layout->is_locked) {
+                $this->warn("Kept {$layout->code}, it was customized.");
+            } else {
+                $layout->delete();
+            }
+        }
 
         $this->info('The demo templates were disabled.');
 

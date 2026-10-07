@@ -695,6 +695,9 @@ To disable the demo, run the following command:
 php artisan dynamicpdf:demo --disable
 ```
 
+It deletes the demo templates and layouts, but keeps a customized demo template and a demo layout that is customized or
+still used by a template, and says which ones it kept.
+
 The first example shows invoice with custom font and image embed.
 
 The second example shows usage of header & footer, page break and full background image.
