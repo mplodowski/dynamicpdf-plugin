@@ -12,15 +12,11 @@ use Throwable;
 class SyncTemplates
 {
     /** @var array<string, array<int, string>> */
-    protected array $report = ['created' => [], 'updated' => [], 'orphaned' => [], 'deleted' => [], 'failed' => []];
+    protected array $report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
-    /**
-     * A template whose view is no longer registered can carry translations and sample data
-     * edited in the backend, so it is only deleted on an explicit prune.
-     */
     public function handle(bool $prune = false): void
     {
-        $this->report = ['created' => [], 'updated' => [], 'orphaned' => [], 'deleted' => [], 'failed' => []];
+        $this->report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
         $registeredLayouts = PDFManager::instance()->listRegisteredLayouts();
 
@@ -33,9 +29,16 @@ class SyncTemplates
         }
 
         $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
-        $dbTemplates = Template::query()->pluck('is_custom', 'code')->all();
 
-        $this->handleOrphanedTemplates($dbTemplates, $registeredTemplates, $prune);
+        if (! $registeredTemplates && ! $prune) {
+            return;
+        }
+
+        if ($prune) {
+            $this->deleteOrphanedTemplates();
+        }
+
+        $dbTemplates = Template::query()->pluck('is_custom', 'code')->all();
 
         if (! $registeredTemplates) {
             return;
@@ -95,25 +98,23 @@ class SyncTemplates
     }
 
     /**
-     * @param  array<string, bool>  $dbTemplates
-     * @param  array<string, string>  $registeredTemplates
+     * @return array<int, string>
      */
-    protected function handleOrphanedTemplates(array $dbTemplates, array $registeredTemplates, bool $prune): void
+    public function orphanedTemplates(): array
     {
-        $orphaned = array_keys(array_diff_key(array_filter($dbTemplates, fn (mixed $isCustom): bool => ! $isCustom), $registeredTemplates));
+        return Template::query()
+            ->where('is_custom', false)
+            ->whereNotIn('code', array_keys(PDFManager::instance()->listRegisteredTemplates()))
+            ->orderBy('code')
+            ->pluck('code')
+            ->all();
+    }
 
-        if ($orphaned === []) {
-            return;
+    protected function deleteOrphanedTemplates(): void
+    {
+        foreach (Template::whereIn('code', $this->orphanedTemplates())->get() as $template) {
+            $this->write((string) $template->code, 'deleted', fn (): ?bool => $template->delete());
         }
-
-        if (! $prune) {
-            $this->report['orphaned'] = $orphaned;
-
-            return;
-        }
-
-        Template::whereIn('code', $orphaned)->get()->each->delete();
-        $this->report['deleted'] = $orphaned;
     }
 
     /**

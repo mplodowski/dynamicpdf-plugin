@@ -223,12 +223,12 @@ The method should return an array of PDF view names.
 Registered views are synchronized to the database when a *PDF Templates* page (the lists or a template or layout form)
 is displayed and when `php artisan dynamicpdf:sync` or `php artisan dynamicpdf:demo` runs, not on every request.
 Synchronization creates the missing templates and layouts, keeps the templates that are no longer registered (for
-example while their plugin is disabled, so their translations and sample data survive) and writes changed view files back to the rows of templates that are not customized and of layouts
-that are *From view*, so list search and sort work on the current values. Customized templates and layouts that are no
-longer *From view* are left alone. A code whose view file is missing is skipped and written to the application log once
-per process; a stored template or layout whose view file went missing or parses to no content, and a template whose
-layout code resolves to nothing, keep their stored content. Until a registered view is synchronized, `PDF::loadTemplate()`
-renders it straight from the file.
+example while their plugin is disabled, so their translations and sample data survive) and writes changed view files
+back to the rows of templates that are not customized and of layouts that are *From view*, so list search and sort work
+on the current values. Customized templates and layouts that are no longer *From view* are left alone. A code whose view
+file is missing is skipped and written to the application log once per process; a stored template or layout whose view
+file went missing or parses to no content, and a template whose layout code resolves to nothing, keep their stored
+content. Until a registered view is synchronized, `PDF::loadTemplate()` renders it straight from the file.
 
 Like templates, PDF layouts can be registered by adding the `registerPDFLayouts` method of the Plugin registration
 class (`Plugin.php`).
@@ -630,8 +630,9 @@ validating its arguments under the fake.
 
 `php artisan dynamicpdf:sync` synchronizes the registered PDF views with the database and lists what was created,
 updated or failed and which non-customized templates are no longer registered. `--prune` deletes those templates
-together with their translations; nothing else ever deletes them. It exits with code 1 when any code fails to sync (a missing view file, a parse error or a
-failed save). Run it after a deployment so the templates exist before the first backend visit.
+together with their translations after a confirmation (`--force` skips it); nothing else ever deletes them. It exits
+with code 1 when any code fails to sync (a missing view file, a parse error or a failed save). Run it after a deployment
+so the templates exist before the first backend visit.
 
 `php artisan dynamicpdf:check` reports the dompdf configuration that fails silently: font, cache and temporary
 directories (existence and write access, without creating anything), `chroot`, inline PHP and remote resources, and

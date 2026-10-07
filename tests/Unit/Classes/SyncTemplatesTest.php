@@ -42,13 +42,14 @@ describe('SyncTemplates', function () {
 
         expect(Template::whereCode('gone::pdf.stale')->value('id'))->toBe($orphan->id)
             ->and($this->findTemplate('gone::pdf.stale')->getTranslation('content_html', 'de', false))->toBe('<p>Übersetzt</p>')
-            ->and($sync->report()['orphaned'])->toBe(['gone::pdf.stale'])
+            ->and($sync->orphanedTemplates())->toBe(['gone::pdf.stale'])
             ->and($sync->report()['deleted'])->toBe([]);
     });
 
     it('deletes unregistered templates only when pruning, also with nothing registered', function (bool $registered) {
         if (! $registered) {
             PDFManager::forgetInstance();
+            expect(PDFManager::instance()->listRegisteredTemplates())->toBe([]);
         }
 
         $this->createTemplate(['code' => 'gone::pdf.stale', 'is_custom' => false]);

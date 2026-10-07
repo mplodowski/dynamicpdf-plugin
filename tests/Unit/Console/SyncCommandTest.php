@@ -25,9 +25,12 @@ describe('dynamicpdf:sync', function () {
         Artisan::call('dynamicpdf:sync');
         $listed = Artisan::output();
         $kept = Template::whereCode('gone::pdf.stale')->exists();
-        Artisan::call('dynamicpdf:sync', ['--prune' => true]);
+        Artisan::call('dynamicpdf:sync', ['--prune' => true, '--no-interaction' => true]);
+        $keptWithoutConfirmation = Template::whereCode('gone::pdf.stale')->exists();
+        Artisan::call('dynamicpdf:sync', ['--prune' => true, '--force' => true]);
 
         expect($kept)->toBeTrue()
+            ->and($keptWithoutConfirmation)->toBeTrue()
             ->and($listed)->toContain('gone::pdf.stale')->toContain('--prune')
             ->and(Template::whereCode('gone::pdf.stale')->exists())->toBeFalse();
     });
