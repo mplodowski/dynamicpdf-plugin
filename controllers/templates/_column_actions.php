@@ -2,6 +2,8 @@
     $definition = $record instanceof Renatio\DynamicPDF\Models\Layout ? 'layouts' : 'templates';
     $requestData = "id: {$record->id}, definition: '{$definition}'";
     $permission = "renatio.dynamicpdf.manage_{$definition}";
+    $name = ['name' => $record->{$record->labelAttribute()}];
+    $usedBy = $definition === 'layouts' ? $record->usedByCount() : 0;
 ?>
 <div class="d-inline-flex gap-2 text-nowrap">
     <?php if (BackendAuth::userHasAccess($permission . '.preview')): ?>
@@ -23,21 +25,31 @@
                 aria-label="<?= e(trans('renatio.dynamicpdf::lang.templates.duplicate')) ?>"><i class="octo-icon-copy icon-lg m-0" aria-hidden="true"></i></button>
     <?php endif ?>
 
-    <?php if ($record->followsView() && BackendAuth::userHasAccess($permission . '.update')): ?>
-        <button type="button"
-                class="btn btn-sm btn-warning"
-                data-request="onResetRecord"
-                data-request-data="<?= $requestData ?>"
-                data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>"
-                data-load-indicator="<?= e(trans('backend::lang.form.resetting')) ?>"
-                data-tooltip-text="<?= e(trans('backend::lang.form.reset_default')) ?>"
-                aria-label="<?= e(trans('backend::lang.form.reset_default')) ?>"><i class="octo-icon-refresh icon-lg m-0" aria-hidden="true"></i></button>
-    <?php elseif (! $record->followsView() && BackendAuth::userHasAccess($permission . '.delete')): ?>
+    <?php if ($record->followsView()): ?>
+        <?php if ($record->isCustomised() && BackendAuth::userHasAccess($permission . '.update')): ?>
+            <button type="button"
+                    class="btn btn-sm btn-warning"
+                    data-request="onResetRecord"
+                    data-request-data="<?= $requestData ?>"
+                    data-request-confirm="<?= e(trans('renatio.dynamicpdf::lang.templates.reset_confirm', $name)) ?>"
+                    data-load-indicator="<?= e(trans('backend::lang.form.resetting')) ?>"
+                    data-tooltip-text="<?= e(trans('backend::lang.form.reset_default')) ?>"
+                    aria-label="<?= e(trans('backend::lang.form.reset_default')) ?>"><i class="octo-icon-refresh icon-lg m-0" aria-hidden="true"></i></button>
+        <?php endif ?>
+    <?php elseif ($usedBy > 0 && BackendAuth::userHasAccess($permission . '.delete')): ?>
+        <?php $usedByText = trans_choice('renatio.dynamicpdf::lang.layout.delete_used_by', $usedBy, ['count' => $usedBy]) ?>
+        <span data-tooltip-text="<?= e($usedByText) ?>">
+            <button type="button"
+                    class="btn btn-sm btn-danger"
+                    disabled
+                    aria-label="<?= e(trans('backend::lang.form.delete') . ' (' . $usedByText . ')') ?>"><i class="octo-icon-delete icon-lg m-0" aria-hidden="true"></i></button>
+        </span>
+    <?php elseif (BackendAuth::userHasAccess($permission . '.delete')): ?>
         <button type="button"
                 class="btn btn-sm btn-danger"
                 data-request="onDeleteRecord"
                 data-request-data="<?= $requestData ?>"
-                data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>"
+                data-request-confirm="<?= e(trans('renatio.dynamicpdf::lang.templates.delete_confirm', $name)) ?>"
                 data-load-indicator="<?= e(trans('backend::lang.form.deleting')) ?>"
                 data-tooltip-text="<?= e(trans('backend::lang.form.delete')) ?>"
                 aria-label="<?= e(trans('backend::lang.form.delete')) ?>"><i class="octo-icon-delete icon-lg m-0" aria-hidden="true"></i></button>

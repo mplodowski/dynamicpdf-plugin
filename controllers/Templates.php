@@ -51,7 +51,7 @@ class Templates extends Controller
         parent::__construct();
 
         $this->setSettingsContext();
-        $this->addJs('/plugins/renatio/dynamicpdf/assets/js/preview.js?v=1');
+        $this->addJs('/plugins/renatio/dynamicpdf/assets/js/preview.js?v=2');
         $this->addJs('/plugins/renatio/dynamicpdf/assets/js/variables.js?v=3');
     }
 
@@ -153,6 +153,17 @@ class Templates extends Controller
         }
 
         return ['clickable' => false];
+    }
+
+    /**
+     * @param  \October\Rain\Database\Builder  $query
+     * @param  string|null  $definition
+     */
+    public function listExtendQuery($query, $definition = null): void
+    {
+        if ($definition === 'layouts') {
+            $query->withCount('templates');
+        }
     }
 
     protected function listDefinition(): string

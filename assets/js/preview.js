@@ -12,3 +12,18 @@ oc.registerControl('dynamicpdf-pdf-preview', class extends oc.ControlBase {
         }
     }
 });
+
+oc.registerControl('dynamicpdf-close-tab', class extends oc.ControlBase {
+    connect() {
+        this.listen('click', this.onClick);
+    }
+
+    onClick(event) {
+        if (!window.opener && history.length !== 1) {
+            return;
+        }
+
+        event.preventDefault();
+        window.close();
+    }
+});

@@ -25,7 +25,7 @@ it('keeps the placeholders and the Markdown of the English texts', function (str
 
     $signature = function (string $text): array {
         preg_match_all('/(?<![:\w]):([a-zA-Z_]\w*)/', $text, $matches);
-        $placeholders = $matches[1];
+        $placeholders = array_values(array_unique($matches[1]));
         sort($placeholders);
 
         return [

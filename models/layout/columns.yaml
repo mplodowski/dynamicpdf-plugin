@@ -23,6 +23,7 @@ columns:
     created_at:
         label: renatio.dynamicpdf::lang.templates.created_at
         type: datetime
+        invisible: true
 
     updated_at:
         label: renatio.dynamicpdf::lang.templates.updated_at

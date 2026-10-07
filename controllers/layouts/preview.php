@@ -18,6 +18,7 @@
 
     <div class="form-buttons">
         <a class="btn btn-default"
+           data-control="dynamicpdf-close-tab"
            href="<?= Backend::url($this->formCheckPermission('modelUpdate') ? 'renatio/dynamicpdf/layouts/update/'.$formModel->id : 'renatio/dynamicpdf/templates/index/layouts') ?>">
             <?= e(trans('backend::lang.form.close')) ?>
         </a>
@@ -26,7 +27,8 @@
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>
     <p>
         <a href="<?= Backend::url('renatio/dynamicpdf/templates/index/layouts') ?>"
-           class="btn btn-default">
+           class="btn btn-default"
+           data-control="dynamicpdf-close-tab">
             <?= e(trans('renatio.dynamicpdf::lang.layouts.return')) ?>
         </a>
     </p>

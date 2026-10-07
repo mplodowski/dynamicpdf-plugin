@@ -3,6 +3,8 @@
 use Backend\Facades\Backend;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File as Filesystem;
+use Renatio\DynamicPDF\Controllers\Layouts;
+use Renatio\DynamicPDF\Controllers\Templates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 
@@ -45,6 +47,23 @@ describe('List actions', function () {
 
         expect($row?->is_custom)->toBeFalsy()
             ->and((string) $row?->content_html)->toContain('from view');
+    });
+
+    it('offers the reset only for a customised view-driven template', function () {
+        $this->views = $this->registerViewTemplates('listactions', [
+            'a' => "title = \"Untouched\"\n==\n<p>a</p>",
+            'b' => "title = \"From view\"\n==\n<p>b</p>",
+        ]);
+        $untouched = $this->createTemplate(['code' => 'listactions::pdf.a', 'is_custom' => false]);
+        $customised = $this->createTemplate(['code' => 'listactions::pdf.b', 'title' => 'Edited', 'is_custom' => true]);
+
+        $list = (new Templates)->run('index', ['templates'])->getContent();
+
+        expect(substr_count($list, 'data-request="onResetRecord"'))->toBe(1)
+            ->and($list)->toContain(e(trans('renatio.dynamicpdf::lang.templates.reset_confirm', ['name' => 'Edited'])))
+            ->and($list)->not->toContain('data-request="onDeleteRecord"')
+            ->and((new Templates)->run('update', [$untouched->id])->getContent())->not->toContain('onResetDefault')
+            ->and((new Templates)->run('update', [$customised->id])->getContent())->toContain('onResetDefault');
     });
 
     it('deletes a backend template from the list', function () {
@@ -108,6 +127,23 @@ describe('List actions', function () {
         'from the list' => ['renatio/dynamicpdf/templates', 'onDeleteRecord'],
         'from the form' => ['renatio/dynamicpdf/layouts/update/:id', 'onDelete'],
     ]);
+
+    it('disables deleting a layout that templates use and names the count', function () {
+        $used = $this->createLayout(['name' => 'Used layout']);
+        $this->createLayout(['name' => 'Free layout']);
+        $this->createTemplate(['layout_id' => $used->id]);
+        $this->createTemplate(['layout_id' => $used->id]);
+
+        $list = (new Templates)->run('index', ['layouts'])->getContent();
+        $form = (new Layouts)->run('update', [$used->id])->getContent();
+        $confirm = fn (string $name): string => e(trans('renatio.dynamicpdf::lang.templates.delete_confirm', ['name' => $name]));
+
+        expect($list)->toContain($confirm('Free layout'))
+            ->not->toContain($confirm('Used layout'))
+            ->toContain('Used by 2 templates')
+            ->and($form)->toContain('Used by 2 templates')
+            ->not->toContain($confirm('Used layout'));
+    });
 
     it('duplicates a layout from the list with manage_layouts', function () {
         $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);

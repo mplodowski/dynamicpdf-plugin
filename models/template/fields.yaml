@@ -13,6 +13,11 @@ fields:
         preset: title
         span: right
 
+    code@update:
+        label: renatio.dynamicpdf::lang.templates.code
+        disabled: true
+        span: right
+
     layout:
         label: renatio.dynamicpdf::lang.templates.layout
         type: relation

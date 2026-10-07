@@ -42,6 +42,31 @@ trait ManagesViewRecords
         }
     }
 
+    public function update(int|string|null $recordId = null, ?string $context = null): mixed
+    {
+        $response = $this->asExtension('FormController')->update($recordId, $context);
+        $this->appendRecordNameToTitle();
+
+        return $response;
+    }
+
+    public function preview(int|string|null $recordId = null, ?string $context = null): mixed
+    {
+        $response = $this->asExtension('FormController')->preview($recordId, $context);
+        $this->appendRecordNameToTitle();
+
+        return $response;
+    }
+
+    protected function appendRecordNameToTitle(): void
+    {
+        $model = $this->formGetModel();
+
+        if ($model instanceof Template || $model instanceof Layout) {
+            $this->pageTitle .= ': ' . $model->{$model->labelAttribute()};
+        }
+    }
+
     public function previewpdf(int|string|null $id = null): ?Response
     {
         $this->requireFormPermission('modelPreview');

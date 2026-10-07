@@ -3,18 +3,19 @@ fields:
     _view_status@update:
         type: hint
 
-    name@create:
+    name:
         label: renatio.dynamicpdf::lang.templates.name
         span: left
-
-    name@update:
-        label: renatio.dynamicpdf::lang.templates.name
-        span: full
 
     code@create:
         label: renatio.dynamicpdf::lang.templates.code
         comment: renatio.dynamicpdf::lang.layouts.code_comment
         preset: name
+        span: right
+
+    code@update:
+        label: renatio.dynamicpdf::lang.templates.code
+        disabled: true
         span: right
 
 secondaryTabs:
