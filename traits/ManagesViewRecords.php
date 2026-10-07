@@ -30,9 +30,7 @@ trait ManagesViewRecords
     use ChecksFormPermissions;
     use RendersPreviewErrors;
 
-    protected const CSS_PIXELS_PER_INCH = 96;
-
-    protected const POINTS_PER_INCH = 72;
+    protected const CSS_PIXELS_PER_POINT = 96 / 72;
 
     protected function setSettingsContext(): void
     {
@@ -237,9 +235,7 @@ trait ManagesViewRecords
 
         $points = $dompdf->setPaper(...$paper)->getPaperSize();
 
-        $toCssPixels = fn (float $points): int => (int) round($points * self::CSS_PIXELS_PER_INCH / self::POINTS_PER_INCH);
-
-        return [$toCssPixels($points[2]), $toCssPixels($points[3])];
+        return [(int) round($points[2] * self::CSS_PIXELS_PER_POINT), (int) round($points[3] * self::CSS_PIXELS_PER_POINT)];
     }
 
     protected function previewHtml(Layout|Template $model): string

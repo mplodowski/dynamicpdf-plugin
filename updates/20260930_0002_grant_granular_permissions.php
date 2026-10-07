@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\DB;
 use October\Rain\Database\Updates\Migration;
 
 /**
- * Grants the granular permissions to everyone who had the parent one, unless any granular permission is already stored.
+ * Grants the granular permissions to everyone who had the parent one. October stores no unchecked permission, so a
+ * narrowed role looks never granted: once any granular permission is stored, nothing is granted.
  */
 return new class extends Migration
 {

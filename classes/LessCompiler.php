@@ -15,7 +15,7 @@ use October\Rain\Exception\ApplicationException;
  */
 class LessCompiler
 {
-    protected const FILE_FUNCTIONS = ['datauri', 'imagesize', 'imagewidth', 'imageheight'];
+    protected const FILE_FUNCTIONS = ['data-uri', 'image-size', 'image-width', 'image-height'];
 
     /**
      * @throws ApplicationException
@@ -69,7 +69,7 @@ class LessCompiler
             return true;
         }
 
-        if ($value instanceof Less_Tree_Call && in_array(str_replace('-', '', strtolower((string) $value->name)), self::FILE_FUNCTIONS, true)) {
+        if ($value instanceof Less_Tree_Call && in_array(self::functionKey((string) $value->name), array_map(self::functionKey(...), self::FILE_FUNCTIONS), true)) {
             return true;
         }
 
@@ -81,5 +81,10 @@ class LessCompiler
         $message = strtok($e->getMessage(), "\n") ?: '';
 
         return trim((string) preg_replace('/\s+in (?:file )?anonymous-file-\d+\.less/', '', $message));
+    }
+
+    protected static function functionKey(string $name): string
+    {
+        return str_replace('-', '', strtolower($name));
     }
 }

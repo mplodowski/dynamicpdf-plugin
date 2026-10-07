@@ -203,7 +203,7 @@ describe('Guarded controller actions', function () {
         }
     })->with('guarded actions');
 
-    it('refuses a direct reset without the update permission, which the update page already refuses before the handler', function (Closure $controller, string $permission, string $record) {
+    it('refuses a direct reset call without the update permission', function (Closure $controller, string $permission, string $record) {
         actingAsPdfManager([$permission]);
         $before = pdfRecordsSnapshot();
 
