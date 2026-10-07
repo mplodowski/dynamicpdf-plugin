@@ -32,7 +32,7 @@ secondaryTabs:
             type: codeeditor
             size: giant
             tab: renatio.dynamicpdf::lang.templates.content_html
-            language: html
+            language: twig
             stretch: true
 
         size:
@@ -54,7 +54,7 @@ secondaryTabs:
             comment: renatio.dynamicpdf::lang.templates.sample_data_comment
             tab: renatio.dynamicpdf::lang.tab.options
             type: codeeditor
-            language: json
+            language: javascript
             size: large
 
         _variables:
