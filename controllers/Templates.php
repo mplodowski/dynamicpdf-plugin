@@ -64,11 +64,11 @@ class Templates extends Controller
     {
         $this->asExtension('ListController')->index();
 
-        $canManageLayouts = self::canManageLayouts();
+        $tab = strtolower((string) $tab);
 
         $this->bodyClass = 'compact-container';
-        $this->vars['canManageLayouts'] = $canManageLayouts;
-        $this->vars['activeTab'] = $canManageLayouts && $tab ? $tab : 'templates';
+        $this->vars['canManageLayouts'] = self::canManageLayouts();
+        $this->vars['activeTab'] = array_key_exists($tab, $this->listConfig) ? $tab : 'templates';
     }
 
     public function formBeforeSave(Template $model): void
