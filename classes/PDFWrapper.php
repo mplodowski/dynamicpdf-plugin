@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use System\Models\File;
+use Throwable;
 use UnexpectedValueException;
 
 /**
@@ -39,7 +40,7 @@ class PDFWrapper extends PDF
 
     protected ?TwigRenderer $twig = null;
 
-    /** @var array{string, string, string}|null */
+    /** @var array{before: string, file: array{string, string, string}}|null */
     protected ?array $baseBeforeFile = null;
 
     public function __construct(Dompdf $dompdf, ConfigRepository $config, Filesystem $files, ViewFactory $view)
@@ -90,15 +91,30 @@ class PDFWrapper extends PDF
 
     /**
      * dompdf derives the protocol and base path from the file only while all three are empty,
-     * and the service provider presets the base path, so they are cleared for the load.
+     * and the service provider presets the base path, so that preset is cleared for the load.
      */
     public function loadFile(string $file): self
     {
         $this->restoreBaseBeforeFile();
         $this->forgetPreviousDocument();
-        $this->baseBeforeFile = [$this->dompdf->getProtocol(), $this->dompdf->getBaseHost(), $this->dompdf->getBasePath()];
-        $this->dompdf->setProtocol('')->setBaseHost('')->setBasePath('');
-        parent::loadFile($file);
+
+        if ($this->dompdf->getProtocol() === '' && $this->dompdf->getBaseHost() === '') {
+            $basePath = $this->dompdf->getBasePath();
+            $this->dompdf->setBasePath('');
+
+            try {
+                parent::loadFile($basePath !== '' && $this->isRelativePath($file) ? rtrim($basePath, '/\\') . '/' . $file : $file);
+            } catch (Throwable $e) {
+                $this->restorePresetBase($basePath);
+
+                throw $e;
+            }
+
+            $this->baseBeforeFile = ['before' => $basePath, 'file' => $this->currentBase()];
+        } else {
+            parent::loadFile($file);
+        }
+
         $this->resetCanvas();
 
         return $this;
@@ -112,13 +128,29 @@ class PDFWrapper extends PDF
 
     protected function restoreBaseBeforeFile(): void
     {
-        if ($this->baseBeforeFile === null) {
-            return;
+        if ($this->baseBeforeFile !== null && $this->currentBase() === $this->baseBeforeFile['file']) {
+            $this->restorePresetBase($this->baseBeforeFile['before']);
         }
 
-        [$protocol, $host, $path] = $this->baseBeforeFile;
-        $this->dompdf->setProtocol($protocol)->setBaseHost($host)->setBasePath($path);
         $this->baseBeforeFile = null;
+    }
+
+    protected function restorePresetBase(string $basePath): void
+    {
+        $this->dompdf->setProtocol('')->setBaseHost('')->setBasePath($basePath);
+    }
+
+    protected function isRelativePath(string $file): bool
+    {
+        return ! str_contains($file, '://') && ! preg_match('~^([/\\\\]|[a-z]:[/\\\\])~i', $file);
+    }
+
+    /**
+     * @return array{string, string, string}
+     */
+    protected function currentBase(): array
+    {
+        return [$this->dompdf->getProtocol(), $this->dompdf->getBaseHost(), $this->dompdf->getBasePath()];
     }
 
     /**
