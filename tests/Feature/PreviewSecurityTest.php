@@ -12,17 +12,20 @@ describe('PDF preview', function () {
 
     afterEach(fn () => @unlink($this->marker));
 
-    it('never runs inline PHP, even when the dompdf configuration enables it', function (string $path) {
-        $template = $this->createTemplate(['content_html' => $this->script]);
+    it('never runs inline PHP, even when the dompdf configuration enables it', function (string $definition, string $path) {
+        $model = $definition === 'Template' ? 'templates' : 'layouts';
+        $record = $definition === 'Template'
+            ? $this->createTemplate(['content_html' => $this->script])
+            : $this->createLayout(['content_html' => '<html><body>' . $this->script . '</body></html>']);
 
         if ($path === 'unsaved') {
-            $this->previewUnsaved('templates', $template->id, ['content_html' => $this->script], 'pdf')->assertOk();
+            $this->previewUnsaved($model, $record->id, ['content_html' => $record->content_html], 'pdf')->assertOk();
         } else {
-            $this->get(Backend::url('renatio/dynamicpdf/templates/previewpdf/' . $template->id))->assertOk();
+            $this->get(Backend::url("renatio/dynamicpdf/{$model}/previewpdf/{$record->id}"))->assertOk();
         }
 
         expect(file_exists($this->marker))->toBeFalse();
-    })->with(['saved', 'unsaved']);
+    })->with(['Template', 'Layout'])->with(['saved', 'unsaved']);
 });
 
 describe('Encryption', function () {
@@ -31,16 +34,20 @@ describe('Encryption', function () {
         $wrapper->loadHTML('<p>x</p>');
 
         $trace = [];
+        $ignoreArgs = (string) ini_get('zend.exception_ignore_args');
+        ini_set('zend.exception_ignore_args', '0');
 
         try {
             $wrapper->encrypt('user-secret', 'owner-secret');
         } catch (RuntimeException $e) {
             $trace = $e->getTrace();
+        } finally {
+            ini_set('zend.exception_ignore_args', $ignoreArgs);
         }
 
         $arguments = collect($trace)->pluck('args')->flatten()->filter(fn (mixed $value): bool => is_string($value));
 
-        expect($trace)->not->toBe([])
+        expect(collect($trace)->filter(fn (array $frame): bool => ($frame['args'] ?? []) !== []))->not->toBeEmpty()
             ->and($arguments->contains('user-secret'))->toBeFalse()
             ->and($arguments->contains('owner-secret'))->toBeFalse();
     });
