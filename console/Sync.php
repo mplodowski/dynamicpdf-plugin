@@ -8,10 +8,10 @@ use Renatio\DynamicPDF\Classes\SyncTemplates;
 class Sync extends Command
 {
     protected $signature = 'dynamicpdf:sync
-        {--prune : Delete the non-customised templates whose view is no longer registered}
+        {--prune : Delete the non-customized templates whose view is no longer registered}
         {--force : Prune without asking for confirmation}';
 
-    protected $description = 'Synchronise the registered PDF views with the database and report the outcome.';
+    protected $description = 'Synchronize the registered PDF views with the database and report the outcome.';
 
     public function handle(): int
     {

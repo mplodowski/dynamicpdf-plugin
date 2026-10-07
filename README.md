@@ -18,8 +18,8 @@ Templates and layouts live in the database or in view files shipped by your plug
 - Twig markup with theme partials, translations, global variables and `beforeRender` / `afterRender` events.
 - Render per document with another layout, in another language, with page numbers, password protection and
   paper size and orientation.
-- Templates translated per language with the native October multisite translation, or shipped as localized view
-  files such as `pdf.de.invoice`.
+- Templates translated per language with the native October multisite translation; with that feature on, registered
+  views can also ship localized view files such as `pdf.de.invoice`, used when a `locale` is passed.
 - Output as a browser stream, download, file on a storage disk or a `System\Models\File` ready to attach to a model.
 - `PDF::fake()` with render assertions for project tests, `dynamicpdf:sync` and `dynamicpdf:check` console commands.
 
@@ -59,14 +59,35 @@ There are two ways to install this plugin.
 2. Use `composer require renatio/dynamicpdf-plugin` in project root. When you use this option you must
    run `php artisan october:migrate` after installation.
 
+## Upgrading
+
+Read the [upgrade guide](https://github.com/mplodowski/dynamicpdf-plugin/blob/master/UPGRADE.md) before updating; it
+lists the steps a version needs, and versions not listed there need no action.
+
+## Quick start
+
+Create a template under *Settings > PDF > PDF Templates* (or run `php artisan dynamicpdf:demo` for ready-made ones),
+for example with the code `acme.shop::pdf.invoice` and the markup `<h1>Invoice {{ number }}</h1>`, then render it from
+a controller, an AJAX handler or a CMS page:
+
+```php
+use Renatio\DynamicPDF\Classes\PDF;
+
+return PDF::loadTemplate('acme.shop::pdf.invoice', ['number' => '2026/1'])->stream('invoice.pdf');
+```
+
+`download()` sends the file as an attachment instead, and `save()` writes it to disk. A plugin can ship the template as
+a view file instead of creating it in the backend, see [Registering PDF templates and
+layouts](#registering-pdf-templates-and-layouts).
+
 ## PDF content
 
-PDF can be created in October using either PDF views or PDF templates. A PDF view is supplied by a plugin in its
-**/views** directory, whereas a PDF template is managed using the back-end interface via *Settings > PDF >
+PDFs can be created in October using either PDF views or PDF templates. A PDF view is supplied by a plugin in its
+**/views** directory, whereas a PDF template is managed using the backend interface via *Settings > PDF >
 PDF Templates*. All PDF templates support using Twig for markup.
 
 PDF views must be registered in the Plugin registration file with the `registerPDFTemplates` and `registerPDFLayouts`
-methods. This will automatically generate a PDF template and layout and allow them to be customized using the back-end
+methods. This will automatically generate a PDF template and layout and allow them to be customized using the backend
 interface.
 
 ## PDF layout views
@@ -109,7 +130,8 @@ body {
 </html>
 ```
 
-> **Note:** Basic Twig tags and expressions are supported in PDF views.
+> **Note:** The HTML markup of a PDF view is rendered with the full Twig environment described in
+> [Twig environment](#twig-environment), including the filters and functions registered by plugins.
 
 The **CSS/LESS** section is optional and a view can contain only the configuration and HTML markup sections.
 
@@ -137,7 +159,7 @@ The configuration section sets the PDF view parameters. The following configurat
 
 | Parameter             | Description                                                                |
 |-----------------------|----------------------------------------------------------------------------|
-| **name**              | the layout name, required.                                                 |
+| **name**              | the layout name, optional; the code is used without it.                    |
 | **pageNumbers**       | page numbers position, e.g. `bottom-center`, see [Page numbers](#page-numbers). |
 | **pageNumbersText**   | page numbers text, `Page {PAGE_NUM} of {PAGE_COUNT}` translated by default. |
 | **pageNumbersSize**   | font size in points, 9 by default.                                         |
@@ -148,7 +170,7 @@ The configuration section sets the PDF view parameters. The following configurat
 ### Using PDF layouts
 
 PDF layouts reside in the database and can be created by selecting *Settings > PDF > PDF Templates* and clicking the
-*Layouts* tab. These behave just like CMS layouts, they contain the scaffold for the PDF. PDF views and templates support
+*Layouts* tab. These behave just like CMS layouts: they contain the scaffold for the PDF. PDF views and templates support
 the use of PDF layouts. The **code** specified in the layout is a unique identifier and cannot be changed once created.
 
 ## PDF template views
@@ -178,7 +200,7 @@ orientation = "portrait"
 <h1>Invoice</h1>
 ```
 
-> **Note:** Basic Twig tags and expressions are supported in PDF views.
+> **Note:** The markup is rendered with the full Twig environment, see [Twig environment](#twig-environment).
 
 ### Configuration section
 
@@ -186,25 +208,26 @@ The configuration section sets the PDF view parameters. The following configurat
 
 | Parameter       | Description                                                                                                  |
 |-----------------|--------------------------------------------------------------------------------------------------------------|
-| **title**       | the template title, required.                                                                                |
+| **title**       | the template title, optional; the code is used without it.                                                   |
 | **layout**      | the layout code, optional.                                                                                   |
 | **description** | the template description, optional.                                                                          |
 | **size**        | the template paper size, optional; without it `default_paper_size` of the dompdf configuration applies.      |
-| **orientation** | the template paper orientation, optional; applies without **size** too, default `portrait`.                  |
+| **orientation** | the template paper orientation, optional; applies without **size** too; without it `default_paper_orientation` of the dompdf configuration applies. |
 
 > **Note:** **size** and **orientation** are read case-insensitively; `A4` is stored as `a4`.
 
 ### Using PDF templates
 
-PDF templates reside in the database and can be created in the back-end area via *Settings > PDF > PDF Templates*.
+PDF templates reside in the database and can be created in the backend area via *Settings > PDF > PDF Templates*.
 The **code** specified in the template is a unique identifier and cannot be changed once created.
 
-> **Note:** If the PDF template does not exist in the system, this code will attempt to find a PDF view with the same
-> code.
+> **Note:** If no PDF template with the code exists in the database yet, a PDF view registered under the same code
+> with `registerPDFTemplates` is rendered instead. A view that exists but is not registered is not looked up, and
+> `loadTemplate()` throws `ModelNotFoundException`. Layouts follow the same rule with `registerPDFLayouts`.
 
 ## Registering PDF templates and layouts
 
-PDF views can be registered as templates that are automatically generated in the back-end ready for customization. PDF
+PDF views can be registered as templates that are automatically generated in the backend ready for customization. PDF
 templates can be customized via the *Settings > PDF > PDF Templates* menu. The templates can be registered by adding
 the `registerPDFTemplates` method of the Plugin registration class (`Plugin.php`).
 
@@ -305,9 +328,16 @@ it, without saving.
 
 ```php
 Event::listen('renatio.dynamicpdf.beforeRender', function ($pdf, $model, array $data) {
+    if ($model->code !== 'acme.shop::pdf.invoice' || ! isset($data['order'])) {
+        return;
+    }
+
     return ['watermark' => $data['order']->isDraft() ? 'DRAFT' : null];
 });
 ```
+
+A listener runs for every document, so check `$model->code` (the template, or the layout rendered on its own) and the
+keys it reads before using them; a listener that returns nothing leaves the data unchanged.
 
 Both events fire once per document: for a template together with its layout (`loadTemplate()`, `parseTemplate()`),
 or for a layout rendered on its own (`loadLayout()`, `parseLayout()`). They also fire for the backend HTML and PDF
@@ -317,9 +347,9 @@ stripped from what a listener returns.
 
 ## Usage
 
-PDF templates and layouts can be accessed in the back-end area via *Settings > PDF > PDF Templates*.
+PDF templates and layouts can be accessed in the backend area via *Settings > PDF > PDF Templates*.
 
-The list marks templates edited in the back-end as *Customized* (they no longer follow their view file) and layouts
+The list marks templates edited in the backend as *Customized* (they no longer follow their view file) and layouts
 that still follow their registered view file as *From view*; the layout list also counts the templates using each layout
 (*Used by*). The HTML and PDF preview buttons of the form show the current, unsaved form values in a popup without
 saving them, and the list opens the PDF preview of the saved record, all with the **Preview** permission. A template's *Sample data* (a JSON object on the *Options* tab, nested objects and lists included) is passed
@@ -413,7 +443,7 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 | pageNumbers($text = 'Page {PAGE_NUM} of {PAGE_COUNT}', $position = 'bottom-center', $size = 9, $font = null, $margin = 20, $color = [0, 0, 0]) | Stamp page numbers on every page of the loaded document |
 | forBrowser($forBrowser = true)                          | Render HTML for a browser, with URLs from `\|pdfasset` and `background_img` instead of local paths |
 | allowSelfSignedCertificates()                           | Accept self-signed TLS certificates for remote resources |
-| allowRemoteApplicationAssets()                          | Limit remote resources to the configured and application hosts and local files to the asset directories |
+| allowRemoteApplicationAssets()                          | Enable remote resources, restricted to the configured and application hosts, and narrow a default `chroot` to the public asset directories, as the backend preview does |
 | loadHTML($string, $encoding = null)                     | Load HTML string                                         |
 | loadFile($file)                                         | Load HTML string from a file                             |
 | loadView($view, array $data = [], array $mergeData = [], $encoding = null) | Load a Laravel view                   |
@@ -433,7 +463,7 @@ wrapper for a single document. The setting applies to every wrapper instance, in
 | download($filename = 'document.pdf')                    | Make the PDF downloadable by the user                    |
 | stream($filename = 'document.pdf')                      | Return a response with the PDF to show in the browser    |
 
-All methods are available through Facade class `Renatio\DynamicPDF\Classes\PDF`.
+All methods are available through the facade class `Renatio\DynamicPDF\Classes\PDF`.
 
 ## Tips
 
@@ -700,9 +730,9 @@ php artisan dynamicpdf:demo --disable
 It deletes the demo templates and layouts, but keeps a customized demo template and a demo layout that is customized or
 still used by a template, and says which ones it kept.
 
-The first example shows invoice with custom font and image embed.
+The first example shows an invoice with a custom font and an embedded image.
 
-The second example shows usage of header & footer, page break and full background image.
+The second example shows the use of a header and footer, a page break and a full-page background image.
 
 ### Render PDF in browser
 
@@ -721,7 +751,7 @@ public function pdf()
 Where `$templateCode` is a unique code specified when creating the template and `$data` is an optional array of
 variables passed to the template.
 
-In HTML template you can use `{{ name }}` to output `John Doe`.
+In the HTML template you can use `{{ name }}` to output `John Doe`.
 
 ### Download PDF
 
@@ -793,8 +823,9 @@ A language with no translation falls back to the stored content, and templates a
 keep following that file in the default language, so **Reset to Default** and the synchronization never touch a
 translation. Per-language background images are not supported.
 
-A registered view can ship localized siblings: `pdf.invoice` renders from `pdf.de.invoice`, `pdf.layouts.default`
-from `pdf.layouts.de.default`. The locale chain is followed, so `de-AT` takes `pdf.de-AT.invoice` and falls back to
+With the feature above turned on, a registered view can ship localized siblings, used when a `locale` argument is
+passed: `pdf.invoice` renders from `pdf.de.invoice`, `pdf.layouts.default` from `pdf.layouts.de.default`. Without the
+feature or the argument the siblings are ignored. The locale chain is followed, so `de-AT` takes `pdf.de-AT.invoice` and falls back to
 `pdf.de.invoice`. The sibling is read for that render only and never changes the stored row; a customized template,
 a layout that is no longer *From view* or a stored translation wins over it.
 
