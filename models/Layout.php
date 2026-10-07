@@ -41,6 +41,8 @@ use Throwable;
  * @property-read File|null $background_img
  * @property-read \October\Rain\Database\Collection<int, Template> $templates
  * @property-read string $html
+ *
+ * @method \October\Rain\Database\Relations\AttachOne background_img()
  */
 class Layout extends Model
 {
@@ -173,7 +175,7 @@ class Layout extends Model
 
     public function getHtmlAttribute(): string
     {
-        return PDF::forBrowser()->loadLayout($this->code)->getDomPDF()->outputHtml();
+        return PDF::forBrowser()->loadLayoutModel($this)->getDomPDF()->outputHtml();
     }
 
     /**

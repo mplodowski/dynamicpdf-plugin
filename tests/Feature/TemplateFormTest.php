@@ -40,7 +40,7 @@ describe('Form buttons', function () {
         expect($html)->toContain('data-change-monitor')
             ->toContain('data-request-before-update="$(this).trigger(\'unchange.oc.changeMonitor\')"')
             ->toContain('data-request="onDuplicate"')
-            ->toMatch('/<a(?=[^>]*\shref="' . preg_quote(Backend::url("renatio/dynamicpdf/{$definition}/previewpdf/{$record->id}"), '/') . '")(?=[^>]*\starget="_blank")/');
+            ->toContain('data-handler="onPreviewUnsaved"');
     })->with(['templates', 'layouts']);
 
     it('asks before Cancel or Duplicate leaves unsaved changes', function (string $definition) {

@@ -10,6 +10,8 @@ use RuntimeException;
 /**
  * @method static PDFWrapper loadTemplate(string $code, array<string, mixed> $data = [], ?string $encoding = null, ?string $layout = null, ?string $locale = null)
  * @method static PDFWrapper loadLayout(string $code, array<string, mixed> $data = [], ?string $encoding = null, ?string $locale = null)
+ * @method static PDFWrapper loadTemplateModel(Template $template, array<string, mixed> $data = [], ?string $encoding = null, ?string $locale = null)
+ * @method static PDFWrapper loadLayoutModel(Layout $layout, array<string, mixed> $data = [], ?string $encoding = null, ?string $locale = null)
  * @method static string parseTemplate(Template $template, array<string, mixed> $data = [])
  * @method static string parseLayout(Layout $layout, array<string, mixed> $data = [])
  * @method static PDFWrapper pageNumbers(string $text = 'Page {PAGE_NUM} of {PAGE_COUNT}', string $position = 'bottom-center', float $size = 9, ?string $font = null, float $margin = 20, array<int, float> $color = [0, 0, 0])

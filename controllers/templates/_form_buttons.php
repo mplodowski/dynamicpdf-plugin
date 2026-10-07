@@ -48,23 +48,25 @@
             dataRequestBeforeUpdate: $unchange,
             dataRequestMessage: __('Saving :name...', ['name' => $formRecordName])
         ) ?>
+    <?php endif ?>
 
-        <?php if ($this->formCheckPermission('modelPreview')): ?>
-            <?= Ui::button(
-                label: trans('renatio.dynamicpdf::lang.templates.preview_html'),
-                href: $this->actionUrl('preview', (string) $formModel->id),
-                class: 'btn-info',
-                target: '_blank'
-            ) ?>
+    <?php if ($this->formCheckPermission('modelPreview')): ?>
+        <?= Ui::popupButton(
+            label: trans('renatio.dynamicpdf::lang.templates.preview_html'),
+            handler: 'onPreviewUnsaved',
+            requestData: ['mode' => 'html'],
+            class: 'btn-info'
+        ) ?>
 
-            <?= Ui::button(
-                label: trans('renatio.dynamicpdf::lang.templates.preview_pdf'),
-                href: $this->actionUrl('previewpdf', (string) $formModel->id),
-                class: 'btn-info',
-                target: '_blank'
-            ) ?>
-        <?php endif ?>
+        <?= Ui::popupButton(
+            label: trans('renatio.dynamicpdf::lang.templates.preview_pdf'),
+            handler: 'onPreviewUnsaved',
+            requestData: ['mode' => 'pdf'],
+            class: 'btn-info'
+        ) ?>
+    <?php endif ?>
 
+    <?php if ($formModel->exists): ?>
         <?php if ($this->formCheckPermission('modelCreate')): ?>
             <?= Ui::ajaxButton(
                 label: trans('renatio.dynamicpdf::lang.templates.duplicate'),

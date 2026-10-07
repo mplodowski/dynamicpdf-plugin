@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use October\Rain\Exception\ApplicationException;
+use October\Rain\Exception\ForbiddenException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
@@ -82,6 +83,41 @@ trait ManagesViewRecords
         return response($html)->header('Content-Security-Policy', "sandbox; script-src 'none'; object-src 'none'");
     }
 
+    public function onPreviewUnsaved(): string
+    {
+        $this->requireFormPermission('modelPreview');
+
+        $widget = $this->formGetWidget() ?? throw new ForbiddenException;
+        $model = $widget->model;
+
+        if (! $model instanceof Template && ! $model instanceof Layout) {
+            throw new ForbiddenException;
+        }
+
+        $widget->setFormValues();
+
+        if ($model instanceof Layout && ! $model->exists) {
+            $model->setRelation('background_img', $model->background_img()->withDeferred($widget->getSessionKey())->first());
+        }
+
+        $pdf = post('mode') === 'pdf';
+
+        try {
+            $preview = $pdf
+                ? base64_encode($this->loadPreviewPdf($model)->allowRemoteApplicationAssets()->output())
+                : (new PreviewFonts)->inline($model->getHtmlAttribute());
+        } catch (TwigError $e) {
+            throw new ApplicationException($this->previewFailedMessage($e));
+        }
+
+        return $this->makePartial('preview_popup', [
+            'title' => trans($pdf ? 'renatio.dynamicpdf::lang.templates.preview_pdf' : 'renatio.dynamicpdf::lang.templates.preview_html'),
+            'pdf' => $pdf ? $preview : null,
+            'html' => $pdf ? null : $preview,
+            'pageSize' => $this->previewPageSize($model),
+        ]);
+    }
+
     public function update_onDuplicate(int|string $recordId): RedirectResponse
     {
         $this->requireFormPermission('modelCreate');
@@ -137,7 +173,7 @@ trait ManagesViewRecords
     protected function loadPreviewPdf(Layout|Template $model): PDFWrapper
     {
         return $model instanceof Template
-            ? PDF::loadTemplate($model->code, $model->sampleData())
-            : PDF::loadLayout($model->code);
+            ? PDF::loadTemplateModel($model, $model->sampleData())
+            : PDF::loadLayoutModel($model);
     }
 }

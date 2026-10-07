@@ -280,8 +280,6 @@ class PDFWrapper extends PDF
      */
     public function loadTemplate(string $code, array $data = [], ?string $encoding = null, ?string $layout = null, ?string $locale = null): self
     {
-        $this->localFiles?->delete();
-
         $template = Template::byCode($code);
         $template->fillFromLocalizedView($locale);
 
@@ -290,6 +288,18 @@ class PDFWrapper extends PDF
         }
 
         $template->layout?->fillFromLocalizedView($locale);
+
+        return $this->loadTemplateModel($template, $data, $encoding, $locale);
+    }
+
+    /**
+     * Renders the template as given, so unsaved changes on the model are included.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function loadTemplateModel(Template $template, array $data = [], ?string $encoding = null, ?string $locale = null): self
+    {
+        $this->localFiles?->delete();
 
         $html = (new LocaleScope($locale))->render(
             [$template, $template->layout],
@@ -314,11 +324,20 @@ class PDFWrapper extends PDF
      */
     public function loadLayout(string $code, array $data = [], ?string $encoding = null, ?string $locale = null): self
     {
-        $this->localFiles?->delete();
-
         $layout = Layout::byCode($code);
-
         $layout->fillFromLocalizedView($locale);
+
+        return $this->loadLayoutModel($layout, $data, $encoding, $locale);
+    }
+
+    /**
+     * Renders the layout as given, so unsaved changes on the model are included.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function loadLayoutModel(Layout $layout, array $data = [], ?string $encoding = null, ?string $locale = null): self
+    {
+        $this->localFiles?->delete();
 
         $html = (new LocaleScope($locale))->render(
             [$layout],
