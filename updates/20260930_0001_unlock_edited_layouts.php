@@ -10,10 +10,7 @@ use Renatio\DynamicPDF\Plugin;
 use System\Models\Parameter;
 
 /**
- * Before 8.1.0 an edit never cleared is_locked, and locked layouts now follow their view. A locked layout keeps
- * the flag only when it provably holds its current view or a version this plugin shipped. Layouts whose view is not
- * registered right now (a disabled plugin or demo) are checked too, their view may come back later.
- * Layouts follow their view only once this has run, so files deployed ahead of the migration overwrite nothing.
+ * Unlocks layouts edited before 8.1.0, which never cleared is_locked, before locked layouts start following their view.
  */
 return new class extends Migration
 {

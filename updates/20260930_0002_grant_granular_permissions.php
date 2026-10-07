@@ -5,9 +5,7 @@ use Illuminate\Support\Facades\DB;
 use October\Rain\Database\Updates\Migration;
 
 /**
- * Before 8.1.0 the parent permission alone allowed create, update, delete and preview, so roles and administrators
- * granted it keep that access. October drops unchecked permissions instead of storing them, so a narrowed role looks
- * like one never granted: once any granular permission is stored, e.g. on a re-run, nothing is granted.
+ * Grants the granular permissions to everyone who had the parent one, unless any granular permission is already stored.
  */
 return new class extends Migration
 {

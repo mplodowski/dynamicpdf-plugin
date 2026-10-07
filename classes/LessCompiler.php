@@ -15,9 +15,6 @@ use October\Rain\Exception\ApplicationException;
  */
 class LessCompiler
 {
-    /**
-     * Hyphen-less, because less.php accepts both forms and names are compared with hyphens stripped.
-     */
     protected const FILE_FUNCTIONS = ['datauri', 'imagesize', 'imagewidth', 'imageheight'];
 
     /**
