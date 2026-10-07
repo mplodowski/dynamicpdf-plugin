@@ -67,7 +67,7 @@ class Templates extends Controller
 
     protected static function definitionOf(Template|Layout $record): string
     {
-        return (string) array_search($record::class, self::LIST_MODELS, true);
+        return $record instanceof Layout ? 'layouts' : 'templates';
     }
 
     public function index(?string $tab = null): void

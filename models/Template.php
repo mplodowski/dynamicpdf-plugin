@@ -251,12 +251,19 @@ class Template extends Model
      */
     public function paper(?Options $options = null): array
     {
+        [$size, $orientation] = self::defaultPaper($options);
+
+        return [$this->size ?: $size, $this->orientation ?: $orientation];
+    }
+
+    /**
+     * @return array{string|array<int, float>, string}
+     */
+    public static function defaultPaper(?Options $options = null): array
+    {
         $options ??= new Options(app('dompdf.options'));
 
-        return [
-            $this->size ?: $options->getDefaultPaperSize(),
-            $this->orientation ?: $options->getDefaultPaperOrientation(),
-        ];
+        return [$options->getDefaultPaperSize(), $options->getDefaultPaperOrientation()];
     }
 
     /**
@@ -266,7 +273,7 @@ class Template extends Model
     {
         $this->describeViewStatus($fields);
 
-        [$size, $orientation] = (new self)->paper();
+        [$size, $orientation] = self::defaultPaper();
         $orientation = Arr::get(self::getOrientationOptions(), $orientation);
 
         if (isset($fields->size) && is_string($size)) {

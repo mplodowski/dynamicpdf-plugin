@@ -17,8 +17,12 @@ describe('HTML preview', function () {
             ->and($response->getContent())->toContain('<p>Hello</p>');
     });
 
-    it('keeps the preview iframe fully sandboxed', function () {
-        expect(file_get_contents(plugins_path('renatio/dynamicpdf/controllers/templates/preview.php')))->toContain('<iframe sandbox src=');
+    it('keeps the preview iframes fully sandboxed', function () {
+        $template = (new Templates)->run('preview', [$this->createTemplate()->id])->getContent();
+        $layout = (new Layouts)->run('preview', [$this->createLayout()->id])->getContent();
+
+        expect($template)->toContain('<iframe sandbox src=')
+            ->and($layout)->toContain('<iframe sandbox src=');
     });
 
     it('serves the layout HTML sandboxed', function () {

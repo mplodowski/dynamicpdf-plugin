@@ -123,6 +123,8 @@ trait ManagesViewRecords
             $html = $this->previewHtml($model);
         } catch (TwigError $e) {
             $html = '<p>' . e($this->previewFailedMessage($e)) . '</p>';
+        } catch (DompdfException $e) {
+            $html = '<p>' . e(trans('renatio.dynamicpdf::lang.templates.preview_failed', ['message' => $e->getMessage()])) . '</p>';
         }
 
         return response($html)->header('Content-Security-Policy', "sandbox; script-src 'none'; object-src 'none'");
@@ -229,25 +231,23 @@ trait ManagesViewRecords
     protected function previewPageSize(Layout|Template $model): array
     {
         $dompdf = app('dompdf');
-        $template = $model instanceof Template ? $model : new Template;
+        $paper = $model instanceof Template ? $model->paper($dompdf->getOptions()) : Template::defaultPaper($dompdf->getOptions());
 
-        $points = $dompdf->setPaper(...$template->paper($dompdf->getOptions()))->getPaperSize();
+        $points = $dompdf->setPaper(...$paper)->getPaperSize();
 
         return [(int) round($points[2] * 96 / 72), (int) round($points[3] * 96 / 72)];
     }
 
     protected function previewHtml(Layout|Template $model): string
     {
-        return (new PreviewFonts)->inline($this->loadPreviewPdf($model, forBrowser: true)->getDomPDF()->outputHtml());
+        return (new PreviewFonts)->inline($model->html);
     }
 
-    protected function loadPreviewPdf(Layout|Template $model, bool $forBrowser = false): PDFWrapper
+    protected function loadPreviewPdf(Layout|Template $model): PDFWrapper
     {
-        $pdf = PDF::forBrowser($forBrowser);
-
         $pdf = $model instanceof Template
-            ? $pdf->loadTemplateModel($model, $model->sampleData())
-            : $pdf->loadLayoutModel($model);
+            ? PDF::loadTemplateModel($model, $model->sampleData())
+            : PDF::loadLayoutModel($model);
 
         return $pdf->setIsPhpEnabled(false);
     }
