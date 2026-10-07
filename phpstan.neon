@@ -5,6 +5,10 @@ includes:
 parameters:
     level: 7
 
+    phpVersion:
+        min: 80200
+        max: 80499
+
     paths:
         - classes
         - console
@@ -12,6 +16,7 @@ parameters:
         - listeners
         - models
         - traits
+        - updates
         - Plugin.php
         - tests
 

@@ -8,7 +8,7 @@ return new class extends Migration
 {
     protected const COLUMNS = ['page_numbers', 'page_numbers_text', 'page_numbers_size', 'page_numbers_color', 'page_numbers_font', 'page_numbers_margin'];
 
-    public function up()
+    public function up(): void
     {
         if (Schema::hasColumn('renatio_dynamicpdf_pdf_layouts', 'page_numbers')) {
             return;
@@ -24,7 +24,7 @@ return new class extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         if (! Schema::hasColumn('renatio_dynamicpdf_pdf_layouts', 'page_numbers')) {
             return;

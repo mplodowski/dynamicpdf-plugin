@@ -8,14 +8,14 @@ use Schema;
 
 class AddIsLockedToLayoutsTable extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::table('renatio_dynamicpdf_pdf_layouts', function (Blueprint $table) {
             $table->boolean('is_locked')->default(false);
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::table('renatio_dynamicpdf_pdf_layouts', function (Blueprint $table) {
             $table->dropColumn('is_locked');

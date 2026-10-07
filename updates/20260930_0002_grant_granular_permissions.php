@@ -16,7 +16,7 @@ return new class extends Migration
 
     protected const CHILDREN = ['create', 'update', 'delete', 'preview'];
 
-    public function up()
+    public function up(): void
     {
         $rows = collect(self::TABLES)->mapWithKeys(fn (string $table) => [$table => $this->rows($table)]);
 
@@ -38,7 +38,7 @@ return new class extends Migration
     /**
      * No-op, the granted permissions cannot be told apart from those an administrator set by hand.
      */
-    public function down()
+    public function down(): void
     {
     }
 

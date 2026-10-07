@@ -22,6 +22,7 @@ return RectorConfig::configure()
         __DIR__ . '/listeners',
         __DIR__ . '/models',
         __DIR__ . '/traits',
+        __DIR__ . '/updates',
         __DIR__ . '/tests',
         __DIR__ . '/Plugin.php',
     ])

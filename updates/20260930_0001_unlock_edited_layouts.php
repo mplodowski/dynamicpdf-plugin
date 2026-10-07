@@ -33,7 +33,7 @@ return new class extends Migration
         'c5440c416b6c45173501ab1b5a33c514efe6d2ce0c81b53cd4bc450ff9a5fa6e',
     ];
 
-    public function up()
+    public function up(): void
     {
         try {
             $views = PDFManager::instance()->listRegisteredLayouts();
@@ -46,7 +46,7 @@ return new class extends Migration
             ->where('is_locked', true)
             ->get(['id', 'code', 'name', 'content_html', 'content_css']);
 
-        $edited = $rows->reject(fn (object $row): bool => $this->isUnedited($row, $views[$row->code] ?? null))->pluck('id');
+        $edited = $rows->reject(fn (stdClass $row): bool => $this->isUnedited($row, $views[$row->code] ?? null))->pluck('id');
 
         if ($edited->isNotEmpty()) {
             DB::table(self::LAYOUTS)->whereIn('id', $edited->all())->update(['is_locked' => false]);
@@ -55,12 +55,12 @@ return new class extends Migration
         Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 1);
     }
 
-    public function down()
+    public function down(): void
     {
         Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 0);
     }
 
-    protected function isUnedited(object $row, ?string $view): bool
+    protected function isUnedited(stdClass $row, ?string $view): bool
     {
         $fingerprint = $this->fingerprint($row->name, $row->content_html, $row->content_css);
 

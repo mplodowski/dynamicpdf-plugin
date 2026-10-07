@@ -8,7 +8,7 @@ use Schema;
 
 class CreateTemplatesTable extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::create('renatio_dynamicpdf_pdf_templates', function (Blueprint $table) {
             $table->increments('id');
@@ -21,7 +21,7 @@ class CreateTemplatesTable extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('renatio_dynamicpdf_pdf_templates');
     }
