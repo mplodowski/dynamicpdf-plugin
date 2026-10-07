@@ -90,7 +90,7 @@ class Templates extends Controller
         $this->checkListPermission($definition, 'create');
         $copy = $this->findListRecord($definition)->duplicate();
 
-        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.duplicate_success')));
+        Flash::success(trans('renatio.dynamicpdf::lang.templates.duplicate_success'));
 
         return Backend::redirect("renatio/dynamicpdf/{$definition}/update/{$copy->id}");
     }

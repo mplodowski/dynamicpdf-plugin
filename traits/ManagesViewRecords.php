@@ -145,7 +145,7 @@ trait ManagesViewRecords
 
         $copy = $this->formFindModelObject($recordId)->duplicate();
 
-        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.duplicate_success')));
+        Flash::success(trans('renatio.dynamicpdf::lang.templates.duplicate_success'));
 
         return redirect()->to($this->actionUrl('update', (string) $copy->id));
     }
@@ -156,7 +156,7 @@ trait ManagesViewRecords
 
         $this->formFindModelObject($recordId)->resetToView();
 
-        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.reset_success')));
+        Flash::success(trans('renatio.dynamicpdf::lang.templates.reset_success'));
 
         return redirect()->refresh();
     }
