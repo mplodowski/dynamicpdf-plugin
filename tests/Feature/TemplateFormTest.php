@@ -1,6 +1,7 @@
 <?php
 
 use Backend\Facades\Backend;
+use Illuminate\Support\Facades\DB;
 
 describe('Template form', function () {
     beforeEach(fn () => actingAsPdfManager());
@@ -52,4 +53,28 @@ describe('Form buttons', function () {
             ->toContain($confirm('cancel_unsaved'))
             ->toContain($confirm('duplicate_unsaved'));
     })->with(['templates', 'layouts']);
+});
+
+describe('Variables list', function () {
+    beforeEach(fn () => actingAsPdfManager());
+
+    it('lists the saved sample data keys on the Options tab, escaped', function () {
+        $template = $this->createTemplate(['sample_data' => '{"<b>x</b>": 1, "order": {"number": "FV/1"}}']);
+
+        $html = $this->get(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id))->assertOk()->getContent();
+
+        expect($html)->toContain('data-control="dynamicpdf-variables"')
+            ->toContain('data-snippet="{{ order.number }}"')
+            ->toContain('>&lt;b&gt;x&lt;/b&gt;</button>')
+            ->not->toContain('<b>x</b>');
+    });
+
+    it('shows how to add sample data when the stored JSON is invalid', function () {
+        $template = $this->createTemplate();
+        DB::table($template->getTable())->where('id', $template->id)->update(['sample_data' => '{"order": ']);
+
+        $html = $this->get(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id))->assertOk()->getContent();
+
+        expect($html)->toContain(e(trans('renatio.dynamicpdf::lang.variables.sample_data_empty')));
+    });
 });

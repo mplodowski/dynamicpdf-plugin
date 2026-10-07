@@ -56,3 +56,10 @@ secondaryTabs:
             type: codeeditor
             language: json
             size: large
+
+        _variables:
+            label: renatio.dynamicpdf::lang.variables.label
+            commentAbove: renatio.dynamicpdf::lang.variables.comment
+            tab: renatio.dynamicpdf::lang.tab.options
+            type: partial
+            path: field_variables
