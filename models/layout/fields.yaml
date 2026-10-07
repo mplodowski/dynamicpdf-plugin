@@ -57,3 +57,84 @@ secondaryTabs:
             comment: renatio.dynamicpdf::lang.templates.background_img_comment
             attachOnUpload: true
             span: left
+
+        _page_numbers_section:
+            label: renatio.dynamicpdf::lang.page_numbers.section
+            tab: renatio.dynamicpdf::lang.tab.options
+            type: section
+
+        page_numbers:
+            label: renatio.dynamicpdf::lang.page_numbers.position
+            tab: renatio.dynamicpdf::lang.tab.options
+            type: dropdown
+            emptyOption: renatio.dynamicpdf::lang.page_numbers.off
+            options:
+                bottom-center: renatio.dynamicpdf::lang.page_numbers.positions.bottom-center
+                bottom-left: renatio.dynamicpdf::lang.page_numbers.positions.bottom-left
+                bottom-right: renatio.dynamicpdf::lang.page_numbers.positions.bottom-right
+                top-center: renatio.dynamicpdf::lang.page_numbers.positions.top-center
+                top-left: renatio.dynamicpdf::lang.page_numbers.positions.top-left
+                top-right: renatio.dynamicpdf::lang.page_numbers.positions.top-right
+            span: left
+
+        page_numbers_text:
+            label: renatio.dynamicpdf::lang.page_numbers.text
+            tab: renatio.dynamicpdf::lang.tab.options
+            placeholder: renatio.dynamicpdf::lang.page_numbers.default_text
+            comment: renatio.dynamicpdf::lang.page_numbers.text_comment
+            span: right
+            trigger:
+                action: show
+                field: page_numbers
+                condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+
+        page_numbers_size:
+            label: renatio.dynamicpdf::lang.page_numbers.size
+            tab: renatio.dynamicpdf::lang.tab.options
+            type: number
+            placeholder: 9
+            min: 1
+            max: 72
+            step: any
+            span: left
+            trigger:
+                action: show
+                field: page_numbers
+                condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+
+        page_numbers_margin:
+            label: renatio.dynamicpdf::lang.page_numbers.margin
+            tab: renatio.dynamicpdf::lang.tab.options
+            comment: renatio.dynamicpdf::lang.page_numbers.margin_comment
+            type: number
+            placeholder: 20
+            min: 0
+            max: 200
+            step: any
+            span: right
+            trigger:
+                action: show
+                field: page_numbers
+                condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+
+        page_numbers_font:
+            label: renatio.dynamicpdf::lang.page_numbers.font
+            tab: renatio.dynamicpdf::lang.tab.options
+            comment: renatio.dynamicpdf::lang.page_numbers.font_comment
+            span: left
+            trigger:
+                action: show
+                field: page_numbers
+                condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+
+        page_numbers_color:
+            label: renatio.dynamicpdf::lang.page_numbers.color
+            tab: renatio.dynamicpdf::lang.tab.options
+            type: colorpicker
+            allowEmpty: true
+            showAlpha: false
+            span: right
+            trigger:
+                action: show
+                field: page_numbers
+                condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]

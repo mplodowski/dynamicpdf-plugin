@@ -135,9 +135,15 @@ name = "Default PDF layout"
 
 The configuration section sets the PDF view parameters. The following configuration parameters are supported:
 
-| Parameter | Description                |
-|-----------|----------------------------|
-| **name**  | the layout name, required. |
+| Parameter             | Description                                                                |
+|-----------------------|----------------------------------------------------------------------------|
+| **name**              | the layout name, required.                                                 |
+| **pageNumbers**       | page numbers position, e.g. `bottom-center`, see [Page numbers](#page-numbers). |
+| **pageNumbersText**   | page numbers text, `Page {PAGE_NUM} of {PAGE_COUNT}` translated by default. |
+| **pageNumbersSize**   | font size in points, 9 by default.                                         |
+| **pageNumbersFont**   | font family used by the document, the default font otherwise.             |
+| **pageNumbersMargin** | distance from the page edge in points, 20 by default.                      |
+| **pageNumbersColor**  | color as `#rrggbb`, black by default.                                      |
 
 ### Using PDF layouts
 
@@ -545,7 +551,12 @@ public function onDownload()
 
 ### Page numbers
 
-Page numbers are stamped on every page after rendering, without enabling inline PHP:
+The simplest way is the layout: pick a position under *Options > Page numbers* in the layout form (or set
+`pageNumbers = "bottom-center"` in the configuration section of a layout view) and every template using that layout
+gets page numbers, in code and in the backend preview. An empty text falls back to "Page {PAGE_NUM} of {PAGE_COUNT}"
+in the language of the render. The demo *Header and Footer* layout has them switched on.
+
+From code, page numbers are stamped on every page after rendering, without enabling inline PHP:
 
 ```php
 return PDF::loadTemplate('renatio::invoice')
@@ -558,7 +569,7 @@ return PDF::loadTemplate('renatio::invoice')
 with `@font-face` in the layout; the dompdf default font otherwise), `margin` (points) and `color` (RGB between 0
 and 1) are optional. Requires the CPDF or PDFLib backend; the GD backend cannot draw page text.
 
-Call `pageNumbers()` after loading the document; it applies to that document only. Inline PHP
+Call `pageNumbers()` after loading the document; it applies to that document only and overrides the layout setting. Inline PHP
 (`setIsPhpEnabled(true)`) is no longer needed for page numbers and should stay off.
 
 > **Security warning:** only enable `setIsPhpEnabled(true)` when the template content is fully trusted. Any

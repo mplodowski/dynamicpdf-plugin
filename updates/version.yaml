@@ -61,9 +61,10 @@ v8.1.0:
     - Granular permissions for templates and layouts, existing roles and administrators keep their access.
     - Template and layout translations, localized view files, layouts follow view file updates like templates.
     - Stricter saving. Invalid Twig, duplicate codes and deleting used layouts are rejected.
-    - Page numbers without inline PHP, PDF::fake(), sync and check commands.
+    - Page numbers set on the layout or from code without inline PHP, PDF::fake(), sync and check commands.
     - 20260907_0001_add_sample_data_to_templates_table.php
     - 20260907_0002_add_unique_code_indexes.php
     - 20260930_0001_unlock_edited_layouts.php
     - 20260930_0002_grant_granular_permissions.php
     - 20261006_0001_widen_content_columns.php
+    - 20261007_0001_add_page_numbers_to_layouts_table.php

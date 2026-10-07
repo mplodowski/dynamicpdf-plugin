@@ -238,6 +238,7 @@ class PDFWrapper extends PDF
         );
 
         $this->loadHTML($html, $encoding);
+        $this->pageNumbers = $template->layout?->pageNumbers($locale);
 
         if ($template->size || $template->orientation) {
             $options = $this->dompdf->getOptions();
@@ -264,6 +265,7 @@ class PDFWrapper extends PDF
         );
 
         $this->loadHTML($html, $encoding);
+        $this->pageNumbers = $layout->pageNumbers($locale);
 
         return $this;
     }

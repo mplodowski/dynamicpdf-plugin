@@ -5,10 +5,12 @@ namespace Renatio\DynamicPDF\Models;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Model;
+use October\Rain\Database\Traits\Nullable;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Exception\ApplicationException;
 use October\Rain\Exception\ValidationException;
 use Renatio\DynamicPDF\Classes\LessCompiler;
+use Renatio\DynamicPDF\Classes\PageNumbers;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
@@ -30,6 +32,12 @@ use Throwable;
  * @property string|null $content_html
  * @property string|null $content_css
  * @property bool $is_locked
+ * @property string|null $page_numbers
+ * @property string|null $page_numbers_text
+ * @property float|string|null $page_numbers_size
+ * @property string|null $page_numbers_color
+ * @property string|null $page_numbers_font
+ * @property float|string|null $page_numbers_margin
  * @property-read File|null $background_img
  * @property-read \October\Rain\Database\Collection<int, Template> $templates
  * @property-read string $html
@@ -39,23 +47,52 @@ class Layout extends Model
     use DescribesViewStatus;
     use Duplicates;
     use FollowsView;
+    use Nullable;
     use TranslatesContent;
     use ValidatesCodeFormat;
     use ValidatesTwigSyntax;
     use Validation;
 
-    public const VIEW_FIELDS = ['name' => 'name', 'content_html' => 'content_html', 'content_css' => 'content_css'];
+    public const PAGE_NUMBERS_SETTINGS = [
+        'page_numbers' => 'pageNumbers',
+        'page_numbers_text' => 'pageNumbersText',
+        'page_numbers_size' => 'pageNumbersSize',
+        'page_numbers_color' => 'pageNumbersColor',
+        'page_numbers_font' => 'pageNumbersFont',
+        'page_numbers_margin' => 'pageNumbersMargin',
+    ];
+
+    public const VIEW_FIELDS = [
+        'name' => 'name',
+        'content_html' => 'content_html',
+        'content_css' => 'content_css',
+        'page_numbers' => 'page_numbers',
+        'page_numbers_text' => 'page_numbers_text',
+        'page_numbers_size' => 'page_numbers_size',
+        'page_numbers_color' => 'page_numbers_color',
+        'page_numbers_font' => 'page_numbers_font',
+        'page_numbers_margin' => 'page_numbers_margin',
+    ];
 
     public $table = 'renatio_dynamicpdf_pdf_layouts';
 
     /** @var array<int, string> */
-    public $translatable = ['content_html', 'content_css'];
+    public $translatable = ['content_html', 'content_css', 'page_numbers_text'];
+
+    /** @var array<int, string> */
+    protected $nullable = ['page_numbers', 'page_numbers_text', 'page_numbers_size', 'page_numbers_color', 'page_numbers_font', 'page_numbers_margin'];
 
     /** @var array<string, array<string>> */
     public $rules = [
         'name' => ['required', 'max:255'],
         'code' => ['required', 'max:255', self::CODE_FORMAT, 'unique'],
         'content_html' => ['required'],
+        'page_numbers' => ['nullable', 'in:top-left,top-center,top-right,bottom-left,bottom-center,bottom-right'],
+        'page_numbers_text' => ['nullable', 'max:255'],
+        'page_numbers_size' => ['nullable', 'numeric', 'between:1,72'],
+        'page_numbers_color' => ['nullable', 'regex:/^#[0-9a-f]{6}$/i'],
+        'page_numbers_font' => ['nullable', 'max:255'],
+        'page_numbers_margin' => ['nullable', 'numeric', 'between:0,200'],
     ];
 
     /** @var array<string, string> */
@@ -193,6 +230,39 @@ class Layout extends Model
         $this->name = Arr::get($sections, 'settings.name') ?: $code;
         $this->content_css = Arr::get($sections, 'css');
         $this->content_html = Arr::get($sections, 'html');
+
+        foreach (self::PAGE_NUMBERS_SETTINGS as $attribute => $setting) {
+            $value = Arr::get($sections, "settings.{$setting}");
+            $this->setAttribute($attribute, $value === '' ? null : $value);
+        }
+    }
+
+    public function pageNumbers(?string $locale = null): ?PageNumbers
+    {
+        if (! $this->page_numbers) {
+            return null;
+        }
+
+        return new PageNumbers(
+            $this->page_numbers_text ?: trans('renatio.dynamicpdf::lang.page_numbers.default_text', [], $locale),
+            $this->page_numbers,
+            is_numeric($this->page_numbers_size) ? (float) $this->page_numbers_size : 9,
+            $this->page_numbers_font ?: null,
+            is_numeric($this->page_numbers_margin) ? (float) $this->page_numbers_margin : 20,
+            $this->pageNumbersColor(),
+        );
+    }
+
+    /**
+     * @return array<int, float>
+     */
+    protected function pageNumbersColor(): array
+    {
+        if (! preg_match('/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i', (string) $this->page_numbers_color, $hex)) {
+            return [0, 0, 0];
+        }
+
+        return array_map(fn (string $component): float => hexdec($component) / 255, array_slice($hex, 1));
     }
 
     public function isCustomised(): bool
