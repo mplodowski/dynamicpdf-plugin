@@ -121,7 +121,7 @@ return [
         'margin' => 'Abstand vom Seitenrand (pt)',
         'margin_comment' => 'Halten Sie ihn innerhalb des Seitenrands, damit die Zahl den Inhalt nicht überdeckt.',
         'font' => 'Schriftart',
-        'font_comment' => 'Eine Schriftfamilie, die das Dokument verwendet, zum Beispiel per @font-face deklariert. Leer bedeutet die Standardschrift.',
+        'font_comment' => 'Eine Schriftfamilie, die das Dokument verwendet, zum Beispiel per @font-face deklariert. Leer bedeutet die Standardschrift. Zeichen, die ihr fehlen (z. B. Kyrillisch), und eine vom Dokument nicht geladene Schrift verwenden die mitgelieferte DejaVu Sans.',
         'color' => 'Farbe',
     ],
 ];

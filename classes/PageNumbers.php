@@ -9,6 +9,16 @@ class PageNumbers
 {
     public const POSITIONS = ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'];
 
+    public const DEFAULT_TEXT = 'Page {PAGE_NUM} of {PAGE_COUNT}';
+
+    public const DEFAULT_POSITION = 'bottom-center';
+
+    public const DEFAULT_SIZE = 9.0;
+
+    public const DEFAULT_MARGIN = 20.0;
+
+    public const UNICODE_FONT = 'DejaVu Sans';
+
     /**
      * @param  array<int, float>  $color
      */
@@ -19,6 +29,7 @@ class PageNumbers
         protected ?string $font,
         protected float $margin,
         protected array $color,
+        protected ?string $fallbackFont = null,
     ) {
         if (! in_array($position, self::POSITIONS, true)) {
             throw new InvalidArgumentException("Unknown page numbers position [{$position}].");
@@ -33,7 +44,7 @@ class PageNumbers
     {
         $canvas = $dompdf->getCanvas();
         $metrics = $dompdf->getFontMetrics();
-        $font = $metrics->getFont($this->font);
+        $font = $metrics->getFont($this->font) ?? ($this->fallbackFont === null ? null : $metrics->getFont($this->fallbackFont));
 
         if ($font === null) {
             throw new InvalidArgumentException("Font [{$this->font}] is not available in the rendered document.");

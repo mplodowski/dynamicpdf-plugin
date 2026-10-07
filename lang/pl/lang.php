@@ -121,7 +121,7 @@ return [
         'margin' => 'Odległość od krawędzi strony (pt)',
         'margin_comment' => 'Zmieść ją w marginesie strony, aby numer nie nachodził na treść.',
         'font' => 'Czcionka',
-        'font_comment' => 'Rodzina czcionek używana w dokumencie, np. zadeklarowana przez @font-face. Puste pole oznacza czcionkę domyślną.',
+        'font_comment' => 'Rodzina czcionek używana w dokumencie, np. zadeklarowana przez @font-face. Puste pole oznacza czcionkę domyślną. Znaki, których ona nie ma (np. cyrylica), i czcionka niewczytana przez dokument używają dołączonej DejaVu Sans.',
         'color' => 'Kolor',
     ],
 ];

@@ -121,7 +121,7 @@ return [
         'margin' => 'Distance from the page edge (pt)',
         'margin_comment' => 'Keep it inside the page margin so the number does not overlap the content.',
         'font' => 'Font',
-        'font_comment' => 'A font family the document uses, for example one declared with @font-face. Empty means the default font.',
+        'font_comment' => 'A font family the document uses, for example one declared with @font-face. Empty means the default font. Letters the default font lacks (e.g. Cyrillic) and a font the document does not load use the bundled DejaVu Sans.',
         'color' => 'Color',
     ],
 ];

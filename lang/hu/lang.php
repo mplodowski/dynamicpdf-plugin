@@ -121,7 +121,7 @@ return [
         'margin' => 'Távolság az oldal szélétől (pt)',
         'margin_comment' => 'Maradjon az oldalmargón belül, hogy a szám ne takarja a tartalmat.',
         'font' => 'Betűtípus',
-        'font_comment' => 'A dokumentum által használt betűcsalád, például @font-face segítségével deklarált. Üresen az alapértelmezett betűtípus.',
+        'font_comment' => 'A dokumentum által használt betűcsalád, például @font-face-szel deklarálva. Üresen az alapértelmezett betűtípus. A belőle hiányzó karakterek (pl. cirill) és a dokumentum által be nem töltött betűtípus a mellékelt DejaVu Sanst használják.',
         'color' => 'Szín',
     ],
 ];

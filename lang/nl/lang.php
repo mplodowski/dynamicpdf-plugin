@@ -121,7 +121,7 @@ return [
         'margin' => 'Afstand tot de paginarand (pt)',
         'margin_comment' => 'Houd deze binnen de paginamarge zodat het nummer de inhoud niet overlapt.',
         'font' => 'Lettertype',
-        'font_comment' => 'Een lettertypefamilie die het document gebruikt, bijvoorbeeld een met @font-face gedeclareerde. Leeg betekent het standaardlettertype.',
+        'font_comment' => 'Een lettertypefamilie die het document gebruikt, bijvoorbeeld gedeclareerd met @font-face. Leeg betekent het standaardlettertype. Tekens die daarin ontbreken (bijv. Cyrillisch) en een lettertype dat het document niet laadt, gebruiken het meegeleverde DejaVu Sans.',
         'color' => 'Kleur',
     ],
 ];

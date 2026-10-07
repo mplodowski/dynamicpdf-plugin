@@ -87,7 +87,6 @@ class Layout extends Model
         'name' => ['required', 'max:255'],
         'code' => ['required', 'max:255', self::CODE_FORMAT, 'unique'],
         'content_html' => ['required'],
-        'page_numbers' => ['nullable', 'in:top-left,top-center,top-right,bottom-left,bottom-center,bottom-right'],
         'page_numbers_text' => ['nullable', 'max:255'],
         'page_numbers_size' => ['nullable', 'numeric', 'between:1,72'],
         'page_numbers_color' => ['nullable', 'regex:/^#[0-9a-f]{6}$/i'],
@@ -135,6 +134,7 @@ class Layout extends Model
 
     public function beforeValidate(): void
     {
+        $this->rules['page_numbers'] = ['nullable', 'in:' . implode(',', PageNumbers::POSITIONS)];
         $this->exemptStoredCodeFromFormat();
 
         $errors = $this->twigSyntaxErrors();
@@ -237,19 +237,27 @@ class Layout extends Model
         }
     }
 
+    /**
+     * The dompdf core fonts only cover Windows-1252, so text with other letters (Cyrillic, most of
+     * Latin Extended) and a font the document does not load fall back to the bundled DejaVu Sans.
+     */
     public function pageNumbers(?string $locale = null): ?PageNumbers
     {
-        if (! $this->page_numbers) {
+        if (! in_array($this->page_numbers, PageNumbers::POSITIONS, true)) {
             return null;
         }
 
+        $text = $this->page_numbers_text ?: trans('renatio.dynamicpdf::lang.page_numbers.default_text', [], $locale);
+        $font = $this->page_numbers_font ?: (preg_match('/[^\x00-\x{FF}]/u', $text) ? PageNumbers::UNICODE_FONT : null);
+
         return new PageNumbers(
-            $this->page_numbers_text ?: trans('renatio.dynamicpdf::lang.page_numbers.default_text', [], $locale),
+            $text,
             $this->page_numbers,
-            is_numeric($this->page_numbers_size) ? (float) $this->page_numbers_size : 9,
-            $this->page_numbers_font ?: null,
-            is_numeric($this->page_numbers_margin) ? (float) $this->page_numbers_margin : 20,
+            is_numeric($this->page_numbers_size) ? (float) $this->page_numbers_size : PageNumbers::DEFAULT_SIZE,
+            $font,
+            is_numeric($this->page_numbers_margin) ? (float) $this->page_numbers_margin : PageNumbers::DEFAULT_MARGIN,
             $this->pageNumbersColor(),
+            PageNumbers::UNICODE_FONT,
         );
     }
 

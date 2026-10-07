@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use October\Rain\Exception\ValidationException;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
@@ -25,6 +26,25 @@ describe('Layout page numbers', function () {
         ])->code;
     });
 
+    it('falls back to DejaVu Sans for a font the document does not load', function () {
+        $code = ($this->templateOn)(($this->layoutWith)(['page_numbers' => 'bottom-center', 'page_numbers_font' => 'No Such Family']));
+
+        expect(($this->render)(fn (PDFWrapper $pdf) => $pdf->loadTemplate($code)))->toContain('/BaseFont /DejaVuSans');
+    });
+
+    it('stamps letters outside Latin-1 with DejaVu Sans', function () {
+        $code = ($this->templateOn)(($this->layoutWith)(['page_numbers' => 'bottom-center', 'page_numbers_text' => 'Страница {PAGE_NUM}']));
+
+        expect(($this->render)(fn (PDFWrapper $pdf) => $pdf->loadTemplate($code)))->toContain('/BaseFont /DejaVuSans');
+    });
+
+    it('ignores an unknown position from a view file instead of failing the render', function () {
+        $layout = ($this->layoutWith)();
+        DB::table('renatio_dynamicpdf_pdf_layouts')->where('id', $layout->id)->update(['page_numbers' => 'bottom']);
+        $code = ($this->templateOn)($layout);
+
+        expect(($this->render)(fn (PDFWrapper $pdf) => $pdf->loadTemplate($code)))->toStartWith('%PDF');
+    });
     it('stamps the layout page numbers on a template rendered from code', function () {
         $code = ($this->templateOn)(($this->layoutWith)(['page_numbers' => 'bottom-right', 'page_numbers_text' => 'Sheet {PAGE_NUM}/{PAGE_COUNT}']));
 
@@ -117,5 +137,32 @@ describe('Layout page numbers', function () {
             expect($stored->is_locked)->toBeFalse()
                 ->and($stored->page_numbers)->toBe('bottom-left');
         });
+    });
+});
+
+describe('Layout page numbers form', function () {
+    beforeEach(function () {
+        $this->directory = $this->registerViewLayouts('acme', [
+            'layouts/numbered' => "name = \"Numbered\"\npageNumbers = \"bottom-center\"\npageNumbersColor = \"#6b7280\"\npageNumbersSize = 9\n==\n<html><body>{{ content_html|raw }}</body></html>",
+        ]);
+        (new SyncTemplates)->handle();
+        actingAsPdfManager();
+    });
+
+    afterEach(fn () => File::deleteDirectory($this->directory));
+
+    it('keeps the layout following its view when the form posts the same values in another notation', function () {
+        $layout = $this->findLayout('acme::pdf.layouts.numbered');
+
+        $this->saveLayoutForm($layout->id, [
+            'name' => 'Numbered',
+            'content_html' => $layout->content_html,
+            'content_css' => '',
+            'page_numbers' => 'bottom-center',
+            'page_numbers_color' => '#6B7280',
+            'page_numbers_size' => '9.0',
+        ])->assertOk();
+
+        expect($this->findLayout('acme::pdf.layouts.numbered')->is_locked)->toBeTrue();
     });
 });

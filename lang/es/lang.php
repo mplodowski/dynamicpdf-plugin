@@ -121,7 +121,7 @@ return [
         'margin' => 'Distancia desde el borde de la página (pt)',
         'margin_comment' => 'Manténgala dentro del margen de la página para que el número no se superponga al contenido.',
         'font' => 'Fuente',
-        'font_comment' => 'Una familia de fuentes que usa el documento, por ejemplo una declarada con @font-face. Vacío significa la fuente predeterminada.',
+        'font_comment' => 'Una familia tipográfica que use el documento, por ejemplo declarada con @font-face. Vacío significa la fuente predeterminada. Los caracteres que le faltan (p. ej. cirílico) y una fuente que el documento no carga usan la DejaVu Sans incluida.',
         'color' => 'Color',
     ],
 ];

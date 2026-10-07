@@ -121,7 +121,7 @@ return [
         'margin' => 'Distanza dal bordo della pagina (pt)',
         'margin_comment' => 'Tienila entro il margine della pagina perché il numero non si sovrapponga al contenuto.',
         'font' => 'Carattere',
-        'font_comment' => 'Una famiglia di caratteri usata dal documento, ad esempio dichiarata con @font-face. Vuoto indica il carattere predefinito.',
+        'font_comment' => 'Una famiglia di caratteri usata dal documento, ad esempio dichiarata con @font-face. Vuoto indica il carattere predefinito. I caratteri che gli mancano (es. cirillico) e un font non caricato dal documento usano il DejaVu Sans incluso.',
         'color' => 'Colore',
     ],
 ];

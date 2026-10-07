@@ -121,7 +121,7 @@ return [
         'margin' => 'Vzdálenost od okraje stránky (pt)',
         'margin_comment' => 'Držte ji uvnitř okraje stránky, aby číslo nepřekrývalo obsah.',
         'font' => 'Písmo',
-        'font_comment' => 'Rodina písma, kterou dokument používá, například deklarovaná pomocí @font-face. Prázdné znamená výchozí písmo.',
+        'font_comment' => 'Rodina písma, kterou dokument používá, např. deklarovaná přes @font-face. Prázdné pole znamená výchozí písmo. Znaky, které mu chybí (např. azbuka), a písmo, které dokument nenačte, použijí přiložené DejaVu Sans.',
         'color' => 'Barva',
     ],
 ];

@@ -121,7 +121,7 @@ return [
         'margin' => 'Distance du bord de la page (pt)',
         'margin_comment' => 'Gardez-la dans la marge de la page pour que le numéro ne chevauche pas le contenu.',
         'font' => 'Police',
-        'font_comment' => 'Une famille de polices utilisée par le document, par exemple déclarée avec @font-face. Vide signifie la police par défaut.',
+        'font_comment' => 'Une famille de polices utilisée par le document, par exemple déclarée avec @font-face. Vide signifie la police par défaut. Les caractères qui lui manquent (p. ex. le cyrillique) et une police que le document ne charge pas utilisent la DejaVu Sans fournie.',
         'color' => 'Couleur',
     ],
 ];

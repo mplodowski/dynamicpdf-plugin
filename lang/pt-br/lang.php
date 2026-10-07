@@ -121,7 +121,7 @@ return [
         'margin' => 'Distância da borda da página (pt)',
         'margin_comment' => 'Mantenha-a dentro da margem da página para que o número não se sobreponha ao conteúdo.',
         'font' => 'Fonte',
-        'font_comment' => 'Uma família de fontes usada pelo documento, por exemplo declarada com @font-face. Vazio significa a fonte padrão.',
+        'font_comment' => 'Uma família de fontes usada pelo documento, por exemplo declarada com @font-face. Vazio significa a fonte padrão. Caracteres que ela não tem (ex. cirílico) e uma fonte que o documento não carrega usam a DejaVu Sans incluída.',
         'color' => 'Cor',
     ],
 ];
