@@ -2,6 +2,7 @@
 
 use Backend\Facades\Backend;
 use Illuminate\Support\Facades\DB;
+use October\Rain\Support\Facades\Flash;
 
 describe('Template form', function () {
     beforeEach(fn () => actingAsPdfManager());
@@ -53,6 +54,39 @@ describe('Form buttons', function () {
             ->toContain($confirm('cancel_unsaved'))
             ->toContain($confirm('duplicate_unsaved'));
     })->with(['templates', 'layouts']);
+
+    it('speaks the backend language in the save flash and the form buttons', function () {
+        actingAsPdfManager();
+        $this->withSession(['locale' => 'es']);
+        $template = $this->createTemplate();
+
+        $this->saveTemplateForm($template->id, [
+            'title' => 'Factura',
+            'code' => $template->code,
+            'content_html' => '<p>Factura</p>',
+        ])->assertOk();
+
+        expect(Flash::all())->toBe(['success' => 'El registro fue guardado.'])
+            ->and($this->get(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id))->assertOk()->getContent())
+            ->toContain('Guardar y cerrar')
+            ->toContain('"Guardando..."')
+            ->not->toContain('Save &amp; Close');
+    });
+
+    it('uses the same record wording in the layout save flash', function () {
+        actingAsPdfManager();
+        $this->withSession(['locale' => 'es']);
+        $layout = $this->createLayout();
+
+        $this->saveLayoutForm($layout->id, [
+            'name' => 'Diseño',
+            'code' => $layout->code,
+            'content_html' => (string) $layout->content_html,
+            'content_css' => '',
+        ])->assertOk();
+
+        expect(Flash::all())->toBe(['success' => 'El registro fue guardado.']);
+    });
 });
 
 describe('Variables list', function () {
