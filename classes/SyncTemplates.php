@@ -12,11 +12,15 @@ use Throwable;
 class SyncTemplates
 {
     /** @var array<string, array<int, string>> */
-    protected array $report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
+    protected array $report = ['created' => [], 'updated' => [], 'orphaned' => [], 'deleted' => [], 'failed' => []];
 
-    public function handle(): void
+    /**
+     * A template whose view is no longer registered can carry translations and sample data
+     * edited in the backend, so it is only deleted on an explicit prune.
+     */
+    public function handle(bool $prune = false): void
     {
-        $this->report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
+        $this->report = ['created' => [], 'updated' => [], 'orphaned' => [], 'deleted' => [], 'failed' => []];
 
         $registeredLayouts = PDFManager::instance()->listRegisteredLayouts();
 
@@ -29,14 +33,14 @@ class SyncTemplates
         }
 
         $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
+        $dbTemplates = Template::query()->pluck('is_custom', 'code')->all();
+
+        $this->handleOrphanedTemplates($dbTemplates, $registeredTemplates, $prune);
 
         if (! $registeredTemplates) {
             return;
         }
 
-        $dbTemplates = Template::query()->pluck('is_custom', 'code')->all();
-
-        $this->clearNonCustomizedTemplates($dbTemplates, $registeredTemplates);
         $this->refreshTemplates($registeredTemplates);
         $this->createTemplates(array_diff_key($registeredTemplates, $dbTemplates));
     }
@@ -94,16 +98,22 @@ class SyncTemplates
      * @param  array<string, bool>  $dbTemplates
      * @param  array<string, string>  $registeredTemplates
      */
-    protected function clearNonCustomizedTemplates(array $dbTemplates, array $registeredTemplates): void
+    protected function handleOrphanedTemplates(array $dbTemplates, array $registeredTemplates, bool $prune): void
     {
-        $obsolete = array_keys(array_diff_key(array_filter($dbTemplates, fn (mixed $isCustom): bool => ! $isCustom), $registeredTemplates));
+        $orphaned = array_keys(array_diff_key(array_filter($dbTemplates, fn (mixed $isCustom): bool => ! $isCustom), $registeredTemplates));
 
-        if ($obsolete === []) {
+        if ($orphaned === []) {
             return;
         }
 
-        Template::whereIn('code', $obsolete)->get()->each->delete();
-        $this->report['deleted'] = $obsolete;
+        if (! $prune) {
+            $this->report['orphaned'] = $orphaned;
+
+            return;
+        }
+
+        Template::whereIn('code', $orphaned)->get()->each->delete();
+        $this->report['deleted'] = $orphaned;
     }
 
     /**

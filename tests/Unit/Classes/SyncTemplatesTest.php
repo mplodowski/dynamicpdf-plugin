@@ -31,17 +31,36 @@ describe('SyncTemplates', function () {
             ->and(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeTrue();
     });
 
-    it('removes stored templates that are no longer registered unless customised', function () {
-        $this->createTemplate(['code' => 'gone::pdf.stale', 'is_custom' => false]);
-        $this->createTemplate(['code' => 'kept::pdf.custom', 'is_custom' => true]);
+    it('keeps and reports templates that are no longer registered, with their translations', function () {
+        $this->enableTranslation('de');
+        $orphan = $this->createTemplate(['code' => 'gone::pdf.stale', 'is_custom' => false]);
+        $orphan->setTranslation('content_html', 'de', '<p>Übersetzt</p>');
+        $orphan->save();
         $sync = new SyncTemplates;
 
         $sync->handle();
 
+        expect(Template::whereCode('gone::pdf.stale')->value('id'))->toBe($orphan->id)
+            ->and($this->findTemplate('gone::pdf.stale')->getTranslation('content_html', 'de', false))->toBe('<p>Übersetzt</p>')
+            ->and($sync->report()['orphaned'])->toBe(['gone::pdf.stale'])
+            ->and($sync->report()['deleted'])->toBe([]);
+    });
+
+    it('deletes unregistered templates only when pruning, also with nothing registered', function (bool $registered) {
+        if (! $registered) {
+            PDFManager::forgetInstance();
+        }
+
+        $this->createTemplate(['code' => 'gone::pdf.stale', 'is_custom' => false]);
+        $this->createTemplate(['code' => 'kept::pdf.custom', 'is_custom' => true]);
+        $sync = new SyncTemplates;
+
+        $sync->handle(prune: true);
+
         expect(Template::whereCode('gone::pdf.stale')->exists())->toBeFalse()
             ->and(Template::whereCode('kept::pdf.custom')->exists())->toBeTrue()
             ->and($sync->report()['deleted'])->toBe(['gone::pdf.stale']);
-    });
+    })->with(['other views registered' => true, 'nothing registered' => false]);
 
     it('skips a registered code without a view file, logs it and still creates the others', function () {
         PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.missing']);

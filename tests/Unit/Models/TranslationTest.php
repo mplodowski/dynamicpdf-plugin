@@ -118,14 +118,14 @@ describe('Native model translation', function () {
             ->and($this->findLayout($layoutCopy->code)->getTranslation('content_html', 'de', false))->toBe('DE-LAYOUT');
     });
 
-    it('removes the translations of a template the sync deletes', function () {
+    it('removes the translations of a template the sync prunes', function () {
         $this->enableTranslation('de');
         PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
         $template = $this->createTemplate(['code' => 'gone::pdf.stale', 'is_custom' => false]);
         $template->setTranslation('content_html', 'de', 'DE-BODY');
         $template->save();
 
-        (new SyncTemplates)->handle();
+        (new SyncTemplates)->handle(prune: true);
 
         expect(Template::whereCode('gone::pdf.stale')->exists())->toBeFalse()
             ->and(Db::table('system_translate_attributes')->where('model_type', Template::class)->where('model_id', $template->id)->exists())->toBeFalse();
