@@ -21,6 +21,13 @@ describe('Registered view fallback', function () {
             ->and($template->layout?->name)->toBe('Default Layout');
     });
 
+    it('renders the template inside its registered layout', function () {
+        $html = app('dynamicpdf')->parseTemplate(Template::byCode('renatio.dynamicpdf::pdf.invoice'));
+
+        expect($html)->toStartWith('<!DOCTYPE html>')
+            ->and($html)->toContain('</body>');
+    });
+
     it('builds a layout from its registered view when the record does not exist', function () {
         $layout = Layout::byCode('renatio.dynamicpdf::pdf.layouts.default');
 

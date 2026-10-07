@@ -3,13 +3,16 @@
 namespace Renatio\DynamicPDF\Tests;
 
 use Backend\Facades\Backend;
+use Closure;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 use LogicException;
 use Monolog\Handler\NullHandler;
+use October\Rain\Exception\ValidationException;
 use October\Rain\Foundation\Application;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Layout;
@@ -56,6 +59,17 @@ abstract class TestCase extends OctoberPestTestCase
         File::ensureDirectoryExists($directory);
 
         return $this->temporaryDirectories[] = $directory;
+    }
+
+    public function validationErrors(Closure $callback): MessageBag
+    {
+        try {
+            $callback();
+        } catch (ValidationException $e) {
+            return $e->getErrors();
+        }
+
+        $this->fail('No validation error was thrown.');
     }
 
     public function useThemesPath(string $path): void

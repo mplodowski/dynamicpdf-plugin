@@ -4,7 +4,6 @@ use Cms\Classes\Theme;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
-use October\Rain\Exception\ValidationException;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
@@ -22,8 +21,7 @@ describe('Twig syntax', function () {
     });
 
     it('rejects layout HTML with a Twig syntax error on the HTML field with its line', function () {
-        expect(fn () => $this->createLayout(['content_html' => "<html><body>\n{% if %}{{ content_html }}</body></html>"]))
-            ->toThrow(ValidationException::class, 'line 2');
+        expect($this->validationErrors(fn () => $this->createLayout(['content_html' => "<html><body>\n{% if %}{{ content_html }}</body></html>"]))->first('content_html'))->toContain('line 2');
     });
 
     it('accepts filters the CMS registers on the environment the PDF renders with', function () {

@@ -11,10 +11,7 @@ use Twig\Loader\ArrayLoader;
 use Twig\TwigFunction;
 
 describe('Twig environment', function () {
-    beforeEach(fn () => $this->themesPath = themes_path());
-
     afterEach(function () {
-        $this->useThemesPath($this->themesPath);
         Event::forget('cms.theme.getActiveTheme');
         Event::forget('cms.extendTwig');
         Theme::resetCache();

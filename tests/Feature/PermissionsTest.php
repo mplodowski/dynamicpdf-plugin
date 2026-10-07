@@ -14,6 +14,20 @@ use Renatio\DynamicPDF\Models\Template;
 use Renatio\DynamicPDF\Tests\TestCase;
 
 describe('Permissions', function () {
+    it('refuses the template preview without manage_templates', function () {
+        actingAsPdfManager(['manage_templates']);
+        $template = $this->createTemplate();
+
+        expect(fn () => (new Templates)->run('html', [$template->id]))->toThrow(ForbiddenException::class);
+    });
+
+    it('refuses the layout preview without manage_layouts', function () {
+        actingAsPdfManager(['manage_layouts']);
+        $layout = $this->createLayout();
+
+        expect(fn () => (new Layouts)->run('html', [$layout->id]))->toThrow(ForbiddenException::class);
+    });
+
     it('hides the layouts list without manage_layouts', function () {
         actingAsPdfUserWith(['manage_templates', 'manage_templates.create']);
         $this->createLayout();
