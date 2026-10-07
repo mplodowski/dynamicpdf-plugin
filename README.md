@@ -839,3 +839,7 @@ body {
 }
 </style>
 ```
+
+The sandboxed backend HTML preview embeds the `ttf`, `otf`, `woff` and `woff2` fonts of `@font-face` rules in `<style>`
+elements when they are public files of the application (plugins, themes, media or public uploads, up to 5 MB each);
+fonts in stylesheets linked with `<link>` are not embedded and show a fallback font in that preview.

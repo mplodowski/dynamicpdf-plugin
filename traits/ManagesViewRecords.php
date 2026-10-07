@@ -10,6 +10,7 @@ use October\Rain\Exception\ApplicationException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
+use Renatio\DynamicPDF\Classes\PreviewFonts;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
@@ -73,7 +74,7 @@ trait ManagesViewRecords
         $model = $this->formFindModelObject($id);
 
         try {
-            $html = $model->getHtmlAttribute();
+            $html = (new PreviewFonts)->inline($model->getHtmlAttribute());
         } catch (TwigError $e) {
             $html = '<p>' . e($this->previewFailedMessage($e)) . '</p>';
         }
