@@ -1,5 +1,6 @@
 <?php
 
+use Backend\Facades\Backend;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Testing\TestResponse;
 use Renatio\DynamicPDF\Classes\Events;
@@ -103,4 +104,43 @@ describe('Preview of unsaved changes', function () {
             ->and($response->json('result'))->toBeNull()
             ->and($rendered)->toBeFalse();
     })->with(['templates', 'layouts']);
+
+    it('refuses posted markup from a role that may only preview saved records', function (string $definition, string $action) {
+        actingAsPdfManager(except: ["manage_{$definition}.update"]);
+        $record = $definition === 'templates' ? $this->createTemplate() : $this->createLayout();
+        $rendered = false;
+        Event::listen(Events::AFTER_RENDER, function () use (&$rendered): void {
+            $rendered = true;
+        });
+        $model = $definition === 'templates' ? 'Template' : 'Layout';
+
+        $response = $this->post(Backend::url("renatio/dynamicpdf/{$definition}/{$action}/{$record->id}"), [$model => ['content_html' => '<p>{{ 7 * 7 }}</p>'], 'mode' => 'html'], [
+            'X-AJAX-HANDLER' => 'onPreviewUnsaved',
+            'X-Requested-With' => 'XMLHttpRequest',
+        ]);
+
+        expect($response->json('result'))->toBeNull()
+            ->and($rendered)->toBeFalse();
+    })->with(['templates', 'layouts'])->with(['update', 'preview']);
+
+    it('previews a template that is being created', function () {
+        actingAsPdfManager();
+
+        $response = $this->post(Backend::url('renatio/dynamicpdf/templates/create'), ['Template' => ['title' => 'New', 'content_html' => '<p>Brand new</p>'], 'mode' => 'html'], [
+            'X-AJAX-HANDLER' => 'onPreviewUnsaved',
+            'X-Requested-With' => 'XMLHttpRequest',
+        ])->assertOk();
+
+        expect(previewFrame($response)->getAttribute('srcdoc'))->toContain('<p>Brand new</p>');
+    });
+
+    it('reports invalid sample data instead of rendering without it', function () {
+        actingAsPdfManager();
+        $template = $this->createTemplate();
+
+        $response = $this->previewUnsaved('templates', $template->id, ['content_html' => '<p>{{ name }}</p>', 'sample_data' => '{"name": "Jane",}']);
+
+        expect($response->json('result'))->toBeNull()
+            ->and((string) $response->getContent())->toContain('sample');
+    });
 });

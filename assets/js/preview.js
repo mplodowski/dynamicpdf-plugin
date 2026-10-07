@@ -1,12 +1,14 @@
 oc.registerControl('dynamicpdf-pdf-preview', class extends oc.ControlBase {
-    connect() {
-        const bytes = Uint8Array.from(atob(this.element.dataset.pdf), (char) => char.charCodeAt(0));
+    async connect() {
+        const blob = await (await fetch('data:application/pdf;base64,' + this.element.dataset.pdf)).blob();
 
-        this.url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+        this.url = URL.createObjectURL(blob);
         this.element.src = this.url;
     }
 
     disconnect() {
-        URL.revokeObjectURL(this.url);
+        if (this.url) {
+            URL.revokeObjectURL(this.url);
+        }
     }
 });

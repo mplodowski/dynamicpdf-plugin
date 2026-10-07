@@ -3,11 +3,14 @@
 namespace Renatio\DynamicPDF\Traits;
 
 use Backend\Facades\BackendMenu;
+use Dompdf\Exception as DompdfException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use October\Rain\Exception\ApplicationException;
 use October\Rain\Exception\ForbiddenException;
+use October\Rain\Exception\ValidationException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
@@ -83,6 +86,10 @@ trait ManagesViewRecords
         return response($html)->header('Content-Security-Policy', "sandbox; script-src 'none'; object-src 'none'");
     }
 
+    /**
+     * Rendering posted markup is as powerful as saving it, so the form's save permission is
+     * required on top of the preview one.
+     */
     public function onPreviewUnsaved(): string
     {
         $this->requireFormPermission('modelPreview');
@@ -90,11 +97,21 @@ trait ManagesViewRecords
         $widget = $this->formGetWidget() ?? throw new ForbiddenException;
         $model = $widget->model;
 
-        if (! $model instanceof Template && ! $model instanceof Layout) {
+        if ((! $model instanceof Template && ! $model instanceof Layout) || ! in_array($this->action, ['create', 'update'], true)) {
             throw new ForbiddenException;
         }
 
+        $this->requireFormPermission($model->exists ? 'modelUpdate' : 'modelCreate');
+
         $widget->setFormValues();
+
+        if ($model instanceof Template) {
+            $validator = Validator::make(['sample_data' => $model->sample_data], ['sample_data' => ['nullable', 'json']]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+        }
 
         if ($model instanceof Layout && ! $model->exists) {
             $model->setRelation('background_img', $model->background_img()->withDeferred($widget->getSessionKey())->first());
@@ -108,6 +125,8 @@ trait ManagesViewRecords
                 : (new PreviewFonts)->inline($model->getHtmlAttribute());
         } catch (TwigError $e) {
             throw new ApplicationException($this->previewFailedMessage($e));
+        } catch (DompdfException $e) {
+            throw new ApplicationException(trans('renatio.dynamicpdf::lang.templates.preview_failed', ['message' => $e->getMessage()]));
         }
 
         return $this->makePartial('preview_popup', [

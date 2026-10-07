@@ -49,7 +49,7 @@ class PDFFake extends PDFWrapper implements Fake
      */
     public function loadTemplateModel(Template $template, array $data = [], ?string $encoding = null, ?string $locale = null): self
     {
-        return $this->record('template', (string) $template->code, $data, $template->layout?->code, $locale);
+        return $this->record('template', (string) $template->code, $data, null, $locale);
     }
 
     /**
