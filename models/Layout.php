@@ -99,6 +99,11 @@ class Layout extends Model
     ];
 
     /** @var array<string, string> */
+    public $attributeNames = [
+        'content_html' => 'renatio.dynamicpdf::lang.templates.content_html',
+    ];
+
+    /** @var array<string, string> */
     public $customMessages = [
         'code.regex' => 'renatio.dynamicpdf::lang.templates.code_format',
     ];
@@ -166,7 +171,7 @@ class Layout extends Model
         $titles = Template::where('layout_id', $this->id)->pluck('title');
 
         if ($titles->isNotEmpty()) {
-            throw new ApplicationException(trans('renatio.dynamicpdf::lang.layout.delete_in_use', ['templates' => $titles->implode(', ')]));
+            throw new ApplicationException(trans_choice('renatio.dynamicpdf::lang.layout.delete_in_use', $titles->count(), ['templates' => $titles->implode(', ')]));
         }
     }
 

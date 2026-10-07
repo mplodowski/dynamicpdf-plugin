@@ -58,6 +58,7 @@ return [
         'edit_template' => 'Editar plantilla PDF',
         'not_found' => 'No se encontró una plantilla registrada con el código :code.',
         'view_follows' => 'Esta plantilla sigue el archivo de vista `:view` y recibe sus actualizaciones del plugin. Guardar cambios en el título, la descripción, el contenido, el diseño o la configuración del papel la desvincula de esas actualizaciones.',
+        'view_follows_translation' => 'Esta plantilla sigue el archivo de vista `:view` y recibe sus actualizaciones del plugin. En este sitio, el título y el contenido se guardan como traducción; guardar cambios en la descripción, el diseño o la configuración del papel la desvincula de esas actualizaciones.',
         'view_detached' => 'Esta plantilla ya no sigue el archivo de vista `:view`, por lo que no recibe las actualizaciones del plugin. **:reset** restaura la versión del archivo de vista.',
     ],
     'layouts' => [
@@ -71,8 +72,9 @@ return [
         'edit_layout' => 'Editar diseño PDF',
         'not_found' => 'No se encontró un diseño registrado con el código :code.',
         'view_follows' => 'Este diseño sigue el archivo de vista `:view` y recibe sus actualizaciones del plugin. Guardar cambios en el nombre, el HTML, el CSS o los números de página lo desvincula de esas actualizaciones.',
+        'view_follows_translation' => 'Este diseño sigue el archivo de vista `:view` y recibe sus actualizaciones del plugin. En este sitio, el HTML, el CSS y el texto de los números de página se guardan como traducción; guardar cambios en el nombre o en los demás ajustes de los números de página lo desvincula de esas actualizaciones.',
         'view_detached' => 'Este diseño ya no sigue el archivo de vista `:view`, por lo que no recibe las actualizaciones del plugin. **:reset** restaura la versión del archivo de vista.',
-        'delete_in_use' => 'Este diseño no se puede eliminar porque lo usan estas plantillas: :templates. Asígneles otro diseño primero.',
+        'delete_in_use' => '{1} Este diseño no se puede eliminar porque lo usa la plantilla :templates. Asígnele otro diseño primero.|[2,*] Este diseño no se puede eliminar porque lo usan estas plantillas: :templates. Asígneles otro diseño primero.',
         'used_by' => 'Usado por',
         'delete_used_by' => 'Plantillas que lo usan: :count',
         'css_reads_files' => 'El CSS no puede leer archivos del servidor. Quite los @import de archivos LESS, @import (inline) y las funciones data-uri(), image-size(), image-width() e image-height(); se permiten las importaciones de CSS simples.',

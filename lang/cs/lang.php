@@ -58,6 +58,7 @@ return [
         'edit_template' => 'Úprava PDF šablony',
         'not_found' => 'Nebyla nalezena registrovaná šablona s kódem :code.',
         'view_follows' => 'Tato šablona vychází ze souboru pohledu `:view` a dostává jeho aktualizace z pluginu. Uložením změn názvu, popisu, obsahu, layoutu nebo nastavení papíru se od těchto aktualizací odpojí.',
+        'view_follows_translation' => 'Tato šablona vychází ze souboru pohledu `:view` a dostává jeho aktualizace z pluginu. Na tomto webu se název a obsah ukládají jako překlad; uložením změn popisu, layoutu nebo nastavení papíru se od těchto aktualizací odpojí.',
         'view_detached' => 'Tato šablona už nevychází ze souboru pohledu `:view`, takže se na ni aktualizace pluginu nevztahují. **:reset** obnoví verzi ze souboru pohledu.',
     ],
     'layouts' => [
@@ -71,8 +72,9 @@ return [
         'edit_layout' => 'Úprava PDF layoutu',
         'not_found' => 'Nebyl nalezen registrovaný layout s kódem :code.',
         'view_follows' => 'Tento layout vychází ze souboru pohledu `:view` a dostává jeho aktualizace z pluginu. Uložením změn názvu, HTML, CSS nebo čísel stránek se od těchto aktualizací odpojí.',
+        'view_follows_translation' => 'Tento layout vychází ze souboru pohledu `:view` a dostává jeho aktualizace z pluginu. Na tomto webu se HTML, CSS a text čísel stránek ukládají jako překlad; uložením změn názvu nebo ostatních nastavení čísel stránek se od těchto aktualizací odpojí.',
         'view_detached' => 'Tento layout už nevychází ze souboru pohledu `:view`, takže se na něj aktualizace pluginu nevztahují. **:reset** obnoví verzi ze souboru pohledu.',
-        'delete_in_use' => 'Tento layout nelze smazat, protože ho používají tyto šablony: :templates. Nejprve jim přiřaďte jiný layout.',
+        'delete_in_use' => '{1} Tento layout nelze smazat, protože ho používá šablona :templates. Nejprve jí přiřaďte jiný layout.|[2,*] Tento layout nelze smazat, protože ho používají tyto šablony: :templates. Nejprve jim přiřaďte jiný layout.',
         'used_by' => 'Použito v',
         'delete_used_by' => 'Používají ho šablony: :count',
         'css_reads_files' => 'CSS nesmí číst soubory na serveru. Odstraňte @import souborů LESS, @import (inline) a funkce data-uri(), image-size(), image-width() a image-height(); běžné importy CSS jsou povoleny.',

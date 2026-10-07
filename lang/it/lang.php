@@ -58,6 +58,7 @@ return [
         'edit_template' => 'Modifica modello',
         'not_found' => 'Nessun modello registrato con il codice :code.',
         'view_follows' => 'Questo modello segue il file di vista `:view` e riceve i suoi aggiornamenti dal plugin. Salvare modifiche a titolo, descrizione, contenuto, layout o impostazioni della carta lo scollega da questi aggiornamenti.',
+        'view_follows_translation' => 'Questo modello segue il file di vista `:view` e riceve i suoi aggiornamenti dal plugin. Su questo sito titolo e contenuto vengono salvati come traduzione; salvare modifiche a descrizione, layout o impostazioni della carta lo scollega da questi aggiornamenti.',
         'view_detached' => 'Questo modello non segue più il file di vista `:view`, quindi gli aggiornamenti del plugin non vengono applicati. **:reset** ripristina la versione del file di vista.',
     ],
     'layouts' => [
@@ -71,8 +72,9 @@ return [
         'edit_layout' => 'Modifica layout',
         'not_found' => 'Nessun layout registrato con il codice :code.',
         'view_follows' => 'Questo layout segue il file di vista `:view` e riceve i suoi aggiornamenti dal plugin. Salvare modifiche a nome, HTML, CSS o numeri di pagina lo scollega da questi aggiornamenti.',
+        'view_follows_translation' => 'Questo layout segue il file di vista `:view` e riceve i suoi aggiornamenti dal plugin. Su questo sito HTML, CSS e testo dei numeri di pagina vengono salvati come traduzione; salvare modifiche al nome o alle altre impostazioni dei numeri di pagina lo scollega da questi aggiornamenti.',
         'view_detached' => 'Questo layout non segue più il file di vista `:view`, quindi gli aggiornamenti del plugin non vengono applicati. **:reset** ripristina la versione del file di vista.',
-        'delete_in_use' => 'Questo layout non può essere eliminato perché lo usano questi modelli: :templates. Assegna loro prima un altro layout.',
+        'delete_in_use' => '{1} Questo layout non può essere eliminato perché lo usa il modello :templates. Assegnagli prima un altro layout.|[2,*] Questo layout non può essere eliminato perché lo usano questi modelli: :templates. Assegna loro prima un altro layout.',
         'used_by' => 'Usato da',
         'delete_used_by' => 'Modelli che lo usano: :count',
         'css_reads_files' => 'Il CSS non può leggere file dal server. Rimuovi gli @import di file LESS, @import (inline) e le funzioni data-uri(), image-size(), image-width() e image-height(); gli import CSS semplici sono consentiti.',

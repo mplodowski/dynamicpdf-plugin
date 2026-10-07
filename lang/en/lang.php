@@ -58,6 +58,7 @@ return [
         'edit_template' => 'Edit template',
         'not_found' => 'Unable to find a registered template with code :code.',
         'view_follows' => 'This template follows the view file `:view` and receives its updates from the plugin. Saving changes to its title, description, content, layout or paper settings detaches it from those updates.',
+        'view_follows_translation' => 'This template follows the view file `:view` and receives its updates from the plugin. On this site its title and content are saved as a translation; saving changes to its description, layout or paper settings detaches it from those updates.',
         'view_detached' => 'This template no longer follows the view file `:view`, so plugin updates to it are not applied. **:reset** restores the version from the view file.',
     ],
     'layouts' => [
@@ -71,8 +72,9 @@ return [
         'edit_layout' => 'Edit layout',
         'not_found' => 'Unable to find a registered layout with code :code.',
         'view_follows' => 'This layout follows the view file `:view` and receives its updates from the plugin. Saving changes to its name, HTML, CSS or page numbers detaches it from those updates.',
+        'view_follows_translation' => 'This layout follows the view file `:view` and receives its updates from the plugin. On this site its HTML, CSS and page number text are saved as a translation; saving changes to its name or other page number settings detaches it from those updates.',
         'view_detached' => 'This layout no longer follows the view file `:view`, so plugin updates to it are not applied. **:reset** restores the version from the view file.',
-        'delete_in_use' => 'This layout cannot be deleted because these templates use it: :templates. Assign them another layout first.',
+        'delete_in_use' => '{1} This layout cannot be deleted because the template :templates uses it. Assign it another layout first.|[2,*] This layout cannot be deleted because these templates use it: :templates. Assign them another layout first.',
         'used_by' => 'Used by',
         'delete_used_by' => 'Used by templates: :count',
         'css_reads_files' => 'The CSS may not read server files. Remove @import of LESS files, @import (inline) and the data-uri(), image-size(), image-width() and image-height() functions; plain CSS imports are allowed.',

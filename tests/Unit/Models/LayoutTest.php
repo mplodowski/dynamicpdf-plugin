@@ -62,4 +62,17 @@ describe('Layout', function () {
         expect(fn () => $this->createLayout([$field => str_repeat('a', 256)]))
             ->toThrow(ValidationException::class, 'greater than 255');
     })->with(['name', 'code']);
+
+    it('names the HTML field in the required message', function () {
+        expect(fn () => $this->createLayout(['content_html' => '']))
+            ->toThrow(ValidationException::class, 'The HTML field is required.');
+    });
+
+    it('names a single template blocking its deletion in the singular', function () {
+        $layout = $this->createLayout();
+        $this->createTemplate(['title' => 'Invoice', 'layout_id' => $layout->id]);
+
+        expect(fn () => $layout->delete())
+            ->toThrow(ApplicationException::class, 'because the template Invoice uses it. Assign it another layout first.');
+    });
 });
