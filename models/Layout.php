@@ -3,7 +3,6 @@
 namespace Renatio\DynamicPDF\Models;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Model;
 use October\Rain\Database\Traits\Nullable;
 use October\Rain\Database\Traits\Validation;
@@ -84,7 +83,7 @@ class Layout extends Model
     public $translatable = ['content_html', 'content_css', 'page_numbers_text'];
 
     /** @var array<int, string> */
-    protected $nullable = ['page_numbers', 'page_numbers_text', 'page_numbers_size', 'page_numbers_color', 'page_numbers_font', 'page_numbers_margin'];
+    protected $nullable = ['content_css', 'page_numbers', 'page_numbers_text', 'page_numbers_size', 'page_numbers_color', 'page_numbers_font', 'page_numbers_margin'];
 
     /** @var array<string, array<string>> */
     public $rules = [
@@ -208,10 +207,11 @@ class Layout extends Model
 
             try {
                 $this->fillFromView($this->code);
+                $this->viewReadFailed = false;
             } catch (Throwable $e) {
                 $this->setRawAttributes($stored, true);
 
-                Log::error("Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
+                $this->failedToReadView($e);
             }
         });
     }
@@ -237,7 +237,7 @@ class Layout extends Model
 
         $this->code = $code;
         $this->name = Arr::get($sections, 'settings.name') ?: $code;
-        $this->content_css = Arr::get($sections, 'css');
+        $this->content_css = $sections['css'] === '' ? null : $sections['css'];
         $this->content_html = Arr::get($sections, 'html');
 
         foreach (self::PAGE_NUMBERS_SETTINGS as $attribute => $setting) {

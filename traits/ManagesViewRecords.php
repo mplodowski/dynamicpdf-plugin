@@ -37,7 +37,9 @@ trait ManagesViewRecords
 
     public function beforeDisplay(): void
     {
-        (new SyncTemplates)->handle();
+        if ($this->getAjaxHandler() === null && in_array($this->action, ['index', 'create', 'update'], true)) {
+            (new SyncTemplates)->handle();
+        }
     }
 
     public function previewpdf(int|string $id): ?Response

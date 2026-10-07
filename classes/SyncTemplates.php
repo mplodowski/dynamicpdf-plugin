@@ -4,7 +4,6 @@ namespace Renatio\DynamicPDF\Classes;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\Log;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Throwable;
@@ -68,7 +67,13 @@ class SyncTemplates
             ->get();
 
         foreach ($layouts as $layout) {
-            $this->write($layout->code, 'updated', fn (): bool => $layout->inDefaultLocale(function () use ($layout): bool {
+            if ($layout->viewReadFailed()) {
+                $this->report['failed'][] = $layout->code;
+
+                continue;
+            }
+
+            $this->write(Layout::class, $layout->code, 'updated', fn (): bool => $layout->inDefaultLocale(function () use ($layout): bool {
                 if (! $layout->content_html || ! $layout->isDirty(Layout::VIEW_FIELDS)) {
                     return false;
                 }
@@ -88,7 +93,7 @@ class SyncTemplates
         $dbLayouts = Layout::query()->pluck('code', 'code')->all();
 
         foreach (array_diff_key($registeredLayouts, $dbLayouts) as $code) {
-            $this->write($code, 'created', function () use ($code): void {
+            $this->write(Layout::class, $code, 'created', function () use ($code): void {
                 $layout = new Layout;
                 $layout->is_locked = true;
                 $layout->fillFromView($code);
@@ -113,7 +118,7 @@ class SyncTemplates
     protected function deleteOrphanedTemplates(): void
     {
         foreach (Template::whereIn('code', $this->orphanedTemplates())->get() as $template) {
-            $this->write((string) $template->code, 'deleted', fn (): ?bool => $template->delete());
+            $this->write(Template::class, (string) $template->code, 'deleted', fn (): ?bool => $template->delete());
         }
     }
 
@@ -132,7 +137,13 @@ class SyncTemplates
             ->get();
 
         foreach ($templates as $template) {
-            $this->write($template->code, 'updated', fn (): bool => $template->inDefaultLocale(function () use ($template): bool {
+            if ($template->viewReadFailed()) {
+                $this->report['failed'][] = $template->code;
+
+                continue;
+            }
+
+            $this->write(Template::class, $template->code, 'updated', fn (): bool => $template->inDefaultLocale(function () use ($template): bool {
                 if (! $template->content_html || ! $template->isDirty(Template::VIEW_FIELDS)) {
                     return false;
                 }
@@ -154,7 +165,7 @@ class SyncTemplates
     protected function createTemplates(array $templates): void
     {
         foreach ($templates as $code) {
-            $this->write($code, 'created', function () use ($code): void {
+            $this->write(Template::class, $code, 'created', function () use ($code): void {
                 $template = new Template;
                 $template->fillFromView($code);
                 $template->forceSave();
@@ -162,7 +173,10 @@ class SyncTemplates
         }
     }
 
-    protected function write(string $code, string $outcome, callable $write): void
+    /**
+     * @param  class-string  $model
+     */
+    protected function write(string $model, string $code, string $outcome, callable $write): void
     {
         try {
             if ($write() !== false) {
@@ -173,7 +187,7 @@ class SyncTemplates
         } catch (Throwable $e) {
             $this->report['failed'][] = $code;
 
-            Log::error("Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", ['exception' => $e]);
+            PDFManager::instance()->logFailureOnce($model, $code, "Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", $e);
         }
     }
 }

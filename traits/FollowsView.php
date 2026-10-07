@@ -5,12 +5,16 @@ namespace Renatio\DynamicPDF\Traits;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use October\Rain\Exception\ApplicationException;
+use Renatio\DynamicPDF\Classes\PDFManager;
+use Throwable;
 
 /**
  * @mixin \October\Rain\Database\Model
  */
 trait FollowsView
 {
+    protected bool $viewReadFailed = false;
+
     /**
      * @return array<string, string>
      */
@@ -59,6 +63,21 @@ trait FollowsView
         }
 
         $this->fillFromView($view);
+    }
+
+    protected function failedToReadView(Throwable $e): void
+    {
+        $this->viewReadFailed = true;
+
+        PDFManager::instance()->logFailureOnce(static::class, $this->code, "Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", $e);
+    }
+
+    /**
+     * The stored values stand in for an unreadable view, so a sync must not report them as current.
+     */
+    public function viewReadFailed(): bool
+    {
+        return $this->viewReadFailed;
     }
 
     public function getView(): ?string

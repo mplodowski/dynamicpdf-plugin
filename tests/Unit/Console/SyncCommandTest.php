@@ -19,6 +19,21 @@ describe('dynamicpdf:sync', function () {
             ->and($exitCode)->toBe(1);
     });
 
+    it('fails for a stored view-driven record whose view file went missing', function (string $kind) {
+        if ($kind === 'template') {
+            PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.gone']);
+            $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.gone', 'is_custom' => false]);
+        } else {
+            PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.gone']);
+            $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.gone', 'is_locked' => true]);
+        }
+
+        $exitCode = Artisan::call('dynamicpdf:sync');
+
+        expect($exitCode)->toBe(1)
+            ->and(Artisan::output())->toContain('Failed')->toContain('renatio.dynamicpdf::pdf.gone');
+    })->with(['template', 'layout']);
+
     it('lists orphaned templates and deletes them with --prune', function () {
         $this->createTemplate(['code' => 'gone::pdf.stale', 'is_custom' => false]);
 

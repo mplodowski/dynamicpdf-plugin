@@ -1,5 +1,6 @@
 <?php
 
+use Backend\Facades\Backend;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -228,9 +229,79 @@ describe('SyncTemplates', function () {
             ->and($sync->report()['updated'])->toBe([]);
     });
 
-    it('synchronises before a templates page is displayed', function () {
-        (new Templates)->beforeDisplay();
+    it('synchronises when a templates page is displayed but not before an AJAX handler', function () {
+        actingAsPdfManager();
 
-        expect(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeTrue();
+        $this->listAction('templates::onPaginate', ['page' => 1])->assertOk();
+        $afterHandler = Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists();
+
+        $this->get(Backend::url('renatio/dynamicpdf/templates'))->assertOk();
+
+        expect($afterHandler)->toBeFalse()
+            ->and(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeTrue();
     });
+
+    it('does not synchronise on a preview page', function (string $action) {
+        $template = $this->createTemplate();
+        actingAsPdfManager();
+
+        $this->get(Backend::url("renatio/dynamicpdf/templates/{$action}/{$template->id}"))->assertOk();
+
+        expect(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeFalse();
+    })->with(['previewpdf', 'html', 'preview']);
+
+    it('reports no update for a view with empty optional sections on the next sync', function () {
+        $this->views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"First\"\n==\n\n==\n<p>v1</p>"]);
+        $this->registerViewTemplates('syncviews', ['a' => "title = \"First\"\ndescription = \"\"\n==\n<p>v1</p>"], $this->views);
+        $sync = new SyncTemplates;
+
+        $sync->handle();
+        $sync->handle();
+
+        expect($sync->report()['updated'])->toBe([]);
+    });
+
+    it('logs a registered code whose view cannot be read once per process', function () {
+        PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.missing']);
+        PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.gone']);
+        $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.gone', 'is_custom' => false]);
+        actingAsPdfManager();
+        $log = Log::spy();
+
+        $this->get(Backend::url('renatio/dynamicpdf/templates'))->assertOk();
+        $this->get(Backend::url('renatio/dynamicpdf/templates'))->assertOk();
+        $this->get(Backend::url('renatio/dynamicpdf/templates'))->assertOk();
+
+        $log->shouldHaveReceived('error')->withArgs(fn (string $message): bool => str_contains($message, 'pdf.layouts.missing'))->once();
+        $log->shouldHaveReceived('error')->withArgs(fn (string $message): bool => str_contains($message, 'pdf.gone'))->once();
+    });
+
+    it('stores empty form fields of a view-driven record as null so the next sync reports no update', function (string $kind) {
+        if ($kind === 'template') {
+            $this->views = $this->registerViewTemplates('syncviews', ['a' => "title = \"First\"\n==\n<p>v1</p>"]);
+        } else {
+            $this->views = $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"First\"\n==\n<p>v1</p>"]);
+        }
+
+        (new SyncTemplates)->handle();
+        actingAsPdfManager();
+
+        if ($kind === 'template') {
+            $this->saveTemplateForm($this->findTemplate('syncviews::pdf.a')->id, [
+                'title' => 'First',
+                'description' => '',
+                'content_html' => '<p>v1</p>',
+                'size' => '',
+                'orientation' => '',
+                'sample_data' => '{"order": 1}',
+            ])->assertOk();
+        } else {
+            $this->saveLayoutForm($this->findLayout('syncviews::pdf.layouts.a')->id, ['name' => 'First', 'content_html' => '<p>v1</p>', 'content_css' => ''])->assertOk();
+        }
+
+        $sync = new SyncTemplates;
+        $sync->handle();
+
+        expect($sync->report()['updated'])->toBe([]);
+    })->with(['template', 'layout']);
 });
