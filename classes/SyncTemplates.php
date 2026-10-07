@@ -4,7 +4,6 @@ namespace Renatio\DynamicPDF\Classes;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\Log;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Throwable;
@@ -69,6 +68,8 @@ class SyncTemplates
 
         foreach ($layouts as $layout) {
             $this->write($layout->code, 'updated', fn (): bool => $layout->inDefaultLocale(function () use ($layout): bool {
+                $layout->throwViewError();
+
                 if (! $layout->content_html || ! $layout->isDirty(Layout::VIEW_FIELDS)) {
                     return false;
                 }
@@ -133,6 +134,8 @@ class SyncTemplates
 
         foreach ($templates as $template) {
             $this->write($template->code, 'updated', fn (): bool => $template->inDefaultLocale(function () use ($template): bool {
+                $template->throwViewError();
+
                 if (! $template->content_html || ! $template->isDirty(Template::VIEW_FIELDS)) {
                     return false;
                 }
@@ -173,7 +176,7 @@ class SyncTemplates
         } catch (Throwable $e) {
             $this->report['failed'][] = $code;
 
-            Log::error("Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", ['exception' => $e]);
+            PDFManager::instance()->logFailureOnce($code, "Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", $e);
         }
     }
 }

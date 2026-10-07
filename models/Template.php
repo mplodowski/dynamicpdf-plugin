@@ -7,8 +7,8 @@ use Dompdf\Adapter\CPDF;
 use Dompdf\Options;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Model;
+use October\Rain\Database\Traits\Nullable;
 use October\Rain\Database\Traits\Validation;
 use October\Rain\Exception\ValidationException;
 use Renatio\DynamicPDF\Classes\PDF;
@@ -43,6 +43,7 @@ class Template extends Model
     use DescribesViewStatus;
     use Duplicates;
     use FollowsView;
+    use Nullable;
     use TranslatesContent;
     use ValidatesCodeFormat;
     use ValidatesTwigSyntax;
@@ -56,6 +57,9 @@ class Template extends Model
 
     /** @var array<int, string> */
     public $translatable = ['title', 'content_html'];
+
+    /** @var array<int, string> */
+    protected $nullable = ['description', 'size', 'orientation', 'sample_data'];
 
     /** @var array<string, string> */
     protected $casts = [
@@ -126,7 +130,7 @@ class Template extends Model
                 $this->setRawAttributes($stored, true);
                 $this->unsetRelation('layout');
 
-                Log::error("Renatio.DynamicPDF could not read the view of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
+                $this->failedToReadView($e);
             }
         });
     }
