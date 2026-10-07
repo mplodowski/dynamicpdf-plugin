@@ -40,6 +40,8 @@ trait DetectsViewChanges
 
     protected function normalizeViewValue(mixed $value): string
     {
-        return str_replace("\r\n", "\n", trim((string) $value));
+        $value = str_replace("\r\n", "\n", trim((string) $value));
+
+        return preg_match('/^#[0-9a-f]{6}$/i', $value) ? strtolower($value) : $value;
     }
 }

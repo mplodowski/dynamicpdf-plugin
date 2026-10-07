@@ -67,11 +67,11 @@ class PDFWrapper extends PDF
      * @param  array<int, float>  $color
      */
     public function pageNumbers(
-        string $text = 'Page {PAGE_NUM} of {PAGE_COUNT}',
-        string $position = 'bottom-center',
-        float $size = 9,
+        string $text = PageNumbers::DEFAULT_TEXT,
+        string $position = PageNumbers::DEFAULT_POSITION,
+        float $size = PageNumbers::DEFAULT_SIZE,
         ?string $font = null,
-        float $margin = 20,
+        float $margin = PageNumbers::DEFAULT_MARGIN,
         array $color = [0, 0, 0],
     ): self {
         $this->pageNumbers = new PageNumbers($text, $position, $size, $font, $margin, $color);
@@ -238,6 +238,7 @@ class PDFWrapper extends PDF
         );
 
         $this->loadHTML($html, $encoding);
+        $this->pageNumbers = $template->layout?->pageNumbers($locale);
 
         if ($template->size || $template->orientation) {
             $options = $this->dompdf->getOptions();
@@ -264,6 +265,7 @@ class PDFWrapper extends PDF
         );
 
         $this->loadHTML($html, $encoding);
+        $this->pageNumbers = $layout->pageNumbers($locale);
 
         return $this;
     }

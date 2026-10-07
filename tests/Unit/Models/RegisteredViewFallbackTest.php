@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\File;
 use October\Rain\Exception\ApplicationException;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Layout;
@@ -44,11 +45,15 @@ describe('Registered view fallback', function () {
     ]);
 
     it('names a view without a title or name after its code', function () {
-        $this->registerViewTemplates('untitled', ['bare' => "description = \"Bare\"\n==\n<p>Bare</p>"]);
-        $this->registerViewLayouts('untitled', ['frame' => "description = \"Frame\"\n==\n==\n<html>{{ content_html|raw }}</html>"]);
+        $directory = $this->registerViewTemplates('untitled', ['bare' => "description = \"Bare\"\n==\n<p>Bare</p>"]);
+        $this->registerViewLayouts('untitled', ['frame' => "description = \"Frame\"\n==\n==\n<html>{{ content_html|raw }}</html>"], $directory);
 
-        expect(Template::byCode('untitled::pdf.bare')->title)->toBe('untitled::pdf.bare')
-            ->and(Layout::byCode('untitled::pdf.frame')->name)->toBe('untitled::pdf.frame');
+        try {
+            expect(Template::byCode('untitled::pdf.bare')->title)->toBe('untitled::pdf.bare')
+                ->and(Layout::byCode('untitled::pdf.frame')->name)->toBe('untitled::pdf.frame');
+        } finally {
+            File::deleteDirectory($directory);
+        }
     });
 
     it('puts the missing code into the not found message', function (Template|Layout $model, string $message) {
