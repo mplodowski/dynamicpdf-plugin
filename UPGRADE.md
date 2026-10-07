@@ -91,7 +91,7 @@ a template or layout an earlier version flagged *Customized* or edited by mistak
 `DYNAMICPDF_ALLOW_SELF_SIGNED=true` on a development host with a self-signed certificate; an unknown `set*()` option
 call now throws `UnexpectedValueException`.
 
-The backend **Preview PDF** no longer enables inline PHP, fetches remote files only from the application host and
+The backend **Preview PDF** never runs inline PHP, fetches remote files only from the application host and
 `allowed_remote_hosts`, and uses `dompdf.options.dpi` instead of 300 DPI. Replace `<script type="text/php">` page
 numbers with `->pageNumbers()` or the layout's *Page numbers* option, add CDN hosts to `allowed_remote_hosts` or use
 `|pdfasset` and local files, and check templates whose `px` sizes were tuned to the old preview.

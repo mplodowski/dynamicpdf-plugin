@@ -610,10 +610,10 @@ and 1) are optional. Requires the CPDF or PDFLib backend; the GD backend cannot 
 Call `pageNumbers()` after loading the document; it applies to that document only and overrides the layout setting.
 Inline PHP (`setIsPhpEnabled(true)`) is no longer needed for page numbers and should stay off.
 
-> **Security warning:** only enable `setIsPhpEnabled(true)` when the template content is fully trusted. Any
-> `<script type="text/php">` block in the HTML is executed on the server, so enabling it for templates that can be
-> edited by backend users allows remote code execution. The backend HTML preview never runs PHP; the backend PDF preview
-> does not turn it on itself, it follows `enable_php` in the dompdf configuration.
+> **Security warning:** only enable `setIsPhpEnabled(true)` or `enable_php` in `config/dompdf.php` when the template
+> content is fully trusted. Any `<script type="text/php">` block in the HTML is executed on the server, so enabling it
+> for templates that can be edited by backend users allows remote code execution. The backend HTML and PDF previews
+> never run inline PHP, whatever the configuration says.
 
 ## Testing
 

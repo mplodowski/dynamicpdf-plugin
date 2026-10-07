@@ -138,7 +138,7 @@ class PDFFake extends PDFWrapper implements Fake
         return $file;
     }
 
-    public function encrypt(string $password, string $ownerPassword = '', array $permissions = []): self
+    public function encrypt(#[\SensitiveParameter] string $password, #[\SensitiveParameter] string $ownerPassword = '', array $permissions = []): self
     {
         return $this;
     }
@@ -146,7 +146,7 @@ class PDFFake extends PDFWrapper implements Fake
     /**
      * @param  array<string>  $pc
      */
-    public function setEncryption(string $password, string $ownerpassword = '', array $pc = []): void
+    public function setEncryption(#[\SensitiveParameter] string $password, #[\SensitiveParameter] string $ownerpassword = '', array $pc = []): void
     {
     }
 

@@ -191,8 +191,10 @@ trait ManagesViewRecords
 
     protected function loadPreviewPdf(Layout|Template $model): PDFWrapper
     {
-        return $model instanceof Template
+        $pdf = $model instanceof Template
             ? PDF::loadTemplateModel($model, $model->sampleData())
             : PDF::loadLayoutModel($model);
+
+        return $pdf->setIsPhpEnabled(false);
     }
 }
