@@ -3,6 +3,7 @@
 use Illuminate\Mail\Message;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Symfony\Component\Mime\Email;
 
 describe('Output helpers', function () {
@@ -37,6 +38,26 @@ describe('Output helpers', function () {
         expect($attachment->getFilename())->toBe('invoice.pdf')
             ->and($attachment->getContentType())->toBe('application/pdf')
             ->and($attachment->getBody())->toStartWith('%PDF');
+    });
+
+    it('renders the e-mail attachment only when it is added to a message', function () {
+        $wrapper = new class(app('dompdf'), app('config'), app('files'), app('view')) extends PDFWrapper
+        {
+            public int $renders = 0;
+
+            public function render(): void
+            {
+                $this->renders++;
+                parent::render();
+            }
+        };
+
+        $attachment = $wrapper->loadHTML('<p>Hello</p>')->attachment();
+        $rendersBefore = $wrapper->renders;
+        (new Message(new Email))->attach($attachment);
+
+        expect($rendersBefore)->toBe(0)
+            ->and($wrapper->renders)->toBe(1);
     });
 
     it('stores a protected file where a protected relation expects it', function () {

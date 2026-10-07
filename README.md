@@ -593,8 +593,8 @@ directory. The file is written to the uploads disk as soon as `toFile()` returns
 
 ### Attach the PDF to an e-mail
 
-`attachment()` returns an `Illuminate\Mail\Attachment` with the `application/pdf` type. The document is rendered only
-when the message is built, so a queued mailable renders it in the queue worker, not in the request:
+`attachment()` returns an `Illuminate\Mail\Attachment` with the `application/pdf` type. The document is rendered when
+the attachment is added to the message:
 
 ```php
 Mail::send('acme.shop::mail.invoice', $data, function ($message) use ($order) {
@@ -611,6 +611,10 @@ public function attachments(): array
     return [PDF::loadTemplate('acme.shop::pdf.invoice', ['order' => $this->order])->attachment('invoice.pdf')];
 }
 ```
+
+Laravel calls `attachments()` while sending, so a queued mailable renders the PDF in the queue worker. Call
+`attachment()` there rather than in the constructor: the attachment holds a closure and cannot be serialized into a
+queued job, and `Mailable::attach()` renders it right away.
 
 ### Save to a storage disk and set metadata
 
