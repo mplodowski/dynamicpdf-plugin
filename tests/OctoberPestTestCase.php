@@ -12,7 +12,6 @@ use October\Tests\Concerns\PerformsMigrations;
 use October\Tests\Concerns\PerformsRegistrations;
 use PDO;
 use ReflectionClass;
-use ReflectionProperty;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SiteManager;
@@ -49,10 +48,9 @@ abstract class OctoberPestTestCase extends TestCase
             if ($this->usingInMemoryDatabase()) {
                 self::$inMemoryConnection = DB::connection()->getPdo();
             }
-
-            $this->forgetDatabaseCheck();
         }
 
+        $this->forgetDatabaseCheck();
         $this->resetStaticState();
         $this->beginDatabaseTransaction();
 
@@ -63,14 +61,29 @@ abstract class OctoberPestTestCase extends TestCase
 
     public function tearDownOctoberPlugin(): void
     {
-        try {
-            if (class_exists(Mockery::class)) {
-                Mockery::close();
+        $error = null;
+
+        $steps = [
+            function (): void {
+                if (class_exists(Mockery::class)) {
+                    Mockery::close();
+                }
+            },
+            $this->rollbackDatabaseTransaction(...),
+            $this->flushModelEventListeners(...),
+            $this->resetStaticState(...),
+        ];
+
+        foreach ($steps as $step) {
+            try {
+                $step();
+            } catch (Throwable $e) {
+                $error ??= $e;
             }
-        } finally {
-            $this->rollbackDatabaseTransaction();
-            $this->flushModelEventListeners();
-            $this->resetStaticState();
+        }
+
+        if ($error !== null) {
+            throw $error;
         }
     }
 
@@ -83,12 +96,16 @@ abstract class OctoberPestTestCase extends TestCase
     }
 
     /**
-     * System::hasDatabase() memoised false while the database was still empty,
-     * which makes Parameter::get() skip the table for the rest of the first test.
+     * System::hasDatabase() is memoised, and a check made before the migrated PDO
+     * was attached would make Parameter::get() skip the table for the whole test.
      */
     protected function forgetDatabaseCheck(): void
     {
-        (new ReflectionProperty(app('system.helper'), 'hasDatabaseCache'))->setValue(app('system.helper'), null);
+        $helper = app('system.helper');
+
+        if (property_exists($helper, 'hasDatabaseCache')) {
+            self::setProtectedProperty($helper, 'hasDatabaseCache', null);
+        }
     }
 
     protected function usingInMemoryDatabase(): bool
@@ -100,12 +117,21 @@ abstract class OctoberPestTestCase extends TestCase
     {
         $connection = DB::connection();
 
+        $dispatcher = $connection->getEventDispatcher();
+        $connection->unsetEventDispatcher();
+
+        if ($connection->transactionLevel() > 0) {
+            $connection->rollBack(0);
+        }
+
+        /**
+         * A transaction orphaned by an earlier test's application is invisible to this
+         * connection's counter, so only the shared PDO can roll it back.
+         */
         if ($connection->getPdo()->inTransaction()) {
             $connection->getPdo()->rollBack();
         }
 
-        $dispatcher = $connection->getEventDispatcher();
-        $connection->unsetEventDispatcher();
         $connection->beginTransaction();
         $connection->setEventDispatcher($dispatcher);
     }
@@ -123,6 +149,7 @@ abstract class OctoberPestTestCase extends TestCase
             }
         } catch (Throwable) {
             self::$databaseMigrated = false;
+            self::$inMemoryConnection = null;
         }
 
         $connection->setEventDispatcher($dispatcher);
