@@ -1,6 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Controllers\Layouts;
 use Renatio\DynamicPDF\Controllers\Templates;
@@ -34,5 +36,15 @@ describe('Reset to default', function () {
 
         expect($stored->name)->toBe('Default Layout')
             ->and($stored->is_locked)->toBeTrue();
+    });
+
+    it('flashes the reset message unescaped because the backend layout escapes it after the redirect', function () {
+        App::setLocale('fr');
+        $layout = $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'is_locked' => false]);
+
+        (new Layouts)->update_onResetDefault($layout->id);
+
+        expect(Flash::all()['success'] ?? null)->toBe(trans('renatio.dynamicpdf::lang.templates.reset_success'))
+            ->toContain("L'enregistrement");
     });
 });

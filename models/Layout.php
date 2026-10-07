@@ -165,7 +165,7 @@ class Layout extends Model
         $titles = Template::where('layout_id', $this->id)->pluck('title');
 
         if ($titles->isNotEmpty()) {
-            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.layout.delete_in_use', ['templates' => $titles->implode(', ')])));
+            throw new ApplicationException(trans('renatio.dynamicpdf::lang.layout.delete_in_use', ['templates' => $titles->implode(', ')]));
         }
     }
 

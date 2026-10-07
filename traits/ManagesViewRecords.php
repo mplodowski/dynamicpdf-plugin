@@ -46,7 +46,7 @@ trait ManagesViewRecords
     {
         $this->requireFormPermission('modelPreview');
 
-        $this->pageTitle = e(trans('renatio.dynamicpdf::lang.templates.preview_pdf'));
+        $this->pageTitle = trans('renatio.dynamicpdf::lang.templates.preview_pdf');
 
         try {
             $model = $this->formFindModelObject($id);
@@ -145,7 +145,7 @@ trait ManagesViewRecords
 
         $copy = $this->formFindModelObject($recordId)->duplicate();
 
-        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.duplicate_success')));
+        Flash::success(trans('renatio.dynamicpdf::lang.templates.duplicate_success'));
 
         return redirect()->to($this->actionUrl('update', (string) $copy->id));
     }
@@ -156,7 +156,7 @@ trait ManagesViewRecords
 
         $this->formFindModelObject($recordId)->resetToView();
 
-        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.reset_success')));
+        Flash::success(trans('renatio.dynamicpdf::lang.templates.reset_success'));
 
         return redirect()->refresh();
     }
@@ -166,7 +166,7 @@ trait ManagesViewRecords
         $this->requireFormPermission('modelDelete');
 
         if ($this->formFindModelObject($recordId)->followsView()) {
-            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.templates.delete_view_refused')));
+            throw new ApplicationException(trans('renatio.dynamicpdf::lang.templates.delete_view_refused'));
         }
 
         return $this->asExtension('FormController')->update_onDelete($recordId);

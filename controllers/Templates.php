@@ -90,7 +90,7 @@ class Templates extends Controller
         $this->checkListPermission($definition, 'create');
         $copy = $this->findListRecord($definition)->duplicate();
 
-        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.duplicate_success')));
+        Flash::success(trans('renatio.dynamicpdf::lang.templates.duplicate_success'));
 
         return Backend::redirect("renatio/dynamicpdf/{$definition}/update/{$copy->id}");
     }
@@ -105,7 +105,7 @@ class Templates extends Controller
         $model = $this->findListRecord($definition);
 
         if (! $model->followsView()) {
-            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.templates.reset_view_only')));
+            throw new ApplicationException(trans('renatio.dynamicpdf::lang.templates.reset_view_only'));
         }
 
         $model->resetToView();
@@ -125,7 +125,7 @@ class Templates extends Controller
         $model = $this->findListRecord($definition);
 
         if ($model->followsView()) {
-            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.templates.delete_view_refused')));
+            throw new ApplicationException(trans('renatio.dynamicpdf::lang.templates.delete_view_refused'));
         }
 
         $model->delete();
@@ -180,7 +180,7 @@ class Templates extends Controller
         $model = $class::find($id);
 
         if (! $model) {
-            throw new ApplicationException(e(trans('backend::lang.model.not_found', ['class' => $class, 'id' => $id])));
+            throw new ApplicationException(trans('backend::lang.model.not_found', ['class' => $class, 'id' => $id]));
         }
 
         return $model;

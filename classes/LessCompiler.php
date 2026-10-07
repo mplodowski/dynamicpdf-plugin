@@ -33,14 +33,14 @@ class LessCompiler
             $seen = [];
 
             if ($this->readsFiles((fn () => $this->rules)->call($parser), $seen)) {
-                throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.layout.css_reads_files')));
+                throw new ApplicationException(trans('renatio.dynamicpdf::lang.layout.css_reads_files'));
             }
 
             return $parser->getCss();
         } catch (ApplicationException $e) {
             throw $e;
         } catch (Exception $e) {
-            throw new ApplicationException(e(trans('renatio.dynamicpdf::lang.layout.css_invalid') . ' ' . $this->describe($e)));
+            throw new ApplicationException(trans('renatio.dynamicpdf::lang.layout.css_invalid') . ' ' . $this->describe($e));
         }
     }
 
