@@ -75,7 +75,7 @@ class RemoteAssetPolicy
     /**
      * @return array<int, string>
      */
-    protected function applicationHosts(): array
+    public function applicationHosts(): array
     {
         $urls = SiteManager::instance()->listEnabled()
             ->filter(fn (SiteDefinition $site): bool => (bool) $site->is_custom_url)
