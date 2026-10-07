@@ -632,6 +632,36 @@ directories (existence and write access, without creating anything), `chroot`, i
 every registered code without a view file. It exits with code 1 on a failure, so it can guard a deployment. Run both
 commands after `october:migrate`.
 
+### Export and import
+
+`php artisan dynamicpdf:export` writes templates and layouts to one JSON file: content, paper settings, sample data,
+the custom/locked flags, page number settings, every stored translation and the layout background image (embedded as
+base64). Pass codes to export only those; a template always brings its layout along. Without `--path` the file goes
+to `storage/app/dynamicpdf-export-<date>.json`, and `--path=-` prints it.
+
+```bash
+php artisan dynamicpdf:export
+php artisan dynamicpdf:export acme.shop::pdf.invoice acme.shop::pdf.quotation --path=pdf-templates.json
+```
+
+`php artisan dynamicpdf:import` reads such a file on another installation, layouts first, and prints a table of what
+was created, updated or skipped. A code that already exists is skipped unless you pass `--force`, which overwrites its
+content, settings, translations and background image. Every record is validated like a backend save (code format,
+Twig syntax, LESS), and the import runs in one transaction: the first invalid record is reported and nothing is
+imported.
+
+```bash
+php artisan dynamicpdf:import pdf-templates.json
+php artisan dynamicpdf:import pdf-templates.json --force
+```
+
+A template moved this way together with its layout renders identically on the target. The *From view* state is kept
+only where the target registers the same view, so the record keeps following that view file; a record whose view the
+target does not register is imported as customized, so the synchronization never deletes or rewrites it. Background
+images must be JPG, PNG, GIF or WebP. A layout whose background file is missing on disk is exported without it and
+listed in a warning. Translations for the target's default language are
+not imported, because they would overwrite the default content.
+
 ## Examples
 
 ### Demo examples

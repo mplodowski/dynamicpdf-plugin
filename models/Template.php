@@ -35,6 +35,8 @@ use Throwable;
  * @property string|null $sample_data
  * @property Layout|null $layout
  * @property-read string $html
+ *
+ * @method \October\Rain\Database\Relations\MorphMany translations()
  */
 class Template extends Model
 {

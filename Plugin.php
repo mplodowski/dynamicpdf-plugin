@@ -12,6 +12,8 @@ use Renatio\DynamicPDF\Classes\PDFAsset;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Console\Check;
 use Renatio\DynamicPDF\Console\Demo;
+use Renatio\DynamicPDF\Console\Export;
+use Renatio\DynamicPDF\Console\Import;
 use Renatio\DynamicPDF\Console\Sync;
 use Renatio\DynamicPDF\Listeners\ImportTranslateMessages;
 use Renatio\DynamicPDF\Models\Template;
@@ -55,6 +57,8 @@ class Plugin extends PluginBase
         $this->registerConsoleCommand('dynamicpdf:demo', Demo::class);
         $this->registerConsoleCommand('dynamicpdf:sync', Sync::class);
         $this->registerConsoleCommand('dynamicpdf:check', Check::class);
+        $this->registerConsoleCommand('dynamicpdf:export', Export::class);
+        $this->registerConsoleCommand('dynamicpdf:import', Import::class);
     }
 
     public function boot(): void
