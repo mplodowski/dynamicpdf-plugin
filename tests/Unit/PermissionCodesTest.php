@@ -105,7 +105,7 @@ describe('Permission codes', function () {
 
         expect(array_keys($permissions))->toEqualCanonicalizing(pluginSourceMatches('/[\'"](model[A-Z][A-Za-z]+)[\'"]/', $paths))
             ->and(array_diff($permissions, $this->registered))->toBe([])
-            ->and(array_values(array_unique($permissions)))->toHaveCount(count($permissions))
+            ->and(array_values(array_unique($permissions)))->toHaveSameSize($permissions)
             ->each->toStartWith("renatio.dynamicpdf.manage_{$definition}.");
     })->with([
         'templates' => ['templates', ['controllers/Templates.php', 'controllers/templates', 'traits']],

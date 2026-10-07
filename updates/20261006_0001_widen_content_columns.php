@@ -6,7 +6,7 @@ use October\Rain\Database\Updates\Migration;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::table('renatio_dynamicpdf_pdf_templates', function (Blueprint $table) {
             $table->mediumText('description')->nullable()->change();
@@ -20,7 +20,7 @@ return new class extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::table('renatio_dynamicpdf_pdf_templates', function (Blueprint $table) {
             $table->text('description')->nullable()->change();

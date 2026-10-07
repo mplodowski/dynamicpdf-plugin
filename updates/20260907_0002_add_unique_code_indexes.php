@@ -16,7 +16,7 @@ return new class extends Migration
     /**
      * Only the deduplication is transactional: MySQL commits implicitly on ALTER TABLE.
      */
-    public function up()
+    public function up(): void
     {
         DB::transaction(function () {
             $this->deduplicateTemplates();
@@ -38,7 +38,7 @@ return new class extends Migration
         }
     }
 
-    public function down()
+    public function down(): void
     {
         foreach ([self::TEMPLATES, self::LAYOUTS] as $name) {
             $indexes = $this->codeIndexes($name);

@@ -10,7 +10,7 @@ return new class extends Migration
      * Guarded because the script was on master under the untagged 8.0.4 and 8.0.5 before
      * moving to 8.1.0, so an install that ran it there runs it again.
      */
-    public function up()
+    public function up(): void
     {
         if (Schema::hasColumn('renatio_dynamicpdf_pdf_templates', 'sample_data')) {
             return;
@@ -21,7 +21,7 @@ return new class extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         if (! Schema::hasColumn('renatio_dynamicpdf_pdf_templates', 'sample_data')) {
             return;
