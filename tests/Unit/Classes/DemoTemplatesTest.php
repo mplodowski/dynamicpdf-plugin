@@ -17,16 +17,13 @@ describe('Demo templates', function () {
         expect($pdf->getDomPDF()->getCanvas()->get_page_count())->toBe(2);
     });
 
-    it('loads the demo stylesheet, fonts and images with remote assets disabled', function (string $code) {
+    it('renders the demo without a single dompdf warning with remote assets disabled', function (string $code) {
         $pdf = PDF::loadTemplate($code);
 
         expect($pdf->getDomPDF()->getOptions()->getIsRemoteEnabled())->toBeFalse();
 
         $pdf->render();
 
-        expect(implode("\n", $GLOBALS['_dompdf_warnings']))
-            ->not->toContain('Error loading')
-            ->not->toContain('Permission denied')
-            ->not->toContain('remote file download is disabled');
+        expect($GLOBALS['_dompdf_warnings'])->toBeEmpty();
     })->with(['renatio.dynamicpdf::pdf.invoice', 'renatio.dynamicpdf::pdf.header_and_footer']);
 });
