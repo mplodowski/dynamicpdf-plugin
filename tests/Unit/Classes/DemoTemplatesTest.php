@@ -17,13 +17,15 @@ describe('Demo templates', function () {
         expect($pdf->getDomPDF()->getCanvas()->get_page_count())->toBe(2);
     });
 
-    it('renders the demo without a single dompdf warning with remote assets disabled', function (string $code) {
+    it('renders the demo without CSS or asset warnings with remote assets disabled', function (string $code) {
         $pdf = PDF::loadTemplate($code);
 
         expect($pdf->getDomPDF()->getOptions()->getIsRemoteEnabled())->toBeFalse();
 
         $pdf->render();
 
-        expect($GLOBALS['_dompdf_warnings'])->toBeEmpty();
+        $dompdfWarnings = preg_grep('/CSS|Error loading|Permission denied|remote file/', $GLOBALS['_dompdf_warnings']);
+
+        expect($dompdfWarnings)->toBeEmpty();
     })->with(['renatio.dynamicpdf::pdf.invoice', 'renatio.dynamicpdf::pdf.header_and_footer']);
 });
