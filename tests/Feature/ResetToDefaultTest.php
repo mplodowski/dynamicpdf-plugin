@@ -29,14 +29,14 @@ describe('Reset to default', function () {
     });
 
     it('restores an edited layout from its view and makes it follow the view again', function () {
-        $layout = $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'name' => 'Edited', 'content_html' => '<html><body>edited</body></html>', 'is_locked' => false]);
+        $layout = $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'name' => 'Edited', 'content_html' => '<html><body>edited</body></html>', 'is_custom' => true]);
 
         (new Layouts)->update_onResetDefault($layout->id);
 
         $stored = Layout::byCode('renatio.dynamicpdf::pdf.layouts.default');
 
         expect($stored->name)->toBe('Default Layout')
-            ->and($stored->is_locked)->toBeTrue();
+            ->and($stored->is_custom)->toBeFalse();
     });
 
     it('refuses to reset a template without a view with the same message as the list', function () {
@@ -48,7 +48,7 @@ describe('Reset to default', function () {
 
     it('flashes the reset message unescaped because the backend layout escapes it after the redirect', function () {
         App::setLocale('fr');
-        $layout = $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'is_locked' => false]);
+        $layout = $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'is_custom' => true]);
 
         (new Layouts)->update_onResetDefault($layout->id);
 

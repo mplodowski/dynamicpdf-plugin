@@ -64,7 +64,7 @@ describe('Native model translation', function () {
 
         expect(Db::table('renatio_dynamicpdf_pdf_layouts')->where('code', 'acme::pdf.layouts.base')->value('content_html'))->toBe('<p>Revised layout</p>')
             ->and($fetched->content_html)->toBe('<p>Deutsches Layout</p>')
-            ->and($fetched->is_locked)->toBeTrue();
+            ->and($fetched->is_custom)->toBeFalse();
     });
 
     it('renders the template and its layout in the requested locale', function () {

@@ -34,7 +34,6 @@ return [
         'sample_data' => 'Sample data',
         'sample_data_comment' => 'JSON object with the variables used by the backend preview, for example {"name": "John Doe", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Customized',
-        'is_locked' => 'From view',
         'duplicate' => 'Duplicate',
         'duplicate_confirm' => 'Create a copy of :name?',
         'duplicating' => 'Duplicating...',

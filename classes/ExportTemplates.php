@@ -18,7 +18,7 @@ class ExportTemplates
         'name',
         'content_html',
         'content_css',
-        'is_locked',
+        'is_custom',
         'page_numbers',
         'page_numbers_text',
         'page_numbers_size',

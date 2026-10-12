@@ -14,13 +14,9 @@ use October\Rain\Exception\ValidationException;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
-use Renatio\DynamicPDF\Traits\DescribesViewStatus;
 use Renatio\DynamicPDF\Traits\Duplicates;
 use Renatio\DynamicPDF\Traits\FollowsView;
-use Renatio\DynamicPDF\Traits\TranslatesContent;
-use Renatio\DynamicPDF\Traits\ValidatesCodeFormat;
-use Renatio\DynamicPDF\Traits\ValidatesTwigSyntax;
-use Throwable;
+use Renatio\DynamicPDF\Traits\ValidatesContent;
 
 /**
  * @property int $id
@@ -40,13 +36,10 @@ use Throwable;
  */
 class Template extends Model
 {
-    use DescribesViewStatus;
     use Duplicates;
     use FollowsView;
     use Nullable;
-    use TranslatesContent;
-    use ValidatesCodeFormat;
-    use ValidatesTwigSyntax;
+    use ValidatesContent;
     use Validation;
 
     public const LAYOUT_CACHE = 'renatio.dynamicpdf.layouts';
@@ -113,37 +106,6 @@ class Template extends Model
     public function labelAttribute(): string
     {
         return 'title';
-    }
-
-    protected function prepareDuplicate(self $copy): void
-    {
-        $copy->is_custom = true;
-    }
-
-    public function afterFetch(): void
-    {
-        if ($this->is_custom || ! $this->code || ! $this->getView()) {
-            return;
-        }
-
-        $this->inDefaultLocale(function (): void {
-            $stored = $this->getAttributes();
-
-            try {
-                $this->fillFromView($this->code);
-                $this->viewReadFailed = false;
-            } catch (Throwable $e) {
-                $this->setRawAttributes($stored, true);
-                $this->unsetRelation('layout');
-
-                $this->failedToReadView($e);
-            }
-        });
-    }
-
-    protected function markAsFollowingView(): void
-    {
-        $this->is_custom = false;
     }
 
     public function fillFromView(string $code): void
@@ -283,10 +245,5 @@ class Template extends Model
         if (isset($fields->orientation) && $orientation) {
             $fields->orientation->emptyOption(trans('renatio.dynamicpdf::lang.options.default', ['value' => trans($orientation)]));
         }
-    }
-
-    public function isCustomised(): bool
-    {
-        return (bool) $this->is_custom;
     }
 }

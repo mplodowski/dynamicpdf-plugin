@@ -13,16 +13,10 @@ use Renatio\DynamicPDF\Classes\PageNumbers;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
-use Renatio\DynamicPDF\Plugin;
-use Renatio\DynamicPDF\Traits\DescribesViewStatus;
 use Renatio\DynamicPDF\Traits\Duplicates;
 use Renatio\DynamicPDF\Traits\FollowsView;
-use Renatio\DynamicPDF\Traits\TranslatesContent;
-use Renatio\DynamicPDF\Traits\ValidatesCodeFormat;
-use Renatio\DynamicPDF\Traits\ValidatesTwigSyntax;
+use Renatio\DynamicPDF\Traits\ValidatesContent;
 use System\Models\File;
-use System\Models\Parameter;
-use Throwable;
 
 /**
  * @property int $id
@@ -30,14 +24,13 @@ use Throwable;
  * @property string $name
  * @property string|null $content_html
  * @property string|null $content_css
- * @property bool $is_locked
+ * @property bool $is_custom
  * @property string|null $page_numbers
  * @property string|null $page_numbers_text
  * @property float|string|null $page_numbers_size
  * @property string|null $page_numbers_color
  * @property string|null $page_numbers_font
  * @property float|string|null $page_numbers_margin
- * @property-read bool $from_view
  * @property-read File|null $background_img
  * @property-read \October\Rain\Database\Collection<int, Template> $templates
  * @property-read string $html
@@ -48,13 +41,10 @@ use Throwable;
  */
 class Layout extends Model
 {
-    use DescribesViewStatus;
     use Duplicates;
     use FollowsView;
     use Nullable;
-    use TranslatesContent;
-    use ValidatesCodeFormat;
-    use ValidatesTwigSyntax;
+    use ValidatesContent;
     use Validation;
 
     public const PAGE_NUMBERS_SETTINGS = [
@@ -110,7 +100,7 @@ class Layout extends Model
 
     /** @var array<string, string> */
     protected $casts = [
-        'is_locked' => 'bool',
+        'is_custom' => 'bool',
     ];
 
     /** @var array<string, array<int|string, mixed>> */
@@ -126,11 +116,6 @@ class Layout extends Model
     public function labelAttribute(): string
     {
         return 'name';
-    }
-
-    protected function prepareDuplicate(self $copy): void
-    {
-        $copy->is_locked = false;
     }
 
     /**
@@ -207,41 +192,6 @@ class Layout extends Model
         return (new LessCompiler)->compile($this->content_css);
     }
 
-    public function afterFetch(): void
-    {
-        if (! $this->is_locked || ! $this->code || ! self::followsViewUpdates() || ! $this->getView()) {
-            return;
-        }
-
-        $this->inDefaultLocale(function (): void {
-            $stored = $this->getAttributes();
-
-            try {
-                $this->fillFromView($this->code);
-                $this->viewReadFailed = false;
-            } catch (Throwable $e) {
-                $this->setRawAttributes($stored, true);
-
-                $this->failedToReadView($e);
-            }
-        });
-    }
-
-    public function getFromViewAttribute(): bool
-    {
-        return $this->is_locked && $this->followsView();
-    }
-
-    public static function followsViewUpdates(): bool
-    {
-        return (bool) Parameter::get(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER);
-    }
-
-    protected function markAsFollowingView(): void
-    {
-        $this->is_locked = true;
-    }
-
     public function fillFromView(string $code): void
     {
         $sections = (new PDFParser)->parseView($code);
@@ -291,10 +241,5 @@ class Layout extends Model
         }
 
         return array_map(fn (string $component): float => hexdec($component) / 255, array_slice($hex, 1));
-    }
-
-    public function isCustomised(): bool
-    {
-        return $this->exists && ! $this->is_locked;
     }
 }

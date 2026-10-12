@@ -26,8 +26,6 @@ class Plugin extends PluginBase
 {
     public const DEMO_PARAMETER = 'renatio::dynamicpdf.demo';
 
-    public const LAYOUTS_FOLLOW_VIEWS_PARAMETER = 'renatio::dynamicpdf.layouts_follow_views';
-
     public const DEMO_TEMPLATES = ['renatio.dynamicpdf::pdf.invoice', 'renatio.dynamicpdf::pdf.header_and_footer'];
 
     public const DEMO_LAYOUTS = ['renatio.dynamicpdf::pdf.layouts.default', 'renatio.dynamicpdf::pdf.layouts.header_and_footer'];

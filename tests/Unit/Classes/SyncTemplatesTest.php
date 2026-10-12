@@ -10,7 +10,6 @@ use Renatio\DynamicPDF\Controllers\Templates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Renatio\DynamicPDF\Plugin;
-use System\Models\Parameter;
 
 describe('SyncTemplates', function () {
     beforeEach(function () {
@@ -21,7 +20,7 @@ describe('SyncTemplates', function () {
     it('creates registered layouts and templates from their views', function () {
         (new SyncTemplates)->handle();
 
-        expect(Layout::byCode('renatio.dynamicpdf::pdf.layouts.default')->is_locked)->toBeTrue()
+        expect(Layout::byCode('renatio.dynamicpdf::pdf.layouts.default')->is_custom)->toBeFalse()
             ->and(Template::byCode('renatio.dynamicpdf::pdf.invoice')->is_custom)->toBeFalse()
             ->and(Template::whereCode('renatio.dynamicpdf::pdf.invoice')->exists())->toBeTrue();
     });
@@ -89,10 +88,8 @@ describe('SyncTemplates', function () {
     });
 
     it('keeps a stored layout whose view file went missing', function () {
-        Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 1);
-        Parameter::clearInternalCache();
         PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.gone']);
-        $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.gone', 'is_locked' => true, 'content_html' => '<p>stored</p>']);
+        $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.gone', 'is_custom' => false, 'content_html' => '<p>stored</p>']);
         $log = Log::spy();
 
         expect(Layout::byCode('renatio.dynamicpdf::pdf.layouts.gone')->content_html)->toBe('<p>stored</p>');
@@ -186,34 +183,13 @@ describe('SyncTemplates', function () {
             ->name->toBe('Second')
             ->content_css->toBe('p { color: blue; }')
             ->content_html->toBe('<p>v2</p>')
-            ->is_locked->toBeTruthy()
+            ->is_custom->toBeFalsy()
             ->and($sync->report()['updated'])->toBe(['syncviews::pdf.layouts.a']);
-    });
-
-    it('leaves a locked layout on its stored content until the migration has flagged layouts to follow their view', function () {
-        expect(Parameter::get(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER))->toBeTruthy();
-
-        Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 0);
-        $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"Second\"\n==\n<p>v2</p>"]);
-        $this->createLayout(['code' => 'syncviews::pdf.layouts.a', 'name' => 'First', 'content_html' => '<p>v1</p>', 'is_locked' => true]);
-
-        $sync = new SyncTemplates;
-        $sync->handle();
-
-        expect(DB::table('renatio_dynamicpdf_pdf_layouts')->where('code', 'syncviews::pdf.layouts.a')->value('content_html'))->toBe('<p>v1</p>')
-            ->and(Layout::byCode('syncviews::pdf.layouts.a')->content_html)->toBe('<p>v1</p>')
-            ->and($sync->report()['updated'])->toBe([]);
-
-        Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 1);
-        $sync->handle();
-
-        expect(DB::table('renatio_dynamicpdf_pdf_layouts')->where('code', 'syncviews::pdf.layouts.a')->value('content_html'))->toBe('<p>v2</p>')
-            ->and(Layout::byCode('syncviews::pdf.layouts.a')->content_html)->toBe('<p>v2</p>');
     });
 
     it('never refreshes an edited layout from its view', function () {
         $this->registerViewLayouts('syncviews', ['layouts/a' => "name = \"Second\"\n==\n<p>v2</p>"]);
-        $this->createLayout(['code' => 'syncviews::pdf.layouts.a', 'name' => 'Mine', 'content_html' => '<p>mine</p>', 'is_locked' => false]);
+        $this->createLayout(['code' => 'syncviews::pdf.layouts.a', 'name' => 'Mine', 'content_html' => '<p>mine</p>', 'is_custom' => true]);
 
         $sync = new SyncTemplates;
         $sync->handle();

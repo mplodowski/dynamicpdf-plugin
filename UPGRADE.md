@@ -78,8 +78,9 @@ always on.
 CMS 3 or 4.0–4.3 stay on 8.0.3 until October is upgraded to 4.4; until then keep `enable_php` off, set
 `allowed_remote_hosts` and give the template and layout permissions to trusted administrators only. Run `php artisan
 october:migrate`, which adds a unique index on template and layout codes and permanently deletes duplicate rows, keeping
-the customized or locked one. Layouts now follow their view file like templates, so the migration clears *From view* on
-every layout it cannot prove unedited.
+the customized or locked one. Layouts now follow their view file like templates, so the migration marks every layout it
+cannot prove unedited as *Customized*. Layouts store this in `is_custom` like templates, so code reading their
+`is_locked` column must switch to `is_custom`, which holds the opposite value.
 
 Permissions are granular now, and existing roles and administrators keep their access: the migration grants
 **Create**, **Update**, **Delete** and **Preview** to those holding **Access templates** or **Access layouts**, so you

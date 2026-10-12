@@ -82,8 +82,8 @@
             ) ?>
         <?php endif ?>
 
-        <?php $usedBy = $formModel instanceof Renatio\DynamicPDF\Models\Layout && ! $formModel->followsView() ? $formModel->usedByCount() : 0 ?>
-        <?php if ($formModel->followsView()): ?>
+        <?php $usedBy = $formModel instanceof Renatio\DynamicPDF\Models\Layout && ! $formModel->hasView() ? $formModel->usedByCount() : 0 ?>
+        <?php if ($formModel->hasView()): ?>
             <?php if ($formModel->isCustomised() && $this->formCheckPermission('modelUpdate')): ?>
                 <?= Ui::ajaxButton(
                     label: trans('backend::lang.form.reset_default'),

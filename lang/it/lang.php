@@ -34,7 +34,6 @@ return [
         'sample_data' => 'Dati di esempio',
         'sample_data_comment' => 'Oggetto JSON con le variabili usate dall\'anteprima nel pannello, ad esempio {"name": "Mario Rossi", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Personalizzato',
-        'is_locked' => 'Da file di vista',
         'duplicate' => 'Duplica',
         'duplicate_confirm' => 'Creare una copia di :name?',
         'duplicating' => 'Duplicazione...',

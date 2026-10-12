@@ -6,6 +6,8 @@ use October\Rain\Database\Schema\Blueprint;
 
 describe('add_unique_code_indexes', function () {
     beforeEach(function () {
+        (require plugins_path('renatio/dynamicpdf/updates/20261012_0001_replace_is_locked_with_is_custom_on_layouts.php'))->down();
+
         foreach (['renatio_dynamicpdf_pdf_templates', 'renatio_dynamicpdf_pdf_layouts'] as $name) {
             Schema::table($name, function (Blueprint $table) use ($name) {
                 if (Schema::hasIndex($name, ['code'], 'unique')) {

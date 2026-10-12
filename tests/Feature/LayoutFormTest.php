@@ -33,7 +33,7 @@ describe('Layout form', function () {
 
         $html = app('dynamicpdf')->loadTemplate('acme::pdf.invoice', locale: 'de')->getDomPDF()->outputHtml();
 
-        expect($this->findLayout('acme::pdf.layouts.default')->is_locked)->toBeFalse()
+        expect($this->findLayout('acme::pdf.layouts.default')->is_custom)->toBeTrue()
             ->and($html)->toContain('EDITED-LAYOUT')->not->toContain('DE-LAYOUT');
     });
 
@@ -46,7 +46,7 @@ describe('Layout form', function () {
 
         $stored = $this->findLayout('acme::pdf.layouts.default');
 
-        expect($stored->is_locked)->toBeTrue()
+        expect($stored->is_custom)->toBeFalse()
             ->and($stored->getTranslation('content_html', 'de', false))->toContain('GESPEICHERT');
     });
 });

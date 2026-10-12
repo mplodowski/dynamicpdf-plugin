@@ -131,7 +131,7 @@ describe('Layout page numbers', function () {
 
             $stored = $this->findLayout('acme::pdf.layouts.numbered');
 
-            expect($stored->is_locked)->toBeFalse()
+            expect($stored->is_custom)->toBeTrue()
                 ->and($stored->page_numbers)->toBe('bottom-left');
         });
     });
@@ -158,6 +158,6 @@ describe('Layout page numbers form', function () {
             'page_numbers_size' => '9.0',
         ])->assertOk();
 
-        expect($this->findLayout('acme::pdf.layouts.numbered')->is_locked)->toBeTrue();
+        expect($this->findLayout('acme::pdf.layouts.numbered')->is_custom)->toBeFalse();
     });
 });

@@ -27,9 +27,6 @@ use Twig\Error\Error as TwigError;
  */
 trait ManagesViewRecords
 {
-    use ChecksFormPermissions;
-    use RendersPreviewErrors;
-
     protected const CSS_PIXELS_PER_POINT = 96 / 72;
 
     protected function setSettingsContext(): void
@@ -43,6 +40,47 @@ trait ManagesViewRecords
         if ($this->getAjaxHandler() === null && in_array($this->action, ['index', 'create', 'update'], true)) {
             (new SyncTemplates)->handle();
         }
+    }
+
+    public function formBeforeSave(Layout|Template $model): void
+    {
+        if (! $model->exists || (! $model->isCustomised() && $this->postedViewFieldChanged($model))) {
+            $model->markAsCustomised();
+        }
+    }
+
+    /**
+     * The form data reaches the model only after formBeforeSave, so the posted values are compared.
+     */
+    protected function postedViewFieldChanged(Layout|Template $model): bool
+    {
+        $fields = $model::VIEW_FIELDS;
+        $widget = $this->formGetWidget();
+
+        if ($widget === null) {
+            return false;
+        }
+
+        $posted = (array) $widget->getSaveData();
+
+        if ($model->shouldTranslate()) {
+            $fields = array_diff_key($fields, array_flip($model->getTranslatableAttributes()));
+        }
+
+        foreach ($fields as $field => $attribute) {
+            if (array_key_exists($field, $posted) && $this->normalizeViewValue($posted[$field]) !== $this->normalizeViewValue($model->getAttribute($attribute))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function normalizeViewValue(mixed $value): string
+    {
+        $value = str_replace("\r\n", "\n", trim((string) $value));
+
+        return preg_match('/^#[0-9a-f]{6}$/i', $value) ? strtolower($value) : $value;
     }
 
     public function update(int|string|null $recordId = null, ?string $context = null): mixed
@@ -207,7 +245,7 @@ trait ManagesViewRecords
 
     protected function resetToView(Layout|Template $model): void
     {
-        if (! $model->followsView()) {
+        if (! $model->hasView()) {
             throw new ApplicationException(trans('renatio.dynamicpdf::lang.templates.reset_view_only'));
         }
 
@@ -218,11 +256,27 @@ trait ManagesViewRecords
     {
         $this->requireFormPermission('modelDelete');
 
-        if ($this->formFindModelObject($recordId)->followsView()) {
+        if ($this->formFindModelObject($recordId)->hasView()) {
             throw new ApplicationException(trans('renatio.dynamicpdf::lang.templates.delete_view_refused'));
         }
 
         return $this->asExtension('FormController')->update_onDelete($recordId);
+    }
+
+    protected function requireFormPermission(string $permission): void
+    {
+        if (! $this->formCheckPermission($permission)) {
+            throw new ForbiddenException;
+        }
+    }
+
+    protected function previewFailedMessage(TwigError $e): string
+    {
+        if ($e->getPrevious() !== null) {
+            report($e);
+        }
+
+        return trans('renatio.dynamicpdf::lang.templates.preview_failed', ['message' => $e->getMessage()]);
     }
 
     /**

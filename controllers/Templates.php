@@ -13,12 +13,10 @@ use October\Rain\Exception\ForbiddenException;
 use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
-use Renatio\DynamicPDF\Traits\DetectsViewChanges;
 use Renatio\DynamicPDF\Traits\ManagesViewRecords;
 
 class Templates extends Controller
 {
-    use DetectsViewChanges;
     use ManagesViewRecords;
 
     protected const LIST_MODELS = ['templates' => Template::class, 'layouts' => Layout::class];
@@ -81,19 +79,6 @@ class Templates extends Controller
         $this->vars['activeTab'] = array_key_exists($tab, $this->listConfig) ? $tab : 'templates';
     }
 
-    public function formBeforeSave(Template $model): void
-    {
-        if (! $model->exists) {
-            $model->is_custom = true;
-
-            return;
-        }
-
-        if (! $model->is_custom && $this->postedViewFieldChanged($model, Template::VIEW_FIELDS)) {
-            $model->is_custom = true;
-        }
-    }
-
     public function index_onDuplicateRecord(): RedirectResponse
     {
         $definition = $this->listDefinition();
@@ -128,7 +113,7 @@ class Templates extends Controller
         $this->checkListPermission($definition, 'delete');
         $model = $this->findListRecord($definition);
 
-        if ($model->followsView()) {
+        if ($model->hasView()) {
             throw new ApplicationException(trans('renatio.dynamicpdf::lang.templates.delete_view_refused'));
         }
 

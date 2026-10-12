@@ -26,7 +26,7 @@
                 aria-label="<?= e(trans('renatio.dynamicpdf::lang.templates.duplicate')) ?>"><i class="octo-icon-copy icon-lg m-0" aria-hidden="true"></i></button>
     <?php endif ?>
 
-    <?php if ($record->followsView()): ?>
+    <?php if ($record->hasView()): ?>
         <?php if ($record->isCustomised() && BackendAuth::userHasAccess($permission . '.update')): ?>
             <button type="button"
                     class="btn btn-sm btn-warning"

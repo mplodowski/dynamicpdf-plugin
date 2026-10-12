@@ -29,14 +29,14 @@ describe('View status notice', function () {
     });
 
     it('informs on a layout following its view and warns on an edited one', function () {
-        $layout = $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'is_locked' => true]);
+        $layout = $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'is_custom' => false]);
 
         expect((new Layouts)->run('update', [$layout->id])->getContent())
             ->toContain('This layout follows the view file <code>renatio.dynamicpdf::pdf.layouts.default</code>')
             ->toContain('callout-info')
             ->not->toContain('callout-warning');
 
-        $layout->is_locked = false;
+        $layout->is_custom = true;
         $layout->save();
 
         expect((new Layouts)->run('update', [$layout->id])->getContent())
@@ -47,7 +47,7 @@ describe('View status notice', function () {
     it('does not warn a translator that translated fields detach the record', function () {
         $site = $this->enableTranslation('de');
         $template = $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'is_custom' => false]);
-        $layout = $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'is_locked' => true]);
+        $layout = $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'is_custom' => false]);
 
         $render = fn (Templates|Layouts $controller, int $id): string => Site::withContext($site->id, fn () => $controller->run('update', [$id])->getContent());
 
