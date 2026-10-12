@@ -4,6 +4,7 @@ namespace Renatio\DynamicPDF\Traits;
 
 use Backend\Facades\Backend;
 use Backend\Facades\BackendMenu;
+use DateTimeInterface;
 use Dompdf\Exception as DompdfException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -18,6 +19,7 @@ use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Classes\PreviewFonts;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
+use Renatio\DynamicPDF\Models\Revision;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SettingsManager;
 use Twig\Error\Error as TwigError;
@@ -28,6 +30,11 @@ use Twig\Error\Error as TwigError;
 trait ManagesViewRecords
 {
     protected const CSS_PIXELS_PER_POINT = 96 / 72;
+
+    /** @var array<string, mixed>|null */
+    protected ?array $revisionSnapshot = null;
+
+    protected ?DateTimeInterface $revisionSnapshotAt = null;
 
     protected function setSettingsContext(): void
     {
@@ -46,6 +53,19 @@ trait ManagesViewRecords
     {
         if (! $model->exists || (! $model->isCustomised() && $this->postedViewFieldChanged($model))) {
             $model->markAsCustomised();
+        }
+    }
+
+    public function formBeforeUpdate(Layout|Template $model): void
+    {
+        $this->revisionSnapshot = $model->revisionSnapshot();
+        $this->revisionSnapshotAt = $model->updated_at ?? $model->created_at;
+    }
+
+    public function formAfterUpdate(Layout|Template $model): void
+    {
+        if ($this->revisionSnapshot !== null) {
+            $model->recordRevision($this->revisionSnapshot, $this->revisionSnapshotAt);
         }
     }
 
@@ -68,19 +88,12 @@ trait ManagesViewRecords
         }
 
         foreach ($fields as $field => $attribute) {
-            if (array_key_exists($field, $posted) && $this->normalizeViewValue($posted[$field]) !== $this->normalizeViewValue($model->getAttribute($attribute))) {
+            if (array_key_exists($field, $posted) && $model::normalizeViewValue($posted[$field]) !== $model::normalizeViewValue($model->getAttribute($attribute))) {
                 return true;
             }
         }
 
         return false;
-    }
-
-    protected function normalizeViewValue(mixed $value): string
-    {
-        $value = str_replace("\r\n", "\n", trim((string) $value));
-
-        return preg_match('/^#[0-9a-f]{6}$/i', $value) ? strtolower($value) : $value;
     }
 
     public function update(int|string|null $recordId = null, ?string $context = null): mixed
@@ -239,6 +252,24 @@ trait ManagesViewRecords
         $this->resetToView($this->formFindModelObject($recordId));
 
         Flash::success(trans('renatio.dynamicpdf::lang.templates.reset_success'));
+
+        return redirect()->refresh();
+    }
+
+    public function update_onRestoreRevision(int|string $recordId): RedirectResponse
+    {
+        $this->requireFormPermission('modelUpdate');
+
+        $model = $this->formFindModelObject($recordId);
+        $revision = $model->revisions()->find((int) post('revision'));
+
+        if (! $revision instanceof Revision) {
+            throw new ApplicationException(trans('renatio.dynamicpdf::lang.revisions.not_found'));
+        }
+
+        $model->restoreRevision($revision);
+
+        Flash::success(trans('renatio.dynamicpdf::lang.revisions.restore_success'));
 
         return redirect()->refresh();
     }

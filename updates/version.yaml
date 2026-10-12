@@ -68,6 +68,7 @@ v8.1.0:
     - Export and import commands move templates and layouts between installations.
     - afterRender listeners receive the HTML of the previous one, their changes add up.
     - attachment() returns the PDF as an e-mail attachment.
+    - History tab keeps the last 20 versions of templates and layouts, Restore brings one back.
     - 20260907_0001_add_sample_data_to_templates_table.php
     - 20260907_0002_add_unique_code_indexes.php
     - 20260930_0001_unlock_edited_layouts.php
@@ -75,3 +76,4 @@ v8.1.0:
     - 20261006_0001_widen_content_columns.php
     - 20261007_0001_add_page_numbers_to_layouts_table.php
     - 20261012_0001_replace_is_locked_with_is_custom_on_layouts.php
+    - 20261012_0002_create_revisions_table.php

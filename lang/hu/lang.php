@@ -130,6 +130,19 @@ return [
     ],
     'tab' => [
         'options' => 'Beállítások',
+        'history' => 'Előzmények',
+    ],
+    'revisions' => [
+        'label' => 'Korábbi verziók',
+        'comment' => 'Minden mentés, amely módosítja a tartalmat, itt hozzáad egy verziót, legfeljebb az utolsó :limit darabot. A fordítások nem verziózottak.',
+        'empty' => 'Még nincsenek korábbi verziók.',
+        'date' => 'Dátum',
+        'author' => 'Szerző',
+        'restore' => 'Visszaállítás',
+        'restore_confirm' => 'Visszaállítja a :date verziót? A nem mentett módosítások elvesznek, a jelenlegi verzió az előzményekben marad.',
+        'restoring' => 'Visszaállítás...',
+        'restore_success' => 'A verzió visszaállt.',
+        'not_found' => 'Ez a verzió már nem létezik.',
     ],
     'page_numbers' => [
         'section' => 'Oldalszámok',

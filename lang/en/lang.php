@@ -130,6 +130,19 @@ return [
     ],
     'tab' => [
         'options' => 'Options',
+        'history' => 'History',
+    ],
+    'revisions' => [
+        'label' => 'Earlier versions',
+        'comment' => 'Every save that changes the content adds a version here, up to the last :limit. Translations are not versioned.',
+        'empty' => 'No earlier versions yet.',
+        'date' => 'Date',
+        'author' => 'Author',
+        'restore' => 'Restore',
+        'restore_confirm' => 'Restore the version from :date? Unsaved changes will be lost, the current version stays in the history.',
+        'restoring' => 'Restoring...',
+        'restore_success' => 'The version was restored.',
+        'not_found' => 'This version no longer exists.',
     ],
     'page_numbers' => [
         'section' => 'Page numbers',

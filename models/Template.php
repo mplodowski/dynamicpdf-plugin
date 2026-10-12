@@ -16,6 +16,7 @@ use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 use Renatio\DynamicPDF\Traits\Duplicates;
 use Renatio\DynamicPDF\Traits\FollowsView;
+use Renatio\DynamicPDF\Traits\HasRevisions;
 use Renatio\DynamicPDF\Traits\ValidatesContent;
 
 /**
@@ -29,7 +30,10 @@ use Renatio\DynamicPDF\Traits\ValidatesContent;
  * @property string|null $orientation
  * @property bool $is_custom
  * @property string|null $sample_data
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
  * @property Layout|null $layout
+ * @property-read \October\Rain\Database\Collection<int, Revision> $revisions
  * @property-read string $html
  *
  * @method \October\Rain\Database\Relations\MorphMany translations()
@@ -38,6 +42,7 @@ class Template extends Model
 {
     use Duplicates;
     use FollowsView;
+    use HasRevisions;
     use Nullable;
     use ValidatesContent;
     use Validation;
@@ -45,6 +50,8 @@ class Template extends Model
     public const LAYOUT_CACHE = 'renatio.dynamicpdf.layouts';
 
     public const VIEW_FIELDS = ['title' => 'title', 'description' => 'description', 'content_html' => 'content_html', 'layout' => 'layout_id', 'size' => 'size', 'orientation' => 'orientation'];
+
+    public const REVISION_FIELDS = ['title', 'description', 'content_html', 'layout_id', 'size', 'orientation', 'sample_data'];
 
     public $table = 'renatio_dynamicpdf_pdf_templates';
 
@@ -62,6 +69,11 @@ class Template extends Model
     /** @var array<string, class-string> */
     public $belongsTo = [
         'layout' => Layout::class,
+    ];
+
+    /** @var array<string, array<int|string, mixed>> */
+    public $morphMany = [
+        'revisions' => [Revision::class, 'name' => 'revisionable', 'delete' => true, 'replicate' => false],
     ];
 
     /** @var array<string, array<string>> */
@@ -106,6 +118,20 @@ class Template extends Model
     public function labelAttribute(): string
     {
         return 'title';
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function restorableRevisionData(Revision $revision): array
+    {
+        $data = $this->revisionFieldsOf($revision);
+
+        if (isset($data['layout_id']) && ! Layout::whereKey($data['layout_id'])->exists()) {
+            $data['layout_id'] = null;
+        }
+
+        return $data;
     }
 
     public function fillFromView(string $code): void

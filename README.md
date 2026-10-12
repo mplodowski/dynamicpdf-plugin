@@ -363,6 +363,13 @@ resets or deletes the record. A template or layout registered by a plugin view o
 *Delete*, and a layout used by a template cannot be deleted. *Duplicate* creates an editable copy with a `_copy` code
 (`_copy2` and so on when that code is taken); the copy is *Customized*.
 
+The *History* tab of both forms lists the versions of the record with the date and author of each. Every backend save
+that changes the content adds the saved version, up to the last 20; the first one is preceded by the content from
+before, listed without an author. Synchronization with view files, *Reset to Default* and the console commands add
+none. *Restore* (with the **Update** permission) brings a version back as a new version by the restoring administrator
+and marks the record *Customized*, so a restore can be undone. Versions hold the default language values, without
+translations and the layout background image, and are deleted with the record.
+
 Layouts define the PDF scaffold, that is everything that repeats on a PDF, such as a header and footer. Each layout has
 unique code, optional background image, HTML content and CSS/LESS content. Not all CSS properties are supported, so
 check [CSSCompatibility](https://github.com/dompdf/dompdf/wiki/CSSCompatibility).

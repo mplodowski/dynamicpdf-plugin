@@ -71,6 +71,13 @@ trait FollowsView
         });
     }
 
+    public static function normalizeViewValue(mixed $value): string
+    {
+        $value = str_replace("\r\n", "\n", trim((string) $value));
+
+        return preg_match('/^#[0-9a-f]{6}$/i', $value) ? strtolower($value) : $value;
+    }
+
     public function isCustomised(): bool
     {
         return $this->exists && (bool) $this->is_custom;
