@@ -6,13 +6,10 @@ use Backend\Behaviors\FormController;
 use Backend\Classes\Controller;
 use Backend\Facades\Backend;
 use Illuminate\Http\RedirectResponse;
-use Renatio\DynamicPDF\Models\Layout;
-use Renatio\DynamicPDF\Traits\DetectsViewChanges;
 use Renatio\DynamicPDF\Traits\ManagesViewRecords;
 
 class Layouts extends Controller
 {
-    use DetectsViewChanges;
     use ManagesViewRecords;
 
     /** @var array<int, string> */
@@ -39,12 +36,5 @@ class Layouts extends Controller
     public function index(): RedirectResponse
     {
         return Backend::redirect('renatio/dynamicpdf/templates/index/layouts');
-    }
-
-    public function formBeforeSave(Layout $model): void
-    {
-        if ($model->is_locked && $this->postedViewFieldChanged($model, Layout::VIEW_FIELDS)) {
-            $model->is_locked = false;
-        }
     }
 }

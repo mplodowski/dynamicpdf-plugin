@@ -34,7 +34,6 @@ return [
         'sample_data' => 'Données d\'exemple',
         'sample_data_comment' => 'Objet JSON avec les variables utilisées par l\'aperçu dans l\'administration, par exemple {"name": "Jean Dupont", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Personnalisé',
-        'is_locked' => 'Issue d\'une vue',
         'duplicate' => 'Dupliquer',
         'duplicate_confirm' => 'Créer une copie de :name ?',
         'duplicating' => 'Duplication...',

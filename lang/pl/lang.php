@@ -34,7 +34,6 @@ return [
         'sample_data' => 'Dane przykładowe',
         'sample_data_comment' => 'Obiekt JSON ze zmiennymi używanymi w podglądzie w panelu, np. {"name": "Jan Kowalski", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Dostosowany',
-        'is_locked' => 'Z widoku',
         'duplicate' => 'Duplikuj',
         'duplicate_confirm' => 'Utworzyć kopię :name?',
         'duplicating' => 'Duplikowanie...',

@@ -10,7 +10,11 @@ use System\Models\Parameter;
 
 describe('unlock_edited_layouts', function () {
     beforeEach(function () {
+        $replaceIsLocked = require plugins_path('renatio/dynamicpdf/updates/20261012_0001_replace_is_locked_with_is_custom_on_layouts.php');
+        $replaceIsLocked->down();
+
         $this->migrate = fn () => (require plugins_path('renatio/dynamicpdf/updates/20260930_0001_unlock_edited_layouts.php'))->up();
+        $this->replaceIsLocked = fn () => $replaceIsLocked->up();
 
         $this->insertLayout = fn (string $code, string $name, string $html, ?string $css = null): int => DB::table('renatio_dynamicpdf_pdf_layouts')->insertGetId([
             'code' => $code, 'name' => $name, 'content_html' => $html, 'content_css' => $css, 'is_locked' => true,
@@ -37,12 +41,13 @@ describe('unlock_edited_layouts', function () {
         $id = ($this->insertLayout)('renatio.dynamicpdf::pdf.layouts.header_and_footer', ...$this->shipped);
 
         ($this->migrate)();
+        ($this->replaceIsLocked)();
         (new SyncTemplates)->handle();
 
         $current = (new PDFParser)->parseView('renatio.dynamicpdf::pdf.layouts.header_and_footer');
 
         expect(($this->row)($id))
-            ->is_locked->toBeTruthy()
+            ->is_custom->toBeFalsy()
             ->content_html->toBe($current['html'])
             ->content_css->toBe($current['css'])
             ->and($this->shipped[1])->not->toBe($current['html']);
@@ -54,10 +59,11 @@ describe('unlock_edited_layouts', function () {
         $id = ($this->insertLayout)('renatio.dynamicpdf::pdf.layouts.header_and_footer', $name, $edited, $css);
 
         ($this->migrate)();
+        ($this->replaceIsLocked)();
         (new SyncTemplates)->handle();
 
         expect(($this->row)($id))
-            ->is_locked->toBeFalsy()
+            ->is_custom->toBeTruthy()
             ->content_html->toBe($edited);
     });
 
@@ -65,10 +71,11 @@ describe('unlock_edited_layouts', function () {
         $id = ($this->insertLayout)('unlockviews::pdf.layouts.letter', 'Letter', '<p>v1</p>', 'p { color: red; }');
 
         ($this->migrate)();
+        ($this->replaceIsLocked)();
         (new SyncTemplates)->handle();
 
         expect(($this->row)($id))
-            ->is_locked->toBeFalsy()
+            ->is_custom->toBeTruthy()
             ->content_html->toBe('<p>v1</p>');
     });
 
@@ -78,10 +85,11 @@ describe('unlock_edited_layouts', function () {
         ($this->migrate)();
 
         $this->registerViewLayouts('lateviews', ['layouts/letter' => "name = \"Letter\"\n==\n<p>v2</p>"]);
+        ($this->replaceIsLocked)();
         (new SyncTemplates)->handle();
 
         expect(($this->row)($id))
-            ->is_locked->toBeFalsy()
+            ->is_custom->toBeTruthy()
             ->content_html->toBe('<p>mine</p>');
     });
 

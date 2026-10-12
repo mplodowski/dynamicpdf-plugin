@@ -25,7 +25,7 @@ describe('dynamicpdf:sync', function () {
             $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.gone', 'is_custom' => false]);
         } else {
             PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.gone']);
-            $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.gone', 'is_locked' => true]);
+            $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.gone', 'is_custom' => false]);
         }
 
         $exitCode = Artisan::call('dynamicpdf:sync');

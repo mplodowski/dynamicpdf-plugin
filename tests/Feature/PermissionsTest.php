@@ -97,7 +97,7 @@ describe('Granular permissions', function () {
         PDFManager::instance()->registerLayouts(['renatio.dynamicpdf::pdf.layouts.default']);
         $record = $definition === 'templates'
             ? $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'content_html' => '<p>customised</p>', 'is_custom' => true])
-            : $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'content_html' => '<p>customised</p>', 'is_locked' => false]);
+            : $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'content_html' => '<p>customised</p>', 'is_custom' => true]);
 
         $response = $this->listAction('onResetRecord', ['id' => $record->id, 'definition' => $definition]);
 
@@ -170,7 +170,7 @@ describe('Guarded controller actions', function () {
 
         $this->records = [
             ':template' => $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'title' => 'Edited', 'is_custom' => true])->id,
-            ':layout' => $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'name' => 'Edited', 'is_locked' => false])->id,
+            ':layout' => $this->createLayout(['code' => 'renatio.dynamicpdf::pdf.layouts.default', 'name' => 'Edited', 'is_custom' => true])->id,
             ':custom_template' => $this->createTemplate(['code' => 'acme::pdf.custom', 'is_custom' => true])->id,
             ':custom_layout' => $this->createLayout(['code' => 'acme::pdf.layouts.custom'])->id,
         ];

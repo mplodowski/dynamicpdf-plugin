@@ -84,6 +84,7 @@ class ImportTemplates
             'layouts' => 'present|array',
             'layouts.*' => 'array',
             'layouts.*.code' => 'required|string|distinct',
+            'layouts.*.is_locked' => 'boolean',
             'layouts.*.background' => 'nullable|array',
             'templates' => 'present|array',
             'templates.*' => 'array',
@@ -143,6 +144,11 @@ class ImportTemplates
 
         try {
             $fill($model);
+
+            if (! $model->hasView()) {
+                $model->markAsCustomised();
+            }
+
             $this->translate($model, $record['translations'] ?? []);
             $model->save();
         } catch (ValidationException $e) {
@@ -159,11 +165,11 @@ class ImportTemplates
      */
     protected function fillLayout(Layout $layout, array $record): void
     {
-        $layout->forceFill(Arr::only($record, ExportTemplates::LAYOUT_FIELDS));
-
-        if (! $layout->followsView()) {
-            $layout->is_locked = false;
+        if (isset($record['is_locked']) && ! isset($record['is_custom'])) {
+            $record['is_custom'] = ! $record['is_locked'];
         }
+
+        $layout->forceFill(Arr::only($record, ExportTemplates::LAYOUT_FIELDS));
 
         if ($layout->background_img !== null) {
             $this->replacedFiles[] = $layout->background_img;
@@ -178,10 +184,6 @@ class ImportTemplates
     protected function fillTemplate(Template $template, array $record): void
     {
         $template->forceFill(Arr::only($record, ExportTemplates::TEMPLATE_FIELDS));
-
-        if (! $template->followsView()) {
-            $template->is_custom = true;
-        }
 
         $layoutCode = $record['layout'] ?? null;
         $layout = $layoutCode === null ? null : Layout::query()->where('code', $layoutCode)->first();

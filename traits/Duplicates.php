@@ -11,7 +11,7 @@ trait Duplicates
         $copy = $this->replicateWithRelations();
         $copy->code = $this->uniqueCopyCode((string) $this->code);
         $copy->{$this->labelAttribute()} = $this->{$this->labelAttribute()} . ' ' . trans('renatio.dynamicpdf::lang.templates.copy_suffix');
-        $this->prepareDuplicate($copy);
+        $copy->markAsCustomised();
 
         try {
             $copy->save();
@@ -25,9 +25,7 @@ trait Duplicates
 
     abstract public function labelAttribute(): string;
 
-    protected function prepareDuplicate(self $copy): void
-    {
-    }
+    abstract public function markAsCustomised(): void;
 
     protected function uniqueCopyCode(string $code): string
     {

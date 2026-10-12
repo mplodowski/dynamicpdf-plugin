@@ -38,7 +38,7 @@ describe('Backend preview tools', function () {
     it('duplicates a layout as an unlocked copy with its background image', function () {
         $uploads = $this->temporaryDirectory('uploads');
         config(['filesystems.disks.uploads.root' => $uploads]);
-        $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default', 'is_locked' => true]);
+        $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default', 'is_custom' => false]);
         $image = new File;
         $image->fromData(base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='), 'bg.png');
         $layout->setAttribute('background_img', $image);
@@ -47,7 +47,7 @@ describe('Backend preview tools', function () {
         $response = (new Layouts)->update_onDuplicate($layout->id);
         $copy = Layout::whereCode('acme::pdf.layouts.default_copy')->firstOrFail();
 
-        expect($copy->getAttribute('is_locked'))->toBeFalsy()
+        expect($copy->getAttribute('is_custom'))->toBeTruthy()
             ->and($response->getTargetUrl())->toContain('layouts/update/' . $copy->id)
             ->and((string) $copy->getAttribute('name'))->toBe('Test Layout (copy)')
             ->and(File::where('attachment_id', $copy->id)->where('field', 'background_img')->count())->toBe(1);

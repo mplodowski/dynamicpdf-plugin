@@ -34,7 +34,6 @@ return [
         'sample_data' => 'Mintaadatok',
         'sample_data_comment' => 'JSON-objektum az adminfelület előnézete által használt változókkal, például {"name": "Kovács János", "items": [{"qty": 1, "price": 39}]}.',
         'is_custom' => 'Testreszabott',
-        'is_locked' => 'Nézetből',
         'duplicate' => 'Duplikálás',
         'duplicate_confirm' => 'Létrehozza :name másolatát?',
         'duplicating' => 'Duplikálás...',

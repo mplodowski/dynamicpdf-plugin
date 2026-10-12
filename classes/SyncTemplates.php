@@ -17,34 +17,13 @@ class SyncTemplates
     {
         $this->report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
-        $registeredLayouts = PDFManager::instance()->listRegisteredLayouts();
-
-        if ($registeredLayouts) {
-            if (Layout::followsViewUpdates()) {
-                $this->refreshLayouts($registeredLayouts);
-            }
-
-            $this->createLayouts($registeredLayouts);
-        }
-
-        $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
-
-        if (! $registeredTemplates && ! $prune) {
-            return;
-        }
+        $this->sync(Layout::class, PDFManager::instance()->listRegisteredLayouts());
 
         if ($prune) {
             $this->deleteOrphanedTemplates();
         }
 
-        $dbTemplates = Template::query()->pluck('is_custom', 'code')->all();
-
-        if (! $registeredTemplates) {
-            return;
-        }
-
-        $this->refreshTemplates($registeredTemplates);
-        $this->createTemplates(array_diff_key($registeredTemplates, $dbTemplates));
+        $this->sync(Template::class, PDFManager::instance()->listRegisteredTemplates());
     }
 
     /**
@@ -56,59 +35,11 @@ class SyncTemplates
     }
 
     /**
-     * @param  array<string, string>  $registeredLayouts
-     */
-    protected function refreshLayouts(array $registeredLayouts): void
-    {
-        /** @var Collection<int, Layout> $layouts */
-        $layouts = Layout::query()
-            ->where('is_locked', true)
-            ->whereIn('code', array_keys($registeredLayouts))
-            ->get();
-
-        foreach ($layouts as $layout) {
-            if ($layout->viewReadFailed()) {
-                $this->report['failed'][] = $layout->code;
-
-                continue;
-            }
-
-            $this->write(Layout::class, $layout->code, 'updated', fn (): bool => $layout->inDefaultLocale(function () use ($layout): bool {
-                if (! $layout->content_html || ! $layout->isDirty(Layout::VIEW_FIELDS)) {
-                    return false;
-                }
-
-                $layout->forceSave();
-
-                return true;
-            }));
-        }
-    }
-
-    /**
-     * @param  array<string, string>  $registeredLayouts
-     */
-    protected function createLayouts(array $registeredLayouts): void
-    {
-        $dbLayouts = Layout::query()->pluck('code', 'code')->all();
-
-        foreach (array_diff_key($registeredLayouts, $dbLayouts) as $code) {
-            $this->write(Layout::class, $code, 'created', function () use ($code): void {
-                $layout = new Layout;
-                $layout->is_locked = true;
-                $layout->fillFromView($code);
-                $layout->forceSave();
-            });
-        }
-    }
-
-    /**
      * @return array<int, string>
      */
     public function orphanedTemplates(): array
     {
-        return Template::query()
-            ->where('is_custom', false)
+        return Template::followingView()
             ->whereNotIn('code', array_keys(PDFManager::instance()->listRegisteredTemplates()))
             ->orderBy('code')
             ->pluck('code')
@@ -123,36 +54,50 @@ class SyncTemplates
     }
 
     /**
+     * @param  class-string<Layout|Template>  $model
+     * @param  array<string, string>  $views
+     */
+    protected function sync(string $model, array $views): void
+    {
+        if ($views === []) {
+            return;
+        }
+
+        $this->refresh($model, $views);
+        $this->create($model, $views);
+    }
+
+    /**
      * A view file read mid-deploy can parse to no content or a layout that does not resolve
      * yet; neither may wipe the stored row.
      *
-     * @param  array<string, string>  $registeredTemplates
+     * @param  class-string<Layout|Template>  $model
+     * @param  array<string, string>  $views
      */
-    protected function refreshTemplates(array $registeredTemplates): void
+    protected function refresh(string $model, array $views): void
     {
-        /** @var Collection<int, Template> $templates */
-        $templates = Template::query()
-            ->where('is_custom', false)
-            ->whereIn('code', array_keys($registeredTemplates))
+        /** @var Collection<int, Layout|Template> $records */
+        $records = $model::followingView()
+            ->whereIn('code', array_keys($views))
             ->get();
 
-        foreach ($templates as $template) {
-            if ($template->viewReadFailed()) {
-                $this->report['failed'][] = $template->code;
+        foreach ($records as $record) {
+            if ($record->viewReadFailed()) {
+                $this->report['failed'][] = $record->code;
 
                 continue;
             }
 
-            $this->write(Template::class, $template->code, 'updated', fn (): bool => $template->inDefaultLocale(function () use ($template): bool {
-                if (! $template->content_html || ! $template->isDirty(Template::VIEW_FIELDS)) {
+            $this->write($model, $record->code, 'updated', fn (): bool => $record->inDefaultLocale(function () use ($record): bool {
+                if (! $record->content_html || ! $record->isDirty($record::VIEW_FIELDS)) {
                     return false;
                 }
 
-                if ($template->layout_id === null && $template->getOriginal('layout_id') !== null) {
+                if ($record instanceof Template && $record->layout_id === null && $record->getOriginal('layout_id') !== null) {
                     return false;
                 }
 
-                $template->forceSave();
+                $record->forceSave();
 
                 return true;
             }));
@@ -160,15 +105,19 @@ class SyncTemplates
     }
 
     /**
-     * @param  array<string, string>  $templates
+     * @param  class-string<Layout|Template>  $model
+     * @param  array<string, string>  $views
      */
-    protected function createTemplates(array $templates): void
+    protected function create(string $model, array $views): void
     {
-        foreach ($templates as $code) {
-            $this->write(Template::class, $code, 'created', function () use ($code): void {
-                $template = new Template;
-                $template->fillFromView($code);
-                $template->forceSave();
+        $stored = $model::query()->pluck('code', 'code')->all();
+
+        foreach (array_diff_key($views, $stored) as $code) {
+            $this->write($model, $code, 'created', function () use ($model, $code): void {
+                $record = new $model;
+                $record->markAsFollowingView();
+                $record->fillFromView($code);
+                $record->forceSave();
             });
         }
     }
@@ -186,7 +135,7 @@ class SyncTemplates
         } catch (Throwable $e) {
             $this->report['failed'][] = $code;
 
-            PDFManager::instance()->logFailureOnce($model, $code, "Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", $e);
+            FailureLog::instance()->logOnce($model, $code, "Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", $e);
         }
     }
 }

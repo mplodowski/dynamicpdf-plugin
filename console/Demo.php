@@ -57,7 +57,7 @@ class Demo extends Command
         $templates = Template::whereIn('code', Plugin::DEMO_TEMPLATES)->get();
 
         foreach ($templates as $template) {
-            if ($template->is_custom) {
+            if ($template->isCustomised()) {
                 $this->warn("Kept {$template->code}, it was customized.");
 
                 continue;
@@ -72,7 +72,7 @@ class Demo extends Command
         foreach ($layouts as $layout) {
             if (Template::where('layout_id', $layout->id)->exists()) {
                 $this->warn("Kept {$layout->code}, templates still use it.");
-            } elseif (! $layout->is_locked) {
+            } elseif ($layout->isCustomised()) {
                 $this->warn("Kept {$layout->code}, it was customized.");
             } else {
                 $layout->delete();

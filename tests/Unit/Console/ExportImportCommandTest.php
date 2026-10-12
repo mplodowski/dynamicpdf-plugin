@@ -119,7 +119,7 @@ describe('dynamicpdf:export and dynamicpdf:import', function () {
 
     it('imports a record whose view the target does not register as customized, so the sync keeps it', function () {
         ($this->exportAndWipe)(function (array $payload): array {
-            $payload['layouts'][0]['is_locked'] = true;
+            $payload['layouts'][0]['is_custom'] = false;
             $payload['templates'][0]['is_custom'] = false;
 
             return $payload;
@@ -131,7 +131,20 @@ describe('dynamicpdf:export and dynamicpdf:import', function () {
         Filesystem::deleteDirectory($views);
 
         expect($this->findTemplate('acme::pdf.invoice')->is_custom)->toBeTrue()
-            ->and($this->findLayout('acme::pdf.layouts.base')->is_locked)->toBeFalse();
+            ->and($this->findLayout('acme::pdf.layouts.base')->is_custom)->toBeTrue();
+    });
+
+    it('imports a layout from a file written before is_custom as following its view when it was locked', function () {
+        $this->registerViewLayouts('acme', ['layouts/base' => "name = \"Base\"\n==\n<html><body>{{ content_html|raw }}</body></html>"]);
+        ($this->exportAndWipe)(function (array $payload): array {
+            unset($payload['layouts'][0]['is_custom']);
+            $payload['layouts'][0]['is_locked'] = true;
+
+            return $payload;
+        });
+
+        expect(($this->import)())->toBe(0)
+            ->and($this->findLayout('acme::pdf.layouts.base')->is_custom)->toBeFalse();
     });
 
     it('exports a layout whose background file is missing without the background and warns about it', function () {

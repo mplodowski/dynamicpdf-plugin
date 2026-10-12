@@ -85,7 +85,7 @@ describe('List actions', function () {
     ]);
 
     it('deletes a locked layout whose view registration is gone', function () {
-        $layout = $this->createLayout(['code' => 'gone::pdf.layouts.default', 'is_locked' => true]);
+        $layout = $this->createLayout(['code' => 'gone::pdf.layouts.default', 'is_custom' => false]);
 
         $this->listAction('onDeleteRecord', ['id' => $layout->id, 'definition' => 'layouts'])->assertOk();
 
