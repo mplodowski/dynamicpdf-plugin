@@ -143,15 +143,13 @@ describe('Granular permissions', function () {
         expect(fn () => (new Layouts)->run('html', [$layout->id]))->toThrow(ForbiddenException::class);
     });
 
-    it('hides the delete button of a view-driven template from a user without the update permission', function () {
+    it('hides the reset of a customised view-driven template without the update permission', function () {
         actingAsPdfUserWith(['manage_templates', 'manage_templates.delete']);
         PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
-        $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'is_custom' => false]);
+        $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'is_custom' => true]);
 
-        $content = (new Templates)->run('index', ['templates'])->getContent();
-
-        expect($content)->not->toContain('onDeleteRecord')
-            ->and($content)->not->toContain('onResetRecord');
+        expect((new Templates)->run('index', ['templates'])->getContent())->not->toContain('onResetRecord')
+            ->not->toContain('onDeleteRecord');
     });
 
     it('hides the new template button without the create permission', function () {
