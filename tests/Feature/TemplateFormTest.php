@@ -4,6 +4,22 @@ use Backend\Facades\Backend;
 use Illuminate\Support\Facades\DB;
 use October\Rain\Support\Facades\Flash;
 
+describe('Template form', function () {
+    it('names the configured dompdf paper defaults in the empty size and orientation options', function () {
+        actingAsPdfManager();
+        config([
+            'dompdf.options.default_paper_size' => 'letter',
+            'dompdf.options.default_paper_orientation' => 'landscape',
+        ]);
+        $template = $this->createTemplate(['size' => null, 'orientation' => null]);
+
+        $html = $this->get(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id))->assertOk()->getContent();
+
+        expect($html)->toContain('>' . trans('renatio.dynamicpdf::lang.options.default', ['value' => 'Letter']) . '<')
+            ->toContain('>' . trans('renatio.dynamicpdf::lang.options.default', ['value' => trans('renatio.dynamicpdf::lang.orientation.landscape')]) . '<');
+    });
+});
+
 describe('Form buttons', function () {
     it('renders the record actions inside a change-monitored form', function (string $definition) {
         actingAsPdfManager();
