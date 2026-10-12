@@ -4,6 +4,7 @@ namespace Renatio\DynamicPDF\Traits;
 
 use Backend\Facades\Backend;
 use Backend\Facades\BackendMenu;
+use DateTimeInterface;
 use Dompdf\Exception as DompdfException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -33,6 +34,8 @@ trait ManagesViewRecords
     /** @var array<string, mixed>|null */
     protected ?array $revisionSnapshot = null;
 
+    protected ?DateTimeInterface $revisionSnapshotAt = null;
+
     protected function setSettingsContext(): void
     {
         BackendMenu::setContext('October.System', 'system', 'settings');
@@ -56,12 +59,13 @@ trait ManagesViewRecords
     public function formBeforeUpdate(Layout|Template $model): void
     {
         $this->revisionSnapshot = $model->revisionSnapshot();
+        $this->revisionSnapshotAt = $model->updated_at ?? $model->created_at;
     }
 
     public function formAfterUpdate(Layout|Template $model): void
     {
         if ($this->revisionSnapshot !== null) {
-            $model->recordRevision($this->revisionSnapshot);
+            $model->recordRevision($this->revisionSnapshot, $this->revisionSnapshotAt);
         }
     }
 
@@ -84,19 +88,12 @@ trait ManagesViewRecords
         }
 
         foreach ($fields as $field => $attribute) {
-            if (array_key_exists($field, $posted) && $this->normalizeViewValue($posted[$field]) !== $this->normalizeViewValue($model->getAttribute($attribute))) {
+            if (array_key_exists($field, $posted) && $model::normalizeViewValue($posted[$field]) !== $model::normalizeViewValue($model->getAttribute($attribute))) {
                 return true;
             }
         }
 
         return false;
-    }
-
-    protected function normalizeViewValue(mixed $value): string
-    {
-        $value = str_replace("\r\n", "\n", trim((string) $value));
-
-        return preg_match('/^#[0-9a-f]{6}$/i', $value) ? strtolower($value) : $value;
     }
 
     public function update(int|string|null $recordId = null, ?string $context = null): mixed

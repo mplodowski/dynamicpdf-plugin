@@ -32,6 +32,8 @@ use System\Models\File;
  * @property string|null $page_numbers_color
  * @property string|null $page_numbers_font
  * @property float|string|null $page_numbers_margin
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
  * @property-read File|null $background_img
  * @property-read \October\Rain\Database\Collection<int, Template> $templates
  * @property-read string $html

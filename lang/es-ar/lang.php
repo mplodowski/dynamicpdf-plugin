@@ -134,7 +134,7 @@ return [
     ],
     'revisions' => [
         'label' => 'Versiones anteriores',
-        'comment' => 'Cada guardado que cambia el contenido conserva acá la versión anterior, hasta las últimas :limit. Las traducciones no se versionan.',
+        'comment' => 'Cada guardado que cambia el contenido agrega acá una versión, hasta las últimas :limit. Las traducciones no se versionan.',
         'empty' => 'Todavía no hay versiones anteriores.',
         'date' => 'Fecha',
         'author' => 'Autor',

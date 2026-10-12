@@ -30,6 +30,8 @@ use Renatio\DynamicPDF\Traits\ValidatesContent;
  * @property string|null $orientation
  * @property bool $is_custom
  * @property string|null $sample_data
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
  * @property Layout|null $layout
  * @property-read \October\Rain\Database\Collection<int, Revision> $revisions
  * @property-read string $html
@@ -123,7 +125,7 @@ class Template extends Model
      */
     protected function restorableRevisionData(Revision $revision): array
     {
-        $data = array_intersect_key((array) $revision->data, array_flip(self::REVISION_FIELDS));
+        $data = $this->revisionFieldsOf($revision);
 
         if (isset($data['layout_id']) && ! Layout::whereKey($data['layout_id'])->exists()) {
             $data['layout_id'] = null;

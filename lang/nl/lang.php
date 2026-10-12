@@ -134,7 +134,7 @@ return [
     ],
     'revisions' => [
         'label' => 'Eerdere versies',
-        'comment' => 'Elke opslag die de inhoud wijzigt, bewaart hier de vorige versie, tot de laatste :limit. Vertalingen krijgen geen versies.',
+        'comment' => 'Elke opslag die de inhoud wijzigt, voegt hier een versie toe, tot de laatste :limit. Vertalingen krijgen geen versies.',
         'empty' => 'Nog geen eerdere versies.',
         'date' => 'Datum',
         'author' => 'Auteur',

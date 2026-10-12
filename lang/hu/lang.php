@@ -134,7 +134,7 @@ return [
     ],
     'revisions' => [
         'label' => 'Korábbi verziók',
-        'comment' => 'Minden mentés, amely módosítja a tartalmat, itt megőrzi az előző verziót, legfeljebb az utolsó :limit darabot. A fordítások nem verziózottak.',
+        'comment' => 'Minden mentés, amely módosítja a tartalmat, itt hozzáad egy verziót, legfeljebb az utolsó :limit darabot. A fordítások nem verziózottak.',
         'empty' => 'Még nincsenek korábbi verziók.',
         'date' => 'Dátum',
         'author' => 'Szerző',

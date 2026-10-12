@@ -13,7 +13,7 @@ return new class extends Migration
             $table->morphs('revisionable', 'renatio_dynamicpdf_revisions_revisionable_index');
             $table->unsignedInteger('user_id')->nullable();
             $table->string('user_name')->nullable();
-            $table->mediumText('data');
+            $table->longText('data');
             $table->timestamp('created_at')->nullable();
         });
     }

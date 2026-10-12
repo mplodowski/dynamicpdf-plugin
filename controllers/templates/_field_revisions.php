@@ -1,6 +1,7 @@
 <?php
-    $revisions = $formModel->revisions()->orderByDesc('id')->get();
+    $revisions = $formModel->revisions()->orderByDesc('id')->get(['id', 'user_name', 'created_at']);
     $canRestore = $this->formCheckPermission('modelUpdate');
+    $currentId = $canRestore ? $formModel->currentRevisionId() : null;
 ?>
 <div role="group" aria-labelledby="<?= $field->getId('label') ?>">
     <span class="form-label d-block" id="<?= $field->getId('label') ?>"><?= e(trans('renatio.dynamicpdf::lang.revisions.label')) ?></span>
@@ -27,15 +28,17 @@
                         <td><?= e($revision->user_name ?: '-') ?></td>
                         <?php if ($canRestore): ?>
                             <td class="text-end">
-                                <?= Ui::ajaxButton(
-                                    label: trans('renatio.dynamicpdf::lang.revisions.restore'),
-                                    handler: 'onRestoreRevision',
-                                    requestData: ['revision' => $revision->id],
-                                    class: 'btn-default btn-sm',
-                                    dataRequestConfirm: trans('renatio.dynamicpdf::lang.revisions.restore_confirm', ['date' => $date]),
-                                    dataRequestBeforeUpdate: "$(this).trigger('unchange.oc.changeMonitor')",
-                                    dataRequestMessage: trans('renatio.dynamicpdf::lang.revisions.restoring')
-                                ) ?>
+                                <?php if ((int) $revision->id !== $currentId): ?>
+                                    <?= Ui::ajaxButton(
+                                        label: trans('renatio.dynamicpdf::lang.revisions.restore'),
+                                        handler: 'onRestoreRevision',
+                                        requestData: ['revision' => $revision->id],
+                                        class: 'btn-default btn-sm',
+                                        dataRequestConfirm: trans('renatio.dynamicpdf::lang.revisions.restore_confirm', ['date' => $date]),
+                                        dataRequestBeforeUpdate: "$(this).trigger('unchange.oc.changeMonitor')",
+                                        dataRequestMessage: trans('renatio.dynamicpdf::lang.revisions.restoring')
+                                    ) ?>
+                                <?php endif ?>
                             </td>
                         <?php endif ?>
                     </tr>

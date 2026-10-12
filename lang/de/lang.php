@@ -134,7 +134,7 @@ return [
     ],
     'revisions' => [
         'label' => 'Frühere Versionen',
-        'comment' => 'Jedes Speichern, das den Inhalt ändert, behält hier die vorherige Version, höchstens die letzten :limit. Übersetzungen werden nicht versioniert.',
+        'comment' => 'Jedes Speichern, das den Inhalt ändert, fügt hier eine Version hinzu, höchstens die letzten :limit. Übersetzungen werden nicht versioniert.',
         'empty' => 'Noch keine früheren Versionen.',
         'date' => 'Datum',
         'author' => 'Autor',

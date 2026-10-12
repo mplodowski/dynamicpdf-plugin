@@ -134,7 +134,7 @@ return [
     ],
     'revisions' => [
         'label' => 'Versioni precedenti',
-        'comment' => 'Ogni salvataggio che modifica il contenuto conserva qui la versione precedente, fino alle ultime :limit. Le traduzioni non sono versionate.',
+        'comment' => 'Ogni salvataggio che modifica il contenuto aggiunge qui una versione, fino alle ultime :limit. Le traduzioni non sono versionate.',
         'empty' => 'Ancora nessuna versione precedente.',
         'date' => 'Data',
         'author' => 'Autore',

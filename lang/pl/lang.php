@@ -134,7 +134,7 @@ return [
     ],
     'revisions' => [
         'label' => 'Poprzednie wersje',
-        'comment' => 'Każdy zapis, który zmienia treść, zachowuje tu poprzednią wersję, maksymalnie :limit ostatnich. Tłumaczenia nie są wersjonowane.',
+        'comment' => 'Każdy zapis, który zmienia treść, dodaje tu wersję, maksymalnie :limit ostatnich. Tłumaczenia nie są wersjonowane.',
         'empty' => 'Brak poprzednich wersji.',
         'date' => 'Data',
         'author' => 'Autor',

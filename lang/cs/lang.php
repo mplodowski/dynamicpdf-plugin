@@ -134,7 +134,7 @@ return [
     ],
     'revisions' => [
         'label' => 'Předchozí verze',
-        'comment' => 'Každé uložení, které změní obsah, zde ponechá předchozí verzi, nejvýše :limit posledních. Překlady se neverzují.',
+        'comment' => 'Každé uložení, které změní obsah, sem přidá verzi, nejvýše :limit posledních. Překlady se neverzují.',
         'empty' => 'Zatím žádné předchozí verze.',
         'date' => 'Datum',
         'author' => 'Autor',

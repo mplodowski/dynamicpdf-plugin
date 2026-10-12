@@ -134,7 +134,7 @@ return [
     ],
     'revisions' => [
         'label' => 'Versions précédentes',
-        'comment' => 'Chaque enregistrement qui modifie le contenu conserve ici la version précédente, dans la limite des :limit dernières. Les traductions ne sont pas versionnées.',
+        'comment' => 'Chaque enregistrement qui modifie le contenu ajoute ici une version, dans la limite des :limit dernières. Les traductions ne sont pas versionnées.',
         'empty' => 'Aucune version précédente pour le moment.',
         'date' => 'Date',
         'author' => 'Auteur',
