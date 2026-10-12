@@ -112,13 +112,13 @@ return [
         'comment' => 'Kliknij pozycję, aby skopiować jej kod Twig. Lista nadąża za zmianami w polu Dane przykładowe.',
         'sample_data_empty' => 'Brak zmiennych. Dodaj obiekt JSON w polu Dane przykładowe, aby zobaczyć tu jego klucze.',
         'globals' => 'Zmienne globalne',
-        'filters' => 'Filtry',
+        'helpers' => 'Filtry i funkcje',
         'copy' => 'Kopiuj :snippet',
         'copied' => 'Skopiowano do schowka.',
         'copy_failed' => 'Przeglądarka zablokowała kopiowanie. Kod jest zaznaczony w polu pod pozycją, naciśnij Ctrl+C (⌘C na Macu), aby go skopiować.',
         'manual_copy' => 'Kod Twig do skopiowania',
         'locale' => 'Język, w którym renderowany jest dokument.',
-        'filter' => [
+        'helper' => [
             'pdfasset' => 'Lokalna ścieżka pliku pluginu, odczytywana przez dompdf z dysku.',
             'app' => 'Bezwzględny URL ścieżki w projekcie.',
             'translate' => 'Przetłumaczony tekst klucza językowego.',
@@ -126,6 +126,21 @@ return [
             'date' => 'Formatuje datę.',
             'number_format' => 'Formatuje liczbę z miejscami dziesiętnymi i separatorami.',
             'nl2br' => 'Zamienia znaki nowej linii na <br>.',
+            'pdf_qr' => 'Obrazek kodu QR z tekstu lub linku, wymaga endroid/qr-code.',
+            'pdf_barcode' => 'Obrazek kodu kreskowego (EAN13, EAN8, UPCA, C128, C39), wymaga picqer/php-barcode-generator.',
+        ],
+    ],
+    'codes' => [
+        'missing_package' => ':function wymaga pakietu :package. Zainstaluj go poleceniem composer require :package.',
+        'invalid_argument' => 'Argument :argument funkcji :function ma nieprawidłową wartość.',
+        'qr_failed' => 'pdf_qr() nie może utworzyć kodu QR dla tego tekstu (:reason).',
+        'barcode_type' => ':type nie jest typem kodu kreskowego obsługiwanym przez pdf_barcode(). Użyj jednego z: :types.',
+        'barcode_failed' => 'pdf_barcode() nie może zakodować ":text" jako :type, :reason.',
+        'reason' => [
+            'check_digit' => 'cyfra kontrolna jest błędna',
+            'length' => 'długość nie pasuje do tego typu',
+            'character' => 'zawiera znak, którego ten typ nie potrafi zakodować',
+            'format' => 'format jest nieprawidłowy dla tego typu',
         ],
     ],
     'tab' => [

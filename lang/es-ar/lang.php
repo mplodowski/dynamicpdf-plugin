@@ -112,13 +112,13 @@ return [
         'comment' => 'Hacé clic en una entrada para copiar su código Twig. La lista sigue el campo Datos de ejemplo mientras lo editás.',
         'sample_data_empty' => 'Todavía no hay variables. Agregá un objeto JSON en Datos de ejemplo para ver acá sus claves.',
         'globals' => 'Variables globales',
-        'filters' => 'Filtros',
+        'helpers' => 'Filtros y funciones',
         'copy' => 'Copiar :snippet',
         'copied' => 'Copiado al portapapeles.',
         'copy_failed' => 'El navegador bloqueó la copia. El código está seleccionado en el campo debajo de la entrada, presioná Ctrl+C (⌘C en Mac) para copiarlo.',
         'manual_copy' => 'Código Twig para copiar',
         'locale' => 'Idioma en el que se genera el documento.',
-        'filter' => [
+        'helper' => [
             'pdfasset' => 'Ruta local de un archivo del plugin, que dompdf lee del disco.',
             'app' => 'URL absoluta de una ruta del proyecto.',
             'translate' => 'Texto traducido de una clave de idioma.',
@@ -126,6 +126,21 @@ return [
             'date' => 'Da formato a una fecha.',
             'number_format' => 'Da formato a un número con decimales y separadores.',
             'nl2br' => 'Convierte los saltos de línea en <br>.',
+            'pdf_qr' => 'Imagen de código QR de un texto o enlace, requiere endroid/qr-code.',
+            'pdf_barcode' => 'Imagen de código de barras (EAN13, EAN8, UPCA, C128, C39), requiere picqer/php-barcode-generator.',
+        ],
+    ],
+    'codes' => [
+        'missing_package' => ':function requiere el paquete :package. Instalalo con composer require :package.',
+        'invalid_argument' => 'El argumento :argument de :function tiene un valor no válido.',
+        'qr_failed' => 'pdf_qr() no puede crear un código QR para este texto (:reason).',
+        'barcode_type' => ':type no es un tipo de código de barras compatible con pdf_barcode(). Usá uno de :types.',
+        'barcode_failed' => 'pdf_barcode() no puede codificar ":text" como :type, :reason.',
+        'reason' => [
+            'check_digit' => 'el dígito verificador es incorrecto',
+            'length' => 'la longitud no corresponde a este tipo',
+            'character' => 'contiene un carácter que este tipo no puede codificar',
+            'format' => 'el formato no es válido para este tipo',
         ],
     ],
     'tab' => [

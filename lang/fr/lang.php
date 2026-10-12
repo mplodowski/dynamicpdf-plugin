@@ -112,13 +112,13 @@ return [
         'comment' => 'Cliquez sur une entrée pour copier son code Twig. La liste suit le champ Données d\'exemple pendant que vous le modifiez.',
         'sample_data_empty' => 'Aucune variable pour l\'instant. Ajoutez un objet JSON dans Données d\'exemple pour voir ses clés ici.',
         'globals' => 'Variables globales',
-        'filters' => 'Filtres',
+        'helpers' => 'Filtres et fonctions',
         'copy' => 'Copier :snippet',
         'copied' => 'Copié dans le presse-papiers.',
         'copy_failed' => 'Le navigateur a bloqué la copie. Le code est sélectionné dans le champ sous l\'entrée, appuyez sur Ctrl+C (⌘C sur Mac) pour le copier.',
         'manual_copy' => 'Code Twig à copier',
         'locale' => 'Langue dans laquelle le document est généré.',
-        'filter' => [
+        'helper' => [
             'pdfasset' => 'Chemin local d\'un fichier de plugin, lu par dompdf depuis le disque.',
             'app' => 'URL absolue d\'un chemin du projet.',
             'translate' => 'Texte traduit d\'une clé de langue.',
@@ -126,6 +126,21 @@ return [
             'date' => 'Formate une date.',
             'number_format' => 'Formate un nombre avec décimales et séparateurs.',
             'nl2br' => 'Transforme les retours à la ligne en <br>.',
+            'pdf_qr' => 'Image de code QR d\'un texte ou d\'un lien, nécessite endroid/qr-code.',
+            'pdf_barcode' => 'Image de code-barres (EAN13, EAN8, UPCA, C128, C39), nécessite picqer/php-barcode-generator.',
+        ],
+    ],
+    'codes' => [
+        'missing_package' => ':function nécessite le paquet :package. Installez-le avec composer require :package.',
+        'invalid_argument' => 'L\'argument :argument de :function a une valeur non valide.',
+        'qr_failed' => 'pdf_qr() ne peut pas créer de code QR pour ce texte (:reason).',
+        'barcode_type' => ':type n\'est pas un type de code-barres pris en charge par pdf_barcode(). Utilisez l\'un de :types.',
+        'barcode_failed' => 'pdf_barcode() ne peut pas encoder ":text" en :type, :reason.',
+        'reason' => [
+            'check_digit' => 'le chiffre de contrôle est faux',
+            'length' => 'la longueur ne convient pas à ce type',
+            'character' => 'il contient un caractère que ce type ne peut pas encoder',
+            'format' => 'le format n\'est pas valide pour ce type',
         ],
     ],
     'tab' => [

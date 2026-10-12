@@ -24,6 +24,9 @@ parameters:
         - ../../../vendor/autoload.php
         - phpstan-bootstrap.php
 
+    scanFiles:
+        - phpstan-picqer.stub
+
     scanDirectories:
         - ../../../modules
         - ../../../vendor/october/rain

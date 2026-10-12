@@ -112,13 +112,13 @@ return [
         'comment' => 'Klik op een item om de Twig-code ervan te kopiëren. De lijst volgt het veld Voorbeeldgegevens terwijl u het bewerkt.',
         'sample_data_empty' => 'Nog geen variabelen. Voeg een JSON-object toe aan Voorbeeldgegevens om de sleutels hier te zien.',
         'globals' => 'Globale variabelen',
-        'filters' => 'Filters',
+        'helpers' => 'Filters en functies',
         'copy' => ':snippet kopiëren',
         'copied' => 'Gekopieerd naar het klembord.',
         'copy_failed' => 'De browser heeft het kopiëren geblokkeerd. De code is geselecteerd in het veld onder het item, druk op Ctrl+C (⌘C op een Mac) om hem te kopiëren.',
         'manual_copy' => 'Twig-code om te kopiëren',
         'locale' => 'Taal waarin het document wordt gegenereerd.',
-        'filter' => [
+        'helper' => [
             'pdfasset' => 'Lokaal pad van een pluginbestand, dat dompdf van de schijf leest.',
             'app' => 'Absolute URL van een pad in het project.',
             'translate' => 'Vertaalde tekst van een taalsleutel.',
@@ -126,6 +126,21 @@ return [
             'date' => 'Formatteert een datum.',
             'number_format' => 'Formatteert een getal met decimalen en scheidingstekens.',
             'nl2br' => 'Zet regeleinden om in <br>.',
+            'pdf_qr' => 'QR-codeafbeelding van een tekst of link, vereist endroid/qr-code.',
+            'pdf_barcode' => 'Streepjescodeafbeelding (EAN13, EAN8, UPCA, C128, C39), vereist picqer/php-barcode-generator.',
+        ],
+    ],
+    'codes' => [
+        'missing_package' => ':function vereist het pakket :package. Installeer het met composer require :package.',
+        'invalid_argument' => 'Het argument :argument van :function heeft een ongeldige waarde.',
+        'qr_failed' => 'pdf_qr() kan voor deze tekst geen QR-code maken (:reason).',
+        'barcode_type' => ':type is geen streepjescodetype dat pdf_barcode() ondersteunt. Gebruik een van :types.',
+        'barcode_failed' => 'pdf_barcode() kan ":text" niet als :type coderen, :reason.',
+        'reason' => [
+            'check_digit' => 'het controlecijfer is onjuist',
+            'length' => 'de lengte past niet bij dit type',
+            'character' => 'het bevat een teken dat dit type niet kan coderen',
+            'format' => 'het formaat is ongeldig voor dit type',
         ],
     ],
     'tab' => [

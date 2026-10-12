@@ -112,13 +112,13 @@ return [
         'comment' => 'Fai clic su una voce per copiarne il codice Twig. L\'elenco segue il campo Dati di esempio mentre lo modifichi.',
         'sample_data_empty' => 'Ancora nessuna variabile. Aggiungi un oggetto JSON in Dati di esempio per vederne qui le chiavi.',
         'globals' => 'Variabili globali',
-        'filters' => 'Filtri',
+        'helpers' => 'Filtri e funzioni',
         'copy' => 'Copia :snippet',
         'copied' => 'Copiato negli appunti.',
         'copy_failed' => 'Il browser ha bloccato la copia. Il codice è selezionato nel campo sotto la voce, premi Ctrl+C (⌘C su Mac) per copiarlo.',
         'manual_copy' => 'Codice Twig da copiare',
         'locale' => 'Lingua in cui viene generato il documento.',
-        'filter' => [
+        'helper' => [
             'pdfasset' => 'Percorso locale di un file del plugin, letto da dompdf dal disco.',
             'app' => 'URL assoluto di un percorso del progetto.',
             'translate' => 'Testo tradotto di una chiave di lingua.',
@@ -126,6 +126,21 @@ return [
             'date' => 'Formatta una data.',
             'number_format' => 'Formatta un numero con decimali e separatori.',
             'nl2br' => 'Converte gli a capo in <br>.',
+            'pdf_qr' => 'Immagine del codice QR di un testo o link, richiede endroid/qr-code.',
+            'pdf_barcode' => 'Immagine del codice a barre (EAN13, EAN8, UPCA, C128, C39), richiede picqer/php-barcode-generator.',
+        ],
+    ],
+    'codes' => [
+        'missing_package' => ':function richiede il pacchetto :package. Installalo con composer require :package.',
+        'invalid_argument' => 'L\'argomento :argument di :function ha un valore non valido.',
+        'qr_failed' => 'pdf_qr() non può creare un codice QR per questo testo (:reason).',
+        'barcode_type' => ':type non è un tipo di codice a barre supportato da pdf_barcode(). Usa uno tra :types.',
+        'barcode_failed' => 'pdf_barcode() non può codificare ":text" come :type, :reason.',
+        'reason' => [
+            'check_digit' => 'la cifra di controllo è errata',
+            'length' => 'la lunghezza non è adatta a questo tipo',
+            'character' => 'contiene un carattere che questo tipo non può codificare',
+            'format' => 'il formato non è valido per questo tipo',
         ],
     ],
     'tab' => [

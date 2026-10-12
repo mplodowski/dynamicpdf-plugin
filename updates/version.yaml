@@ -69,6 +69,7 @@ v8.1.0:
     - afterRender listeners receive the HTML of the previous one, their changes add up.
     - attachment() returns the PDF as an e-mail attachment.
     - History tab keeps the last 20 versions of templates and layouts, Restore brings one back.
+    - New pdf_qr() and pdf_barcode() Twig functions for QR codes and barcodes, with optional packages.
     - 20260907_0001_add_sample_data_to_templates_table.php
     - 20260907_0002_add_unique_code_indexes.php
     - 20260930_0001_unlock_edited_layouts.php

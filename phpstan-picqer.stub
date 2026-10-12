@@ -1,0 +1,19 @@
+<?php
+
+namespace Picqer\Barcode;
+
+/** picqer/php-barcode-generator is only suggested and not installed here; these mirror its v3 signatures. */
+class BarcodeGeneratorPNG
+{
+    public function useGd(): void {}
+
+    /**
+     * @param  array{int, int, int}  $foregroundColor
+     */
+    public function getBarcode(string $barcode, string $type, int $widthFactor = 2, int $height = 30, array $foregroundColor = [0, 0, 0]): string {}
+}
+
+class BarcodeGeneratorSVG
+{
+    public function getBarcode(string $barcode, string $type, float $widthFactor = 2, float $height = 30, string $foregroundColor = 'black'): string {}
+}
