@@ -1,5 +1,6 @@
 <?php
 
+use Endroid\QrCode\QrCode;
 use Illuminate\Support\Facades\Artisan;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use Renatio\DynamicPDF\Controllers\Templates;
@@ -28,7 +29,14 @@ describe('pdf_qr()', function () {
         expect(fn () => app('dynamicpdf')->parseTemplate($template))
             ->toThrow(RuntimeError::class, 'pdf_qr() cannot create a QR code for this text');
     });
-});
+
+    it('names the argument that is out of range', function () {
+        $template = $this->createTemplate(['content_html' => "{{ pdf_qr('https://example.com', 0) }}"]);
+
+        expect(fn () => app('dynamicpdf')->parseTemplate($template))
+            ->toThrow(RuntimeError::class, 'The size argument of pdf_qr() has an invalid value');
+    });
+})->skip(! class_exists(QrCode::class), 'endroid/qr-code is not installed');
 
 describe('pdf_barcode()', function () {
     it('names the package to install when it is missing', function () {

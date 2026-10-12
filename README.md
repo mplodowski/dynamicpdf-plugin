@@ -601,10 +601,11 @@ composer require endroid/qr-code picqer/php-barcode-generator
 ```
 
 Barcode types are `EAN13`, `EAN8`, `UPCA`, `C128` and `C39`, available as constants of
-`Renatio\DynamicPDF\Classes\Codes`. Arguments are positional. A missing package, an unsupported type or text the code
-cannot hold (a wrong EAN-13 check digit, a non-ASCII character, too much text for a QR code) stops the render with a
-message saying what to fix, which the backend preview shows. Without the GD extension (or Imagick for barcodes) the
-code is drawn as an SVG data URI instead. `dynamicpdf:check` reports whether each package is installed.
+`Renatio\DynamicPDF\Classes\Codes`. Arguments are positional. A missing package, an unsupported type, a size that is
+not a positive whole number or text the code cannot hold (a wrong EAN-13 check digit, a non-ASCII character, too much
+text for a QR code) stops the render with a message saying what to fix, which the backend preview shows. Without the
+GD extension, which dompdf needs for PNG images, the code is drawn as an SVG data URI instead. `dynamicpdf:check`
+reports whether each package is installed and supported.
 
 ### Attach the PDF to a model
 

@@ -112,13 +112,13 @@ return [
         'comment' => 'Kliknij pozycję, aby skopiować jej kod Twig. Lista nadąża za zmianami w polu Dane przykładowe.',
         'sample_data_empty' => 'Brak zmiennych. Dodaj obiekt JSON w polu Dane przykładowe, aby zobaczyć tu jego klucze.',
         'globals' => 'Zmienne globalne',
-        'filters' => 'Filtry i funkcje',
+        'helpers' => 'Filtry i funkcje',
         'copy' => 'Kopiuj :snippet',
         'copied' => 'Skopiowano do schowka.',
         'copy_failed' => 'Przeglądarka zablokowała kopiowanie. Kod jest zaznaczony w polu pod pozycją, naciśnij Ctrl+C (⌘C na Macu), aby go skopiować.',
         'manual_copy' => 'Kod Twig do skopiowania',
         'locale' => 'Język, w którym renderowany jest dokument.',
-        'filter' => [
+        'helper' => [
             'pdfasset' => 'Lokalna ścieżka pliku pluginu, odczytywana przez dompdf z dysku.',
             'app' => 'Bezwzględny URL ścieżki w projekcie.',
             'translate' => 'Przetłumaczony tekst klucza językowego.',
@@ -132,6 +132,7 @@ return [
     ],
     'codes' => [
         'missing_package' => ':function wymaga pakietu :package. Zainstaluj go poleceniem composer require :package.',
+        'invalid_argument' => 'Argument :argument funkcji :function ma nieprawidłową wartość.',
         'qr_failed' => 'pdf_qr() nie może utworzyć kodu QR dla tego tekstu (:reason).',
         'barcode_type' => ':type nie jest typem kodu kreskowego obsługiwanym przez pdf_barcode(). Użyj jednego z: :types.',
         'barcode_failed' => 'pdf_barcode() nie może zakodować ":text" jako :type, :reason.',

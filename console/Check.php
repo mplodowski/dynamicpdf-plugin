@@ -46,7 +46,7 @@ class Check extends Command
         $this->views('Registered templates', PDFManager::instance()->listRegisteredTemplates());
 
         foreach (Codes::PACKAGES as $function => $package) {
-            $this->package($function, $package);
+            $this->package($function, $package['package'], $package['class'], $package['major']);
         }
 
         $this->newLine();
@@ -110,17 +110,25 @@ class Check extends Command
         $this->components->twoColumnDetail($label, self::PASS . " {$path}");
     }
 
-    protected function package(string $function, string $package): void
+    protected function package(string $function, string $package, string $class, int $major): void
     {
         $label = "{$function} ({$package})";
 
-        if (! InstalledVersions::isInstalled($package)) {
+        if (! class_exists($class)) {
             $this->components->twoColumnDetail($label, self::INFO . " not installed; run composer require {$package} to use {$function}");
 
             return;
         }
 
-        $this->components->twoColumnDetail($label, self::PASS . ' ' . InstalledVersions::getPrettyVersion($package));
+        $version = InstalledVersions::isInstalled($package) ? InstalledVersions::getPrettyVersion($package) : null;
+
+        if ($version !== null && preg_match('/^v?(\d+)\./', $version, $match) && (int) $match[1] < $major) {
+            $this->components->twoColumnDetail($label, self::WARN . " {$version} is not supported; {$function} needs version {$major} or newer");
+
+            return;
+        }
+
+        $this->components->twoColumnDetail($label, self::PASS . ($version !== null ? " {$version}" : ' installed'));
     }
 
     protected function nearestExistingParent(string $path): string

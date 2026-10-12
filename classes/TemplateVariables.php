@@ -13,7 +13,7 @@ class TemplateVariables
 {
     protected const IDENTIFIER = '/^[A-Za-z_]\w*$/';
 
-    protected const FILTERS = [
+    protected const HELPERS = [
         '|pdfasset' => ['pdfasset', "{{ 'plugins/acme/shop/assets/img/logo.png'|pdfasset }}"],
         '|app' => ['app', "{{ 'storage/app/media/logo.png'|app }}"],
         '|_' => ['translate', "{{ 'acme.shop::lang.invoice.title'|_ }}"],
@@ -39,7 +39,7 @@ class TemplateVariables
     protected array $taken = [];
 
     /**
-     * @return array{sample: list<Entry>|null, globals: list<Entry>, filters: list<Entry>}
+     * @return array{sample: list<Entry>|null, globals: list<Entry>, helpers: list<Entry>}
      */
     public function forTemplate(Template $template): array
     {
@@ -58,7 +58,7 @@ class TemplateVariables
         return [
             'sample' => $this->sampleEntries($sample),
             'globals' => $this->globalEntries($globals),
-            'filters' => $this->filterEntries(),
+            'helpers' => $this->helperEntries(),
         ];
     }
 
@@ -111,12 +111,12 @@ class TemplateVariables
     /**
      * @return list<Entry>
      */
-    protected function filterEntries(): array
+    protected function helperEntries(): array
     {
         $entries = [];
 
-        foreach (self::FILTERS as $label => [$langKey, $snippet]) {
-            $entries[] = $this->entry($label, $snippet, trans("renatio.dynamicpdf::lang.variables.filter.{$langKey}"));
+        foreach (self::HELPERS as $label => [$langKey, $snippet]) {
+            $entries[] = $this->entry($label, $snippet, trans("renatio.dynamicpdf::lang.variables.helper.{$langKey}"));
         }
 
         return $entries;

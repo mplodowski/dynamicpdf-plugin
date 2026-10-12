@@ -112,13 +112,13 @@ return [
         'comment' => 'Kattintson egy elemre a Twig-kódja másolásához. A lista szerkesztés közben követi a Mintaadatok mezőt.',
         'sample_data_empty' => 'Még nincsenek változók. Adjon meg egy JSON-objektumot a Mintaadatok mezőben, hogy itt lássa a kulcsait.',
         'globals' => 'Globális változók',
-        'filters' => 'Szűrők és függvények',
+        'helpers' => 'Szűrők és függvények',
         'copy' => ':snippet másolása',
         'copied' => 'Vágólapra másolva.',
         'copy_failed' => 'A böngésző letiltotta a másolást. A kód ki van jelölve az elem alatti mezőben, a másoláshoz nyomja meg a Ctrl+C (Macen ⌘C) billentyűket.',
         'manual_copy' => 'Másolandó Twig-kód',
         'locale' => 'A dokumentum megjelenítésének nyelve.',
-        'filter' => [
+        'helper' => [
             'pdfasset' => 'Egy bővítményfájl helyi útvonala, amelyet a dompdf a lemezről olvas.',
             'app' => 'Egy projektbeli útvonal abszolút URL-je.',
             'translate' => 'Egy nyelvi kulcs lefordított szövege.',
@@ -132,6 +132,7 @@ return [
     ],
     'codes' => [
         'missing_package' => 'A(z) :function a(z) :package csomagot igényli. Telepítse a composer require :package paranccsal.',
+        'invalid_argument' => 'A(z) :function :argument argumentumának értéke érvénytelen.',
         'qr_failed' => 'A pdf_qr() nem tud QR-kódot készíteni ebből a szövegből (:reason).',
         'barcode_type' => 'A(z) :type nem a pdf_barcode() által támogatott vonalkódtípus. Használja ezek egyikét: :types.',
         'barcode_failed' => 'A pdf_barcode() nem tudja :type típusként kódolni ezt: ":text", :reason.',

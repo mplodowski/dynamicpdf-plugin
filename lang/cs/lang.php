@@ -112,13 +112,13 @@ return [
         'comment' => 'Kliknutím na položku zkopírujete její kód Twig. Seznam se průběžně řídí polem Ukázková data.',
         'sample_data_empty' => 'Zatím žádné proměnné. Přidejte do pole Ukázková data objekt JSON, aby se zde zobrazily jeho klíče.',
         'globals' => 'Globální proměnné',
-        'filters' => 'Filtry a funkce',
+        'helpers' => 'Filtry a funkce',
         'copy' => 'Kopírovat :snippet',
         'copied' => 'Zkopírováno do schránky.',
         'copy_failed' => 'Prohlížeč kopírování zablokoval. Kód je označen v poli pod položkou, zkopírujte jej stisknutím Ctrl+C (⌘C na Macu).',
         'manual_copy' => 'Kód Twig ke zkopírování',
         'locale' => 'Jazyk, ve kterém se dokument vykresluje.',
-        'filter' => [
+        'helper' => [
             'pdfasset' => 'Místní cesta k souboru pluginu, kterou dompdf čte z disku.',
             'app' => 'Absolutní URL cesty v projektu.',
             'translate' => 'Přeložený text jazykového klíče.',
@@ -132,6 +132,7 @@ return [
     ],
     'codes' => [
         'missing_package' => ':function vyžaduje balíček :package. Nainstalujte ho příkazem composer require :package.',
+        'invalid_argument' => 'Argument :argument funkce :function má neplatnou hodnotu.',
         'qr_failed' => 'pdf_qr() nemůže vytvořit QR kód pro tento text (:reason).',
         'barcode_type' => ':type není typ čárového kódu, který pdf_barcode() podporuje. Použijte jeden z typů :types.',
         'barcode_failed' => 'pdf_barcode() nemůže zakódovat ":text" jako :type, :reason.',

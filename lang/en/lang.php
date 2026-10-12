@@ -112,13 +112,13 @@ return [
         'comment' => 'Click an entry to copy its Twig code. The list follows the Sample data field as you edit it.',
         'sample_data_empty' => 'No variables yet. Add a JSON object to Sample data to list its keys here.',
         'globals' => 'Global variables',
-        'filters' => 'Filters and functions',
+        'helpers' => 'Filters and functions',
         'copy' => 'Copy :snippet',
         'copied' => 'Copied to the clipboard.',
         'copy_failed' => 'The browser blocked copying. The code is selected in the field below the entry, press Ctrl+C (⌘C on a Mac) to copy it.',
         'manual_copy' => 'Twig code to copy',
         'locale' => 'Language the document is rendered in.',
-        'filter' => [
+        'helper' => [
             'pdfasset' => 'Local path of a plugin file, read by dompdf from disk.',
             'app' => 'Absolute URL of a path in the project.',
             'translate' => 'Translated text of a language key.',
@@ -132,6 +132,7 @@ return [
     ],
     'codes' => [
         'missing_package' => ':function needs the :package package. Install it with composer require :package.',
+        'invalid_argument' => 'The :argument argument of :function has an invalid value.',
         'qr_failed' => 'pdf_qr() cannot create a QR code for this text (:reason).',
         'barcode_type' => ':type is not a barcode type pdf_barcode() supports. Use one of :types.',
         'barcode_failed' => 'pdf_barcode() cannot encode ":text" as :type, :reason.',

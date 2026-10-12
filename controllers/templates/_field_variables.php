@@ -3,7 +3,7 @@
     $groups = [
         'sample' => 'renatio.dynamicpdf::lang.templates.sample_data',
         'globals' => 'renatio.dynamicpdf::lang.variables.globals',
-        'filters' => 'renatio.dynamicpdf::lang.variables.filters',
+        'helpers' => 'renatio.dynamicpdf::lang.variables.helpers',
     ];
 ?>
 <div data-control="dynamicpdf-variables"
