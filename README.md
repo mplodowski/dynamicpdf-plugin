@@ -675,6 +675,48 @@ public function onDownload()
 }
 ```
 
+### Download a record's PDF in the backend
+
+A "Download invoice" button on a backend form needs an AJAX handler that checks a permission, loads the record and
+renders the template in the document's language. In the controller of your plugin:
+
+```php
+use October\Rain\Exception\ForbiddenException;
+use Renatio\DynamicPDF\Classes\PDF;
+
+public function update_onDownloadInvoice($recordId = null)
+{
+    if (! $this->user->hasAccess('acme.shop.orders.invoice')) {
+        throw new ForbiddenException;
+    }
+
+    $order = $this->formFindModelObject($recordId);
+
+    return PDF::loadTemplate('acme.shop::pdf.invoice', ['order' => $order], locale: $order->locale ?: null)
+        ->download('invoice-' . str_slug($order->number) . '.pdf');
+}
+```
+
+And the button in the form toolbar (`controllers/orders/_form_buttons.php` or `update.php`):
+
+```php
+<?= Ui::ajaxButton(label: 'Download invoice', handler: 'onDownloadInvoice', class: 'btn-default') ?>
+```
+
+`download()` works for an AJAX handler (see above), and `formFindModelObject()` already refuses a record the form
+cannot load. Register the permission in your `Plugin::registerPermissions()`.
+
+### Other rendering engines
+
+dompdf supports CSS 2.1 and parts of CSS 3, without flexbox or grid. If a document needs them, keep editing it in the
+backend and pass the HTML from `PDF::parseTemplate()` to your own tool, such as Gotenberg or Browsershot:
+
+```php
+use Renatio\DynamicPDF\Models\Template;
+
+$html = PDF::parseTemplate(Template::byCode('acme.shop::pdf.invoice'), ['order' => $order]);
+```
+
 ### Page numbers
 
 The simplest way is the layout: pick a position under *Options > Page numbers* in the layout form (or set
