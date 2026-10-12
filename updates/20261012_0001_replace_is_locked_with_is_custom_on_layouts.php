@@ -11,19 +11,19 @@ return new class extends Migration
 
     public function up(): void
     {
-        $this->invertColumn('is_locked', 'is_custom', true);
+        $this->invertColumn('is_locked', 'is_custom');
     }
 
     public function down(): void
     {
-        $this->invertColumn('is_custom', 'is_locked', false);
+        $this->invertColumn('is_custom', 'is_locked');
     }
 
-    protected function invertColumn(string $from, string $to, bool $default): void
+    protected function invertColumn(string $from, string $to): void
     {
         if (! Schema::hasColumn(self::LAYOUTS, $to)) {
-            Schema::table(self::LAYOUTS, function (Blueprint $table) use ($to, $default) {
-                $table->boolean($to)->default($default);
+            Schema::table(self::LAYOUTS, function (Blueprint $table) use ($to) {
+                $table->boolean($to)->default(false);
             });
         }
 

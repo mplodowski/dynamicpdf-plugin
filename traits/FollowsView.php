@@ -71,13 +71,9 @@ trait FollowsView
         });
     }
 
-    /**
-     * A row read before the migration that adds is_custom ran is treated as customised, so its
-     * stored content is never replaced by the view.
-     */
     public function isCustomised(): bool
     {
-        return $this->exists && (bool) ($this->attributes['is_custom'] ?? true);
+        return $this->exists && (bool) $this->is_custom;
     }
 
     public function markAsCustomised(): void

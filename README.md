@@ -246,14 +246,13 @@ The method should return an array of PDF view names.
 Registered views are synchronized to the database when a *PDF Templates* page (the lists or a template or layout form)
 is displayed and when `php artisan dynamicpdf:sync` or `php artisan dynamicpdf:demo` runs, not on every request: the
 AJAX requests of those pages (searching, sorting and paging a list, saving a form) and the preview pages do not
-synchronize.
-Synchronization creates the missing templates and layouts, keeps the templates that are no longer registered (for
-example while their plugin is disabled, so their translations and sample data survive) and writes changed view files
-back to the rows of templates and layouts that are not customized, so list search and sort work
-on the current values. Customized templates and layouts are left alone. A code whose view
-file is missing or cannot be read is skipped and written to the application log once per process; a stored template or
-layout whose view file went missing or parses to no content, and a template whose layout code resolves to nothing, keep
-their stored content. Until a registered view is synchronized, `PDF::loadTemplate()` renders it straight from the file.
+synchronize. Synchronization creates the missing templates and layouts, keeps the templates that are no longer
+registered (for example while their plugin is disabled, so their translations and sample data survive) and writes
+changed view files back to the rows of templates and layouts that are not customized, so list search and sort work on
+the current values. Customized templates and layouts are left alone. A code whose view file is missing or cannot be read
+is skipped and written to the application log once per process; a stored template or layout whose view file went missing
+or parses to no content, and a template whose layout code resolves to nothing, keep their stored content. Until a
+registered view is synchronized, `PDF::loadTemplate()` renders it straight from the file.
 
 Like templates, PDF layouts can be registered by adding the `registerPDFLayouts` method of the Plugin registration
 class (`Plugin.php`).
@@ -349,18 +348,18 @@ stripped from what a listener returns.
 
 PDF templates and layouts can be accessed in the backend area via *Settings > PDF > PDF Templates*.
 
-Both lists mark templates and layouts edited in the backend as *Customized* (they no longer follow their view file);
-the layout list also counts the templates using each layout
-(*Used by*). The HTML and PDF preview buttons of the form show the current, unsaved form values in a popup without
-saving them, and the list opens the PDF preview of the saved record, all with the **Preview** permission. A template's *Sample data* (a JSON object on the *Options* tab, nested objects and lists included) is passed
-to both previews, so `{{ variables }}` render with realistic values. A template becomes *Customized* only when a value
-the view file provides is changed; editing the sample data alone keeps it view-driven. Likewise a layout becomes
-*Customized* once its name, markup or CSS is changed, and its localized view files are then no longer used. Translated
-fields saved with another site selected do not change it. *Reset to Default* restores the record from its view file
-and clears *Customized*. The *Actions* column of both lists opens the PDF preview and duplicates, resets or deletes the
-record. A template or layout registered by a plugin view offers *Reset to Default* instead of *Delete*, and a layout
-used by a template cannot be deleted. *Duplicate* creates an editable copy with a `_copy` code (`_copy2` and so on when
-that code is taken); the copy is *Customized*.
+Both lists mark templates and layouts edited in the backend as *Customized* (they no longer follow their view file); the
+layout list also counts the templates using each layout (*Used by*). The HTML and PDF preview buttons of the form show
+the current, unsaved form values in a popup without saving them, and the list opens the PDF preview of the saved record,
+all with the **Preview** permission. A template's *Sample data* (a JSON object on the *Options* tab, nested objects and
+lists included) is passed to both previews, so `{{ variables }}` render with realistic values. A template becomes
+*Customized* only when a value the view file provides is changed; editing the sample data alone keeps it view-driven.
+Likewise a layout becomes *Customized* once its name, markup or CSS is changed, and its localized view files are then no
+longer used. Translated fields saved with another site selected do not change it. *Reset to Default* restores the record
+from its view file and clears *Customized*. The *Actions* column of both lists opens the PDF preview and duplicates,
+resets or deletes the record. A template or layout registered by a plugin view offers *Reset to Default* instead of
+*Delete*, and a layout used by a template cannot be deleted. *Duplicate* creates an editable copy with a `_copy` code
+(`_copy2` and so on when that code is taken); the copy is *Customized*.
 
 Layouts define the PDF scaffold, that is everything that repeats on a PDF, such as a header and footer. Each layout has
 unique code, optional background image, HTML content and CSS/LESS content. Not all CSS properties are supported, so
@@ -725,10 +724,10 @@ php artisan dynamicpdf:render acme.shop::pdf.invoice --data=@order.json --locale
 
 ### Export and import
 
-`php artisan dynamicpdf:export` writes templates and layouts to one JSON file: content, paper settings, sample data,
-the *Customized* flag, page number settings, every stored translation and the layout background image (embedded as
-base64). Pass codes to export only those; a template always brings its layout along. Without `--path` the file goes
-to `storage/app/dynamicpdf-export-<date>.json`, and `--path=-` prints it.
+`php artisan dynamicpdf:export` writes templates and layouts to one JSON file: content, paper settings, sample data, the
+*Customized* flag, page number settings, every stored translation and the layout background image (embedded as base64).
+Pass codes to export only those; a template always brings its layout along. Without `--path` the file goes to
+`storage/app/dynamicpdf-export-<date>.json`, and `--path=-` prints it.
 
 ```bash
 php artisan dynamicpdf:export
@@ -746,12 +745,12 @@ php artisan dynamicpdf:import pdf-templates.json
 php artisan dynamicpdf:import pdf-templates.json --force
 ```
 
-A template moved this way together with its layout renders identically on the target. A record that is not *Customized* stays so
-only where the target registers the same view, so the record keeps following that view file; a record whose view the
-target does not register is imported as customized, so the synchronization never deletes or rewrites it. Background
-images must be JPG, PNG, GIF or WebP. A layout whose background file is missing on disk is exported without it and
-listed in a warning. Translations for the target's default language are
-not imported, because they would overwrite the default content.
+A template moved this way together with its layout renders identically on the target. A record that is not *Customized*
+stays so only where the target registers the same view, so the record keeps following that view file; a record whose
+view the target does not register is imported as customized, so the synchronization never deletes or rewrites it.
+Background images must be JPG, PNG, GIF or WebP. A layout whose background file is missing on disk is exported without
+it and listed in a warning. Translations for the target's default language are not imported, because they would
+overwrite the default content.
 
 ## Examples
 
@@ -867,9 +866,9 @@ translation. Per-language background images are not supported.
 
 With the feature above turned on, a registered view can ship localized siblings, used when a `locale` argument is
 passed: `pdf.invoice` renders from `pdf.de.invoice`, `pdf.layouts.default` from `pdf.layouts.de.default`. Without the
-feature or the argument the siblings are ignored. The locale chain is followed, so `de-AT` takes `pdf.de-AT.invoice`
-and falls back to `pdf.de.invoice`. The sibling is read for that render only and never changes the stored row; a
-customized template or layout or a stored translation wins over it.
+feature or the argument the siblings are ignored. The locale chain is followed, so `de-AT` takes `pdf.de-AT.invoice` and
+falls back to `pdf.de.invoice`. The sibling is read for that render only and never changes the stored row; a customized
+template or layout or a stored translation wins over it.
 
 ```text
 plugins/acme/shop/views/pdf/

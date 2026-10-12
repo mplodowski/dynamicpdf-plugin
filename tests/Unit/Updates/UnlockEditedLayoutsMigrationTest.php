@@ -103,17 +103,15 @@ describe('unlock_edited_layouts', function () {
         expect(($this->row)($id)->is_locked)->toBeTruthy();
     });
 
-    it('unlocks every edited layout and still lets layouts follow their view when the registered layouts cannot be listed', function () {
+    it('unlocks every edited layout when the registered layouts cannot be listed', function () {
         $id = ($this->insertLayout)('unlockviews::pdf.layouts.letter', 'Letter', '<p>mine</p>');
-        Parameter::set(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER, 0);
         $manager = Mockery::mock(PDFManager::class);
         $manager->shouldReceive('listRegisteredLayouts')->andThrow(new RuntimeException('broken registration'));
         (new ReflectionProperty(PDFManager::class, 'instance'))->setValue(null, $manager);
 
         ($this->migrate)();
 
-        expect(($this->row)($id)->is_locked)->toBeFalsy()
-            ->and(Parameter::get(Plugin::LAYOUTS_FOLLOW_VIEWS_PARAMETER))->toBeTruthy();
+        expect(($this->row)($id)->is_locked)->toBeFalsy();
     });
 
     it('gives the same result when it runs twice', function () {

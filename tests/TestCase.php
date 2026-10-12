@@ -184,6 +184,7 @@ abstract class TestCase extends OctoberPestTestCase
             'code' => 'test.layout.' . uniqid(),
             'content_html' => '<html><body>{{ content_html }}</body></html>',
             'content_css' => '',
+            'is_custom' => true,
         ], $attributes));
     }
 
