@@ -1,8 +1,9 @@
 <?php
     $unchange = "$(this).trigger('unchange.oc.changeMonitor')";
-    $confirmUnsaved = fn (string $message): string => e("var form = $(this).closest('[data-change-monitor]');"
-        . " if (!form.hasClass('oc-data-changed')) return;"
-        . ' oc.confirmPromise(' . json_encode($message) . ')'
+    $confirmBeforeRequest = fn (string $unsavedMessage, ?string $savedMessage = null): string => e("var form = $(this).closest('[data-change-monitor]');"
+        . " var message = form.hasClass('oc-data-changed') ? " . json_encode($unsavedMessage) . ' : ' . json_encode($savedMessage) . ';'
+        . ' if (!message) return;'
+        . ' oc.confirmPromise(message)'
         . ".then(() => oc.request(this, null, { beforeSendFunc: null, beforeUpdateFunc: () => { {$unchange} } }), () => {});"
         . ' return false;');
 ?>
@@ -67,17 +68,20 @@
     <?php endif ?>
 
     <?php if ($formModel->exists): ?>
+        <?php $name = ['name' => $formModel->{$formModel->labelAttribute()}] ?>
         <?php if ($this->formCheckPermission('modelCreate')): ?>
             <?= Ui::ajaxButton(
                 label: trans('renatio.dynamicpdf::lang.templates.duplicate'),
                 handler: 'onDuplicate',
                 class: 'btn-default',
-                dataRequestBeforeSend: $confirmUnsaved(trans('renatio.dynamicpdf::lang.templates.duplicate_unsaved')),
+                dataRequestBeforeSend: $confirmBeforeRequest(
+                    trans('renatio.dynamicpdf::lang.templates.duplicate_unsaved'),
+                    trans('renatio.dynamicpdf::lang.templates.duplicate_confirm', $name)
+                ),
                 dataRequestMessage: trans('renatio.dynamicpdf::lang.templates.duplicating')
             ) ?>
         <?php endif ?>
 
-        <?php $name = ['name' => $formModel->{$formModel->labelAttribute()}] ?>
         <?php $usedBy = $formModel instanceof Renatio\DynamicPDF\Models\Layout && ! $formModel->followsView() ? $formModel->usedByCount() : 0 ?>
         <?php if ($formModel->followsView()): ?>
             <?php if ($formModel->isCustomised() && $this->formCheckPermission('modelUpdate')): ?>
@@ -127,7 +131,7 @@
             class: 'btn-link p-0',
             dataBrowserRedirectBack: true,
             dataRequestData: 'close: true',
-            dataRequestBeforeSend: $confirmUnsaved(trans('renatio.dynamicpdf::lang.templates.cancel_unsaved')),
+            dataRequestBeforeSend: $confirmBeforeRequest(trans('renatio.dynamicpdf::lang.templates.cancel_unsaved')),
             dataRequestMessage: trans('backend::lang.list.loading')
         ) ?>
     </span>

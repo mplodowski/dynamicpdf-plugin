@@ -19,6 +19,15 @@ describe('List actions', function () {
         expect((string) $response->json('__ajax.redirect'))->toContain('templates/update/' . $copy->id);
     });
 
+    it('asks before duplicating from the list and names the record', function () {
+        $this->createTemplate(['title' => 'Invoice']);
+        $this->createLayout(['name' => 'Letterhead']);
+        $confirm = fn (string $name): string => 'data-request-confirm="' . e(trans('renatio.dynamicpdf::lang.templates.duplicate_confirm', ['name' => $name])) . '"';
+
+        expect((new Templates)->run('index', ['templates'])->getContent())->toContain($confirm('Invoice'))
+            ->and((new Templates)->run('index', ['layouts'])->getContent())->toContain($confirm('Letterhead'));
+    });
+
     it('treats a non-string list definition as the templates list', function () {
         $template = $this->createTemplate(['code' => 'acme::pdf.invoice']);
 

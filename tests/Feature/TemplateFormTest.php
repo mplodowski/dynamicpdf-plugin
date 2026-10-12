@@ -45,14 +45,15 @@ describe('Form buttons', function () {
             ->toContain('data-handler="onPreviewUnsaved"');
     })->with(['templates', 'layouts']);
 
-    it('asks before Cancel or Duplicate leaves unsaved changes', function (string $definition) {
+    it('asks before Cancel or Duplicate leaves unsaved changes and always before Duplicate', function (string $definition) {
         actingAsPdfManager();
-        $record = $definition === 'templates' ? $this->createTemplate() : $this->createLayout();
-        $confirm = fn (string $key): string => e('oc.confirmPromise(' . json_encode(trans("renatio.dynamicpdf::lang.templates.{$key}")) . ')');
+        $record = $definition === 'templates' ? $this->createTemplate(['title' => 'Invoice']) : $this->createLayout(['name' => 'Invoice']);
+        $message = fn (string $key, array $replace = []): string => (string) json_encode(trans("renatio.dynamicpdf::lang.templates.{$key}", $replace));
+        $branches = fn (string $unsaved, string $saved): string => e("form.hasClass('oc-data-changed') ? {$unsaved} : {$saved}; if (!message) return; oc.confirmPromise(message)");
 
         expect($this->get(Backend::url("renatio/dynamicpdf/{$definition}/update/{$record->id}"))->assertOk()->getContent())
-            ->toContain($confirm('cancel_unsaved'))
-            ->toContain($confirm('duplicate_unsaved'));
+            ->toContain($branches($message('cancel_unsaved'), 'null'))
+            ->toContain($branches($message('duplicate_unsaved'), $message('duplicate_confirm', ['name' => 'Invoice'])));
     })->with(['templates', 'layouts']);
 
     it('speaks the backend language in the save flash and the form buttons', function () {
