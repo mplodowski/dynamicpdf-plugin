@@ -39,6 +39,15 @@ describe('Global variables and events', function () {
         expect(app('dynamicpdf')->parseTemplate($template))->toBe('<p>COPY</p><!-- audited -->');
     });
 
+    it('passes the HTML through every afterRender listener in turn', function () {
+        Event::listen(Events::AFTER_RENDER, fn (PDFWrapper $pdf, Template $template, string $html): string => str_replace('<p>', '<p class="draft">', $html));
+        Event::listen(Events::AFTER_RENDER, fn (): null => null);
+        Event::listen(Events::AFTER_RENDER, fn (PDFWrapper $pdf, Template $template, string $html): string => $html . '<footer>1</footer>');
+        $template = $this->createTemplate(['content_html' => '<p>Invoice</p>']);
+
+        expect(app('dynamicpdf')->parseTemplate($template))->toBe('<p class="draft">Invoice</p><footer>1</footer>');
+    });
+
     it('exposes the variables a plugin registers with registerPDFVariables', function () {
         $plugin = new class(app()) extends PluginBase
         {

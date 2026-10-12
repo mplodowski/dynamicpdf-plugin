@@ -59,7 +59,13 @@ class TemplateRenderer
 
         $html = PDFAsset::whileRendering($pdf, fn (): string => $render($data));
 
-        foreach (Event::fire(Events::AFTER_RENDER, [$pdf, $model, $html]) ?? [] as $replacement) {
+        foreach (Event::getListeners(Events::AFTER_RENDER) as $listener) {
+            $replacement = $listener(Events::AFTER_RENDER, [$pdf, $model, $html]);
+
+            if ($replacement === false) {
+                break;
+            }
+
             if (is_string($replacement)) {
                 $html = $replacement;
             }
