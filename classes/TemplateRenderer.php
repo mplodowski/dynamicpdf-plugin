@@ -3,6 +3,7 @@
 namespace Renatio\DynamicPDF\Classes;
 
 use Closure;
+use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Event;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
@@ -59,19 +60,36 @@ class TemplateRenderer
 
         $html = PDFAsset::whileRendering($pdf, fn (): string => $render($data));
 
+        return $this->afterRender([$pdf, $model, $html]);
+    }
+
+    /**
+     * Calls the listeners one by one so each receives the HTML returned by the previous one. Event::fake() only
+     * records the event.
+     *
+     * @param  array{PDFWrapper, Template|Layout, string}  $payload
+     */
+    protected function afterRender(array $payload): string
+    {
+        if (! Event::getFacadeRoot() instanceof Dispatcher) {
+            Event::dispatch(Events::AFTER_RENDER, $payload);
+
+            return $payload[2];
+        }
+
         foreach (Event::getListeners(Events::AFTER_RENDER) as $listener) {
-            $replacement = $listener(Events::AFTER_RENDER, [$pdf, $model, $html]);
+            $replacement = $listener(Events::AFTER_RENDER, $payload);
 
             if ($replacement === false) {
                 break;
             }
 
             if (is_string($replacement)) {
-                $html = $replacement;
+                $payload[2] = $replacement;
             }
         }
 
-        return $html;
+        return $payload[2];
     }
 
     /**
