@@ -5,7 +5,7 @@ layout = "renatio.dynamicpdf::pdf.layouts.default"
 <div class="text-sm text-gray-700 leading-none">
     <h2 class="text-3xl font-bold leading-none">Acme Studio</h2>
 
-    <p class="text-gray-400">via example.com</p>
+    <p class="text-gray-400">www.example.com</p>
 
     <div class="my-8">
         <h1 class="text-4xl font-bold leading-none">Invoice</h1>
@@ -18,7 +18,7 @@ layout = "renatio.dynamicpdf::pdf.layouts.default"
 
         <p class="mb-2">
             Example street 16<br>
-            Warsaw, 50-100<br>
+            Warsaw, 00-001<br>
             Poland
         </p>
 
@@ -28,7 +28,7 @@ layout = "renatio.dynamicpdf::pdf.layouts.default"
     <div class="float-right w-1/2 text-right">
         <h4 class="mb-4 text-lg font-bold leading-none">Invoice from</h4>
 
-        <p class="mb-2 font-bold">Acme Software Ltd</p>
+        <p class="mb-2 font-bold">Acme Studio Ltd</p>
 
         <p class="mb-2">
             221 Sample Street<br>
@@ -36,9 +36,9 @@ layout = "renatio.dynamicpdf::pdf.layouts.default"
             Exampleland
         </p>
 
-        <p class="mb-2">VAT Number: XX000000000</p>
+        <p class="mb-2">VAT Number: GB123456789</p>
 
-        <p>Company Number: 00000000</p>
+        <p>Company Number: 12345678</p>
     </div>
 
     <div class="clear-both"></div>
@@ -47,8 +47,8 @@ layout = "renatio.dynamicpdf::pdf.layouts.default"
 
     <div class="float-left w-1/2">
         <p>Customer: <span class="font-bold">john.doe@example.com</span></p>
-        <p>Order Number / Invoice: <span class="font-bold">#2026-0001</span></p>
-        <p>Billing date: <span class="font-bold">01 Sep 2026</span></p>
+        <p>Order Number / Invoice: <span class="font-bold">#{{ 'now'|date('Y') }}-0001</span></p>
+        <p>Billing date: <span class="font-bold">{{ 'now'|date('d M Y') }}</span></p>
     </div>
 
     <div class="float-right text-right">
