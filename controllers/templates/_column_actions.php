@@ -20,7 +20,7 @@
                 class="btn btn-sm btn-default"
                 data-request="onDuplicateRecord"
                 data-request-data="<?= $requestData ?>"
-                data-request-confirm="<?= e(trans('backend::lang.form.action_confirm')) ?>"
+                data-request-confirm="<?= e(trans('renatio.dynamicpdf::lang.templates.duplicate_confirm', $name)) ?>"
                 data-load-indicator="<?= e(trans('renatio.dynamicpdf::lang.templates.duplicating')) ?>"
                 data-tooltip-text="<?= e(trans('renatio.dynamicpdf::lang.templates.duplicate')) ?>"
                 aria-label="<?= e(trans('renatio.dynamicpdf::lang.templates.duplicate')) ?>"><i class="octo-icon-copy icon-lg m-0" aria-hidden="true"></i></button>

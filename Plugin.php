@@ -106,6 +106,7 @@ class Plugin extends PluginBase
             ],
             'renatio.dynamicpdf.manage_layouts' => [
                 'label' => 'renatio.dynamicpdf::lang.permissions.manage_layouts',
+                'comment' => 'renatio.dynamicpdf::lang.permissions.manage_layouts_comment',
                 'tab' => $tab,
             ],
             'renatio.dynamicpdf.manage_layouts.create' => [
