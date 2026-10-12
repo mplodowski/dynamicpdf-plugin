@@ -323,7 +323,7 @@ it, without saving.
 | Event                              | Payload                                       | Return value                              |
 |------------------------------------|-----------------------------------------------|-------------------------------------------|
 | `renatio.dynamicpdf.beforeRender`  | `PDFWrapper $pdf`, `Template\|Layout $model`, `array $data` | an array merged on top of the render data |
-| `renatio.dynamicpdf.afterRender`   | `PDFWrapper $pdf`, `Template\|Layout $model`, `string $html` | a string replacing the rendered HTML      |
+| `renatio.dynamicpdf.afterRender`   | `PDFWrapper $pdf`, `Template\|Layout $model`, `string $html` | a string replacing the HTML for the next listener and the PDF |
 
 ```php
 Event::listen('renatio.dynamicpdf.beforeRender', function ($pdf, $model, array $data) {
@@ -342,7 +342,9 @@ Both events fire once per document: for a template together with its layout (`lo
 or for a layout rendered on its own (`loadLayout()`, `parseLayout()`). They also fire for the backend HTML and PDF
 preview, so keep side effects such as counters or audit entries out of the listeners. Every listener runs; the arrays
 they return are merged in turn, and the reserved names `content_html`, `css`, `background_img` and `locale` are
-stripped from what a listener returns.
+stripped from what a listener returns. `afterRender` listeners run in the order they were registered and each one
+receives the HTML returned by the previous one, so a watermark and a footer added by two plugins both end up in the
+PDF; returning `false` stops the listeners that follow.
 
 ## Usage
 

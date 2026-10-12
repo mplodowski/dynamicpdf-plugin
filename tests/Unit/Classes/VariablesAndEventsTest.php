@@ -39,6 +39,31 @@ describe('Global variables and events', function () {
         expect(app('dynamicpdf')->parseTemplate($template))->toBe('<p>COPY</p><!-- audited -->');
     });
 
+    it('passes the HTML through every afterRender listener in turn', function () {
+        Event::listen(Events::AFTER_RENDER, fn (PDFWrapper $pdf, Template $template, string $html): string => str_replace('<p>', '<p class="draft">', $html));
+        Event::listen(Events::AFTER_RENDER, fn (): null => null);
+        Event::listen(Events::AFTER_RENDER, fn (PDFWrapper $pdf, Template $template, string $html): string => $html . '<footer>1</footer>');
+        $template = $this->createTemplate(['content_html' => '<p>Invoice</p>']);
+
+        expect(app('dynamicpdf')->parseTemplate($template))->toBe('<p class="draft">Invoice</p><footer>1</footer>');
+    });
+
+    it('stops the afterRender listeners after one returns false', function () {
+        Event::listen(Events::AFTER_RENDER, fn (PDFWrapper $pdf, Template $template, string $html): string => $html . '<i>1</i>');
+        Event::listen(Events::AFTER_RENDER, fn (): bool => false);
+        Event::listen(Events::AFTER_RENDER, fn (PDFWrapper $pdf, Template $template, string $html): string => $html . '<i>2</i>');
+
+        expect(app('dynamicpdf')->parseTemplate($this->createTemplate(['content_html' => '<p>x</p>'])))->toBe('<p>x</p><i>1</i>');
+    });
+
+    it('records a faked afterRender event without running its listeners', function () {
+        Event::listen(Events::AFTER_RENDER, fn (): string => 'replaced');
+        Event::fake([Events::AFTER_RENDER]);
+
+        expect(app('dynamicpdf')->parseTemplate($this->createTemplate(['content_html' => '<p>x</p>'])))->toBe('<p>x</p>');
+        Event::assertDispatched(Events::AFTER_RENDER);
+    });
+
     it('exposes the variables a plugin registers with registerPDFVariables', function () {
         $plugin = new class(app()) extends PluginBase
         {
