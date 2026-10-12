@@ -684,7 +684,7 @@ renders the template in the document's language. In the controller of your plugi
 use October\Rain\Exception\ForbiddenException;
 use Renatio\DynamicPDF\Classes\PDF;
 
-public function update_onDownloadInvoice($recordId = null)
+public function update_onDownloadInvoice($recordId)
 {
     if (! $this->user->hasAccess('acme.shop.orders.invoice')) {
         throw new ForbiddenException;
@@ -693,18 +693,20 @@ public function update_onDownloadInvoice($recordId = null)
     $order = $this->formFindModelObject($recordId);
 
     return PDF::loadTemplate('acme.shop::pdf.invoice', ['order' => $order], locale: $order->locale ?: null)
-        ->download('invoice-' . str_slug($order->number) . '.pdf');
+        ->download('invoice-' . str_slug(str_replace('/', '-', $order->number)) . '.pdf');
 }
 ```
 
-And the button in the form toolbar (`controllers/orders/_form_buttons.php` or `update.php`):
+And the button in the toolbar of the update form (`controllers/orders/update.php`; the `update_` prefix makes the
+handler exist on that page only):
 
 ```php
 <?= Ui::ajaxButton(label: 'Download invoice', handler: 'onDownloadInvoice', class: 'btn-default') ?>
 ```
 
 `download()` works for an AJAX handler (see above), and `formFindModelObject()` already refuses a record the form
-cannot load. Register the permission in your `Plugin::registerPermissions()`.
+cannot load. The PDF shows the saved record, not unsaved form changes. Register the permission in your
+`Plugin::registerPermissions()`.
 
 ### Other rendering engines
 
@@ -716,6 +718,10 @@ use Renatio\DynamicPDF\Models\Template;
 
 $html = PDF::parseTemplate(Template::byCode('acme.shop::pdf.invoice'), ['order' => $order]);
 ```
+
+The HTML is rendered in the current application locale, and asset and image URLs point to the public site, so the
+other tool must be able to reach it. Paper size and orientation and the layout's page numbers are applied by dompdf,
+not written into the HTML; set them in the other tool.
 
 ### Page numbers
 
