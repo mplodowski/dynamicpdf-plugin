@@ -21,6 +21,8 @@ class TemplateVariables
         '|date' => ['date', "{{ value|date('Y-m-d') }}"],
         '|number_format' => ['number_format', "{{ value|number_format(2, '.', ' ') }}"],
         '|nl2br' => ['nl2br', '{{ value|nl2br }}'],
+        'pdf_qr()' => ['pdf_qr', "<img src=\"{{ pdf_qr('https://example.com/invoices/123', 150) }}\" width=\"150\">"],
+        'pdf_barcode()' => ['pdf_barcode', "<img src=\"{{ pdf_barcode('5901234123457', 'EAN13') }}\">"],
     ];
 
     /**

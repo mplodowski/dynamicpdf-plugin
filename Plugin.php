@@ -8,6 +8,7 @@ use Barryvdh\DomPDF\ServiceProvider;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Lang;
+use Renatio\DynamicPDF\Classes\Codes;
 use Renatio\DynamicPDF\Classes\PDFAsset;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Console\Check;
@@ -138,7 +139,15 @@ class Plugin extends PluginBase
             $filters['__'] = [Lang::class, 'choice'];
         }
 
-        return ['filters' => $filters];
+        $codes = new Codes;
+
+        return [
+            'filters' => $filters,
+            'functions' => [
+                'pdf_qr' => [$codes, 'qr'],
+                'pdf_barcode' => [$codes, 'barcode'],
+            ],
+        ];
     }
 
     /**

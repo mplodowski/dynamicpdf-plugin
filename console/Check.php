@@ -2,9 +2,11 @@
 
 namespace Renatio\DynamicPDF\Console;
 
+use Composer\InstalledVersions;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\View;
 use InvalidArgumentException;
+use Renatio\DynamicPDF\Classes\Codes;
 use Renatio\DynamicPDF\Classes\PDFManager;
 
 class Check extends Command
@@ -14,6 +16,8 @@ class Check extends Command
     protected const WARN = '<fg=yellow;options=bold>WARN</>';
 
     protected const FAIL = '<fg=red;options=bold>FAIL</>';
+
+    protected const INFO = '<fg=blue;options=bold>INFO</>';
 
     protected $signature = 'dynamicpdf:check';
 
@@ -40,6 +44,10 @@ class Check extends Command
 
         $this->views('Registered layouts', PDFManager::instance()->listRegisteredLayouts());
         $this->views('Registered templates', PDFManager::instance()->listRegisteredTemplates());
+
+        foreach (Codes::PACKAGES as $function => $package) {
+            $this->package($function, $package);
+        }
 
         $this->newLine();
 
@@ -100,6 +108,19 @@ class Check extends Command
         }
 
         $this->components->twoColumnDetail($label, self::PASS . " {$path}");
+    }
+
+    protected function package(string $function, string $package): void
+    {
+        $label = "{$function} ({$package})";
+
+        if (! InstalledVersions::isInstalled($package)) {
+            $this->components->twoColumnDetail($label, self::INFO . " not installed; run composer require {$package} to use {$function}");
+
+            return;
+        }
+
+        $this->components->twoColumnDetail($label, self::PASS . ' ' . InstalledVersions::getPrettyVersion($package));
     }
 
     protected function nearestExistingParent(string $path): string

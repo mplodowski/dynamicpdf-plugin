@@ -20,6 +20,7 @@ Templates and layouts live in the database or in view files shipped by your plug
   paper size and orientation.
 - Templates translated per language with the native October multisite translation; with that feature on, registered
   views can also ship localized view files such as `pdf.de.invoice`, used when a `locale` is passed.
+- QR codes and barcodes with the `pdf_qr()` and `pdf_barcode()` Twig functions.
 - Output as a browser stream, download, file on a storage disk or a `System\Models\File` ready to attach to a model.
 - `PDF::fake()` with render assertions for project tests, `dynamicpdf:sync` and `dynamicpdf:check` console commands.
 
@@ -585,6 +586,26 @@ fetches `http(s)` addresses with cURL when the extension is available, and needs
 > configuration, and writes the dompdf log file only when `app.debug` is on. A schemeless `APP_URL` such as
 > `myapp.test` is understood.
 
+### QR codes and barcodes
+
+`pdf_qr(text, size = 150, margin = 0)` and `pdf_barcode(text, type = 'C128', widthFactor = 2, height = 50)` return
+the code as a PNG data URI, so it renders with `enable_remote` off. They need packages the plugin only suggests:
+
+```bash
+composer require endroid/qr-code picqer/php-barcode-generator
+```
+
+```twig
+<img src="{{ pdf_qr('https://example.com/invoices/' ~ invoice.number ~ '/pay') }}" width="120">
+<img src="{{ pdf_barcode(invoice.ean, 'EAN13') }}">
+```
+
+Barcode types are `EAN13`, `EAN8`, `UPCA`, `C128` and `C39`, available as constants of
+`Renatio\DynamicPDF\Classes\Codes`. Arguments are positional. A missing package, an unsupported type or text the code
+cannot hold (a wrong EAN-13 check digit, a non-ASCII character, too much text for a QR code) stops the render with a
+message saying what to fix, which the backend preview shows. Without the GD extension (or Imagick for barcodes) the
+code is drawn as an SVG data URI instead. `dynamicpdf:check` reports whether each package is installed.
+
 ### Attach the PDF to a model
 
 `toFile()` returns a `System\Models\File` built from the rendered document, so the PDF can be attached with October's
@@ -711,8 +732,8 @@ with code 1 when any code fails to sync (a missing view file, a parse error or a
 so the templates exist before the first backend visit.
 
 `php artisan dynamicpdf:check` reports the dompdf configuration that fails silently: font, cache and temporary
-directories (existence and write access, without creating anything), `chroot`, inline PHP and remote resources, and
-every registered code without a view file. It exits with code 1 on a failure, so it can guard a deployment. Run both
+directories (existence and write access, without creating anything), `chroot`, inline PHP and remote resources,
+every registered code without a view file and whether the packages behind `pdf_qr()` and `pdf_barcode()` are installed. It exits with code 1 on a failure, so it can guard a deployment. Run both
 commands after `october:migrate`.
 
 ### Render

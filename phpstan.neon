@@ -24,6 +24,10 @@ parameters:
         - ../../../vendor/autoload.php
         - phpstan-bootstrap.php
 
+    # The suggested picqer/php-barcode-generator package is not installed in the project.
+    scanFiles:
+        - phpstan-picqer.stub
+
     scanDirectories:
         - ../../../modules
         - ../../../vendor/october/rain
