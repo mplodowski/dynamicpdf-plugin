@@ -130,6 +130,19 @@ return [
     ],
     'tab' => [
         'options' => 'Opciones',
+        'history' => 'Historial',
+    ],
+    'revisions' => [
+        'label' => 'Versiones anteriores',
+        'comment' => 'Cada guardado que cambia el contenido conserva aquí la versión anterior, hasta las últimas :limit. Las traducciones no se versionan.',
+        'empty' => 'Todavía no hay versiones anteriores.',
+        'date' => 'Fecha',
+        'author' => 'Autor',
+        'restore' => 'Restaurar',
+        'restore_confirm' => '¿Restaurar la versión del :date? Se perderán los cambios sin guardar, la versión actual queda en el historial.',
+        'restoring' => 'Restaurando...',
+        'restore_success' => 'La versión fue restaurada.',
+        'not_found' => 'Esta versión ya no existe.',
     ],
     'page_numbers' => [
         'section' => 'Números de página',

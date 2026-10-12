@@ -18,6 +18,7 @@ use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Classes\PreviewFonts;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
+use Renatio\DynamicPDF\Models\Revision;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SettingsManager;
 use Twig\Error\Error as TwigError;
@@ -28,6 +29,9 @@ use Twig\Error\Error as TwigError;
 trait ManagesViewRecords
 {
     protected const CSS_PIXELS_PER_POINT = 96 / 72;
+
+    /** @var array<string, mixed>|null */
+    protected ?array $revisionSnapshot = null;
 
     protected function setSettingsContext(): void
     {
@@ -46,6 +50,18 @@ trait ManagesViewRecords
     {
         if (! $model->exists || (! $model->isCustomised() && $this->postedViewFieldChanged($model))) {
             $model->markAsCustomised();
+        }
+    }
+
+    public function formBeforeUpdate(Layout|Template $model): void
+    {
+        $this->revisionSnapshot = $model->revisionSnapshot();
+    }
+
+    public function formAfterUpdate(Layout|Template $model): void
+    {
+        if ($this->revisionSnapshot !== null) {
+            $model->recordRevision($this->revisionSnapshot);
         }
     }
 
@@ -239,6 +255,24 @@ trait ManagesViewRecords
         $this->resetToView($this->formFindModelObject($recordId));
 
         Flash::success(trans('renatio.dynamicpdf::lang.templates.reset_success'));
+
+        return redirect()->refresh();
+    }
+
+    public function update_onRestoreRevision(int|string $recordId): RedirectResponse
+    {
+        $this->requireFormPermission('modelUpdate');
+
+        $model = $this->formFindModelObject($recordId);
+        $revision = $model->revisions()->find((int) post('revision'));
+
+        if (! $revision instanceof Revision) {
+            throw new ApplicationException(trans('renatio.dynamicpdf::lang.revisions.not_found'));
+        }
+
+        $model->restoreRevision($revision);
+
+        Flash::success(trans('renatio.dynamicpdf::lang.revisions.restore_success'));
 
         return redirect()->refresh();
     }

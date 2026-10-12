@@ -145,3 +145,8 @@ secondaryTabs:
                 action: show
                 field: page_numbers
                 condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+
+        _revisions@update:
+            tab: renatio.dynamicpdf::lang.tab.history
+            type: partial
+            path: field_revisions

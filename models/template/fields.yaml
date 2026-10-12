@@ -70,3 +70,8 @@ secondaryTabs:
             type: partial
             path: field_variables
             dependsOn: sample_data
+
+        _revisions@update:
+            tab: renatio.dynamicpdf::lang.tab.history
+            type: partial
+            path: field_revisions

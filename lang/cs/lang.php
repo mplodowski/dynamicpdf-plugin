@@ -130,6 +130,19 @@ return [
     ],
     'tab' => [
         'options' => 'Možnosti',
+        'history' => 'Historie',
+    ],
+    'revisions' => [
+        'label' => 'Předchozí verze',
+        'comment' => 'Každé uložení, které změní obsah, zde ponechá předchozí verzi, nejvýše :limit posledních. Překlady se neverzují.',
+        'empty' => 'Zatím žádné předchozí verze.',
+        'date' => 'Datum',
+        'author' => 'Autor',
+        'restore' => 'Obnovit',
+        'restore_confirm' => 'Obnovit verzi z :date? Neuložené změny budou ztraceny, aktuální verze zůstane v historii.',
+        'restoring' => 'Obnovuje se...',
+        'restore_success' => 'Verze byla obnovena.',
+        'not_found' => 'Tato verze už neexistuje.',
     ],
     'page_numbers' => [
         'section' => 'Čísla stránek',

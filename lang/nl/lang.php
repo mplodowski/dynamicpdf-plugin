@@ -130,6 +130,19 @@ return [
     ],
     'tab' => [
         'options' => 'Opties',
+        'history' => 'Geschiedenis',
+    ],
+    'revisions' => [
+        'label' => 'Eerdere versies',
+        'comment' => 'Elke opslag die de inhoud wijzigt, bewaart hier de vorige versie, tot de laatste :limit. Vertalingen krijgen geen versies.',
+        'empty' => 'Nog geen eerdere versies.',
+        'date' => 'Datum',
+        'author' => 'Auteur',
+        'restore' => 'Herstellen',
+        'restore_confirm' => 'De versie van :date herstellen? Niet-opgeslagen wijzigingen gaan verloren, de huidige versie blijft in de geschiedenis.',
+        'restoring' => 'Herstellen...',
+        'restore_success' => 'De versie is hersteld.',
+        'not_found' => 'Deze versie bestaat niet meer.',
     ],
     'page_numbers' => [
         'section' => 'Paginanummers',

@@ -15,6 +15,7 @@ use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 use Renatio\DynamicPDF\Traits\Duplicates;
 use Renatio\DynamicPDF\Traits\FollowsView;
+use Renatio\DynamicPDF\Traits\HasRevisions;
 use Renatio\DynamicPDF\Traits\ValidatesContent;
 use System\Models\File;
 
@@ -35,6 +36,7 @@ use System\Models\File;
  * @property-read \October\Rain\Database\Collection<int, Template> $templates
  * @property-read string $html
  * @property-read int|null $templates_count
+ * @property-read \October\Rain\Database\Collection<int, Revision> $revisions
  *
  * @method \October\Rain\Database\Relations\AttachOne background_img()
  * @method \October\Rain\Database\Relations\MorphMany translations()
@@ -43,6 +45,7 @@ class Layout extends Model
 {
     use Duplicates;
     use FollowsView;
+    use HasRevisions;
     use Nullable;
     use ValidatesContent;
     use Validation;
@@ -67,6 +70,8 @@ class Layout extends Model
         'page_numbers_font' => 'page_numbers_font',
         'page_numbers_margin' => 'page_numbers_margin',
     ];
+
+    public const REVISION_FIELDS = ['name', 'content_html', 'content_css', 'page_numbers', 'page_numbers_text', 'page_numbers_size', 'page_numbers_color', 'page_numbers_font', 'page_numbers_margin'];
 
     public $table = 'renatio_dynamicpdf_pdf_layouts';
 
@@ -111,6 +116,11 @@ class Layout extends Model
     /** @var array<string, array<int|string, mixed>> */
     public $attachOne = [
         'background_img' => [File::class, 'delete' => true],
+    ];
+
+    /** @var array<string, array<int|string, mixed>> */
+    public $morphMany = [
+        'revisions' => [Revision::class, 'name' => 'revisionable', 'delete' => true, 'replicate' => false],
     ];
 
     public function labelAttribute(): string

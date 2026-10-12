@@ -130,6 +130,19 @@ return [
     ],
     'tab' => [
         'options' => 'Optionen',
+        'history' => 'Verlauf',
+    ],
+    'revisions' => [
+        'label' => 'Frühere Versionen',
+        'comment' => 'Jedes Speichern, das den Inhalt ändert, behält hier die vorherige Version, höchstens die letzten :limit. Übersetzungen werden nicht versioniert.',
+        'empty' => 'Noch keine früheren Versionen.',
+        'date' => 'Datum',
+        'author' => 'Autor',
+        'restore' => 'Wiederherstellen',
+        'restore_confirm' => 'Die Version vom :date wiederherstellen? Nicht gespeicherte Änderungen gehen verloren, die aktuelle Version bleibt im Verlauf.',
+        'restoring' => 'Wird wiederhergestellt...',
+        'restore_success' => 'Die Version wurde wiederhergestellt.',
+        'not_found' => 'Diese Version existiert nicht mehr.',
     ],
     'page_numbers' => [
         'section' => 'Seitenzahlen',
