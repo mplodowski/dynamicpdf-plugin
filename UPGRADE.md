@@ -72,30 +72,20 @@ Plugin adds support for October CMS 4.0 while keeping 3.x, and upgrades to Larav
 removed by dompdf 3 (for example `enable_css_float` and `setAdminUsername()`) no longer apply, and the HTML5 parser is
 always on.
 
-## Upgrading To 8.1.0
+## Upgrading To 9.0.0
 
-**Security release. Upgrade every installation running 8.0.x.** Requires PHP 8.2 and October CMS 4.4; sites on October
-CMS 3 or 4.0–4.3 stay on 8.0.3 until October is upgraded to 4.4; until then keep `enable_php` off, set
-`allowed_remote_hosts` and give the template and layout permissions to trusted administrators only. Run `php artisan
-october:migrate`, which adds a unique index on template and layout codes and permanently deletes duplicate rows, keeping
-the customized or locked one. Layouts now follow their view file like templates, so the migration marks every layout it
-cannot prove unedited as *Customized*. Layouts store this in `is_custom` like templates, so code reading their
-`is_locked` column must switch to `is_custom`, which holds the opposite value.
+**Security release.** Requires PHP 8.2 and October CMS 4.4; older sites stay on 8.0.3. Run `php artisan october:migrate`.
 
-Permissions are granular now, and existing roles and administrators keep their access: the migration grants
-**Create**, **Update**, **Delete** and **Preview** to those holding **Access templates** or **Access layouts**, so you
-can narrow them under **Settings → Administrators**. The *Layouts* tab now also requires **Access layouts**.
-
-Layout CSS may no longer read server files: LESS and `(inline)` imports and the `data-uri()` / `image-size()` family
-of functions are rejected on save and fail the render of an older layout, so remove them. Use **Reset to default** on
-a template or layout an earlier version flagged *Customized* or edited by mistake. Set
-`DYNAMICPDF_ALLOW_SELF_SIGNED=true` on a development host with a self-signed certificate; an unknown `set*()` option
-call now throws `UnexpectedValueException`.
-
-The backend **Preview PDF** never runs inline PHP, fetches remote files only from the application host and
-`allowed_remote_hosts`, and uses `dompdf.options.dpi` instead of 300 DPI. Replace `<script type="text/php">` page
-numbers with `->pageNumbers()` or the layout's *Page numbers* option, add CDN hosts to `allowed_remote_hosts` or use
-`|pdfasset` and local files, and check templates whose `px` sizes were tuned to the old preview.
-
-Synchronization no longer deletes non-customized templates whose view is no longer registered; delete them with
-`php artisan dynamicpdf:sync --prune`.
+- Templates render in a Twig sandbox and receive plain arrays instead of models: eager-load relations or pass arrays.
+  `config()`, `env()`, `{% cache %}` and similar calls are rejected. `DYNAMICPDF_SANDBOX=false` turns the sandbox off.
+- Replace `<script type="text/php">` page numbers with the layout's *Page numbers* option or `->pageNumbers()`.
+- The PDF preview loads remote files only from the application host and `allowed_remote_hosts`; use `|pdfasset` for
+  local files.
+- Layout CSS can no longer read server files: remove LESS `(inline)` imports and `data-uri()`.
+- The migration deletes duplicate template and layout codes, keeping the customized one, and marks layouts it cannot
+  prove unedited as *Customized*; use **Reset to Default** on those you never changed. Code reading a layout's
+  `is_locked` must read `is_custom`, which holds the opposite value.
+- Permissions are granular. Existing roles keep their access; narrow it under *Settings → Administrators*.
+- `dynamicpdf:sync` no longer deletes templates whose view is gone; use `--prune`.
+- An unknown `set*()` dompdf option now throws `UnexpectedValueException`.
+- Set `DYNAMICPDF_ALLOW_SELF_SIGNED=true` on a development host with a self-signed certificate.

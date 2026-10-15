@@ -75,6 +75,8 @@ class Layout extends Model
 
     public const REVISION_FIELDS = ['name', 'content_html', 'content_css', 'page_numbers', 'page_numbers_text', 'page_numbers_size', 'page_numbers_color', 'page_numbers_font', 'page_numbers_margin'];
 
+    public const REVISION_ATTACHMENTS = ['background_img'];
+
     public $table = 'renatio_dynamicpdf_pdf_layouts';
 
     /** @var array<int, string> */
@@ -124,6 +126,16 @@ class Layout extends Model
     public $morphMany = [
         'revisions' => [Revision::class, 'name' => 'revisionable', 'delete' => true, 'replicate' => false],
     ];
+
+    /**
+     * @return array<string, string|null>
+     */
+    protected function revisionAttachments(): array
+    {
+        $image = $this->background_img()->getQuery()->first();
+
+        return ['background_img' => $image instanceof File ? (string) $image->getAttribute('file_name') : null];
+    }
 
     public function labelAttribute(): string
     {

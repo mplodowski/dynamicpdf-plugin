@@ -97,7 +97,7 @@ describe('Global variables and events', function () {
             ->and(PDFManager::instance()->listRegisteredTemplates())->toHaveKey('renatio.dynamicpdf::pdf.invoice');
     });
 
-    it('still loads plugin registrations through the pre-8.1 method name', function () {
+    it('still loads plugin registrations through the pre-9.0 method name', function () {
         Parameter::set(Plugin::DEMO_PARAMETER, 1);
         PDFManager::instance()->loadRegisteredTemplates();
         Parameter::set(Plugin::DEMO_PARAMETER, 0);

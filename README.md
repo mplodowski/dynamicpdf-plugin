@@ -13,23 +13,20 @@ Templates and layouts live in the database or in view files shipped by your plug
 ## Features
 
 - PDF templates and layouts edited in the backend, with HTML and PDF preview rendered from sample data.
-- Templates and layouts registered by plugins as view files, synchronized to the database and customizable, with
-  reset to the file version.
+- Templates and layouts registered by plugins as view files, synchronized to the database, with reset to the file.
 - Twig markup with theme partials, translations, global variables and `beforeRender` / `afterRender` events.
-- Render per document with another layout, in another language, with page numbers, password protection and
-  paper size and orientation.
-- Templates translated per language with the native October multisite translation; with that feature on, registered
-  views can also ship localized view files such as `pdf.de.invoice`, used when a `locale` is passed.
+- Per-document layout, language, page numbers, password protection, paper size and orientation.
+- Templates translated per language with October multisite, plus localized view files such as `pdf.de.invoice`.
 - QR codes and barcodes with the `pdf_qr()` and `pdf_barcode()` Twig functions.
-- Output as a browser stream, download, file on a storage disk or a `System\Models\File` ready to attach to a model.
-- `PDF::fake()` with render assertions for project tests, `dynamicpdf:sync` and `dynamicpdf:check` console commands.
+- Output as a browser stream, download, file on a storage disk or a `System\Models\File` to attach to a model.
+- `PDF::fake()` with render assertions for tests, plus console commands to sync, check, render, export and import.
 
 ## Requirements
 
-This plugin requires PHP 8.2 or higher and October CMS 4.4 or higher.
+PHP 8.2+ and October CMS 4.4+.
 
-Templates are rendered with Twig without a sandbox, so the **Create** and **Update** permissions for templates and
-layouts should only be granted to trusted users.
+Templates render in October's Twig sandbox (see [Twig environment](#twig-environment)). Still, grant the **Create** and
+**Update** permissions for templates and layouts to trusted users only.
 
 ## Like this plugin?
 
@@ -54,22 +51,17 @@ from [www.flaticon.com](https://www.flaticon.com/).
 
 ## Installation
 
-There are two ways to install this plugin.
-
-1. Use `php artisan plugin:install Renatio.DynamicPDF` command.
-2. Use `composer require renatio/dynamicpdf-plugin` in project root. When you use this option you must
-   run `php artisan october:migrate` after installation.
+- `php artisan plugin:install Renatio.DynamicPDF`, or
+- `composer require renatio/dynamicpdf-plugin` followed by `php artisan october:migrate`.
 
 ## Upgrading
 
-Read the [upgrade guide](UPGRADE.md) before updating; it lists the steps a version needs, and versions not listed
-there need no action.
+Read the [upgrade guide](UPGRADE.md) before updating; versions not listed there need no action.
 
 ## Quick start
 
-Create a template under *Settings > PDF > PDF Templates* (or run `php artisan dynamicpdf:demo` for ready-made ones),
-for example with the code `acme.shop::pdf.invoice` and the markup `<h1>Invoice {{ number }}</h1>`, then render it from
-a controller or a CMS page:
+Create a template under *Settings > PDF > PDF Templates* (or run `php artisan dynamicpdf:demo`), e.g. with the code
+`acme.shop::pdf.invoice` and the markup `<h1>Invoice {{ number }}</h1>`, then render it:
 
 ```php
 use Renatio\DynamicPDF\Classes\PDF;
@@ -77,37 +69,19 @@ use Renatio\DynamicPDF\Classes\PDF;
 return PDF::loadTemplate('acme.shop::pdf.invoice', ['number' => '2026/1'])->stream('invoice.pdf');
 ```
 
-`download()` sends the file as an attachment instead, which an AJAX handler needs, and `save()` writes it to disk. A
-plugin can ship the template as a view file instead of creating it in the backend, see [Registering PDF templates and
-layouts](#registering-pdf-templates-and-layouts).
+`download()` sends it as an attachment (use it in AJAX handlers), `save()` writes it to disk.
 
 ## PDF content
 
-PDFs can be created in October using either PDF views or PDF templates. A PDF view is supplied by a plugin in its
-**/views** directory, whereas a PDF template is managed using the backend interface via *Settings > PDF >
-PDF Templates*. All PDF templates support using Twig for markup.
-
-PDF views must be registered in the Plugin registration file with the `registerPDFTemplates` and `registerPDFLayouts`
-methods. This will automatically generate a PDF template and layout and allow them to be customized using the backend
-interface.
+A PDF template is either managed in the backend (*Settings > PDF > PDF Templates*) or supplied by a plugin as a view
+file in its `views` directory and registered with `registerPDFTemplates` / `registerPDFLayouts`. Both use Twig.
 
 ## PDF layout views
 
-PDF layout views reside in the file system and the code used represents the path to the view file. For example PDF
-layout with the code **author.plugin::pdf.layouts.default** would use the content in the following file:
+The code is the path to the view file: **author.plugin::pdf.layouts.default** reads
+`plugins/author/plugin/views/pdf/layouts/default.htm`.
 
-```text
-plugins/                 <=== Plugins directory
-  author/                <=== "author" segment
-    plugin/              <=== "plugin" segment
-      views/             <=== View directory
-        pdf/             <=== "pdf" segment
-          layouts/       <=== "layouts" segment
-            default.htm  <=== "default" segment
-```
-
-The content inside a PDF view file can include up to 3 sections: **configuration**, **CSS/LESS**, and **HTML markup**.
-Sections are separated with the `==` sequence. For example:
+A layout view has up to 3 sections separated by `==`: **configuration**, **CSS/LESS** (optional) and **HTML markup**:
 
 ```twig
 name = "Default PDF layout"
@@ -120,30 +94,6 @@ body {
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title>Document</title>
-        <style type="text/css" media="screen">
-            {{ css|raw }}
-        </style>
-    </head>
-    <body>
-        {{ content_html|raw }}
-    </body>
-</html>
-```
-
-> **Note:** The HTML markup of a PDF view is rendered with the CMS or system Twig environment described in
-> [Twig environment](#twig-environment), including the filters and functions registered by plugins.
-
-The **CSS/LESS** section is optional and a view can contain only the configuration and HTML markup sections.
-
-```twig
-name = "Default PDF layout"
-==
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title>Document</title>
         <style type="text/css" media="screen">
             {{ css|raw }}
         </style>
@@ -156,40 +106,25 @@ name = "Default PDF layout"
 
 ### Configuration section
 
-The configuration section sets the PDF view parameters. The following configuration parameters are supported:
-
-| Parameter             | Description                                                                |
-|-----------------------|----------------------------------------------------------------------------|
-| **name**              | the layout name, optional; the code is used without it.                    |
+| Parameter             | Description                                                                     |
+|-----------------------|---------------------------------------------------------------------------------|
+| **name**              | the layout name, optional; the code is used without it.                         |
 | **pageNumbers**       | page numbers position, e.g. `bottom-center`, see [Page numbers](#page-numbers). |
-| **pageNumbersText**   | page numbers text, `Page {PAGE_NUM} of {PAGE_COUNT}` translated by default. |
-| **pageNumbersSize**   | font size in points, 9 by default.                                         |
-| **pageNumbersFont**   | font family used by the document, the default font otherwise.             |
-| **pageNumbersMargin** | distance from the page edge in points, 20 by default.                      |
-| **pageNumbersColor**  | color as `#rrggbb`, black by default.                                      |
+| **pageNumbersText**   | page numbers text, `Page {PAGE_NUM} of {PAGE_COUNT}` translated by default.     |
+| **pageNumbersSize**   | font size in points, 9 by default.                                              |
+| **pageNumbersFont**   | font family used by the document, the default font otherwise.                   |
+| **pageNumbersMargin** | distance from the page edge in points, 20 by default.                           |
+| **pageNumbersColor**  | color as `#rrggbb`, black by default.                                           |
 
 ### Using PDF layouts
 
-PDF layouts reside in the database and can be created by selecting *Settings > PDF > PDF Templates* and clicking the
-*Layouts* tab. These behave just like CMS layouts: they contain the scaffold for the PDF. PDF views and templates support
-the use of PDF layouts. The **code** specified in the layout is a unique identifier and cannot be changed once created.
+Database layouts are managed on the *Layouts* tab of *Settings > PDF > PDF Templates*. They hold the scaffold of the
+PDF, like CMS layouts. The **code** is unique and cannot be changed once created.
 
 ## PDF template views
 
-PDF templates reside in the file system and the code used represents the path to the view file. For example PDF template
-with the code **author.plugin::pdf.invoice** would use the content in the following file:
-
-```text
-plugins/                 <=== Plugins directory
-  author/                <=== "author" segment
-    plugin/              <=== "plugin" segment
-      views/             <=== View directory
-        pdf/             <=== "pdf" segment
-          invoice.htm    <=== "invoice" segment
-```
-
-The content inside a PDF view file can include up to 2 sections: **configuration** and **HTML markup**. Sections are
-separated with the `==` sequence. For example:
+**author.plugin::pdf.invoice** reads `plugins/author/plugin/views/pdf/invoice.htm`. A template view has up to 2
+sections, **configuration** and **HTML markup**:
 
 ```twig
 title = "Invoice"
@@ -201,36 +136,30 @@ orientation = "portrait"
 <h1>Invoice</h1>
 ```
 
-> **Note:** The markup is rendered with the CMS or system Twig environment, see [Twig environment](#twig-environment).
-
 ### Configuration section
 
-The configuration section sets the PDF view parameters. The following configuration parameters are supported:
+| Parameter       | Description                                                                  |
+|-----------------|------------------------------------------------------------------------------|
+| **title**       | optional; the code is used without it.                                       |
+| **layout**      | the layout code, optional.                                                   |
+| **description** | optional.                                                                    |
+| **size**        | paper size, optional; defaults to dompdf `default_paper_size`.               |
+| **orientation** | paper orientation, optional; defaults to dompdf `default_paper_orientation`. |
 
-| Parameter       | Description                                                                                                  |
-|-----------------|--------------------------------------------------------------------------------------------------------------|
-| **title**       | the template title, optional; the code is used without it.                                                   |
-| **layout**      | the layout code, optional.                                                                                   |
-| **description** | the template description, optional.                                                                          |
-| **size**        | the template paper size, optional; without it `default_paper_size` of the dompdf configuration applies.      |
-| **orientation** | the template paper orientation, optional, also without **size**; defaults to dompdf `default_paper_orientation`. |
-
-> **Note:** **size** and **orientation** are read case-insensitively; `A4` is stored as `a4`.
+**size** and **orientation** are case-insensitive (`A4` is stored as `a4`).
 
 ### Using PDF templates
 
-PDF templates reside in the database and can be created in the backend area via *Settings > PDF > PDF Templates*.
-The **code** specified in the template is a unique identifier and cannot be changed once created.
+Database templates are managed in *Settings > PDF > PDF Templates*. The **code** is unique and cannot be changed once
+created.
 
-> **Note:** If no PDF template with the code exists in the database yet, a PDF view registered under the same code
-> with `registerPDFTemplates` is rendered instead. A view that exists but is not registered is not looked up, and
-> `loadTemplate()` throws `ModelNotFoundException`. Layouts follow the same rule with `registerPDFLayouts`.
+If no database template has the code yet, a view registered under it with `registerPDFTemplates` is rendered instead.
+An unregistered view is not looked up and `loadTemplate()` throws `ModelNotFoundException`. Layouts follow the same rule
+with `registerPDFLayouts`.
 
 ## Registering PDF templates and layouts
 
-PDF views can be registered as templates that are automatically generated in the backend ready for customization. PDF
-templates can be customized via the *Settings > PDF > PDF Templates* menu. The templates can be registered by adding
-the `registerPDFTemplates` method of the Plugin registration class (`Plugin.php`).
+Return the view names from `Plugin.php`:
 
 ```php
 public function registerPDFTemplates()
@@ -240,25 +169,7 @@ public function registerPDFTemplates()
         'renatio.demo::pdf.resume',
     ];
 }
-```
 
-The method should return an array of PDF view names.
-
-Registered views are synchronized to the database when a *PDF Templates* page (the lists or a template or layout form)
-is displayed and when `php artisan dynamicpdf:sync` or `php artisan dynamicpdf:demo` runs, not on every request: the
-AJAX requests of those pages (searching, sorting and paging a list, saving a form) and the preview pages do not
-synchronize. Synchronization creates the missing templates and layouts, keeps the templates that are no longer
-registered (for example while their plugin is disabled, so their translations and sample data survive) and writes
-changed view files back to the rows of templates and layouts that are not customized, so list search and sort work on
-the current values. Customized templates and layouts are left alone. A code whose view file is missing or cannot be read
-is skipped and written to the application log once per process; a stored template or layout whose view file went missing
-or parses to no content, and a template whose layout code resolves to nothing, keep their stored content. Until a
-registered view is synchronized, `PDF::loadTemplate()` renders it straight from the file.
-
-Like templates, PDF layouts can be registered by adding the `registerPDFLayouts` method of the Plugin registration
-class (`Plugin.php`).
-
-```php
 public function registerPDFLayouts()
 {
     return [
@@ -268,37 +179,55 @@ public function registerPDFLayouts()
 }
 ```
 
-The method should return an array of PDF view names.
+Registered views are synchronized to the database when a *PDF Templates* list or form page is displayed and when
+`dynamicpdf:sync` or `dynamicpdf:demo` runs — not on every request, AJAX request or preview. Synchronization:
+
+- creates missing templates and layouts;
+- updates non-customized records from changed view files; customized records are left alone;
+- keeps templates that are no longer registered (only `dynamicpdf:sync --prune` deletes them);
+- skips a code whose view file is missing or unreadable and logs it once per process; a stored record whose view file
+  is missing or empty, or whose layout code resolves to nothing, keeps its stored content.
+
+Until a registered view is synchronized, `PDF::loadTemplate()` renders it straight from the file.
 
 ## Twig environment
 
-Templates and layouts are rendered with the CMS Twig environment when the Cms module is installed and a theme is
-active, so theme partials and content blocks are available. Otherwise, for example in a backend-only installation
-that loads only the System and Backend modules, the system Twig environment is used. Filters and functions registered
-by plugins through `registerMarkupTags` work in both. Filters and tags provided by the Cms module itself (`|theme`,
-`|page`, `{% partial %}`) are unavailable without it.
+Templates use the CMS Twig environment when the Cms module is installed and a theme is active (theme partials and
+content blocks available), otherwise the system Twig environment. Plugin filters and functions from
+`registerMarkupTags` work in both; Cms-module tags such as `|theme`, `|page` and `{% partial %}` need the Cms module.
+
+Both run in October's Twig sandbox regardless of `cms.safe_mode`. Templates receive plain data:
+
+- models become arrays of their visible attributes, `$appends` accessors and already loaded relations; collections
+  become arrays; dates stay dates; attachments keep `path` and `url`;
+- model methods and lazy-loaded relations are unavailable — eager-load with `with()`, add accessors to `$appends`, or
+  pass arrays; models, queries and relations returned by other plugins' functions allow no method calls either;
+- `config()`, `env()`, `response()`, `redirect()`, `abort()`, `ajaxHandler()`, `flash()`, `dump()`, `form_*` and macro
+  functions and the `{% flash %}` and `{% cache %}` tags are rejected; filters such as `map` take only arrow functions;
+  object methods cannot be static or receive PHP function names.
+
+Set `DYNAMICPDF_SANDBOX=false` (`sandbox` in `config/renatio/dynamicpdf.php`) only when everyone who can edit templates
+may run code on the server.
 
 ### Plugin assets
 
-dompdf treats every `http(s)://` address, including the one `|app` returns, as a remote file, and remote files are
-not loaded while `enable_remote` is off, which is the default. Stylesheets, fonts and images shipped with a plugin are
-better referenced with the `|pdfasset` filter, which takes a path relative to the project root and returns the
-absolute path of the file on disk, so dompdf reads it locally:
+dompdf treats every `http(s)://` address (including `|app`) as remote, and remote files are not loaded while
+`enable_remote` is off (the default). Use `|pdfasset` for plugin files: it takes a path relative to the project root
+and returns the absolute path on disk.
 
 ```twig
 <link href="{{ 'plugins/acme/shop/assets/css/pdf.css'|pdfasset }}" rel="stylesheet">
 <img src="{{ 'plugins/acme/shop/assets/img/logo.png'|pdfasset }}">
 ```
 
-Only existing files inside the `plugins` directory and the dompdf `chroot` are resolved. Any other path (one leaving
-the directory with `..`, an absolute path, a URL) returns an empty string and writes a warning to the log. In the
-backend HTML preview, which the browser shows, and outside a DynamicPDF render the filter returns the same URL as
-`|app`. Quote the value inside CSS `url('...')`, since a path may contain spaces.
+Only existing files inside `plugins` and the dompdf `chroot` resolve; any other path (`..`, absolute, URL) returns an
+empty string and logs a warning. In the backend HTML preview and outside a DynamicPDF render it returns the same URL as
+`|app`. Quote the value inside CSS `url('...')`.
 
 ## Global variables
 
-Variables every template and layout should receive, such as company details or a logo URL, are registered in the
-plugin registration class. A closure value is resolved when the document is rendered:
+Variables every template and layout receives are registered in `Plugin.php`. Closures are resolved on every render,
+so keep them cheap:
 
 ```php
 public function registerPDFVariables()
@@ -310,21 +239,18 @@ public function registerPDFVariables()
 }
 ```
 
-Data passed to `loadTemplate()`, `loadLayout()` or `parseTemplate()` takes precedence over a registered variable. The
-names `content_html`, `css`, `background_img` and `locale` are reserved for the wrapper and ignored when registered.
-Every closure is resolved on every render, whether or not the template uses it, so keep them cheap.
+Data passed to `loadTemplate()`, `loadLayout()` or `parseTemplate()` wins over a registered variable. The names
+`content_html`, `css`, `background_img` and `locale` are reserved and ignored when registered.
 
-The *Options* tab of the template form lists the variables a template can use: the keys of its saved sample data
-(`order.number`, `items[].title` for a loop), the registered global variables with `locale`, and the most useful
-filters. Clicking an entry copies its Twig code to the clipboard. The list follows the sample data field as you edit
-it, without saving.
+The template HTML editor autocompletes sample data keys, global variables, `locale`, nested keys, filters and tags
+inside `{{ }}` / `{% %}`; Ctrl+Space lists all of them.
 
 ## Events
 
-| Event                              | Payload                                       | Return value                              |
-|------------------------------------|-----------------------------------------------|-------------------------------------------|
-| `renatio.dynamicpdf.beforeRender`  | `PDFWrapper $pdf`, `Template\|Layout $model`, `array $data` | an array merged on top of the render data |
-| `renatio.dynamicpdf.afterRender`   | `PDFWrapper $pdf`, `Template\|Layout $model`, `string $html` | a string replacing the HTML for the next listener and the PDF |
+| Event                             | Payload                                                      | Return value                                                  |
+|-----------------------------------|--------------------------------------------------------------|---------------------------------------------------------------|
+| `renatio.dynamicpdf.beforeRender` | `PDFWrapper $pdf`, `Template\|Layout $model`, `array $data`  | an array merged on top of the render data                     |
+| `renatio.dynamicpdf.afterRender`  | `PDFWrapper $pdf`, `Template\|Layout $model`, `string $html` | a string replacing the HTML for the next listener and the PDF |
 
 ```php
 Event::listen('renatio.dynamicpdf.beforeRender', function ($pdf, $model, array $data) {
@@ -336,189 +262,150 @@ Event::listen('renatio.dynamicpdf.beforeRender', function ($pdf, $model, array $
 });
 ```
 
-A listener runs for every document, so check `$model->code` (the template, or the layout rendered on its own) and the
-keys it reads before using them; a listener that returns nothing leaves the data unchanged.
-
-Both events fire once per document: for a template together with its layout (`loadTemplate()`, `parseTemplate()`),
-or for a layout rendered on its own (`loadLayout()`, `parseLayout()`). They also fire for the backend HTML and PDF
-preview, so keep side effects such as counters or audit entries out of the listeners. Every listener runs; the arrays
-they return are merged in turn, and the reserved names `content_html`, `css`, `background_img` and `locale` are
-stripped from what a listener returns. `afterRender` listeners run in the order they were registered and each one
-receives the HTML returned by the previous one, so a watermark and a footer added by two plugins both end up in the
-PDF; returning `false` stops the listeners that follow.
+- Both fire once per document — a template with its layout (`loadTemplate()`, `parseTemplate()`) or a layout on its
+  own (`loadLayout()`, `parseLayout()`) — including backend previews, so avoid side effects in listeners.
+- Listeners run for every document: check `$model->code` and the keys you read. Returning nothing changes nothing.
+- `beforeRender` results are merged in turn; reserved names (`content_html`, `css`, `background_img`, `locale`) are
+  stripped.
+- `afterRender` listeners run in registration order, each receiving the previous one's HTML; returning `false` stops
+  the rest.
 
 ## Usage
 
-PDF templates and layouts can be accessed in the backend area via *Settings > PDF > PDF Templates*.
+Templates and layouts are managed in *Settings > PDF > PDF Templates*.
 
-Both lists mark templates and layouts edited in the backend as *Customized* (they no longer follow their view file); the
-layout list also counts the templates using each layout (*Used by*). The HTML and PDF preview buttons of the form show
-the current, unsaved form values in a popup without saving them, and the list opens the PDF preview of the saved record,
-all with the **Preview** permission. A template's *Sample data* (a JSON object on the *Options* tab, nested objects and
-lists included) is passed to both previews, so `{{ variables }}` render with realistic values. A template becomes
-*Customized* only when a value the view file provides is changed; editing the sample data alone keeps it view-driven.
-Likewise a layout becomes *Customized* once its name, markup or CSS is changed, and its localized view files are then no
-longer used. Translated fields saved with another site selected do not change it. *Reset to Default* restores the record
-from its view file and clears *Customized*. The *Actions* column of both lists opens the PDF preview and duplicates,
-resets or deletes the record. A template or layout registered by a plugin view offers *Reset to Default* instead of
-*Delete*, and a layout used by a template cannot be deleted. *Duplicate* creates an editable copy with a `_copy` code
-(`_copy2` and so on when that code is taken); the copy is *Customized*.
+- A record edited in the backend is marked *Customized* and no longer follows its view file. Editing only sample data
+  or translations (another site selected) does not customize it. A customized layout ignores its localized view files.
+- *Reset to Default* restores a registered record from its view file; registered records offer it instead of *Delete*.
+- A layout used by a template cannot be deleted. The layout list shows the number of templates using it (*Used by*).
+- *Duplicate* creates a *Customized* copy with a `_copy` code (`_copy2`, ... when taken).
+- *Sample data* (a JSON object) is passed to the HTML and PDF previews, which show the current unsaved form values.
+- The *History* tab keeps the last 20 saved versions with date and author, a line diff per version, and *Restore*
+  (**Update** permission), which adds a new version and marks the record *Customized*. Versions hold default-language
+  values only. Background image changes are recorded, but *Restore* does not bring back a replaced image.
+  Synchronization and console commands add no versions.
 
-The *History* tab of both forms lists the versions of the record with the date and author of each. Every backend save
-that changes the content adds the saved version, up to the last 20; the first one is preceded by the content from
-before, listed without an author. Synchronization with view files, *Reset to Default* and the console commands add
-none. *Restore* (with the **Update** permission) brings a version back as a new version by the restoring administrator
-and marks the record *Customized*, so a restore can be undone. Versions hold the default language values, without
-translations and the layout background image, and are deleted with the record.
-
-Layouts define the PDF scaffold, that is everything that repeats on a PDF, such as a header and footer. Each layout has
-unique code, optional background image, HTML content and CSS/LESS content. Not all CSS properties are supported, so
-check [CSSCompatibility](https://github.com/dompdf/dompdf/wiki/CSSCompatibility).
-
-Templates define the actual PDF content parsed from HTML.
+Layouts hold what repeats on every page (header, footer, background image, CSS/LESS); templates hold the content. Check
+dompdf's [CSSCompatibility](https://github.com/dompdf/dompdf/wiki/CSSCompatibility).
 
 ## Permissions
 
-Access is granted under **Settings → Administrators**, on the **PDF** tab. Super users bypass all of them.
+Granted under **Settings → Administrators**, on the **PDF** tab. Super users bypass all of them; every action is also
+checked on the server.
 
-| Permission | What it unlocks |
-| --- | --- |
-| **Access templates** | The *PDF Templates* page with the template list. |
-| **Create templates** | The *New template* form and duplicating a template. |
-| **Update templates** | Opening and saving the template form, and resetting a template to its view file. |
-| **Delete templates** | Deleting a template from the list or the form. |
-| **Preview templates** | The HTML and PDF preview of a template. |
-| **Access layouts** | The *Layouts* tab on the *PDF Templates* page (which also needs **Access templates**). |
-| **Create layouts** | The *New layout* form and duplicating a layout. |
-| **Update layouts** | Opening and saving the layout form, and resetting a layout to its view file. |
-| **Delete layouts** | Deleting a layout that no template uses. |
-| **Preview layouts** | The HTML and PDF preview of a layout. |
-
-Without **Access layouts** the *Layouts* tab is hidden on the *PDF Templates* page. Buttons a user cannot use are
-hidden, and every action is checked again on the server.
+| Permission            | What it unlocks                                                     |
+|-----------------------|---------------------------------------------------------------------|
+| **Access templates**  | The *PDF Templates* page with the template list.                    |
+| **Create templates**  | The *New template* form and duplicating a template.                 |
+| **Update templates**  | Opening and saving the template form, and resetting it to its view. |
+| **Delete templates**  | Deleting a template.                                                |
+| **Preview templates** | The HTML and PDF preview of a template.                             |
+| **Access layouts**    | The *Layouts* tab (also needs **Access templates**).                |
+| **Create layouts**    | The *New layout* form and duplicating a layout.                     |
+| **Update layouts**    | Opening and saving the layout form, and resetting it to its view.   |
+| **Delete layouts**    | Deleting a layout that no template uses.                            |
+| **Preview layouts**   | The HTML and PDF preview of a layout.                               |
 
 ## Configuration
 
-The default configuration settings are set in `config/dompdf.php`. Copy this file to your own config directory to modify
-the values. You can publish the config using this command:
+Publish `config/dompdf.php` to change the defaults:
 
 ```bash
 php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
 ```
 
-You can still alter the dompdf options in your code before generating the PDF using dynamic methods for all options like
-so:
+Per document, use the dynamic setters or `setOption()`:
 
 ```php
 PDF::loadTemplate('renatio::invoice')
     ->setDpi(300)
-    ->setDefaultFont('sans-serif')
+    ->setOption(['defaultFont' => 'sans-serif'])
     ->stream();
 ```
 
-or use the `setOption()` method before generating the PDF, like this:
-
-```php
-PDF::loadTemplate('renatio::invoice')
-    ->setOption(['dpi' => 300, 'defaultFont' => 'sans-serif'])
-    ->stream();
-```
-
-The options most often changed are `dpi`, `default_font`, `default_paper_size`, `enable_remote` (off by default;
-required for images, stylesheets and fonts loaded by URL, see [Plugin assets](#plugin-assets) for local ones),
-`allowed_remote_hosts`, `chroot` and `font_dir`. The full list with the current defaults is in the published
-`config/dompdf.php` and in [Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php); every option
-has a matching `set*()` method on the wrapper named after the camel-cased key, except the `enable_*` options, which are
-`setIsRemoteEnabled()`, `setIsPhpEnabled()`, `setIsJavascriptEnabled()`, `setIsFontSubsettingEnabled()` and
-`setIsPdfAEnabled()`; `enable_html5_parser` has no effect since dompdf 3. A setter that exists on neither dompdf nor its
-options throws `UnexpectedValueException`.
+Common options: `dpi`, `default_font`, `default_paper_size`, `enable_remote` (off by default; needed for resources
+loaded by URL), `allowed_remote_hosts`, `chroot` and `font_dir`. See the published config and
+[Dompdf\Options](https://github.com/dompdf/dompdf/blob/master/src/Options.php). Each option has a camel-cased `set*()`
+method, except `enable_*`: `setIsRemoteEnabled()`, `setIsPhpEnabled()`, `setIsJavascriptEnabled()`,
+`setIsFontSubsettingEnabled()` and `setIsPdfAEnabled()`. `enable_html5_parser` has no effect since dompdf 3. An unknown
+setter throws `UnexpectedValueException`.
 
 ### Self-signed certificates
 
-Remote resources (requires `enable_remote` in the dompdf configuration) are fetched with full TLS verification. On a
-development host with a self-signed certificate set `DYNAMICPDF_ALLOW_SELF_SIGNED=true` in `.env` (or
-`allow_self_signed_certificates` in `config/renatio/dynamicpdf.php`), or call `allowSelfSignedCertificates()` on the
-wrapper for a single document. The setting applies to every wrapper instance, including `loadHTML()` and after
-`setOptions()`.
+Remote resources are fetched with full TLS verification. On a development host set `DYNAMICPDF_ALLOW_SELF_SIGNED=true`
+(`allow_self_signed_certificates` in `config/renatio/dynamicpdf.php`) for every wrapper, including `loadHTML()` and
+after `setOptions()`, or call `allowSelfSignedCertificates()` for one document.
 
 ## Methods
 
-| Method                                                  | Description                                              |
-|---------------------------------------------------------|----------------------------------------------------------|
-| loadTemplate($code, array $data = [], $encoding = null, $layout = null, $locale = null) | Load backend template, optionally with another layout and locale |
-| loadLayout($code, array $data = [], $encoding = null, $locale = null) | Load backend layout, optionally in another locale |
-| loadTemplateModel(Template $template, array $data = [], $encoding = null, $locale = null) | Load a template model as it is, unsaved changes included |
-| loadLayoutModel(Layout $layout, array $data = [], $encoding = null, $locale = null) | Load a layout model as it is, unsaved changes included |
-| pageNumbers($text = 'Page {PAGE_NUM} of {PAGE_COUNT}', $position = 'bottom-center', $size = 9, $font = null, $margin = 20, $color = [0, 0, 0]) | Stamp page numbers on every page of the loaded document |
-| forBrowser($forBrowser = true)                          | Render HTML for a browser, with URLs from `\|pdfasset` and `background_img` instead of local paths |
-| allowSelfSignedCertificates()                           | Accept self-signed TLS certificates for remote resources |
-| allowRemoteApplicationAssets()                          | Enable remote resources, restricted to the configured and application hosts (disabled when there are none), and narrow a default `chroot` to the public asset directories, as the backend preview does |
-| loadHTML($string, $encoding = null)                     | Load HTML string                                         |
-| loadFile($file)                                         | Load HTML string from a file                             |
-| loadView($view, array $data = [], array $mergeData = [], $encoding = null) | Load a Laravel view                   |
-| parseTemplate(Template $template, array $data = [])     | Parse backend template using Twig                        |
-| parseLayout(Layout $layout, array $data = [])           | Parse backend layout using Twig                          |
-| setOption($attribute, $value = null)                    | Change one dompdf option, or an array of them            |
-| setOptions(array $options, $mergeWithDefaults = false)  | Replace the whole dompdf options object                  |
-| getDomPDF()                                             | Get the DomPDF instance                                  |
-| setPaper($paper, $orientation = 'portrait')             | Set the paper size and orientation (default A4/portrait) |
-| setWarnings($warnings)                                  | Show or hide warnings                                    |
-| output()                                                | Output the PDF as a string                               |
-| toFile($filename = 'document.pdf', $public = true)      | Return the PDF as a System\Models\File to attach to a model |
-| attachment($filename = 'document.pdf')                  | Return the PDF as an e-mail attachment                   |
-| encrypt($password, $ownerPassword = '', $permissions = []) | Password-protect the PDF (CPDF backend)               |
-| fake()                                                  | Static: replace the wrapper with a recorder for tests    |
-| addInfo(array $info)                                    | Set PDF metadata such as Title or Author                 |
-| save($filename, $disk = null)                           | Save the PDF to a file, optionally on a storage disk     |
-| download($filename = 'document.pdf')                    | Make the PDF downloadable by the user                    |
-| stream($filename = 'document.pdf')                      | Return a response with the PDF to show in the browser    |
+All methods are available through the facade `Renatio\DynamicPDF\Classes\PDF`.
 
-All methods are available through the facade class `Renatio\DynamicPDF\Classes\PDF`.
+| Method                                                                                                                                         | Description                                                                                                                                                      |
+|------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| loadTemplate($code, array $data = [], $encoding = null, $layout = null, $locale = null)                                                        | Load backend template, optionally with another layout and locale                                                                                                 |
+| loadLayout($code, array $data = [], $encoding = null, $locale = null)                                                                          | Load backend layout, optionally in another locale                                                                                                                |
+| loadTemplateModel(Template $template, array $data = [], $encoding = null, $locale = null)                                                      | Load a template model as it is, unsaved changes included                                                                                                         |
+| loadLayoutModel(Layout $layout, array $data = [], $encoding = null, $locale = null)                                                            | Load a layout model as it is, unsaved changes included                                                                                                           |
+| pageNumbers($text = 'Page {PAGE_NUM} of {PAGE_COUNT}', $position = 'bottom-center', $size = 9, $font = null, $margin = 20, $color = [0, 0, 0]) | Stamp page numbers on every page of the loaded document                                                                                                          |
+| forBrowser($forBrowser = true)                                                                                                                 | Render HTML for a browser, with URLs from `\|pdfasset` and `background_img` instead of local paths                                                               |
+| allowSelfSignedCertificates()                                                                                                                  | Accept self-signed TLS certificates for remote resources                                                                                                         |
+| allowRemoteApplicationAssets()                                                                                                                 | Enable remote resources only from the configured and application hosts (none when there are none), and narrow a default `chroot` to the public asset directories |
+| loadHTML($string, $encoding = null)                                                                                                            | Load HTML string                                                                                                                                                 |
+| loadFile($file)                                                                                                                                | Load HTML string from a file                                                                                                                                     |
+| loadView($view, array $data = [], array $mergeData = [], $encoding = null)                                                                     | Load a Laravel view                                                                                                                                              |
+| parseTemplate(Template $template, array $data = [])                                                                                            | Parse backend template using Twig                                                                                                                                |
+| parseLayout(Layout $layout, array $data = [])                                                                                                  | Parse backend layout using Twig                                                                                                                                  |
+| setOption($attribute, $value = null)                                                                                                           | Change one dompdf option, or an array of them                                                                                                                    |
+| setOptions(array $options, $mergeWithDefaults = false)                                                                                         | Replace the whole dompdf options object                                                                                                                          |
+| getDomPDF()                                                                                                                                    | Get the DomPDF instance                                                                                                                                          |
+| setPaper($paper, $orientation = 'portrait')                                                                                                    | Set the paper size and orientation (default A4/portrait)                                                                                                         |
+| setWarnings($warnings)                                                                                                                         | Show or hide warnings                                                                                                                                            |
+| output()                                                                                                                                       | Output the PDF as a string                                                                                                                                       |
+| toFile($filename = 'document.pdf', $public = true)                                                                                             | Return the PDF as a System\Models\File to attach to a model                                                                                                      |
+| attachment($filename = 'document.pdf')                                                                                                         | Return the PDF as an e-mail attachment                                                                                                                           |
+| encrypt($password, $ownerPassword = '', $permissions = [])                                                                                     | Password-protect the PDF (CPDF backend)                                                                                                                          |
+| fake()                                                                                                                                         | Static: replace the wrapper with a recorder for tests                                                                                                            |
+| addInfo(array $info)                                                                                                                           | Set PDF metadata such as Title or Author                                                                                                                         |
+| save($filename, $disk = null)                                                                                                                  | Save the PDF to a file, optionally on a storage disk                                                                                                             |
+| download($filename = 'document.pdf')                                                                                                           | Make the PDF downloadable by the user                                                                                                                            |
+| stream($filename = 'document.pdf')                                                                                                             | Return a response with the PDF to show in the browser                                                                                                            |
+
+Methods return the wrapper, so they can be chained:
+
+```php
+return PDF::loadTemplate('renatio::invoice')
+    ->save('/path-to/my_stored_file.pdf')
+    ->stream();
+```
 
 ## Tips
 
 ### Background image
 
-The background image is shown only where the layout HTML uses `{{ background_img }}`. The default HTML of a layout
-created in the backend does it on `<body>`; in other layouts, such as ones from view files, use the following code to
-display it over the whole page:
+The layout background shows only where the layout HTML uses `{{ background_img }}` (the default HTML of a new backend
+layout does it on `<body>`). For a full-page background:
 
 ```html
 <style>@page { margin: 0; }</style>
 <body style="background: url('{{ background_img }}') top left no-repeat; background-size: 100% 100%;">
 ```
 
-Without `@page { margin: 0; }` the background covers only the area inside dompdf's default 1.2 cm page margins.
+Without `@page { margin: 0; }` it covers only the area inside dompdf's default 1.2 cm margins.
 
-In a PDF `{{ background_img }}` is the local path of the uploaded file, so the background shows without `enable_remote`.
-A file on a remote disk, such as S3, is copied to `storage/temp/dynamicpdf` and the copy is deleted together with the
-PDF object. A file outside the dompdf `chroot` (the project root by default) keeps its URL, which loads only with
-`enable_remote` and its host in `allowed_remote_hosts`. In the backend HTML preview it is the URL of the file.
-
-dompdf redraws the background at the page size in its DPI, 794 x 1123 px for A4 at the default 96 DPI, so a larger
-image adds no sharpness on its own. For a higher-quality background, such as 300 DPI (2480 x 3508 px), use an image
-that large and set the DPI in code or with `dpi` in the dompdf configuration, which the backend preview also uses.
-This also makes the PDF larger:
-
-```php
-return PDF::loadTemplate($model->code)
-    ->setDpi(300)
-    ->stream();
-```
+- In a PDF `{{ background_img }}` is a local path, so `enable_remote` is not needed. A file on a remote disk (S3) is
+  copied to `storage/temp/dynamicpdf` and deleted with the PDF object. In the backend HTML preview it is the URL.
+- A file outside the dompdf `chroot` keeps its URL and loads only with `enable_remote` and its host in
+  `allowed_remote_hosts`.
+- dompdf redraws the background at page size × DPI (794 × 1123 px for A4 at 96 DPI). For a sharper background use a
+  larger image and raise the DPI (e.g. 300 DPI, 2480 × 3508 px) with `setDpi()` or `dpi` in the config, which the
+  backend preview also uses. This makes the PDF larger.
 
 ### UTF-8 support
 
-In your layout, set the UTF-8 meta tag in `head` section:
-
-```html
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-```
-
-If you have problems with foreign characters, then use the **DejaVu Sans** font family.
+Set `<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>` in the layout `head`. For foreign characters
+use the **DejaVu Sans** font.
 
 ### Page breaks
-
-You can use the CSS page-break-before/page-break-after properties to create a new page.
 
 ```html
 <style>
@@ -533,8 +420,8 @@ You can use the CSS page-break-before/page-break-after properties to create a ne
 
 ### Render log
 
-dompdf writes no log by default (`log_output_file` is `null`). To see the frame count, memory, time and dompdf's debug
-output of a render, set `log_output_file` in the dompdf configuration or for a single document:
+dompdf writes no log by default. To get frame count, memory, time and debug output, set `log_output_file` in the config
+or per document; the file is overwritten on every render:
 
 ```php
 return PDF::loadTemplate('renatio::invoice')
@@ -542,14 +429,12 @@ return PDF::loadTemplate('renatio::invoice')
     ->stream();
 ```
 
-The file is overwritten on every render. The backend PDF preview writes `storage/temp/log.htm` only when `app.debug` is
-on.
+The backend PDF preview writes `storage/temp/log.htm` only when `app.debug` is on.
 
 ### Embed image inside PDF template
 
-Prefer local files, which dompdf reads without `enable_remote`: the local path of an attachment, `|pdfasset` for an
-image shipped with a plugin, or a data URI for a small generated image. `$file` is an instance of
-`October\Rain\Database\Attach\File`:
+Prefer local files, which need no `enable_remote`: an attachment's local path, `|pdfasset`, or a data URI. `$file` is
+an `October\Rain\Database\Attach\File`:
 
 ```php
 return PDF::loadTemplate('renatio::invoice', ['file' => $file])->stream();
@@ -561,13 +446,11 @@ return PDF::loadTemplate('renatio::invoice', ['file' => $file])->stream();
 <img src="data:image/png;base64,{{ logo_base64 }}">
 ```
 
-`getLocalPath` copies a file from a remote disk, such as S3, to `storage/temp/uploads` first and October does not delete
-the copy. Local paths must lie inside the dompdf `chroot`, the project root by default; the backend PDF preview narrows
-it to the public directories, so a protected upload renders from code but not in the preview.
+`getLocalPath` copies a remote-disk file to `storage/temp/uploads`, which October does not delete. Local paths must lie
+inside the dompdf `chroot` (the project root by default).
 
-A URL, such as `file.getPath` or `file.getThumb(200, 200, {'mode': 'crop'})`, is a remote file. Enable remote files
-only together with the hosts they may come from, never with `setIsRemoteEnabled(true)` alone: with
-`allowed_remote_hosts` left at `null` or set to an empty array dompdf fetches any address the HTML names.
+A URL (`file.getPath`, `file.getThumb(200, 200, {'mode': 'crop'})`) is remote. Always enable remote files together with
+allowed hosts: with `allowed_remote_hosts` `null` or empty, dompdf fetches any address.
 
 ```php
 return PDF::loadTemplate('renatio::invoice', ['file' => $file])
@@ -576,20 +459,17 @@ return PDF::loadTemplate('renatio::invoice', ['file' => $file])
     ->stream();
 ```
 
-The same is set for every PDF with `enable_remote` and `allowed_remote_hosts` in the dompdf configuration. dompdf
-fetches `http(s)` addresses with cURL when the extension is available, and needs `allow_url_fopen` only without it.
+dompdf uses cURL when available and needs `allow_url_fopen` only without it.
 
-> The backend PDF preview fetches remote resources only from the hosts listed in `allowed_remote_hosts` of the dompdf
-> configuration plus the application host (`app.url` and the custom site URLs); when no host can be resolved at all it
-> fetches nothing remote. It reads local files only from the directories October publishes (web root, modules,
-> plugins, themes, app assets, public uploads, media and the resize cache) unless `chroot` is set in the
-> configuration, and writes the dompdf log file only when `app.debug` is on. A schemeless `APP_URL` such as
-> `myapp.test` is understood.
+> The backend PDF preview fetches remote resources only from `allowed_remote_hosts` plus the application hosts
+> (`app.url` and custom site URLs; schemeless `APP_URL` is understood), and nothing remote when none resolve. Unless
+> `chroot` is configured, it reads local files only from public directories (web root, modules, plugins, themes, app
+> assets, public uploads, media, resize cache), so a protected upload renders from code but not in the preview.
 
 ### QR codes and barcodes
 
-`pdf_qr(text, size = 150, margin = 0)` and `pdf_barcode(text, type = 'C128', widthFactor = 2, height = 50)` return
-the code as a PNG data URI, so it renders with `enable_remote` off. They need packages the plugin only suggests:
+`pdf_qr(text, size = 150, margin = 0, options = {})` and `pdf_barcode(text, type = 'C128', widthFactor = 2, height = 50)`
+return a PNG data URI (an SVG data URI without the GD extension), so `enable_remote` is not needed. They require:
 
 ```bash
 composer require endroid/qr-code picqer/php-barcode-generator
@@ -600,31 +480,50 @@ composer require endroid/qr-code picqer/php-barcode-generator
 <img src="{{ pdf_barcode(invoice.ean, 'EAN13') }}">
 ```
 
-Barcode types are `EAN13`, `EAN8`, `UPCA`, `C128` and `C39`, available as constants of
-`Renatio\DynamicPDF\Classes\Codes`. Arguments are positional. A missing package, an unsupported type, a size that is
-not a positive whole number or text the code cannot hold (a wrong EAN-13 check digit, a non-ASCII character, too much
-text for a QR code) stops the render with a message saying what to fix, which the backend preview shows. Without the
-GD extension, which dompdf needs for PNG images, the code is drawn as an SVG data URI instead. `dynamicpdf:check`
-reports whether each package is installed and supported.
+`size` and `margin` are pixels of the image; the printed size comes from the `<img>` `width`, so generate it larger
+than displayed (the demo invoice makes 192 px and shows 96 px).
+
+`pdf_qr()` also takes a hash of options, in place of the size or after the margin:
+
+| Option             | Value                                   | Default   |
+|--------------------|-----------------------------------------|-----------|
+| `size`             | image width and height in pixels        | `150`     |
+| `margin`           | white space around the code in pixels   | `0`       |
+| `color`            | colour of the code, `#rgb` or `#rrggbb` | `#000000` |
+| `background`       | `#rgb`, `#rrggbb` or `transparent`      | `#ffffff` |
+| `error_correction` | `low`, `medium`, `quartile` or `high`   | `low`     |
+
+```twig
+<img src="{{ pdf_qr(invoice.url, {size: 300, color: '#1f2937', error_correction: 'medium'}) }}" width="100">
+```
+
+Barcode types: `EAN13`, `EAN8`, `UPCA`, `C128`, `C39` (constants of `Renatio\DynamicPDF\Classes\Codes`). Arguments are
+positional. A missing package, unsupported type, non-positive or non-integer size, or text the code cannot hold (wrong
+EAN-13 check digit, non-ASCII, too long for QR) stops the render with an explanatory message.
+
+`pdf_qr_available()` and `pdf_barcode_available()` tell whether a supported version of the package is installed:
+
+```twig
+{% if pdf_qr_available() %}
+    <img src="{{ pdf_qr('https://example.com/invoices/123') }}" width="80">
+{% endif %}
+```
 
 ### Attach the PDF to a model
 
-`toFile()` returns a `System\Models\File` built from the rendered document, so the PDF can be attached with October's
-`attachOne` / `attachMany` relations instead of being written to disk by hand:
+`toFile()` returns a `System\Models\File` for `attachOne` / `attachMany` relations:
 
 ```php
 $order->invoice = PDF::loadTemplate('renatio::invoice', ['order' => $order])->toFile('invoice.pdf', public: false);
 $order->save();
 ```
 
-Pass `public: false` for a relation declared with `'public' => false`, otherwise the record points at the wrong
-directory. The file is written to the uploads disk as soon as `toFile()` returns, so attach and save it, or call
-`$file->delete()` when you abandon it.
+Pass `public: false` for a relation declared with `'public' => false`. The file is written to the uploads disk
+immediately, so attach and save it, or call `$file->delete()`.
 
 ### Attach the PDF to an e-mail
 
-`attachment()` returns an `Illuminate\Mail\Attachment` with the `application/pdf` type. The document is rendered when
-the attachment is added to the message:
+`attachment()` returns an `application/pdf` `Illuminate\Mail\Attachment`, rendered when added to the message:
 
 ```php
 Mail::send('acme.shop::mail.invoice', $data, function ($message) use ($order) {
@@ -633,7 +532,8 @@ Mail::send('acme.shop::mail.invoice', $data, function ($message) use ($order) {
 });
 ```
 
-In a mailable, return it from `attachments()`:
+In a mailable, return it from `attachments()` (not the constructor — the attachment holds a closure and cannot be
+serialized for the queue); a queued mailable then renders the PDF in the worker:
 
 ```php
 public function attachments(): array
@@ -641,10 +541,6 @@ public function attachments(): array
     return [PDF::loadTemplate('acme.shop::pdf.invoice', ['order' => $this->order])->attachment('invoice.pdf')];
 }
 ```
-
-Laravel calls `attachments()` while sending, so a queued mailable renders the PDF in the queue worker. Call
-`attachment()` there rather than in the constructor: the attachment holds a closure and cannot be serialized into a
-queued job, and `Mailable::attach()` renders it right away.
 
 ### Save to a storage disk and set metadata
 
@@ -660,13 +556,12 @@ PDF::loadTemplate('renatio::invoice')
 return PDF::loadTemplate('renatio::invoice')->encrypt('reader-password', 'owner-password', ['print'])->stream();
 ```
 
-`encrypt()` renders the document, so call it last, right before the output method. Permissions are opt-in: without
+`encrypt()` renders the document, so call it right before the output method. Permissions are opt-in: without
 `['print', 'copy', ...]` the reader cannot print or copy. Requires the CPDF backend.
 
 ### Download PDF via Ajax response
 
-The October CMS AJAX framework saves a response with a `Content-Disposition: attachment` header as a file, so an AJAX
-handler can return `download()`:
+The AJAX framework saves a `Content-Disposition: attachment` response as a file, so a handler can return `download()`:
 
 ```php
 public function onDownload()
@@ -677,8 +572,7 @@ public function onDownload()
 
 ### Download a record's PDF in the backend
 
-A "Download invoice" button on a backend form needs an AJAX handler that checks a permission, loads the record and
-renders the template in the document's language. In the controller of your plugin:
+In your plugin's controller:
 
 ```php
 use October\Rain\Exception\ForbiddenException;
@@ -697,21 +591,18 @@ public function update_onDownloadInvoice($recordId)
 }
 ```
 
-And the button in the toolbar of the update form (`controllers/orders/update.php`; the `update_` prefix makes the
-handler exist on that page only):
+And in the update form toolbar (`controllers/orders/update.php`):
 
 ```php
 <?= Ui::ajaxButton(label: 'Download invoice', handler: 'onDownloadInvoice', class: 'btn-default') ?>
 ```
 
-`download()` works for an AJAX handler (see above), and `formFindModelObject()` already refuses a record the form
-cannot load. The PDF shows the saved record, not unsaved form changes. Register the permission in your
-`Plugin::registerPermissions()`.
+The PDF shows the saved record, not unsaved form changes. Register the permission in `Plugin::registerPermissions()`.
 
 ### Other rendering engines
 
-dompdf supports CSS 2.1 and parts of CSS 3, without flexbox or grid. If a document needs them, keep editing it in the
-backend and pass the HTML from `PDF::parseTemplate()` to your own tool, such as Gotenberg or Browsershot:
+dompdf supports CSS 2.1 and parts of CSS 3, without flexbox or grid. For those, pass the HTML from
+`PDF::parseTemplate()` to another tool such as Gotenberg or Browsershot:
 
 ```php
 use Renatio\DynamicPDF\Models\Template;
@@ -719,18 +610,16 @@ use Renatio\DynamicPDF\Models\Template;
 $html = PDF::parseTemplate(Template::byCode('acme.shop::pdf.invoice'), ['order' => $order]);
 ```
 
-The HTML is rendered in the current application locale, and asset and image URLs point to the public site, so the
-other tool must be able to reach it. Paper size and orientation and the layout's page numbers are applied by dompdf,
-not written into the HTML; set them in the other tool.
+The HTML uses the current application locale and public URLs for assets. Paper size, orientation and layout page
+numbers are not in the HTML; set them in the other tool.
 
 ### Page numbers
 
-The simplest way is the layout: pick a position under *Options > Page numbers* in the layout form (or set
-`pageNumbers = "bottom-center"` in the configuration section of a layout view) and every template using that layout
-gets page numbers, in code and in the backend preview. An empty text falls back to "Page {PAGE_NUM} of {PAGE_COUNT}"
-in the language of the render. The demo *Header and Footer* layout has them switched on.
+Set a position under *Options > Page numbers* in the layout form (or `pageNumbers = "bottom-center"` in a layout view)
+and every template using the layout gets page numbers. An empty text falls back to "Page {PAGE_NUM} of {PAGE_COUNT}" in
+the render language.
 
-From code, page numbers are stamped on every page after rendering, without enabling inline PHP:
+From code (applies to that document only and overrides the layout setting):
 
 ```php
 return PDF::loadTemplate('renatio::invoice')
@@ -738,26 +627,21 @@ return PDF::loadTemplate('renatio::invoice')
     ->stream();
 ```
 
-`{PAGE_NUM}` and `{PAGE_COUNT}` are replaced on each page. Positions: `top-left`, `top-center`, `top-right`,
-`bottom-left`, `bottom-center`, `bottom-right`; `font` (a family available in the document, for example one declared
-with `@font-face` in the layout; the dompdf default font otherwise), `margin` (points) and `color` (RGB between 0
-and 1) are optional. Requires the CPDF or PDFLib backend; the GD backend cannot draw page text.
+Positions: `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right`. Optional `font` (a
+family available in the document, e.g. from `@font-face`), `margin` (points) and `color` (RGB 0–1). Requires the CPDF or
+PDFLib backend.
 
-Call `pageNumbers()` after loading the document; it applies to that document only and overrides the layout setting.
-Inline PHP (`setIsPhpEnabled(true)`) is no longer needed for page numbers and should stay off.
-
-> **Security warning:** only enable `setIsPhpEnabled(true)` or `enable_php` in `config/dompdf.php` when the template
-> content is fully trusted. Any `<script type="text/php">` block in the HTML is executed on the server, so enabling it
-> for templates that can be edited by backend users allows remote code execution. The backend HTML and PDF previews
-> never run inline PHP, whatever the configuration says.
+> **Security warning:** page numbers do not need inline PHP. Enable `setIsPhpEnabled(true)` or `enable_php` only for
+> fully trusted content: any `<script type="text/php">` block runs on the server. The backend previews never run
+> inline PHP.
 
 ## Testing
 
-`PDF::fake()` replaces the wrapper for the rest of the test: no template is looked up, no Twig, dompdf, database or
-filesystem work happens, `stream()` and `download()` return an empty `application/pdf` response, `output()` returns an
-empty string, `save()` writes nothing, `toFile()` returns a record that can be attached and saved and `attachment()` an
-empty attachment. The fake records every `loadTemplate()`, `loadLayout()`, `loadView()`, `loadFile()`,
-`parseTemplate()` and `parseLayout()` call with its data, layout and locale:
+`PDF::fake()` replaces the wrapper for the rest of the test: no lookup, Twig, dompdf, database or filesystem work.
+`stream()` / `download()` return an empty `application/pdf` response, `output()` an empty string, `save()` writes
+nothing, `toFile()` returns an attachable record and `attachment()` an empty attachment. Every `loadTemplate()`,
+`loadLayout()`, `loadView()`, `loadFile()`, `parseTemplate()` and `parseLayout()` call is recorded with its data,
+layout and locale:
 
 ```php
 $fake = PDF::fake();
@@ -769,32 +653,36 @@ $fake->assertRenderedTimes('acme::pdf.invoice', 1);
 $fake->assertNotRendered('acme::pdf.reminder');
 ```
 
-`assertNothingRendered()` covers the negative case and `rendered()` returns the raw records. `pageNumbers()` keeps
-validating its arguments under the fake.
+Also `assertNothingRendered()` and `rendered()` (the raw records). `pageNumbers()` still validates its arguments.
 
 ## Console commands
 
-`php artisan dynamicpdf:sync` synchronizes the registered PDF views with the database and lists what was created,
-updated or failed and which non-customized templates are no longer registered. `--prune` deletes those templates
-together with their translations after a confirmation (`--force` skips it); nothing else ever deletes them. It exits
-with code 1 when any code fails to sync (a missing view file, a parse error or a failed save). Run it after a deployment
-so the templates exist before the first backend visit.
+Run `dynamicpdf:sync` and `dynamicpdf:check` after `october:migrate` on every deployment.
 
-`php artisan dynamicpdf:check` reports the dompdf configuration that fails silently: font, cache and temporary
-directories (existence and write access, without creating anything), `chroot`, inline PHP and remote resources,
-every registered code without a view file and whether the packages behind `pdf_qr()` and `pdf_barcode()` are installed. It exits with code 1 on a failure, so it can guard a deployment. Run both
-commands after `october:migrate`.
+`php artisan dynamicpdf:sync` synchronizes registered views and lists what was created, updated or failed and which
+non-customized templates are no longer registered. `--prune` deletes those (with translations) after confirmation;
+`--force` skips it. Exits with code 1 when any code fails to sync.
+
+`php artisan dynamicpdf:check` reports silent dompdf misconfiguration: font, cache and temp directories (existence and
+write access), `chroot`, inline PHP, remote resources, registered codes without a view file, and the `pdf_qr()` /
+`pdf_barcode()` packages. Exits with code 1 on a failure.
 
 ### Render
 
-`php artisan dynamicpdf:render` renders a template with the same configuration as your application code and writes
-it to `--output`, by default `storage/temp/<code>.pdf`. Pass the variables with `--data` as a JSON object or as
-`@path/to/file.json`; `--sample` uses the template's *Sample data*, and keys from `--data` override it. `--layout`
-and `--locale` work like the arguments of `PDF::loadTemplate()`, and `--html` writes the HTML that dompdf lays out
-instead of the PDF, with asset URLs as in the backend HTML preview so it opens in a browser. The command prints the
-written path and the dompdf warnings of the PDF render, such as an image that could not be loaded or an unknown CSS
-property; `--html` skips that render, so it prints almost none. It exits with code 1 and a short message on an unknown
-code, invalid data, a Twig error, a dompdf failure or an unwritable output path; `-v` shows the full exception.
+`php artisan dynamicpdf:render <code>` renders a template like your application does.
+
+| Option      | Effect                                                                        |
+|-------------|-------------------------------------------------------------------------------|
+| `--output=` | output path, `storage/temp/<code>.pdf` by default                             |
+| `--data=`   | variables as a JSON object or `@path/to/file.json`; overrides `--sample` keys |
+| `--sample`  | use the template's *Sample data*                                              |
+| `--layout=` | as in `PDF::loadTemplate()`                                                   |
+| `--locale=` | as in `PDF::loadTemplate()`                                                   |
+| `--html`    | write the HTML (with browser asset URLs) instead of the PDF                   |
+| `-v`        | show the full exception on failure                                            |
+
+It prints the written path and dompdf warnings (none with `--html`), and exits with code 1 on an unknown code, invalid
+data, Twig or dompdf error, or unwritable output path.
 
 ```bash
 php artisan dynamicpdf:render acme.shop::pdf.invoice --sample --output=invoice.pdf
@@ -803,127 +691,80 @@ php artisan dynamicpdf:render acme.shop::pdf.invoice --data=@order.json --locale
 
 ### Export and import
 
-`php artisan dynamicpdf:export` writes templates and layouts to one JSON file: content, paper settings, sample data, the
-*Customized* flag, page number settings, every stored translation and the layout background image (embedded as base64).
-Pass codes to export only those; a template always brings its layout along. Without `--path` the file goes to
-`storage/app/dynamicpdf-export-<date>.json`, and `--path=-` prints it.
+`php artisan dynamicpdf:export [codes...]` writes templates and layouts to one JSON file: content, paper and page number
+settings, sample data, the *Customized* flag, translations and the layout background image (base64). A template brings
+its layout along. Default path `storage/app/dynamicpdf-export-<date>.json`; `--path=-` prints to stdout.
 
 ```bash
 php artisan dynamicpdf:export
 php artisan dynamicpdf:export acme.shop::pdf.invoice acme.shop::pdf.quotation --path=pdf-templates.json
 ```
 
-`php artisan dynamicpdf:import` reads such a file on another installation, layouts first, and prints a table of what
-was created, updated or skipped. A code that already exists is skipped unless you pass `--force`, which overwrites its
-content, settings, translations and background image. Every record is validated like a backend save (code format,
-Twig syntax, LESS), and the import runs in one transaction: the first invalid record is reported and nothing is
-imported.
+`php artisan dynamicpdf:import <file>` imports layouts first and prints what was created, updated or skipped. Existing
+codes are skipped unless `--force` overwrites them. Records are validated like a backend save (code, Twig, LESS) in one
+transaction: the first invalid record aborts the whole import.
 
 ```bash
 php artisan dynamicpdf:import pdf-templates.json
 php artisan dynamicpdf:import pdf-templates.json --force
 ```
 
-A template moved this way together with its layout renders identically on the target. A record that is not *Customized*
-stays so only where the target registers the same view, so the record keeps following that view file; a record whose
-view the target does not register is imported as customized, so the synchronization never deletes or rewrites it.
-Background images must be JPG, PNG, GIF or WebP. A layout whose background file is missing on disk is exported without
-it and listed in a warning. Translations for the target's default language are not imported, because they would
-overwrite the default content.
+- A non-customized record stays so only if the target registers the same view; otherwise it is imported as customized.
+- Background images must be JPG, PNG, GIF or WebP; a layout whose background file is missing is exported without it,
+  with a warning.
+- Translations for the target's default language are not imported.
 
 ## Examples
 
 ### Demo examples
 
-There is a console command that will enable demo templates and layouts.
-
 ```bash
 php artisan dynamicpdf:demo
-```
-
-To disable the demo, run the following command:
-
-```bash
 php artisan dynamicpdf:demo --disable
 ```
 
-It deletes the demo templates and layouts, but keeps a customized demo template and a demo layout that is customized or
-still used by a template, and says which ones it kept.
-
-The first example shows an invoice with a custom font and an embedded image.
-
-The second example shows the use of a header and footer, a page break and a full-page background image.
+The demo adds an invoice (custom font, embedded image) and a document with header and footer, page break and full-page
+background. `--disable` deletes them, except a customized demo template or a demo layout that is customized or still
+used, and lists what it kept.
 
 ### Render PDF in browser
-
-```php
-use Renatio\DynamicPDF\Classes\PDF; // import facade
-
-public function pdf()
-{
-    $templateCode = 'renatio::invoice'; // unique code of the template
-    $data = ['name' => 'John Doe']; // optional data used in template
-
-    return PDF::loadTemplate($templateCode, $data)->stream('download.pdf');
-}
-```
-
-Where `$templateCode` is a unique code specified when creating the template and `$data` is an optional array of
-variables passed to the template.
-
-In the HTML template you can use `{{ name }}` to output `John Doe`.
-
-### Download PDF
 
 ```php
 use Renatio\DynamicPDF\Classes\PDF;
 
 public function pdf()
 {
-    return PDF::loadTemplate('renatio::invoice')->download('download.pdf');
+    return PDF::loadTemplate('renatio::invoice', ['name' => 'John Doe'])->stream('download.pdf');
 }
 ```
 
-### Fluent interface
-
-You can chain the methods:
-
-```php
-return PDF::loadTemplate('renatio::invoice')
-    ->save('/path-to/my_stored_file.pdf')
-    ->stream();
-```
+In the template, `{{ name }}` outputs `John Doe`. Use `->download('download.pdf')` to download instead.
 
 ### Render with another layout
 
-A template can be rendered with a different layout than the one stored with it, for example one letterhead per
-company, without changing the template in the database:
+Swaps the layout markup, CSS and background image without changing the stored template; paper size and orientation
+still come from the template (use `setPaper()` to change them):
 
 ```php
 return PDF::loadTemplate('renatio::invoice', $data, layout: 'renatio::layouts.company_b')->stream();
 ```
 
-Only the layout markup, CSS and background image are swapped; paper size and orientation still come from the
-template, so call `setPaper()` when the other layout needs them changed.
-
 ### Render in another language
 
-The document language usually should not depend on the language of the backend user who generated it. Pass the
-locale to render in; language file translations (`trans`, `__`), Carbon dates and the `locale` template variable
-follow it while the template is parsed, and the application locale is restored afterwards, also when parsing fails:
+Translations (`trans`, `__`), Carbon dates and the `locale` variable follow the `locale` argument while parsing; the
+application locale is restored afterwards, also on failure:
 
 ```php
 return PDF::loadTemplate('renatio::invoice', $data, locale: 'de')->download('rechnung.pdf');
 ```
 
-`loadTemplate()` and `loadLayout()` always add the `locale` variable, holding the application locale when no argument
-is given; a `locale` key in your own data takes precedence. Inline PHP executed by dompdf during `output()` runs after
-the locale has been restored.
+`loadTemplate()` and `loadLayout()` always add `locale` (the application locale by default); a `locale` key in your
+data wins. Inline PHP run by dompdf during `output()` runs after the locale is restored.
 
 #### Translate the templates themselves
 
-Template title and markup, and layout markup and CSS, can be stored per language. Off by default; turn it on in
-`config/multisite.php` and clear the application cache:
+Template title and markup, and layout markup and CSS, can be stored per language. Enable it in `config/multisite.php`
+and clear the application cache:
 
 ```php
 'features' => [
@@ -931,23 +772,20 @@ Template title and markup, and layout markup and CSS, can be stored per language
 ],
 ```
 
-Editing a template or layout with another site selected in the backend then writes a translation instead of
-overwriting the stored content, the backend previews follow the selected site, and the `locale` argument above picks
-the translation to render with:
+Editing with another site selected in the backend then saves a translation, previews follow the selected site, and the
+`locale` argument picks the translation:
 
 ```php
 PDF::loadTemplate('acme.shop::pdf.invoice', $data, locale: 'pl')->download('faktura.pdf');
 ```
 
-A language with no translation falls back to the stored content, and templates and layouts backed by a view file
-keep following that file in the default language, so **Reset to Default** and the synchronization never touch a
-translation. Per-language background images are not supported.
+A language without a translation falls back to the stored content. **Reset to Default** and synchronization never touch
+translations. Per-language background images are not supported.
 
-With the feature above turned on, a registered view can ship localized siblings, used when a `locale` argument is
-passed: `pdf.invoice` renders from `pdf.de.invoice`, `pdf.layouts.default` from `pdf.layouts.de.default`. Without the
-feature or the argument the siblings are ignored. The locale chain is followed, so `de-AT` takes `pdf.de-AT.invoice` and
-falls back to `pdf.de.invoice`. The sibling is read for that render only and never changes the stored row; a customized
-template or layout or a stored translation wins over it.
+With the feature on and a `locale` argument passed, a registered view can ship localized siblings: `pdf.invoice`
+renders from `pdf.de.invoice`, `pdf.layouts.default` from `pdf.layouts.de.default`. `de-AT` tries `pdf.de-AT.invoice`,
+then `pdf.de.invoice`. A customized record or a stored translation wins over the sibling, which never changes the stored
+row.
 
 ```text
 plugins/acme/shop/views/pdf/
@@ -958,7 +796,7 @@ plugins/acme/shop/views/pdf/
     layouts/de/default.htm
 ```
 
-This is independent of RainLab.Translate, whose `|_` messages follow the site locale, not the `locale` argument.
+RainLab.Translate `|_` messages follow the site locale, not the `locale` argument.
 
 ### Change paper size and orientation
 
@@ -971,8 +809,6 @@ return PDF::loadTemplate('renatio::invoice')
 Available [paper sizes](https://github.com/dompdf/dompdf/blob/master/src/Adapter/CPDF.php) (the `$PAPER_SIZES` array).
 
 ### PDF on CMS page
-
-To display PDF on CMS page you can use PHP section of the page like so:
 
 ```php
 use Renatio\DynamicPDF\Classes\PDF;
@@ -1009,8 +845,9 @@ function onStart()
 
 ### Using custom fonts
 
-The plugin ships the Open Sans font. Declare it in a `<style>` element of the layout HTML: the *CSS* tab is compiled as
-LESS and does not run Twig, so `|pdfasset` works only in the HTML.
+The plugin ships Open Sans. Declare fonts in a `<style>` element of the layout HTML — the *CSS* tab is LESS without
+Twig, so `|pdfasset` works only in the HTML. Repeat the rule for `OpenSans-Bold.ttf` (`font-weight: bold`),
+`OpenSans-Italic.ttf` (`font-style: italic`) and `OpenSans-BoldItalic.ttf` (both):
 
 ```html
 <style>
@@ -1019,44 +856,20 @@ LESS and does not run Twig, so `|pdfasset` works only in the HTML.
     src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf'|pdfasset }}');
 }
 
-@font-face {
-    font-family: 'Open Sans';
-    font-weight: bold;
-    src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf'|pdfasset }}');
-}
-
-@font-face {
-    font-family: 'Open Sans';
-    font-style: italic;
-    src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf'|pdfasset }}');
-}
-
-@font-face {
-    font-family: 'Open Sans';
-    font-style: italic;
-    font-weight: bold;
-    src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf'|pdfasset }}');
-}
-
 body {
     font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
 }
 </style>
 ```
 
-The sandboxed backend HTML preview embeds the `ttf`, `otf`, `woff` and `woff2` fonts of `@font-face` rules in `<style>`
-elements when they are public files of the application (plugins, themes, media or public uploads, up to 5 MB each);
-fonts in stylesheets linked with `<link>` are not embedded and show a fallback font in that preview.
+The backend HTML preview embeds `ttf`, `otf`, `woff` and `woff2` fonts from `@font-face` rules in `<style>` elements
+when they are public application files (up to 5 MB each); fonts from `<link>`ed stylesheets show a fallback there.
 
-dompdf embeds every font file in full unless `enable_font_subsetting` is on (off by default), which keeps only the
-glyphs the document uses. A one-page document in the four Open Sans styles above shrinks from about 525 KB to about
-30 KB:
+dompdf embeds full font files unless `enable_font_subsetting` is on, which keeps only the used glyphs (a one-page
+document in four Open Sans styles shrinks from about 525 KB to 30 KB). Set it in the config or per document:
 
 ```php
 return PDF::loadTemplate('renatio::invoice')
     ->setIsFontSubsettingEnabled(true)
     ->stream();
 ```
-
-Set `enable_font_subsetting` to `true` in the dompdf configuration to apply it to every PDF.

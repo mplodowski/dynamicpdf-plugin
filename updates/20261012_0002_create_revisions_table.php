@@ -6,8 +6,16 @@ use October\Rain\Database\Updates\Migration;
 
 return new class extends Migration
 {
+    /**
+     * Guarded because the script shipped as 8.1.0 before moving to 9.0.0, so an install that ran it there runs it
+     * again.
+     */
     public function up(): void
     {
+        if (Schema::hasTable('renatio_dynamicpdf_revisions')) {
+            return;
+        }
+
         Schema::create('renatio_dynamicpdf_revisions', function (Blueprint $table) {
             $table->id();
             $table->morphs('revisionable', 'renatio_dynamicpdf_revisions_revisionable_index');

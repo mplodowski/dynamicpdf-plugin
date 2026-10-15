@@ -8,7 +8,7 @@ return new class extends Migration
 {
     /**
      * Guarded because the script was on master under the untagged 8.0.4 and 8.0.5 before
-     * moving to 8.1.0, so an install that ran it there runs it again.
+     * moving to 9.0.0, so an install that ran it there runs it again.
      */
     public function up(): void
     {

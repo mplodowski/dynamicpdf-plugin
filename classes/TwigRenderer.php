@@ -12,6 +12,8 @@ use Twig\Source;
 
 class TwigRenderer
 {
+    protected const SYSTEM_ENVIRONMENT = 'renatio.dynamicpdf.twig.sandboxed';
+
     protected ?Environment $environment = null;
 
     protected ?PDFTwigController $controller = null;
@@ -30,6 +32,10 @@ class TwigRenderer
         }
 
         $twig = $this->environment();
+
+        if ((new TwigSandbox)->enabled()) {
+            $data = (new TwigData)->convert($data);
+        }
 
         try {
             return $this->whileControllerCurrent(fn (): string => $twig->createTemplate($markup)->render($data));
@@ -80,10 +86,44 @@ class TwigRenderer
         if ($this->environment === null || $this->theme !== $theme?->getDirName()) {
             $this->theme = $theme?->getDirName();
             $this->controller = $theme ? $this->makeController($theme) : null;
-            $this->environment = $this->controller?->getTwig() ?? app('twig.environment');
+            $this->environment = $this->controller
+                ? (new TwigSandbox)->apply($this->controller->getTwig())
+                : $this->systemEnvironment();
         }
 
         return $this->environment;
+    }
+
+    /**
+     * A fresh twig.environment, built with the container's extenders, so the sandbox does not reach
+     * the shared one behind Twig::parse() and .htm views. Shared by every render in the process.
+     */
+    protected function systemEnvironment(): Environment
+    {
+        $sandbox = new TwigSandbox;
+
+        if (! $sandbox->enabled()) {
+            return app('twig.environment');
+        }
+
+        $key = self::SYSTEM_ENVIRONMENT . '.' . md5(serialize([config('cms.safe_mode'), config('cms.security_policy_v1')]));
+
+        if (! app()->bound($key)) {
+            $shared = app()->resolved('twig.environment') ? app('twig.environment') : null;
+            app()->forgetInstance('twig.environment');
+
+            try {
+                app()->instance($key, $sandbox->apply(app('twig.environment')));
+            } finally {
+                app()->forgetInstance('twig.environment');
+
+                if ($shared) {
+                    app()->instance('twig.environment', $shared);
+                }
+            }
+        }
+
+        return app($key);
     }
 
     protected function activeTheme(): ?Theme

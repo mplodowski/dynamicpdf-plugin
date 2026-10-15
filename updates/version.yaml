@@ -55,21 +55,13 @@ v7.1.2: Allow self signed certificates on development environment.
 v8.0.1: Support October 4.
 v8.0.2: Update dependencies.
 v8.0.3: Refactor to use pluck() function.
-v8.1.0:
-    - Security release. Sandboxed HTML preview, PDF preview never runs inline PHP and loads remote files from allowed hosts only, layout CSS cannot read server files.
+v9.0.0:
+    - Security release. Templates render in a Twig sandbox and previews never run inline PHP.
     - Require PHP 8.2 and October CMS 4.4.
-    - Granular permissions for templates and layouts, existing roles and administrators keep their access.
-    - Template and layout translations, localized view files, layouts follow view file updates like templates.
-    - Stricter saving. Invalid Twig, duplicate codes and deleting used layouts are rejected.
-    - Page numbers set on the layout or from code without inline PHP, PDF::fake(), sync, check and render commands.
-    - New |pdfasset filter, demo and layout backgrounds render without remote assets.
-    - Backend previews show unsaved form changes in a popup.
-    - Template form lists the available variables and filters, a click copies the Twig code.
-    - Export and import commands move templates and layouts between installations.
-    - afterRender listeners receive the HTML of the previous one, their changes add up.
-    - attachment() returns the PDF as an e-mail attachment.
-    - History tab keeps the last 20 versions of templates and layouts, Restore brings one back.
-    - New pdf_qr() and pdf_barcode() Twig functions for QR codes and barcodes, with optional packages.
+    - New editor with Twig autocomplete, live previews and a version history with diffs.
+    - Granular permissions and translations for templates and layouts.
+    - Page numbers on layouts, QR codes and barcodes, |pdfasset filter.
+    - Export, import, sync, check and render commands, PDF::fake() for tests.
     - 20260907_0001_add_sample_data_to_templates_table.php
     - 20260907_0002_add_unique_code_indexes.php
     - 20260930_0001_unlock_edited_layouts.php

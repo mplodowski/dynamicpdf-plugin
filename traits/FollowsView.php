@@ -240,10 +240,7 @@ trait FollowsView
 
         $fields->_view_status
             ->mode($customised ? 'warning' : 'info')
-            ->comment(trans("renatio.dynamicpdf::lang.{$this->langGroup()}.{$key}", [
-                'view' => $this->getView(),
-                'reset' => trans('backend::lang.form.reset_default'),
-            ]));
+            ->text(trans("renatio.dynamicpdf::lang.{$this->langGroup()}.{$key}"));
     }
 
     protected function langGroup(): string

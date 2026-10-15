@@ -1,41 +1,11 @@
 <?php
-    $variables = (new Renatio\DynamicPDF\Classes\TemplateVariables)->forTemplate($formModel);
-    $groups = [
-        'sample' => 'renatio.dynamicpdf::lang.templates.sample_data',
-        'globals' => 'renatio.dynamicpdf::lang.variables.globals',
-        'helpers' => 'renatio.dynamicpdf::lang.variables.helpers',
-    ];
+    $templateVariables = new Renatio\DynamicPDF\Classes\TemplateVariables;
+    $isLayout = $formModel instanceof Renatio\DynamicPDF\Models\Layout;
 ?>
 <div data-control="dynamicpdf-variables"
-     role="group"
-     aria-labelledby="<?= $field->getId('label') ?>"
-     data-source-field="sample_data"
-     data-copied-text="<?= e(trans('renatio.dynamicpdf::lang.variables.copied')) ?>"
-     data-copy-failed-text="<?= e(trans('renatio.dynamicpdf::lang.variables.copy_failed')) ?>"
-     data-manual-copy-label="<?= e(trans('renatio.dynamicpdf::lang.variables.manual_copy')) ?>">
-    <span class="form-label d-block" id="<?= $field->getId('label') ?>"><?= e(trans('renatio.dynamicpdf::lang.variables.label')) ?></span>
-    <p class="form-text mt-0"><?= e(trans('renatio.dynamicpdf::lang.variables.comment')) ?></p>
-
-    <?php foreach ($groups as $group => $heading): ?>
-        <h6 class="mt-3 mb-2"><?= e(trans($heading)) ?></h6>
-
-        <?php if ($variables[$group] === null): ?>
-            <p class="form-text mt-0"><?= e(trans('renatio.dynamicpdf::lang.variables.sample_data_empty')) ?></p>
-        <?php else: ?>
-            <ul class="list-unstyled d-flex flex-column gap-1 mb-0">
-                <?php foreach ($variables[$group] as $entry): ?>
-                    <li class="d-flex flex-wrap align-items-baseline column-gap-2">
-                        <button type="button"
-                                class="btn btn-sm btn-default font-monospace text-start text-break"
-                                data-snippet="<?= e($entry['snippet']) ?>"
-                                title="<?= e($entry['snippet']) ?>"
-                                aria-label="<?= e(trans('renatio.dynamicpdf::lang.variables.copy', ['snippet' => $entry['snippet']])) ?>"><?= e($entry['label']) ?></button>
-                        <?php if ($entry['description']): ?>
-                            <span class="text-muted"><?= e($entry['description']) ?></span>
-                        <?php endif ?>
-                    </li>
-                <?php endforeach ?>
-            </ul>
-        <?php endif ?>
-    <?php endforeach ?>
+     data-source-field="<?= $isLayout ? '' : 'sample_data' ?>"
+     data-target-field="content_html"
+     data-variables="<?= e(json_encode($isLayout ? $templateVariables->forLayout($formModel) : $templateVariables->forTemplate($formModel))) ?>"
+     data-kinds="<?= e(json_encode(trans('renatio.dynamicpdf::lang.variables.kinds'))) ?>">
+    <p class="form-text mb-0"><?= e(trans('renatio.dynamicpdf::lang.variables.comment')) ?></p>
 </div>

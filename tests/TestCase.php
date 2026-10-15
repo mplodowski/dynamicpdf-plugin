@@ -4,7 +4,9 @@ namespace Renatio\DynamicPDF\Tests;
 
 use Backend\Facades\Backend;
 use Closure;
+use Cms\Classes\Theme;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\MessageBag;
@@ -123,6 +125,17 @@ abstract class TestCase extends OctoberPestTestCase
             'X-AJAX-HANDLER' => 'onSave',
             'X-Requested-With' => 'XMLHttpRequest',
         ]);
+    }
+
+    public function activateTheme(?string $theme): void
+    {
+        if ($theme === null) {
+            config(['cms.active_theme' => '']);
+        } else {
+            Event::listen('cms.theme.getActiveTheme', fn (): string => $theme);
+        }
+
+        Theme::resetCache();
     }
 
     /**

@@ -146,6 +146,8 @@ class Plugin extends PluginBase
             'functions' => [
                 'pdf_qr' => [$codes, 'qr'],
                 'pdf_barcode' => [$codes, 'barcode'],
+                'pdf_qr_available' => [$codes, 'qrAvailable'],
+                'pdf_barcode_available' => [$codes, 'barcodeAvailable'],
             ],
         ];
     }

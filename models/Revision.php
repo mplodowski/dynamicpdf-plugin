@@ -20,6 +20,12 @@ class Revision extends Model
 {
     public const LIMIT = 20;
 
+    public const EVENT = '_event';
+
+    public const EVENT_RESET = 'reset';
+
+    public const EVENT_RESTORE = 'restore';
+
     public const UPDATED_AT = null;
 
     public $table = 'renatio_dynamicpdf_revisions';
@@ -38,10 +44,22 @@ class Revision extends Model
     /**
      * Backend::makeCarbon() throws a TypeError for an administrator whose preferences carry no timezone.
      */
-    public function createdAtLabel(): string
+    public function createdAtLocal(): ?Carbon
     {
         $timezone = Preference::get('timezone') ?: Config::get('backend.timezone', Config::get('app.timezone'));
 
-        return $this->created_at?->copy()->setTimezone($timezone)->format('Y-m-d H:i') ?? '';
+        return $this->created_at?->copy()->setTimezone($timezone);
+    }
+
+    public function event(): ?string
+    {
+        $event = $this->data[self::EVENT] ?? null;
+
+        return is_string($event) ? $event : null;
+    }
+
+    public function createdAtLabel(): string
+    {
+        return $this->createdAtLocal()?->format('Y-m-d H:i') ?? '';
     }
 }

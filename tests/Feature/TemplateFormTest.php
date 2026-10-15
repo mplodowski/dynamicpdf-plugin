@@ -78,33 +78,39 @@ describe('Form buttons', function () {
     });
 });
 
-describe('Variables list', function () {
+describe('Editor suggestions', function () {
     beforeEach(fn () => actingAsPdfManager());
 
-    it('lists the saved sample data keys on the Options tab, escaped', function () {
+    it('passes the saved sample data keys to the HTML editor, escaped', function () {
         $template = $this->createTemplate(['sample_data' => '{"<b>x</b>": 1, "order": {"number": "FV/1"}}']);
 
         $html = $this->get(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id))->assertOk()->getContent();
 
         expect($html)->toContain('data-control="dynamicpdf-variables"')
-            ->toContain('aria-labelledby="Form-field-Template-_variables-label"')
-            ->toContain('id="Form-field-Template-_variables-label"')
             ->toContain('data-field-depends="[&quot;sample_data&quot;]"')
-            ->toContain('data-snippet="{{ order.number }}"')
-            ->toContain('>&lt;b&gt;x&lt;/b&gt;</button>')
+            ->toContain('&quot;{{ order.number }}&quot;')
+            ->toContain(e(trans('renatio.dynamicpdf::lang.variables.comment')))
             ->not->toContain('<b>x</b>');
     });
 
-    it('shows how to add sample data when the stored JSON is invalid', function () {
+    it('suggests what a layout receives instead of sample data', function () {
+        $layout = $this->createLayout();
+
+        $html = $this->get(Backend::url('renatio/dynamicpdf/layouts/update/' . $layout->id))->assertOk()->getContent();
+
+        expect($html)->toContain('data-control="dynamicpdf-variables"')
+            ->toContain('&quot;{{ content_html|raw }}&quot;')
+            ->not->toContain('data-field-depends="[&quot;sample_data&quot;]"');
+    });
+
+    it('still opens the form when the stored sample data is invalid', function () {
         $template = $this->createTemplate();
         DB::table($template->getTable())->where('id', $template->id)->update(['sample_data' => '{"order": ']);
 
-        $html = $this->get(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id))->assertOk()->getContent();
-
-        expect($html)->toContain(e(trans('renatio.dynamicpdf::lang.variables.sample_data_empty')));
+        $this->get(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id))->assertOk();
     });
 
-    it('rebuilds the list from the unsaved sample data when the field refreshes', function () {
+    it('rebuilds the suggestions from the unsaved sample data when the field refreshes', function () {
         $template = $this->createTemplate(['sample_data' => '{"order": {"number": "FV/1"}}']);
 
         $response = $this->post(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id), [
@@ -115,7 +121,7 @@ describe('Variables list', function () {
             'X-Requested-With' => 'XMLHttpRequest',
         ])->assertOk();
 
-        expect($response->getContent())->toContain('{{ invoice.total }}')
-            ->not->toContain('{{ order.number }}');
+        expect($response->getContent())->toContain('invoice.total')
+            ->not->toContain('order.number');
     });
 });

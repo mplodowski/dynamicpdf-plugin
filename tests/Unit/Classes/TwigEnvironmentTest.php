@@ -7,13 +7,13 @@ use Illuminate\Support\Facades\File;
 use Renatio\DynamicPDF\Classes\PDFTwigController;
 use Twig\Environment;
 use Twig\Error\SyntaxError;
-use Twig\Loader\ArrayLoader;
 use Twig\TwigFunction;
 
 describe('Twig environment', function () {
     afterEach(function () {
         Event::forget('cms.theme.getActiveTheme');
         Event::forget('cms.extendTwig');
+        Event::forget('system.extendTwig');
         Theme::resetCache();
         app()->forgetInstance('twig.environment');
     });
@@ -90,9 +90,10 @@ describe('Twig environment', function () {
     });
 
     it('renders through the system environment when no theme is active', function () {
-        $twig = new Environment(new ArrayLoader);
-        $twig->addFunction(new TwigFunction('probe', fn (): string => 'system twig'));
-        app()->instance('twig.environment', $twig);
+        $this->activateTheme(null);
+        Event::listen('system.extendTwig', function (Environment $twig): void {
+            $twig->addFunction(new TwigFunction('probe', fn (): string => 'system twig'));
+        });
         $template = $this->createTemplate(['content_html' => '{{ probe() }}']);
 
         expect(app('dynamicpdf')->parseTemplate($template))->toBe('system twig');

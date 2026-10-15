@@ -17,7 +17,9 @@ use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDF;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Classes\PreviewFonts;
+use Renatio\DynamicPDF\Classes\RevisionHistory;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
+use Renatio\DynamicPDF\Classes\TextDiff;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Revision;
 use Renatio\DynamicPDF\Models\Template;
@@ -36,6 +38,8 @@ trait ManagesViewRecords
 
     protected ?DateTimeInterface $revisionSnapshotAt = null;
 
+    protected bool $detachedBySave = false;
+
     protected function setSettingsContext(): void
     {
         BackendMenu::setContext('October.System', 'system', 'settings');
@@ -51,8 +55,11 @@ trait ManagesViewRecords
 
     public function formBeforeSave(Layout|Template $model): void
     {
-        if (! $model->exists || (! $model->isCustomised() && $this->postedViewFieldChanged($model))) {
+        if (! $model->exists) {
             $model->markAsCustomised();
+        } elseif (! $model->isCustomised() && $this->postedViewFieldChanged($model)) {
+            $model->markAsCustomised();
+            $this->detachedBySave = $model->hasView();
         }
     }
 
@@ -94,6 +101,20 @@ trait ManagesViewRecords
         }
 
         return false;
+    }
+
+    /**
+     * @return mixed the redirect, or the refreshed history when the form stays open
+     */
+    public function update_onSave(int|string|null $recordId = null, ?string $context = null): mixed
+    {
+        $redirect = $this->asExtension('FormController')->update_onSave($recordId, $context);
+
+        if ($redirect !== null || $this->detachedBySave) {
+            return $redirect ?? redirect()->refresh();
+        }
+
+        return ['#dynamicpdf-revisions' => $this->makePartial('revisions', ['record' => $this->formGetModel()])];
     }
 
     public function update(int|string|null $recordId = null, ?string $context = null): mixed
@@ -267,11 +288,30 @@ trait ManagesViewRecords
             throw new ApplicationException(trans('renatio.dynamicpdf::lang.revisions.not_found'));
         }
 
-        $model->restoreRevision($revision);
-
-        Flash::success(trans('renatio.dynamicpdf::lang.revisions.restore_success'));
+        if ($model->restoreRevision($revision)) {
+            Flash::success(trans('renatio.dynamicpdf::lang.revisions.restore_success'));
+        }
 
         return redirect()->refresh();
+    }
+
+    public function update_onRevisionChanges(int|string $recordId): string
+    {
+        $model = $this->formFindModelObject($recordId);
+        $revision = $model->revisions()->find((int) post('revision'));
+
+        if (! $revision instanceof Revision) {
+            throw new ApplicationException(trans('renatio.dynamicpdf::lang.revisions.not_found'));
+        }
+
+        $changes = (new RevisionHistory($model, $this->formGetWidget()?->getFields() ?? []))->changesOf($revision);
+        $diff = new TextDiff;
+
+        return $this->makePartial('revision_changes', [
+            'revision' => $revision,
+            'changes' => array_map(fn (array $change) => $change + ['hunks' => $diff->hunks($change['old'], $change['new'])], $changes ?? []),
+            'isOldest' => $changes === null,
+        ]);
     }
 
     protected function resetToView(Layout|Template $model): void
@@ -280,7 +320,11 @@ trait ManagesViewRecords
             throw new ApplicationException(trans('renatio.dynamicpdf::lang.templates.reset_view_only'));
         }
 
+        $previous = $model->revisionSnapshot();
+        $previousAt = $model->updated_at ?? $model->created_at;
+
         $model->resetToView();
+        $model->recordRevision($previous, $previousAt, Revision::EVENT_RESET);
     }
 
     public function update_onDelete(int|string|null $recordId = null): mixed
@@ -323,9 +367,15 @@ trait ManagesViewRecords
         return [(int) round($points[2] * self::CSS_PIXELS_PER_POINT), (int) round($points[3] * self::CSS_PIXELS_PER_POINT)];
     }
 
+    /**
+     * Dompdf sizes the root element to the page and a browser to the content, which squeezes a body
+     * background sized 100% 100% into the content height.
+     */
     protected function previewHtml(Layout|Template $model): string
     {
-        return (new PreviewFonts)->inline($model->html);
+        $html = (new PreviewFonts)->inline($model->html);
+
+        return preg_replace('~<head\b[^>]*>~i', '$0<style>html{min-height:100%}</style>', $html, 1) ?? $html;
     }
 
     protected function loadPreviewPdf(Layout|Template $model): PDFWrapper

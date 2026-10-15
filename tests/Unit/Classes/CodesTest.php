@@ -1,8 +1,10 @@
 <?php
 
+use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\QrCode;
 use Illuminate\Support\Facades\Artisan;
 use Picqer\Barcode\BarcodeGeneratorPNG;
+use Renatio\DynamicPDF\Classes\Codes;
 use Renatio\DynamicPDF\Controllers\Templates;
 use Twig\Error\RuntimeError;
 
@@ -35,6 +37,38 @@ describe('pdf_qr()', function () {
 
         expect(fn () => app('dynamicpdf')->parseTemplate($template))
             ->toThrow(RuntimeError::class, 'The size argument of pdf_qr() has an invalid value');
+    });
+
+    it('takes options in place of the size or after the margin, keeping the defaults it does not set', function () {
+        $render = fn (string $call): string => app('dynamicpdf')->parseTemplate($this->createTemplate(['content_html' => "{{ {$call} }}"]));
+
+        $default = $render("pdf_qr('x')");
+        $colored = $render("pdf_qr('x', {color: '#1f2937'})");
+
+        expect($colored)->not->toBe($default)
+            ->and($render("pdf_qr('x', 150, 0, {color: '#1F2937'})"))->toBe($colored)
+            ->and($render("pdf_qr('x', {size: 150, margin: 0, color: '#000', background: '#ffffff', error_correction: 'LOW'})"))->toBe($default);
+    });
+
+    it('explains an option it cannot use', function (string $options, string $message) {
+        $template = $this->createTemplate(['content_html' => "{{ pdf_qr('x', {$options}) }}"]);
+
+        expect(fn () => app('dynamicpdf')->parseTemplate($template))->toThrow(RuntimeError::class, $message);
+    })->with([
+        'unknown option' => ["{logo: 'a.png'}", 'logo is not an option of pdf_qr(). Use one of size, margin, color, background, error_correction'],
+        'color name' => ["{color: 'red'}", 'The color argument of pdf_qr() has an invalid value'],
+        'error correction level' => ["{error_correction: 'max'}", 'The error_correction argument of pdf_qr() has an invalid value'],
+    ]);
+
+    it('is unavailable and names the major version to install when an older endroid/qr-code is installed', function () {
+        $codes = new class extends Codes
+        {
+            public const PACKAGES = ['pdf_qr()' => ['class' => 'Endroid\\QrCode\\Missing'] + parent::PACKAGES['pdf_qr()']] + parent::PACKAGES;
+        };
+
+        expect(Codes::PACKAGES['pdf_qr()']['class'])->toBe(ErrorCorrectionLevel::class)
+            ->and($codes->qrAvailable())->toBeFalse()
+            ->and(fn () => $codes->qr('x'))->toThrow(RuntimeError::class, 'pdf_qr() needs version 5 or newer of the endroid/qr-code package. Upgrade it with composer require endroid/qr-code:^5.');
     });
 })->skip(! class_exists(QrCode::class), 'endroid/qr-code is not installed');
 

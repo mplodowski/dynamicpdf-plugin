@@ -3,12 +3,14 @@
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use October\Rain\Database\Updates\Migration;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFParser;
 
 /**
- * Unlocks layouts edited before 8.1.0, which never cleared is_locked, before locked layouts start following their view.
+ * Unlocks layouts edited before 9.0.0, which never cleared is_locked, before locked layouts start following their view.
+ * An install that ran 8.1.0 runs it again after is_locked became is_custom, so it then does nothing.
  */
 return new class extends Migration
 {
@@ -33,6 +35,10 @@ return new class extends Migration
 
     public function up(): void
     {
+        if (! Schema::hasColumn(self::LAYOUTS, 'is_locked')) {
+            return;
+        }
+
         try {
             $views = PDFManager::instance()->listRegisteredLayouts();
         } catch (Throwable $e) {

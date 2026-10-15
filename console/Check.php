@@ -114,16 +114,18 @@ class Check extends Command
     {
         $label = "{$function} ({$package})";
 
-        if (! class_exists($class)) {
+        $installed = InstalledVersions::isInstalled($package);
+
+        if (! class_exists($class) && ! $installed) {
             $this->components->twoColumnDetail($label, self::INFO . " not installed; run composer require {$package} to use {$function}");
 
             return;
         }
 
-        $version = InstalledVersions::isInstalled($package) ? InstalledVersions::getPrettyVersion($package) : null;
+        $version = $installed ? InstalledVersions::getPrettyVersion($package) : null;
 
-        if ($version !== null && preg_match('/^v?(\d+)\./', $version, $match) && (int) $match[1] < $major) {
-            $this->components->twoColumnDetail($label, self::WARN . " {$version} is not supported; {$function} needs version {$major} or newer");
+        if (! class_exists($class) || ($version !== null && preg_match('/^v?(\d+)\./', $version, $match) && (int) $match[1] < $major)) {
+            $this->components->twoColumnDetail($label, self::WARN . ' ' . ($version ?? 'This version') . " is not supported; {$function} needs version {$major} or newer");
 
             return;
         }

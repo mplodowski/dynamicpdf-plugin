@@ -5,10 +5,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Model;
 use October\Rain\Exception\ForbiddenException;
+use October\Rain\Support\Facades\Flash;
 use Renatio\DynamicPDF\Classes\PDFManager;
+use Renatio\DynamicPDF\Classes\RevisionHistory;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Controllers\Templates;
 use Renatio\DynamicPDF\Models\Revision;
+use System\Models\File;
 
 describe('Revisions', function () {
     afterEach(fn () => Model::unguard());
@@ -52,18 +55,143 @@ describe('Revisions', function () {
         $log->shouldHaveReceived('warning')->once();
     });
 
-    it('records nothing for a save without changes, a reset to the view or a view sync', function () {
+    it('records nothing for a save without changes or a view sync', function () {
         actingAsPdfManager();
         PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
         $template = $this->createTemplate(['title' => 'Invoice', 'content_html' => "<p>Same</p>\n<p>Lines</p>"]);
-        $viewTemplate = $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'content_html' => '<p>edited</p>', 'is_custom' => true]);
+        $viewTemplate = $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'is_custom' => false]);
 
         $this->saveTemplateForm($template->id, ['title' => 'Invoice', 'code' => $template->code, 'content_html' => "<p>Same</p>\r\n<p>Lines</p>"])->assertOk();
-        (new Templates)->update_onResetDefault($viewTemplate->id);
         DB::table('renatio_dynamicpdf_pdf_templates')->where('id', $viewTemplate->id)->update(['content_html' => '<p>stale</p>']);
         (new SyncTemplates)->handle();
 
         expect(Revision::query()->count())->toBe(0);
+    });
+
+    it('records a reset to the view as a version of the resetting administrator', function () {
+        $user = actingAsPdfManager();
+        PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
+        $template = $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'content_html' => '<p>edited</p>', 'is_custom' => true]);
+
+        (new Templates)->update_onResetDefault($template->id);
+
+        [$baseline, $reset] = Revision::query()->orderBy('id')->get()->whereInstanceOf(Revision::class)->values()->all() + [null, null];
+
+        expect(Revision::query()->count())->toBe(2)
+            ->and($baseline?->data['content_html'])->toBe('<p>edited</p>')
+            ->and($reset?->data['content_html'])->toContain('Invoice')
+            ->and($reset?->event())->toBe(Revision::EVENT_RESET)
+            ->and($reset?->user_id)->toBe($user->id);
+    });
+
+    it('reloads the form when a save detaches the record from its view, so the notice and Reset to Default update', function () {
+        actingAsPdfManager();
+        PDFManager::instance()->registerTemplates(['renatio.dynamicpdf::pdf.invoice']);
+        $template = $this->createTemplate(['code' => 'renatio.dynamicpdf::pdf.invoice', 'is_custom' => false]);
+
+        Model::reguard();
+        $response = $this->post(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id), [
+            'Template' => ['title' => 'Edited', 'content_html' => '<p>Edited</p>'],
+            'redirect' => '0',
+        ], ['X-AJAX-HANDLER' => 'onSave', 'X-Requested-With' => 'XMLHttpRequest'])->assertOk();
+
+        expect(collect($response->json('__ajax.ops'))->pluck('op')->all())->toContain('redirect');
+    });
+
+    it('refreshes the history after a save that stays on the page', function () {
+        actingAsPdfManager();
+        $template = $this->createTemplate(['content_html' => '<p>Old</p>']);
+
+        Model::reguard();
+        $response = $this->post(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id), [
+            'Template' => ['title' => 'Test Template', 'code' => $template->code, 'content_html' => '<p>New</p>'],
+            'redirect' => '0',
+        ], ['X-AJAX-HANDLER' => 'onSave', 'X-Requested-With' => 'XMLHttpRequest'])->assertOk();
+
+        $history = collect($response->json('__ajax.ops'))->firstWhere('selector', '#dynamicpdf-revisions')['html'] ?? '';
+
+        expect($history)->toContain('data-request="onRestoreRevision"')
+            ->and($history)->toContain('revision-current');
+    });
+
+    it('records uploading, replacing and removing the background image of a layout, which Restore leaves alone', function () {
+        actingAsPdfManager();
+        $layout = $this->createLayout();
+        $upload = function (string $name) use ($layout): File {
+            $image = new File;
+            $image->fromData(base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='), $name);
+            $layout->background_img()->add($image);
+
+            return $image;
+        };
+
+        $upload('first.png');
+        $layout->background_img()->remove($upload('second.png'));
+
+        $images = Revision::query()->orderBy('id')->get()->map(fn ($revision) => array_key_exists('background_img', $revision->data) ? $revision->data['background_img'] : 'missing')->all();
+        $html = (string) $this->get(Backend::url('renatio/dynamicpdf/layouts/update/' . $layout->id))->assertOk()->getContent();
+
+        expect($images)->toBe([null, 'first.png', 'second.png', null])
+            ->and($html)->toContain('<span class="revision-old">second.png</span>');
+
+        $layout->restoreRevision(Revision::query()->orderBy('id')->get()->whereInstanceOf(Revision::class)->values()->get(1) ?? throw new RuntimeException);
+
+        expect($layout->background_img()->getQuery()->exists())->toBeFalse();
+    });
+
+    it('records a background image removed in the form together with the save, as one version after a baseline from before', function () {
+        actingAsPdfManager();
+        $layout = $this->createLayout(['name' => 'Plain']);
+        $image = new File;
+        $image->fromData(base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='), 'first.png');
+        $layout->background_img()->add($image);
+        Revision::query()->delete();
+        DB::table('renatio_dynamicpdf_pdf_layouts')->where('id', $layout->id)->update(['updated_at' => '2026-01-02 03:04:05']);
+        $layout->background_img()->remove($image, 'form-session');
+
+        Model::reguard();
+        $this->post(Backend::url('renatio/dynamicpdf/layouts/update/' . $layout->id), [
+            'Layout' => ['name' => 'Renamed', 'code' => $layout->code, 'content_html' => (string) $layout->content_html],
+            '_session_key' => 'form-session',
+        ], ['X-AJAX-HANDLER' => 'onSave', 'X-Requested-With' => 'XMLHttpRequest'])->assertOk();
+
+        $revisions = Revision::query()->orderBy('id')->get();
+
+        expect($revisions->map(fn ($revision) => [$revision->data['name'], $revision->data['background_img']])->all())
+            ->toBe([['Plain', 'first.png'], ['Renamed', null]])
+            ->and((string) $revisions->first()?->created_at)->toBe('2026-01-02 03:04:05');
+    });
+
+    it('does not list the background image as changed against a version saved before it was versioned', function () {
+        $layout = $this->createLayout(['name' => 'Renamed']);
+        $image = new File;
+        $image->fromData(base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='), 'logo.png');
+        $layout->background_img()->add($image);
+        Revision::query()->delete();
+
+        $layout->recordRevision(array_diff_key(['name' => 'Plain'] + $layout->revisionSnapshot(), ['background_img' => true]));
+
+        expect(array_column((new RevisionHistory($layout, []))->rows()[0]['changes'] ?? [], 'label'))->toBe(['Name']);
+    });
+
+    it('neither offers nor reports a restore of a version that differs only in the background image', function () {
+        actingAsPdfManager();
+        $layout = $this->createLayout();
+        $image = new File;
+        $image->fromData(base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='), 'logo.png');
+        $layout->background_img()->add($image);
+
+        $html = (string) $this->get(Backend::url('renatio/dynamicpdf/layouts/update/' . $layout->id))->assertOk()->getContent();
+
+        Model::reguard();
+        $this->post(Backend::url('renatio/dynamicpdf/layouts/update/' . $layout->id), ['revision' => Revision::query()->orderBy('id')->value('id')], [
+            'X-AJAX-HANDLER' => 'onRestoreRevision',
+            'X-Requested-With' => 'XMLHttpRequest',
+        ])->assertOk();
+
+        expect(Revision::query()->count())->toBe(2)
+            ->and($html)->not->toContain('data-request="onRestoreRevision"')
+            ->and(Flash::messages())->toBe([]);
     });
 
     it('keeps only the newest versions of a record', function () {
@@ -83,7 +211,7 @@ describe('Revisions', function () {
             ->and($kept->last())->toBe('<p>v' . (Revision::LIMIT + 1) . '</p>');
     });
 
-    it('offers Restore for every version but the current one, also without a timezone preference', function () {
+    it('lists what each version changed and offers Restore for all but the current one, also without a timezone preference', function () {
         $user = actingAsPdfManager();
         DB::table('backend_user_preferences')->insert([
             'user_id' => $user->id,
@@ -92,12 +220,22 @@ describe('Revisions', function () {
             'item' => 'preferences',
             'value' => '{"locale":"en"}',
         ]);
-        $template = $this->createTemplate();
-        $template->recordRevision(['title' => 'Old title'] + $template->revisionSnapshot());
+        $layout = $this->createLayout(['name' => 'Letterhead <b>']);
+        $template = $this->createTemplate(['layout_id' => $layout->id, 'content_html' => '<p>New</p>']);
+        $template->recordRevision(['title' => 'Old <title>', 'layout_id' => null, 'content_html' => '<p>Old</p>'] + $template->revisionSnapshot());
 
         $html = (string) $this->get(Backend::url('renatio/dynamicpdf/templates/update/' . $template->id))->assertOk()->getContent();
+        $rows = explode('<tr>', substr($html, (int) strpos($html, 'dynamicpdf-revisions')));
 
-        expect(Revision::query()->count())->toBe(2)
+        expect($rows)->toHaveCount(4)
+            ->and($rows[2])->toContain('<span class="revision-old">Old &lt;title&gt;</span>')
+            ->and($rows[2])->toContain('<span class="revision-new">Test Template</span>')
+            ->and($rows[2])->toContain('<span class="revision-new">Letterhead &lt;b&gt;</span>')
+            ->and($rows[2])->toContain('<span class="revision-field">HTML</span>')
+            ->and($rows[2])->toContain('revision-current')
+            ->and($rows[2])->not->toContain('onRestoreRevision')
+            ->and($rows[3])->toContain('State before the first change')
+            ->and($rows[3])->toContain('data-request="onRestoreRevision"')
             ->and(substr_count($html, 'data-request="onRestoreRevision"'))->toBe(1);
     });
 

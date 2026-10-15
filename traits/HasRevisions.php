@@ -19,6 +19,27 @@ use Throwable;
  */
 trait HasRevisions
 {
+    /** @var array<string, mixed>|null */
+    protected ?array $snapshotBeforeAttachment = null;
+
+    protected bool $savingWithRevisions = false;
+
+    /**
+     * Attachments uploaded with attachOnUpload are saved before the form is, so their versions are recorded right
+     * away; deferred ones are committed inside the save and belong to its version.
+     */
+    public function initializeHasRevisions(): void
+    {
+        if (static::REVISION_ATTACHMENTS === []) {
+            return;
+        }
+
+        $this->bindEvent('model.relation.beforeAdd', fn (string $relation) => $this->rememberSnapshotBeforeAttachment($relation));
+        $this->bindEvent('model.relation.beforeRemove', fn (string $relation) => $this->rememberSnapshotBeforeAttachment($relation));
+        $this->bindEvent('model.relation.add', fn (string $relation) => $this->recordAttachmentRevision($relation));
+        $this->bindEvent('model.relation.remove', fn (string $relation) => $this->recordAttachmentRevision($relation));
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -30,7 +51,46 @@ trait HasRevisions
             $snapshot[$field] = $this->getTranslatableBaseValue($field);
         }
 
-        return $snapshot;
+        return $snapshot + $this->revisionAttachments();
+    }
+
+    /**
+     * File names of the versioned attachments; listed in the history but never restored, the files are gone.
+     *
+     * @return array<string, string|null>
+     */
+    protected function revisionAttachments(): array
+    {
+        return [];
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $options
+     */
+    protected function saveInternal($options = [])
+    {
+        $this->savingWithRevisions = true;
+
+        try {
+            return parent::saveInternal($options);
+        } finally {
+            $this->savingWithRevisions = false;
+        }
+    }
+
+    protected function rememberSnapshotBeforeAttachment(string $relation): void
+    {
+        if ($this->exists && ! $this->savingWithRevisions && in_array($relation, static::REVISION_ATTACHMENTS, true)) {
+            $this->snapshotBeforeAttachment = $this->revisionSnapshot();
+        }
+    }
+
+    protected function recordAttachmentRevision(string $relation): void
+    {
+        if ($this->snapshotBeforeAttachment !== null && in_array($relation, static::REVISION_ATTACHMENTS, true)) {
+            $this->recordRevision($this->snapshotBeforeAttachment);
+            $this->snapshotBeforeAttachment = null;
+        }
     }
 
     /**
@@ -38,7 +98,7 @@ trait HasRevisions
      *
      * @param  array<string, mixed>  $previous
      */
-    public function recordRevision(array $previous, ?DateTimeInterface $previousAt = null): void
+    public function recordRevision(array $previous, ?DateTimeInterface $previousAt = null, ?string $event = null): void
     {
         $current = $this->revisionSnapshot();
 
@@ -52,22 +112,34 @@ trait HasRevisions
             }
 
             $user = BackendAuth::getUser();
+            $data = $event === null ? $current : $current + [Revision::EVENT => $event];
 
-            $this->createRevision($current, $user instanceof User ? $user : null, now());
+            $this->createRevision($data, $user instanceof User ? $user : null, now());
             $this->pruneRevisions();
         } catch (Throwable $e) {
             Log::warning("Renatio.DynamicPDF could not record a revision of {$this->code}: {$e->getMessage()}", ['exception' => $e]);
         }
     }
 
-    public function restoreRevision(Revision $revision): void
+    /**
+     * @param  array<string, mixed>|null  $current
+     */
+    public function restoresChanges(Revision $revision, ?array $current = null): bool
+    {
+        $current ??= $this->revisionSnapshot();
+
+        return ! self::sameSnapshot($current, $this->restorableRevisionData($revision) + $current);
+    }
+
+    public function restoreRevision(Revision $revision): bool
     {
         $previous = $this->revisionSnapshot();
-        $data = $this->restorableRevisionData($revision);
 
-        if (self::sameSnapshot($previous, $data + $previous)) {
-            return;
+        if (! $this->restoresChanges($revision, $previous)) {
+            return false;
         }
+
+        $data = $this->restorableRevisionData($revision);
 
         $this->inDefaultLocale(function () use ($data): void {
             foreach ($data as $field => $value) {
@@ -78,7 +150,9 @@ trait HasRevisions
             $this->save();
         });
 
-        $this->recordRevision($previous);
+        $this->recordRevision($previous, null, Revision::EVENT_RESTORE);
+
+        return true;
     }
 
     public function currentRevisionId(): ?int

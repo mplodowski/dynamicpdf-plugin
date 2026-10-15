@@ -31,6 +31,9 @@ class Layouts extends Controller
 
         $this->setSettingsContext();
         $this->addJs('/plugins/renatio/dynamicpdf/assets/js/preview.js?v=3');
+        $this->addJs('/plugins/renatio/dynamicpdf/assets/js/variables.js?v=8');
+        $this->addCss('/plugins/renatio/dynamicpdf/assets/css/revisions.css?v=5');
+        $this->addCss('/plugins/renatio/dynamicpdf/assets/css/editor.css?v=4');
     }
 
     public function index(): RedirectResponse

@@ -121,8 +121,8 @@ describe('List actions', function () {
 
         expect($list)->toContain($confirm('Free layout'))
             ->not->toContain($confirm('Used layout'))
-            ->toContain('Used by templates: 2')
-            ->and($form)->toContain('Used by templates: 2')
+            ->toContain(e(trans('renatio.dynamicpdf::lang.layout.delete_used_by', ['count' => 2])))
+            ->and($form)->toContain(e(trans('renatio.dynamicpdf::lang.layout.delete_used_by', ['count' => 2])))
             ->not->toContain($confirm('Used layout'));
     });
 

@@ -1,36 +1,36 @@
 fields:
 
     _view_status@update:
-        type: hint
+        type: partial
+        path: field_view_status
 
     title:
         label: renatio.dynamicpdf::lang.templates.title
-        span: left
+        span: row
+        spanClass: col-md-4
 
     code@create:
         label: renatio.dynamicpdf::lang.templates.code
         comment: renatio.dynamicpdf::lang.templates.code_comment
         preset: title
-        span: right
+        span: row
+        spanClass: col-md-4
 
     code@update:
         label: renatio.dynamicpdf::lang.templates.code
         disabled: true
-        span: right
+        span: row
+        spanClass: col-md-4
 
     layout:
         label: renatio.dynamicpdf::lang.templates.layout
         type: relation
         emptyOption: renatio.dynamicpdf::lang.templates.empty_option
-        span: auto
-
-    description:
-        label: renatio.dynamicpdf::lang.templates.description
-        type: textarea
-        size: tiny
+        span: row
+        spanClass: col-md-4
 
 secondaryTabs:
-
+    stretch: true
     fields:
 
         content_html:
@@ -43,33 +43,49 @@ secondaryTabs:
                 role: group
                 aria-label: HTML
 
+        _variables:
+            tab: renatio.dynamicpdf::lang.templates.content_html
+            type: partial
+            path: field_variables
+            cssClass: dynamicpdf-editor-hint
+            dependsOn: sample_data
+
+        sample_data:
+            tab: renatio.dynamicpdf::lang.templates.sample_data
+            type: codeeditor
+            language: javascript
+            size: giant
+            stretch: true
+            attributes:
+                role: group
+                aria-label: JSON
+
+        _sample_data_hint:
+            tab: renatio.dynamicpdf::lang.templates.sample_data
+            type: partial
+            path: field_editor_hint
+            text: renatio.dynamicpdf::lang.templates.sample_data_comment
+            cssClass: dynamicpdf-editor-hint
+
         size:
-            label: renatio.dynamicpdf::lang.templates.size
             tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.templates.size
             type: dropdown
             emptyOption: renatio.dynamicpdf::lang.options.empty
             span: left
 
         orientation:
-            label: renatio.dynamicpdf::lang.templates.orientation
             tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.templates.orientation
             type: dropdown
             emptyOption: renatio.dynamicpdf::lang.options.empty
             span: right
 
-        sample_data:
-            label: renatio.dynamicpdf::lang.templates.sample_data
-            comment: renatio.dynamicpdf::lang.templates.sample_data_comment
+        description:
             tab: renatio.dynamicpdf::lang.tab.options
-            type: codeeditor
-            language: javascript
-            size: large
-
-        _variables:
-            tab: renatio.dynamicpdf::lang.tab.options
-            type: partial
-            path: field_variables
-            dependsOn: sample_data
+            label: renatio.dynamicpdf::lang.templates.description
+            type: textarea
+            size: small
 
         _revisions@update:
             tab: renatio.dynamicpdf::lang.tab.history

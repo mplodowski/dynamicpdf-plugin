@@ -23,7 +23,7 @@ describe('View status notice', function () {
         expect(viewStatusField($model))
             ->hidden->toBeFalse()
             ->mode->toBe('info')
-            ->comment->toContain($view);
+            ->getConfig('text')->toContain("plugin's default");
 
         $model->is_custom = true;
         $model->save();

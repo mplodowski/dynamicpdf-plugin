@@ -43,7 +43,7 @@
             <button type="button"
                     class="btn btn-sm btn-danger"
                     disabled
-                    aria-label="<?= e(trans('backend::lang.form.delete') . ' (' . $usedByText . ')') ?>"><i class="octo-icon-delete icon-lg m-0" aria-hidden="true"></i></button>
+                    aria-label="<?= e($usedByText) ?>"><i class="octo-icon-delete icon-lg m-0" aria-hidden="true"></i></button>
         </span>
     <?php elseif (BackendAuth::userHasAccess($permission . '.delete')): ?>
         <button type="button"

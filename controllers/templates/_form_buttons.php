@@ -70,10 +70,12 @@
     <?php if ($formModel->exists): ?>
         <?php $name = ['name' => $formModel->{$formModel->labelAttribute()}] ?>
         <?php if ($this->formCheckPermission('modelCreate')): ?>
-            <?= Ui::ajaxButton(
+            <?= Ui::iconButton(
                 label: trans('renatio.dynamicpdf::lang.templates.duplicate'),
+                icon: 'oc-icon-copy',
                 handler: 'onDuplicate',
-                class: 'btn-default',
+                class: 'pull-right',
+                ariaLabel: trans('renatio.dynamicpdf::lang.templates.duplicate'),
                 dataRequestBeforeSend: $confirmBeforeRequest(
                     trans('renatio.dynamicpdf::lang.templates.duplicate_unsaved'),
                     trans('renatio.dynamicpdf::lang.templates.duplicate_confirm', $name)
@@ -83,28 +85,17 @@
         <?php endif ?>
 
         <?php $usedBy = $formModel instanceof Renatio\DynamicPDF\Models\Layout && ! $formModel->hasView() ? $formModel->usedByCount() : 0 ?>
-        <?php if ($formModel->hasView()): ?>
-            <?php if ($formModel->isCustomised() && $this->formCheckPermission('modelUpdate')): ?>
-                <?= Ui::ajaxButton(
-                    label: trans('backend::lang.form.reset_default'),
-                    handler: 'onResetDefault',
-                    class: 'btn-warning pull-right',
-                    dataRequestConfirm: trans('renatio.dynamicpdf::lang.templates.reset_confirm', $name),
-                    dataRequestBeforeUpdate: $unchange,
-                    dataRequestMessage: trans('backend::lang.form.resetting')
-                ) ?>
-            <?php endif ?>
-        <?php elseif ($usedBy > 0 && $this->formCheckPermission('modelDelete')): ?>
+        <?php if ($usedBy > 0 && $this->formCheckPermission('modelDelete')): ?>
             <?php $usedByText = trans('renatio.dynamicpdf::lang.layout.delete_used_by', ['count' => $usedBy]) ?>
-            <span class="pull-right" data-tooltip-text="<?= e($usedByText) ?>">
+            <span class="pull-right" data-tooltip-text="<?= e($usedByText) ?>" data-tooltip-position="top">
                 <?= Ui::iconButton(
                     icon: 'oc-icon-delete',
                     danger: true,
                     disabled: true,
-                    ariaLabel: trans('backend::lang.form.delete') . ' (' . $usedByText . ')'
+                    ariaLabel: $usedByText
                 ) ?>
             </span>
-        <?php elseif ($this->formCheckPermission('modelDelete')): ?>
+        <?php elseif (! $formModel->hasView() && $this->formCheckPermission('modelDelete')): ?>
             <?= Ui::iconButton(
                 label: trans('backend::lang.form.delete'),
                 icon: 'oc-icon-delete',

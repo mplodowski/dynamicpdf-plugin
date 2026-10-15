@@ -53,6 +53,8 @@ class Template extends Model
 
     public const REVISION_FIELDS = ['title', 'description', 'content_html', 'layout_id', 'size', 'orientation', 'sample_data'];
 
+    public const REVISION_ATTACHMENTS = [];
+
     public $table = 'renatio_dynamicpdf_pdf_templates';
 
     /** @var array<int, string> */

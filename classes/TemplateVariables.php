@@ -3,6 +3,7 @@
 namespace Renatio\DynamicPDF\Classes;
 
 use Illuminate\Support\Str;
+use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use stdClass;
 
@@ -44,10 +45,7 @@ class TemplateVariables
     public function forTemplate(Template $template): array
     {
         $sample = json_decode((string) $template->sample_data);
-        $globals = array_diff_key(
-            PDFManager::instance()->listRegisteredVariables(),
-            array_flip(TemplateRenderer::RESERVED_VARIABLES),
-        );
+        $globals = $this->registeredGlobals();
 
         $this->taken = array_fill_keys(array_map('strval', [
             ...array_keys($sample instanceof stdClass ? get_object_vars($sample) : []),
@@ -60,6 +58,37 @@ class TemplateVariables
             'globals' => $this->globalEntries($globals),
             'helpers' => $this->helperEntries(),
         ];
+    }
+
+    /**
+     * @return array{layout: list<Entry>, globals: list<Entry>, helpers: list<Entry>}
+     */
+    public function forLayout(Layout $layout): array
+    {
+        $globals = $this->registeredGlobals();
+
+        $this->taken = array_fill_keys(array_map('strval', [...array_keys($globals), ...TemplateRenderer::RESERVED_VARIABLES]), true);
+
+        return [
+            'layout' => [
+                $this->entry('content_html', '{{ content_html|raw }}', trans('renatio.dynamicpdf::lang.variables.layout_content')),
+                $this->entry('css', '{{ css|raw }}', trans('renatio.dynamicpdf::lang.variables.layout_css')),
+                $this->entry('background_img', '{{ background_img }}', trans('renatio.dynamicpdf::lang.variables.layout_background')),
+            ],
+            'globals' => $this->globalEntries($globals),
+            'helpers' => $this->helperEntries(),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function registeredGlobals(): array
+    {
+        return array_diff_key(
+            PDFManager::instance()->listRegisteredVariables(),
+            array_flip(TemplateRenderer::RESERVED_VARIABLES),
+        );
     }
 
     /**

@@ -3,6 +3,10 @@ description = "Example invoice with custom font and image embed"
 layout = "renatio.dynamicpdf::pdf.layouts.default"
 ==
 <div class="text-sm text-gray-700 leading-none">
+    {% if pdf_qr_available() %}
+        <img style="float: right" src="{{ pdf_qr('https://example.com/invoices/' ~ 'now'|date('Y') ~ '-0001', 192) }}" width="96" height="96" alt="">
+    {% endif %}
+
     <h2 class="text-3xl font-bold leading-none">Acme Studio</h2>
 
     <p class="text-gray-400">www.example.com</p>
@@ -62,14 +66,14 @@ layout = "renatio.dynamicpdf::pdf.layouts.default"
         <thead>
             <tr class="border-b border-solid border-gray-700">
                 <th class="text-left font-normal border-b border-solid border-gray-700 pb-1">Product</th>
-                <th class="text-left font-normal border-b border-solid border-gray-700 pb-1">Quantity</th>
+                <th class="text-center font-normal border-b border-solid border-gray-700 pb-1">Quantity</th>
                 <th class="text-right font-normal border-b border-solid border-gray-700 pb-1">Price</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td class="font-bold border-b border-solid border-gray-700 py-4">Acme Studio License Renewal</td>
-                <td class="border-b border-solid border-gray-700 py-4">1</td>
+                <td class="text-center border-b border-solid border-gray-700 py-4">1</td>
                 <td class="text-right border-b border-solid border-gray-700 py-4">$39.00</td>
             </tr>
 
@@ -100,5 +104,5 @@ layout = "renatio.dynamicpdf::pdf.layouts.default"
         If you have a problem with your order (e.g. don’t recognise the charge, suspect a fraudulent transaction), please write to billing@example.com.
     </p>
 
-    <p class="text-center mt-8"><img class="w-16" src="{{ 'plugins/renatio/dynamicpdf/assets/img/october.png'|pdfasset }}"></p>
+    <p class="text-center mt-8"><img class="w-16" style="display: inline" src="{{ 'plugins/renatio/dynamicpdf/assets/img/october.png'|pdfasset }}"></p>
 </div>

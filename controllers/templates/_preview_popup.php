@@ -2,7 +2,7 @@
     <h4 class="modal-title"><?= e($title) ?></h4>
     <button type="button" class="btn-close" data-dismiss="popup"></button>
 </div>
-<div class="modal-body">
+<div class="modal-body pb-4">
     <?php if ($pdf !== null): ?>
         <iframe data-control="dynamicpdf-pdf-preview"
                 data-pdf="<?= e($pdf) ?>"

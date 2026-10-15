@@ -7,6 +7,8 @@ columns:
     code:
         label: renatio.dynamicpdf::lang.templates.code
         searchable: true
+        type: partial
+        path: column_code
 
     description:
         label: renatio.dynamicpdf::lang.templates.description
@@ -39,4 +41,4 @@ columns:
         clickable: false
         align: center
         cssClass: text-nowrap
-        width: 130px
+        width: 1%

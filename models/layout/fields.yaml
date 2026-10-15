@@ -1,7 +1,8 @@
 fields:
 
     _view_status@update:
-        type: hint
+        type: partial
+        path: field_view_status
 
     name:
         label: renatio.dynamicpdf::lang.templates.name
@@ -19,7 +20,7 @@ fields:
         span: right
 
 secondaryTabs:
-
+    stretch: true
     fields:
 
         content_html:
@@ -46,6 +47,12 @@ secondaryTabs:
                     </body>
                 </html>
 
+        _variables:
+            tab: renatio.dynamicpdf::lang.templates.content_html
+            type: partial
+            path: field_variables
+            cssClass: dynamicpdf-editor-hint
+
         content_css:
             tab: renatio.dynamicpdf::lang.templates.content_css
             type: codeeditor
@@ -57,22 +64,21 @@ secondaryTabs:
                 aria-label: CSS/LESS
 
         background_img:
-            label: renatio.dynamicpdf::lang.templates.background_img
             tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.templates.background_img
             type: fileupload
             mode: image
             comment: renatio.dynamicpdf::lang.templates.background_img_comment
             attachOnUpload: true
-            span: left
 
         _page_numbers_section:
-            label: renatio.dynamicpdf::lang.page_numbers.section
             tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.section
             type: section
 
         page_numbers:
-            label: renatio.dynamicpdf::lang.page_numbers.position
             tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.position
             type: dropdown
             emptyOption: renatio.dynamicpdf::lang.page_numbers.off
             options:
@@ -82,69 +88,75 @@ secondaryTabs:
                 top-center: renatio.dynamicpdf::lang.page_numbers.positions.top-center
                 top-left: renatio.dynamicpdf::lang.page_numbers.positions.top-left
                 top-right: renatio.dynamicpdf::lang.page_numbers.positions.top-right
-            span: left
+            span: row
+            spanClass: col-md-6
 
         page_numbers_text:
-            label: renatio.dynamicpdf::lang.page_numbers.text
             tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.text
             placeholder: renatio.dynamicpdf::lang.page_numbers.default_text
             comment: renatio.dynamicpdf::lang.page_numbers.text_comment
-            span: right
             trigger:
                 action: show
                 field: page_numbers
                 condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+            span: row
+            spanClass: col-md-6
 
         page_numbers_size:
-            label: renatio.dynamicpdf::lang.page_numbers.size
             tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.size
             type: number
             placeholder: 9
             min: 1
             max: 72
             step: any
-            span: left
             trigger:
                 action: show
                 field: page_numbers
                 condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+            span: row
+            spanClass: col-md-6
+
+        page_numbers_font:
+            tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.font
+            comment: renatio.dynamicpdf::lang.page_numbers.font_comment
+            trigger:
+                action: show
+                field: page_numbers
+                condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+            span: row
+            spanClass: col-md-6
 
         page_numbers_margin:
-            label: renatio.dynamicpdf::lang.page_numbers.margin
             tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.margin
             comment: renatio.dynamicpdf::lang.page_numbers.margin_comment
             type: number
             placeholder: 20
             min: 0
             max: 200
             step: any
-            span: right
             trigger:
                 action: show
                 field: page_numbers
                 condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
-
-        page_numbers_font:
-            label: renatio.dynamicpdf::lang.page_numbers.font
-            tab: renatio.dynamicpdf::lang.tab.options
-            comment: renatio.dynamicpdf::lang.page_numbers.font_comment
-            span: left
-            trigger:
-                action: show
-                field: page_numbers
-                condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+            span: row
+            spanClass: col-md-6
 
         page_numbers_color:
-            label: renatio.dynamicpdf::lang.page_numbers.color
             tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.color
             type: colorpicker
             allowEmpty: true
             showAlpha: false
-            span: right
             trigger:
                 action: show
                 field: page_numbers
                 condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+            span: row
+            spanClass: col-md-6
 
         _revisions@update:
             tab: renatio.dynamicpdf::lang.tab.history

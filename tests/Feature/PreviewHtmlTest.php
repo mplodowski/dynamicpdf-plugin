@@ -33,6 +33,12 @@ describe('HTML preview', function () {
         expect($response->headers->get('Content-Security-Policy'))->toBe("sandbox; script-src 'none'; object-src 'none'");
     });
 
+    it('stretches the root to the page so a 100% body background covers it like in the PDF', function () {
+        $layout = $this->createLayout(['content_html' => '<html><head><title>x</title></head><body>x</body></html>']);
+
+        expect((new Layouts)->html($layout->id)->getContent())->toContain('<head><style>html{min-height:100%}</style>');
+    });
+
     it('links plugin assets by URL so the browser can load them', function () {
         $layout = $this->createLayout(['content_html' => "<html><body><img src=\"{{ 'plugins/renatio/dynamicpdf/assets/img/october.png'|pdfasset }}\">{{ content_html|raw }}</body></html>"]);
         $template = $this->createTemplate(['layout_id' => $layout->id]);
