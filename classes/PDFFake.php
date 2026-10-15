@@ -13,11 +13,8 @@ use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use System\Models\File;
+use UnexpectedValueException;
 
-/**
- * Records what a project renders without touching templates, Twig, dompdf, the database
- * or the filesystem.
- */
 class PDFFake extends PDFWrapper implements Fake
 {
     /** @var array<int, array{code: string, kind: string, data: array<string, mixed>, layout: string|null, locale: string|null}> */
@@ -45,6 +42,22 @@ class PDFFake extends PDFWrapper implements Fake
     public function loadLayout(string $code, array $data = [], ?string $encoding = null, ?string $locale = null): self
     {
         return $this->record('layout', $code, $data, null, $locale);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function loadTemplateModel(Template $template, array $data = [], ?string $encoding = null, ?string $locale = null): self
+    {
+        return $this->record('template', (string) $template->code, $data, null, $locale);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function loadLayoutModel(Layout $layout, array $data = [], ?string $encoding = null, ?string $locale = null): self
+    {
+        return $this->record('layout', (string) $layout->code, $data, null, $locale);
     }
 
     /**
@@ -113,9 +126,6 @@ class PDFFake extends PDFWrapper implements Fake
         return $this->emptyResponse($filename, 'inline');
     }
 
-    /**
-     * Complete enough to be attached and saved without a byte written anywhere.
-     */
     public function toFile(string $filename = 'document.pdf', bool $public = true): File
     {
         $file = new File;
@@ -128,7 +138,7 @@ class PDFFake extends PDFWrapper implements Fake
         return $file;
     }
 
-    public function encrypt(string $password, string $ownerPassword = '', array $permissions = []): self
+    public function encrypt(#[\SensitiveParameter] string $password, #[\SensitiveParameter] string $ownerPassword = '', array $permissions = []): self
     {
         return $this;
     }
@@ -136,7 +146,7 @@ class PDFFake extends PDFWrapper implements Fake
     /**
      * @param  array<string>  $pc
      */
-    public function setEncryption(string $password, string $ownerpassword = '', array $pc = []): void
+    public function setEncryption(#[\SensitiveParameter] string $password, #[\SensitiveParameter] string $ownerpassword = '', array $pc = []): void
     {
     }
 
@@ -160,6 +170,10 @@ class PDFFake extends PDFWrapper implements Fake
 
     public function __call($method, $parameters)
     {
+        if (! method_exists($this->dompdf, $method) && ! method_exists($this->dompdf->getOptions(), $method)) {
+            throw new UnexpectedValueException("Method [{$method}] does not exist on PDF instance.");
+        }
+
         return $this;
     }
 

@@ -72,29 +72,20 @@ Plugin adds support for October CMS 4.0 while keeping 3.x, and upgrades to Larav
 removed by dompdf 3 (for example `enable_css_float` and `setAdminUsername()`) no longer apply, and the HTML5 parser is
 always on.
 
-## Upgrading To 8.0.4
+## Upgrading To 9.0.0
 
-**Security release. Upgrade every installation running 8.0.x.** Plugin requires PHP 8.2 or higher and October CMS 4.0
-or higher.
+**Security release.** Requires PHP 8.2 and October CMS 4.4; older sites stay on 8.0.3. Run `php artisan october:migrate`.
 
-Calling an option setter that does not exist on the wrapper, dompdf or its options (a typo such as
-`setRemoteEnabled()`, or `setAdminUsername()` removed by dompdf) now throws `UnexpectedValueException` instead of being
-silently ignored.
-
-TLS certificates are verified on every environment. On a development host with a self-signed certificate set
-`DYNAMICPDF_ALLOW_SELF_SIGNED=true` in `.env` (or `allow_self_signed_certificates` in `config/renatio/dynamicpdf.php`),
-or call the now public `allowSelfSignedCertificates()` on the wrapper for a single document.
-
-Registered PDF views are synchronised to the database when the *PDF Templates* settings page is opened or
-`dynamicpdf:demo` runs, no longer on every request. Rendering a registered view that is not stored yet works without
-the sync. A registered code without a view file is skipped and logged instead of silently stopping the sync.
-
-The backend HTML and PDF preview no longer enables inline PHP. If you use the demo templates, open the
-**Header and Footer** layout and click **Reset to default** to remove the page number script from the stored copy.
-
-## Upgrading To 8.0.5
-
-The template and layout `code` columns get a unique index. Duplicate rows, which concurrent synchronisations could
-leave behind, are deleted permanently by the migration and not restored by a rollback: for templates the customised
-row is kept, for layouts the locked one, otherwise the oldest. Templates attached to a deleted layout are re-pointed
-to the kept one.
+- Templates render in a Twig sandbox and receive plain arrays instead of models: eager-load relations or pass arrays.
+  `config()`, `env()`, `{% cache %}` and similar calls are rejected. `DYNAMICPDF_SANDBOX=false` turns the sandbox off.
+- Replace `<script type="text/php">` page numbers with the layout's *Page numbers* option or `->pageNumbers()`.
+- The PDF preview loads remote files only from the application host and `allowed_remote_hosts`; use `|pdfasset` for
+  local files.
+- Layout CSS can no longer read server files: remove LESS `(inline)` imports and `data-uri()`.
+- The migration deletes duplicate template and layout codes, keeping the customized one, and marks layouts it cannot
+  prove unedited as *Customized*; use **Reset to Default** on those you never changed. Code reading a layout's
+  `is_locked` must read `is_custom`, which holds the opposite value.
+- Permissions are granular. Existing roles keep their access; narrow it under *Settings → Administrators*.
+- `dynamicpdf:sync` no longer deletes templates whose view is gone; use `--prune`.
+- An unknown `set*()` dompdf option now throws `UnexpectedValueException`.
+- Set `DYNAMICPDF_ALLOW_SELF_SIGNED=true` on a development host with a self-signed certificate.

@@ -2,26 +2,15 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\View;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Template;
 
 describe('Template list queries', function () {
     beforeEach(function () {
-        $this->views = sys_get_temp_dir() . '/dynamicpdf-views-' . uniqid();
-        File::makeDirectory($this->views . '/pdf', 0755, true);
-        View::addNamespace('acmetest', $this->views);
-
-        foreach (['a', 'b', 'c'] as $name) {
-            File::put($this->views . "/pdf/{$name}.htm", "title = \"{$name}\"\nlayout = \"acme::pdf.layouts.default\"\n==\n<p>{$name}</p>");
-        }
-
-        PDFManager::instance()->registerTemplates(['acmetest::pdf.a', 'acmetest::pdf.b', 'acmetest::pdf.c']);
-    });
-
-    afterEach(function () {
-        PDFManager::forgetInstance();
-        File::deleteDirectory($this->views);
+        $this->views = $this->registerViewTemplates('acmetest', array_combine(['a', 'b', 'c'], array_map(
+            fn (string $name): string => "title = \"{$name}\"\nlayout = \"acme::pdf.layouts.default\"\n==\n<p>{$name}</p>",
+            ['a', 'b', 'c'],
+        )));
     });
 
     it('resolves the layout of view-driven templates once per code, not once per row', function () {
@@ -75,6 +64,17 @@ describe('Template list queries', function () {
         $layout->delete();
 
         expect(Template::byCode('acmetest::pdf.a')->layout)->toBeNull();
+    });
+
+    it('resolves layouts without the cache when the plugin registered no binding', function () {
+        app()->offsetUnset(Template::LAYOUT_CACHE);
+        $layout = $this->createLayout(['code' => 'acme::pdf.layouts.default']);
+        $this->createTemplate(['code' => 'acmetest::pdf.a', 'is_custom' => false]);
+
+        $layout->save();
+
+        expect(Template::byCode('acmetest::pdf.a')->layout?->code)->toBe('acme::pdf.layouts.default')
+            ->and(app()->bound(Template::LAYOUT_CACHE))->toBeFalse();
     });
 
     it('forgets a remembered layout when it is saved', function () {

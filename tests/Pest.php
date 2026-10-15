@@ -1,8 +1,62 @@
 <?php
 
+use Backend\Facades\BackendAuth;
+use Backend\Models\User;
 use Renatio\DynamicPDF\Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->beforeEach(fn () => $this->setUpOctoberPlugin())
-    ->afterEach(fn () => $this->tearDownOctoberPlugin())
+    ->afterEach(function () {
+        try {
+            BackendAuth::logout();
+        } finally {
+            $this->tearDownOctoberPlugin();
+        }
+    })
     ->in(__DIR__);
+
+/**
+ * @param  array<int, string>  $permissions  codes without the plugin prefix
+ */
+function actingAsPdfUserWith(array $permissions): User
+{
+    $granted = ['general.backend' => 1];
+
+    foreach ($permissions as $permission) {
+        $granted['renatio.dynamicpdf.' . $permission] = 1;
+    }
+
+    /** @var User $user */
+    $user = User::create([
+        'login' => 'permissions-' . uniqid(),
+        'email' => uniqid() . '@example.com',
+        'password' => 'Password!123456',
+        'password_confirmation' => 'Password!123456',
+        'first_name' => 'Permission',
+        'last_name' => 'Tests',
+        'permissions' => $granted,
+    ]);
+
+    BackendAuth::login($user);
+
+    return $user;
+}
+
+/**
+ * @param  array<int, string>  $except  codes without the plugin prefix
+ */
+function actingAsPdfManager(array $except = []): User
+{
+    return actingAsPdfUserWith(array_diff([
+        'manage_templates',
+        'manage_templates.create',
+        'manage_templates.update',
+        'manage_templates.delete',
+        'manage_templates.preview',
+        'manage_layouts',
+        'manage_layouts.create',
+        'manage_layouts.update',
+        'manage_layouts.delete',
+        'manage_layouts.preview',
+    ], $except));
+}

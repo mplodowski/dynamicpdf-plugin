@@ -5,30 +5,30 @@ name = "Default Layout"
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title>Default</title>
-        <link href="{{ 'plugins/renatio/dynamicpdf/assets/css/tailwind.css'|app }}" rel="stylesheet">
+        <link href="{{ 'plugins/renatio/dynamicpdf/assets/css/tailwind.css'|pdfasset }}" rel="stylesheet">
         <style>
             @font-face {
                 font-family: 'Open Sans';
-                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf'|app }});
+                src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf'|pdfasset }}');
             }
 
             @font-face {
                 font-family: 'Open Sans';
                 font-weight: bold;
-                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf'|app }});
+                src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf'|pdfasset }}');
             }
 
             @font-face {
                 font-family: 'Open Sans';
                 font-style: italic;
-                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf'|app }});
+                src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf'|pdfasset }}');
             }
 
             @font-face {
                 font-family: 'Open Sans';
                 font-style: italic;
                 font-weight: bold;
-                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf'|app }});
+                src: url('{{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf'|pdfasset }}');
             }
 
             @page {

@@ -5,17 +5,13 @@ namespace Renatio\DynamicPDF\Controllers;
 use Backend\Behaviors\FormController;
 use Backend\Classes\Controller;
 use Backend\Facades\Backend;
-use Backend\Facades\BackendMenu;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
-use October\Rain\Exception\ApplicationException;
-use October\Rain\Support\Facades\Flash;
-use Renatio\DynamicPDF\Classes\PDF;
-use Renatio\DynamicPDF\Classes\SyncTemplates;
-use System\Classes\SettingsManager;
+use Renatio\DynamicPDF\Traits\ManagesViewRecords;
 
 class Layouts extends Controller
 {
+    use ManagesViewRecords;
+
     /** @var array<int, string> */
     public $requiredPermissions = ['renatio.dynamicpdf.manage_layouts'];
 
@@ -31,59 +27,17 @@ class Layouts extends Controller
     {
         parent::__construct();
 
-        BackendMenu::setContext('October.System', 'system', 'settings');
-        SettingsManager::setContext('Renatio.DynamicPDF', 'templates');
+        $this->addViewPath($this->guessViewPathFrom(Templates::class), true);
+
+        $this->setSettingsContext();
+        $this->addJs('/plugins/renatio/dynamicpdf/assets/js/preview.js?v=3');
+        $this->addJs('/plugins/renatio/dynamicpdf/assets/js/variables.js?v=8');
+        $this->addCss('/plugins/renatio/dynamicpdf/assets/css/revisions.css?v=5');
+        $this->addCss('/plugins/renatio/dynamicpdf/assets/css/editor.css?v=4');
     }
 
-    public function beforeDisplay(): void
+    public function index(): RedirectResponse
     {
-        (new SyncTemplates)->handle();
-    }
-
-    public function previewpdf(int|string $id): ?Response
-    {
-        $this->pageTitle = e(trans('renatio.dynamicpdf::lang.templates.preview_pdf'));
-
-        try {
-            $model = $this->formFindModelObject($id);
-        } catch (ApplicationException $e) {
-            $this->handleError($e);
-
-            return null;
-        }
-
-        return PDF::loadLayout($model->code)
-            ->setLogOutputFile(storage_path('temp/log.htm'))
-            ->allowRemoteApplicationAssets()
-            ->setDpi(300)
-            ->stream();
-    }
-
-    public function html(int|string $id): Response
-    {
-        $model = $this->formFindModelObject($id);
-
-        return response($model->html)->header('Content-Security-Policy', 'sandbox allow-same-origin');
-    }
-
-    public function update_onDuplicate(int|string $recordId): RedirectResponse
-    {
-        $copy = $this->formFindModelObject($recordId)->duplicate();
-
-        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.duplicate_success')));
-
-        return Backend::redirect('renatio/dynamicpdf/layouts/update/' . $copy->id);
-    }
-
-    public function update_onResetDefault(int|string $recordId): RedirectResponse
-    {
-        $model = $this->formFindModelObject($recordId);
-
-        $model->fillFromCode();
-        $model->save();
-
-        Flash::success(e(trans('backend::lang.form.reset_success')));
-
-        return redirect()->refresh();
+        return Backend::redirect('renatio/dynamicpdf/templates/index/layouts');
     }
 }

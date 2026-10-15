@@ -7,10 +7,10 @@ use October\Rain\Database\Updates\Migration;
 return new class extends Migration
 {
     /**
-     * Guarded because the script shipped briefly under 8.0.4 before moving to 8.0.5, so an
-     * install that ran it there runs it again.
+     * Guarded because the script was on master under the untagged 8.0.4 and 8.0.5 before
+     * moving to 9.0.0, so an install that ran it there runs it again.
      */
-    public function up()
+    public function up(): void
     {
         if (Schema::hasColumn('renatio_dynamicpdf_pdf_templates', 'sample_data')) {
             return;
@@ -21,7 +21,7 @@ return new class extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         if (! Schema::hasColumn('renatio_dynamicpdf_pdf_templates', 'sample_data')) {
             return;

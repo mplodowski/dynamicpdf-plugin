@@ -14,27 +14,30 @@ function captureWrapper(): \Renatio\DynamicPDF\Classes\PDFWrapper
 }
 
 describe('Backend preview', function () {
-    afterEach(function () {
-        app()->forgetInstance('dynamicpdf');
-    });
+    beforeEach(fn () => actingAsPdfManager());
 
-    it('does not enable inline PHP when previewing a template', function () {
+    afterEach(fn () => app()->forgetInstance('dynamicpdf'));
+
+    it('does not enable inline PHP when previewing', function (string $type) {
         $wrapper = captureWrapper();
-        $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
 
-        (new Templates)->previewpdf($template->id);
+        $type === 'template'
+            ? (new Templates)->previewpdf($this->createTemplate(['content_html' => '<p>Hello</p>'])->id)
+            : (new Layouts)->previewpdf($this->createLayout(['content_html' => '<html><body>Hello</body></html>'])->id);
 
         expect($wrapper->getDomPDF()->getOptions()->getIsPhpEnabled())->toBeFalse();
-    });
+    })->with(['template', 'layout']);
 
-    it('does not enable inline PHP when previewing a layout', function () {
+    it('renders the preview with the configured DPI like PDFs generated from code', function (string $type) {
+        config(['dompdf.options.dpi' => 120]);
         $wrapper = captureWrapper();
-        $layout = $this->createLayout(['content_html' => '<html><body>Hello</body></html>']);
 
-        (new Layouts)->previewpdf($layout->id);
+        $type === 'template'
+            ? (new Templates)->previewpdf($this->createTemplate(['content_html' => '<p>Hello</p>'])->id)
+            : (new Layouts)->previewpdf($this->createLayout(['content_html' => '<html><body>Hello</body></html>'])->id);
 
-        expect($wrapper->getDomPDF()->getOptions()->getIsPhpEnabled())->toBeFalse();
-    });
+        expect($wrapper->getDomPDF()->getOptions()->getDpi())->toBe(120);
+    })->with(['template', 'layout']);
 
     it('limits remote resources to the application host when the config allows any host', function () {
         config(['app.url' => 'https://app.example.com']);
@@ -47,6 +50,32 @@ describe('Backend preview', function () {
 
         expect($options->getIsRemoteEnabled())->toBeTrue()
             ->and($options->getAllowedRemoteHosts())->toBe(['app.example.com'])
+            ->and($options->validateRemoteUri('http://169.254.169.254/latest/meta-data/')[0])->toBeFalse();
+    });
+
+    it('restricts remote resources for a schemeless application url', function () {
+        config(['app.url' => 'myapp.test']);
+        $wrapper = captureWrapper();
+        $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
+
+        (new Templates)->previewpdf($template->id);
+
+        $options = $wrapper->getDomPDF()->getOptions();
+
+        expect($options->getAllowedRemoteHosts())->toBe(['myapp.test'])
+            ->and($options->validateRemoteUri('http://169.254.169.254/latest/meta-data/')[0])->toBeFalse();
+    });
+
+    it('disables remote resources when no application host can be resolved', function () {
+        config(['app.url' => '', 'dompdf.options.enable_remote' => true]);
+        $wrapper = captureWrapper();
+        $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
+
+        (new Templates)->previewpdf($template->id);
+
+        $options = $wrapper->getDomPDF()->getOptions();
+
+        expect($options->getIsRemoteEnabled())->toBeFalse()
             ->and($options->validateRemoteUri('http://169.254.169.254/latest/meta-data/')[0])->toBeFalse();
     });
 
@@ -70,15 +99,6 @@ describe('Backend preview', function () {
         (new Layouts)->previewpdf($layout->id);
 
         expect($wrapper->getDomPDF()->getOptions()->getAllowedRemoteHosts())->toBe(['cdn.example.com', 'app.example.com']);
-    });
-
-    it('keeps redirects disabled when accepting self-signed certificates', function () {
-        $wrapper = captureWrapper();
-        $template = $this->createTemplate(['content_html' => '<p>Hello</p>']);
-
-        (new Templates)->previewpdf($template->id);
-
-        expect(stream_context_get_options($wrapper->getDomPDF()->getHttpContext())['http']['follow_location'])->toBeFalse();
     });
 
     it('limits local files in the preview to the asset directories', function () {

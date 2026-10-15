@@ -1,33 +1,37 @@
-# ===================================
-#  Field Definitions
-# ===================================
-
 fields:
 
-    name@create:
+    _view_status@update:
+        type: partial
+        path: field_view_status
+
+    name:
         label: renatio.dynamicpdf::lang.templates.name
         span: left
 
-    name@update:
-        label: renatio.dynamicpdf::lang.templates.name
-        span: full
-
     code@create:
         label: renatio.dynamicpdf::lang.templates.code
-        comment: renatio.dynamicpdf::lang.templates.code_comment
+        comment: renatio.dynamicpdf::lang.layouts.code_comment
         preset: name
         span: right
 
-secondaryTabs:
+    code@update:
+        label: renatio.dynamicpdf::lang.templates.code
+        disabled: true
+        span: right
 
+secondaryTabs:
+    stretch: true
     fields:
 
         content_html:
             type: codeeditor
             size: giant
             tab: renatio.dynamicpdf::lang.templates.content_html
-            language: html
+            language: twig
             stretch: true
+            attributes:
+                role: group
+                aria-label: HTML
             default: |
                 <!DOCTYPE html>
                 <html>
@@ -38,23 +42,123 @@ secondaryTabs:
                             {{ css|raw }}
                         </style>
                     </head>
-                    <body>
+                    <body{% if background_img %} style="background: url('{{ background_img }}') top left no-repeat; background-size: 100% 100%;"{% endif %}>
                         {{ content_html|raw }}
                     </body>
                 </html>
+
+        _variables:
+            tab: renatio.dynamicpdf::lang.templates.content_html
+            type: partial
+            path: field_variables
+            cssClass: dynamicpdf-editor-hint
 
         content_css:
             tab: renatio.dynamicpdf::lang.templates.content_css
             type: codeeditor
             size: giant
-            language: css
+            language: less
             stretch: true
+            attributes:
+                role: group
+                aria-label: CSS/LESS
 
         background_img:
-            label: renatio.dynamicpdf::lang.templates.background_img
             tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.templates.background_img
             type: fileupload
             mode: image
             comment: renatio.dynamicpdf::lang.templates.background_img_comment
             attachOnUpload: true
-            span: left
+
+        _page_numbers_section:
+            tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.section
+            type: section
+
+        page_numbers:
+            tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.position
+            type: dropdown
+            emptyOption: renatio.dynamicpdf::lang.page_numbers.off
+            options:
+                bottom-center: renatio.dynamicpdf::lang.page_numbers.positions.bottom-center
+                bottom-left: renatio.dynamicpdf::lang.page_numbers.positions.bottom-left
+                bottom-right: renatio.dynamicpdf::lang.page_numbers.positions.bottom-right
+                top-center: renatio.dynamicpdf::lang.page_numbers.positions.top-center
+                top-left: renatio.dynamicpdf::lang.page_numbers.positions.top-left
+                top-right: renatio.dynamicpdf::lang.page_numbers.positions.top-right
+            span: row
+            spanClass: col-md-6
+
+        page_numbers_text:
+            tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.text
+            placeholder: renatio.dynamicpdf::lang.page_numbers.default_text
+            comment: renatio.dynamicpdf::lang.page_numbers.text_comment
+            trigger:
+                action: show
+                field: page_numbers
+                condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+            span: row
+            spanClass: col-md-6
+
+        page_numbers_size:
+            tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.size
+            type: number
+            placeholder: 9
+            min: 1
+            max: 72
+            step: any
+            trigger:
+                action: show
+                field: page_numbers
+                condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+            span: row
+            spanClass: col-md-6
+
+        page_numbers_font:
+            tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.font
+            comment: renatio.dynamicpdf::lang.page_numbers.font_comment
+            trigger:
+                action: show
+                field: page_numbers
+                condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+            span: row
+            spanClass: col-md-6
+
+        page_numbers_margin:
+            tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.margin
+            comment: renatio.dynamicpdf::lang.page_numbers.margin_comment
+            type: number
+            placeholder: 20
+            min: 0
+            max: 200
+            step: any
+            trigger:
+                action: show
+                field: page_numbers
+                condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+            span: row
+            spanClass: col-md-6
+
+        page_numbers_color:
+            tab: renatio.dynamicpdf::lang.tab.options
+            label: renatio.dynamicpdf::lang.page_numbers.color
+            type: colorpicker
+            allowEmpty: true
+            showAlpha: false
+            trigger:
+                action: show
+                field: page_numbers
+                condition: value[bottom-center][bottom-left][bottom-right][top-center][top-left][top-right]
+            span: row
+            spanClass: col-md-6
+
+        _revisions@update:
+            tab: renatio.dynamicpdf::lang.tab.history
+            type: partial
+            path: field_revisions

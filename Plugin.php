@@ -7,12 +7,17 @@ use Backend\Facades\Backend;
 use Barryvdh\DomPDF\ServiceProvider;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Event;
-use RainLab\Translate\Classes\ThemeScanner;
+use Illuminate\Support\Facades\Lang;
+use Renatio\DynamicPDF\Classes\Codes;
+use Renatio\DynamicPDF\Classes\PDFAsset;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Console\Check;
 use Renatio\DynamicPDF\Console\Demo;
+use Renatio\DynamicPDF\Console\Export;
+use Renatio\DynamicPDF\Console\Import;
+use Renatio\DynamicPDF\Console\Render;
 use Renatio\DynamicPDF\Console\Sync;
-use Renatio\DynamicPDF\Models\Layout;
+use Renatio\DynamicPDF\Listeners\ImportTranslateMessages;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\PluginBase;
 use System\Classes\PluginManager;
@@ -20,6 +25,12 @@ use System\Models\Parameter;
 
 class Plugin extends PluginBase
 {
+    public const DEMO_PARAMETER = 'renatio::dynamicpdf.demo';
+
+    public const DEMO_TEMPLATES = ['renatio.dynamicpdf::pdf.invoice', 'renatio.dynamicpdf::pdf.header_and_footer'];
+
+    public const DEMO_LAYOUTS = ['renatio.dynamicpdf::pdf.layouts.default', 'renatio.dynamicpdf::pdf.layouts.header_and_footer'];
+
     /**
      * @return array<string, string>
      */
@@ -34,7 +45,7 @@ class Plugin extends PluginBase
         ];
     }
 
-    public function boot(): void
+    public function register(): void
     {
         $this->app->register(ServiceProvider::class);
 
@@ -45,32 +56,23 @@ class Plugin extends PluginBase
             $app->make('view'),
         ));
 
-        if (config('dompdf.public_path') === null) {
-            config(['dompdf.public_path' => public_path()]);
-        }
-
-        Event::listen('rainlab.translate.themeScanner.afterScan', function (ThemeScanner $scanner): void {
-            $messages = [];
-
-            foreach (Layout::all() as $layout) {
-                $messages = array_merge($messages, $scanner->parseContent($layout->content_html));
-            }
-
-            foreach (Template::all() as $template) {
-                $messages = array_merge($messages, $scanner->parseContent($template->content_html));
-            }
-
-            $scanner->importMessages($messages);
-        });
-    }
-
-    public function register(): void
-    {
         $this->app->scoped(Template::LAYOUT_CACHE, fn (): ArrayObject => new ArrayObject);
 
         $this->registerConsoleCommand('dynamicpdf:demo', Demo::class);
         $this->registerConsoleCommand('dynamicpdf:sync', Sync::class);
         $this->registerConsoleCommand('dynamicpdf:check', Check::class);
+        $this->registerConsoleCommand('dynamicpdf:export', Export::class);
+        $this->registerConsoleCommand('dynamicpdf:import', Import::class);
+        $this->registerConsoleCommand('dynamicpdf:render', Render::class);
+    }
+
+    public function boot(): void
+    {
+        if (config('dompdf.public_path') === null) {
+            config(['dompdf.public_path' => public_path()]);
+        }
+
+        Event::listen('rainlab.translate.themeScanner.afterScan', ImportTranslateMessages::class);
     }
 
     /**
@@ -78,14 +80,49 @@ class Plugin extends PluginBase
      */
     public function registerPermissions(): array
     {
+        $tab = 'renatio.dynamicpdf::lang.permissions.tab';
+
         return [
             'renatio.dynamicpdf.manage_templates' => [
                 'label' => 'renatio.dynamicpdf::lang.permissions.manage_templates',
-                'tab' => 'renatio.dynamicpdf::lang.permissions.tab',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_templates.create' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.create_templates',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_templates.update' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.update_templates',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_templates.delete' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.delete_templates',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_templates.preview' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.preview_templates',
+                'tab' => $tab,
             ],
             'renatio.dynamicpdf.manage_layouts' => [
                 'label' => 'renatio.dynamicpdf::lang.permissions.manage_layouts',
-                'tab' => 'renatio.dynamicpdf::lang.permissions.tab',
+                'comment' => 'renatio.dynamicpdf::lang.permissions.manage_layouts_comment',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_layouts.create' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.create_layouts',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_layouts.update' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.update_layouts',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_layouts.delete' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.delete_layouts',
+                'tab' => $tab,
+            ],
+            'renatio.dynamicpdf.manage_layouts.preview' => [
+                'label' => 'renatio.dynamicpdf::lang.permissions.preview_layouts',
+                'tab' => $tab,
             ],
         ];
     }
@@ -95,14 +132,22 @@ class Plugin extends PluginBase
      */
     public function registerMarkupTags(): array
     {
-        if (PluginManager::instance()->exists('RainLab.Translate')) {
-            return [];
+        $filters = ['pdfasset' => [new PDFAsset, false]];
+
+        if (! PluginManager::instance()->exists('RainLab.Translate')) {
+            $filters['_'] = [Lang::class, 'get'];
+            $filters['__'] = [Lang::class, 'choice'];
         }
 
+        $codes = new Codes;
+
         return [
-            'filters' => [
-                '_' => ['Lang', 'get'],
-                '__' => ['Lang', 'choice'],
+            'filters' => $filters,
+            'functions' => [
+                'pdf_qr' => [$codes, 'qr'],
+                'pdf_barcode' => [$codes, 'barcode'],
+                'pdf_qr_available' => [$codes, 'qrAvailable'],
+                'pdf_barcode_available' => [$codes, 'barcodeAvailable'],
             ],
         ];
     }
@@ -129,14 +174,7 @@ class Plugin extends PluginBase
      */
     public function registerPDFTemplates(): array
     {
-        if (! Parameter::get('renatio::dynamicpdf.demo')) {
-            return [];
-        }
-
-        return [
-            'renatio.dynamicpdf::pdf.invoice',
-            'renatio.dynamicpdf::pdf.header_and_footer',
-        ];
+        return Parameter::get(self::DEMO_PARAMETER) ? self::DEMO_TEMPLATES : [];
     }
 
     /**
@@ -144,13 +182,6 @@ class Plugin extends PluginBase
      */
     public function registerPDFLayouts(): array
     {
-        if (! Parameter::get('renatio::dynamicpdf.demo')) {
-            return [];
-        }
-
-        return [
-            'renatio.dynamicpdf::pdf.layouts.default',
-            'renatio.dynamicpdf::pdf.layouts.header_and_footer',
-        ];
+        return Parameter::get(self::DEMO_PARAMETER) ? self::DEMO_LAYOUTS : [];
     }
 }

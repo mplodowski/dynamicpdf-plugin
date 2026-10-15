@@ -2,30 +2,34 @@
 
 namespace Renatio\DynamicPDF\Traits;
 
+use Illuminate\Database\UniqueConstraintViolationException;
+
 trait Duplicates
 {
-    /**
-     * A copy with a free code, its attachments and the label of the copy marked as such.
-     */
     public function duplicate(): static
     {
         $copy = $this->replicateWithRelations();
         $copy->code = $this->uniqueCopyCode((string) $this->code);
-        $copy->{$this->duplicateLabelAttribute()} = $this->{$this->duplicateLabelAttribute()} . ' ' . trans('renatio.dynamicpdf::lang.templates.copy_suffix');
-        $this->prepareDuplicate($copy);
-        $copy->save();
+        $copy->{$this->labelAttribute()} = $this->{$this->labelAttribute()} . ' ' . trans('renatio.dynamicpdf::lang.templates.copy_suffix');
+        $copy->markAsCustomised();
+
+        try {
+            $copy->save();
+        } catch (UniqueConstraintViolationException) {
+            $copy->code = $this->uniqueCopyCode((string) $this->code);
+            $copy->save();
+        }
 
         return $copy;
     }
 
-    abstract protected function duplicateLabelAttribute(): string;
+    abstract public function labelAttribute(): string;
 
-    protected function prepareDuplicate(self $copy): void
-    {
-    }
+    abstract public function markAsCustomised(): void;
 
     protected function uniqueCopyCode(string $code): string
     {
+        $code = (string) preg_replace('#[^\w.:/-]#', '_', $code);
         $candidate = $code . '_copy';
 
         for ($i = 2; static::whereCode($candidate)->exists(); $i++) {

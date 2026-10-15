@@ -1,0 +1,86 @@
+name = "Header and Footer"
+==
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>Header and Footer</title>
+        <link href="{{ 'plugins/renatio/dynamicpdf/assets/css/tailwind.css'|app }}" rel="stylesheet">
+        <style>
+            @font-face {
+                font-family: 'Open Sans';
+                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Regular.ttf'|app }});
+            }
+
+            @font-face {
+                font-family: 'Open Sans';
+                font-weight: bold;
+                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Bold.ttf'|app }});
+            }
+
+            @font-face {
+                font-family: 'Open Sans';
+                font-style: italic;
+                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-Italic.ttf'|app }});
+            }
+
+            @font-face {
+                font-family: 'Open Sans';
+                font-style: italic;
+                font-weight: bold;
+                src: url({{ 'plugins/renatio/dynamicpdf/assets/fonts/OpenSans-BoldItalic.ttf'|app }});
+            }
+
+            @page {
+                margin: 0;
+                padding: 0;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+
+            body {
+                font-family: "Open Sans", sans-serif;
+            }
+        </style>
+    </head>
+    <body style="background-image: url({{ 'plugins/renatio/dynamicpdf/assets/img/bg.jpg'|app }});"
+          class="bg-left-top bg-no-repeat pt-36">
+        <div class="h-32 fixed top-0 px-12 mt-20 w-full text-gray-500">
+            This is example header text
+        </div>
+
+        <div class="h-24 fixed bottom-0 px-12 w-full text-gray-500">
+            This is example footer text
+        </div>
+
+        {{ content_html|raw }}
+
+        <script type="text/php">
+            if (isset($pdf)) {
+                $size = 9;
+                $color = [0,0,0];
+
+                $font = $fontMetrics->getFont('Open Sans');
+                $textHeight = $fontMetrics->getFontHeight($font, $size);
+                $width = $fontMetrics->getTextWidth('Page 1 of 2', $font, $size);
+
+                $foot = $pdf->open_object();
+
+                $w = $pdf->get_width();
+                $h = $pdf->get_height();
+
+                $y = $h - $textHeight - 13;
+
+                $pdf->close_object();
+                $pdf->add_object($foot, 'all');
+
+                $text = "Page {PAGE_NUM} of {PAGE_COUNT}";
+
+                // Center the text
+                $pdf->page_text($w / 2 - $width / 2, $y, $text, $font, $size, $color);
+            }
+        </script>
+    </body>
+</html>

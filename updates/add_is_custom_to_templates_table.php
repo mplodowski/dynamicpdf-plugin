@@ -8,14 +8,14 @@ use Schema;
 
 class AddIsCustomToTemplatesTable extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::table('renatio_dynamicpdf_pdf_templates', function (Blueprint $table) {
             $table->boolean('is_custom')->default(false);
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::table('renatio_dynamicpdf_pdf_templates', function (Blueprint $table) {
             $table->dropColumn('is_custom');

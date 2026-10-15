@@ -1,7 +1,7 @@
 {
     "name": "renatio/dynamicpdf-plugin",
     "type": "october-plugin",
-    "description": "October HTML to PDF converter using dompdf library.",
+    "description": "Generate PDFs in October CMS from HTML and Twig templates edited in the backend, with layouts, page numbers, password protection and file output.",
     "homepage": "https://octobercms.com/plugin/renatio-dynamicpdf",
     "keywords": [
         "octobercms-plugin",
@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "october/rain": "^4.0",
+        "october/rain": "^4.4",
         "barryvdh/laravel-dompdf": "^3.1"
     },
     "require-dev": {
@@ -31,7 +31,12 @@
         "phpstan/phpstan": "^2.0",
         "rector/rector": "^2.0"
     },
+    "suggest": {
+        "endroid/qr-code": "Required by the pdf_qr() Twig function (QR codes as images, PNG needs ext-gd).",
+        "picqer/php-barcode-generator": "Required by the pdf_barcode() Twig function (EAN-13, Code 128 and other barcodes)."
+    },
     "scripts": {
+        "test": "../../../vendor/bin/pest tests -c phpunit.xml",
         "stan": "../../../vendor/bin/phpstan analyse --memory-limit=1G",
         "rector": "../../../vendor/bin/rector process --dry-run",
         "rector:fix": "../../../vendor/bin/rector process"

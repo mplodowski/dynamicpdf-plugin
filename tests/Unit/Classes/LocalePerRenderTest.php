@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Twig\Error\SyntaxError;
 
 describe('Locale per render', function () {
@@ -14,14 +15,6 @@ describe('Locale per render', function () {
             ->and(app()->getLocale())->toBe('en');
     });
 
-    it('formats dates in the given locale', function () {
-        $this->createTemplate(['code' => 'acme::pdf.dates', 'content_html' => "{{ date.translatedFormat('F') }}"]);
-
-        $wrapper = app('dynamicpdf')->loadTemplate('acme::pdf.dates', ['date' => \Carbon\Carbon::create(2026, 3, 1)], locale: 'de');
-
-        expect($wrapper->getDomPDF()->outputHtml())->toContain('März');
-    });
-
     it('exposes the application locale and lets template data override it', function () {
         $this->createTemplate(['code' => 'acme::pdf.locale', 'content_html' => '{{ locale }}']);
 
@@ -32,8 +25,16 @@ describe('Locale per render', function () {
             ->and($overridden)->toContain('custom');
     });
 
+    it('treats an empty locale as no locale', function () {
+        app()->setLocale('pl');
+        $this->createTemplate(['code' => 'acme::pdf.invoice', 'content_html' => "{{ 'renatio.dynamicpdf::lang.templates.label'|trans }} [{{ locale }}]"]);
+
+        expect(app('dynamicpdf')->loadTemplate('acme::pdf.invoice', locale: '')->getDomPDF()->outputHtml())->toContain('Szablony [pl]');
+    });
+
     it('restores the previous locale when parsing fails', function () {
-        $this->createTemplate(['code' => 'acme::pdf.broken', 'content_html' => '{{ name']);
+        $template = $this->createTemplate(['code' => 'acme::pdf.broken']);
+        DB::table('renatio_dynamicpdf_pdf_templates')->where('id', $template->id)->update(['content_html' => '{{ name']);
 
         expect(fn () => app('dynamicpdf')->loadTemplate('acme::pdf.broken', locale: 'pl'))->toThrow(SyntaxError::class)
             ->and(app()->getLocale())->toBe('en');

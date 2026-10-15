@@ -5,10 +5,13 @@ use Renatio\DynamicPDF\Classes\Events;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\PDFWrapper;
 use Renatio\DynamicPDF\Models\Template;
+use Renatio\DynamicPDF\Plugin;
+use System\Classes\PluginBase;
+use System\Classes\PluginManager;
+use System\Models\Parameter;
 
 describe('Global variables and events', function () {
     afterEach(function () {
-        PDFManager::forgetInstance();
         Event::forget(Events::BEFORE_RENDER);
         Event::forget(Events::AFTER_RENDER);
     });
@@ -36,11 +39,70 @@ describe('Global variables and events', function () {
         expect(app('dynamicpdf')->parseTemplate($template))->toBe('<p>COPY</p><!-- audited -->');
     });
 
+    it('passes the HTML through every afterRender listener in turn', function () {
+        Event::listen(Events::AFTER_RENDER, fn (PDFWrapper $pdf, Template $template, string $html): string => str_replace('<p>', '<p class="draft">', $html));
+        Event::listen(Events::AFTER_RENDER, fn (): null => null);
+        Event::listen(Events::AFTER_RENDER, fn (PDFWrapper $pdf, Template $template, string $html): string => $html . '<footer>1</footer>');
+        $template = $this->createTemplate(['content_html' => '<p>Invoice</p>']);
+
+        expect(app('dynamicpdf')->parseTemplate($template))->toBe('<p class="draft">Invoice</p><footer>1</footer>');
+    });
+
+    it('stops the afterRender listeners after one returns false', function () {
+        Event::listen(Events::AFTER_RENDER, fn (PDFWrapper $pdf, Template $template, string $html): string => $html . '<i>1</i>');
+        Event::listen(Events::AFTER_RENDER, fn (): bool => false);
+        Event::listen(Events::AFTER_RENDER, fn (PDFWrapper $pdf, Template $template, string $html): string => $html . '<i>2</i>');
+
+        expect(app('dynamicpdf')->parseTemplate($this->createTemplate(['content_html' => '<p>x</p>'])))->toBe('<p>x</p><i>1</i>');
+    });
+
+    it('records a faked afterRender event without running its listeners', function () {
+        Event::listen(Events::AFTER_RENDER, fn (): string => 'replaced');
+        Event::fake([Events::AFTER_RENDER]);
+
+        expect(app('dynamicpdf')->parseTemplate($this->createTemplate(['content_html' => '<p>x</p>'])))->toBe('<p>x</p>');
+        Event::assertDispatched(Events::AFTER_RENDER);
+    });
+
+    it('exposes the variables a plugin registers with registerPDFVariables', function () {
+        $plugin = new class(app()) extends PluginBase
+        {
+            /**
+             * @return array<string, string>
+             */
+            public function registerPDFVariables(): array
+            {
+                return ['company' => 'Acme'];
+            }
+        };
+        (fn () => $this->plugins['Acme.Variables'] = $plugin)->call(PluginManager::instance());
+        PDFManager::forgetInstance();
+
+        try {
+            $html = app('dynamicpdf')->parseTemplate($this->createTemplate(['content_html' => '<p>{{ company }}</p>']));
+        } finally {
+            (function () {
+                unset($this->plugins['Acme.Variables']);
+            })->call(PluginManager::instance());
+        }
+
+        expect($html)->toBe('<p>Acme</p>');
+    });
+
     it('keeps plugin registrations when a variable was registered before the plugins were read', function () {
+        Parameter::set(Plugin::DEMO_PARAMETER, 1);
         PDFManager::instance()->registerVariables(['company' => 'Acme']);
 
         expect(PDFManager::instance()->listRegisteredVariables())->toHaveKey('company')
-            ->and(PDFManager::instance()->listRegisteredTemplates())->toBeArray();
+            ->and(PDFManager::instance()->listRegisteredTemplates())->toHaveKey('renatio.dynamicpdf::pdf.invoice');
+    });
+
+    it('still loads plugin registrations through the pre-9.0 method name', function () {
+        Parameter::set(Plugin::DEMO_PARAMETER, 1);
+        PDFManager::instance()->loadRegisteredTemplates();
+        Parameter::set(Plugin::DEMO_PARAMETER, 0);
+
+        expect(PDFManager::instance()->listRegisteredTemplates())->toHaveKey('renatio.dynamicpdf::pdf.invoice');
     });
 
     it('ignores reserved names coming from variables and listeners', function () {

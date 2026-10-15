@@ -1,31 +1,31 @@
-# ===================================
-#  Form Behavior Config
-# ===================================
-
-# Record name
 name: renatio.dynamicpdf::lang.template.menu_label
 
-# Model Form Field configuration
 form: $/renatio/dynamicpdf/models/template/fields.yaml
 
-# Model Class name
 modelClass: Renatio\DynamicPDF\Models\Template
 
-# Default redirect location
+customMessages:
+    flashCreate: renatio.dynamicpdf::lang.templates.create_success
+    flashUpdate: renatio.dynamicpdf::lang.templates.update_success
+    flashDelete: renatio.dynamicpdf::lang.templates.delete_success
+
 defaultRedirect: renatio/dynamicpdf/templates
 
-# Create page
 create:
     title: renatio.dynamicpdf::lang.template.create_template
     redirect: renatio/dynamicpdf/templates/update/:id
     redirectClose: renatio/dynamicpdf/templates
 
-# Update page
 update:
     title: renatio.dynamicpdf::lang.template.edit_template
     redirect: renatio/dynamicpdf/templates
     redirectClose: renatio/dynamicpdf/templates
 
-# Preview page
 preview:
     title: renatio.dynamicpdf::lang.templates.preview_html
+
+permissions:
+    modelCreate: renatio.dynamicpdf.manage_templates.create
+    modelUpdate: renatio.dynamicpdf.manage_templates.update
+    modelDelete: renatio.dynamicpdf.manage_templates.delete
+    modelPreview: renatio.dynamicpdf.manage_templates.preview

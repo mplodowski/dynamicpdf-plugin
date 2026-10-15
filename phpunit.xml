@@ -28,7 +28,9 @@
             <directory>classes</directory>
             <directory>console</directory>
             <directory>controllers</directory>
+            <directory>listeners</directory>
             <directory>models</directory>
+            <directory>traits</directory>
             <file>Plugin.php</file>
         </include>
     </source>
@@ -42,7 +44,7 @@
         <env name="APP_LOCALE" value="en"/>
         <env name="APP_DEBUG" value="true"/>
 
-        <env name="CACHE_DRIVER" value="array"/>
+        <env name="CACHE_STORE" value="array"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
 
@@ -58,6 +60,6 @@
 
         <env name="MAIL_MAILER" value="array"/>
 
-        <env name="BROADCAST_DRIVER" value="log"/>
+        <env name="BROADCASTING_DEFAULT" value="log"/>
     </php>
 </phpunit>

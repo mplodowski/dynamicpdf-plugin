@@ -2,9 +2,11 @@
 
 namespace Renatio\DynamicPDF\Console;
 
+use Composer\InstalledVersions;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\View;
 use InvalidArgumentException;
+use Renatio\DynamicPDF\Classes\Codes;
 use Renatio\DynamicPDF\Classes\PDFManager;
 
 class Check extends Command
@@ -14,6 +16,8 @@ class Check extends Command
     protected const WARN = '<fg=yellow;options=bold>WARN</>';
 
     protected const FAIL = '<fg=red;options=bold>FAIL</>';
+
+    protected const INFO = '<fg=blue;options=bold>INFO</>';
 
     protected $signature = 'dynamicpdf:check';
 
@@ -25,7 +29,7 @@ class Check extends Command
     {
         $this->newLine();
 
-        $this->directory('Font directory', config('dompdf.options.font_dir'));
+        $this->directory('Font directory', config('dompdf.options.font_dir'), createdOnRender: true);
         $this->directory('Font cache', config('dompdf.options.font_cache'));
         $this->directory('Temporary directory', config('dompdf.options.temp_dir'));
 
@@ -40,6 +44,10 @@ class Check extends Command
 
         $this->views('Registered layouts', PDFManager::instance()->listRegisteredLayouts());
         $this->views('Registered templates', PDFManager::instance()->listRegisteredTemplates());
+
+        foreach (Codes::PACKAGES as $function => $package) {
+            $this->package($function, $package['package'], $package['class'], $package['major']);
+        }
 
         $this->newLine();
 
@@ -69,10 +77,9 @@ class Check extends Command
     }
 
     /**
-     * Only reports: creating the directory here would give it the CLI user's ownership and
-     * certify a directory the web server still cannot write to.
+     * Only reports: a directory created here would belong to the CLI user, not the web server.
      */
-    protected function directory(string $label, mixed $path): void
+    protected function directory(string $label, mixed $path, bool $createdOnRender = false): void
     {
         if (! is_string($path) || $path === '') {
             $this->components->twoColumnDetail($label, self::WARN . ' not configured');
@@ -81,6 +88,14 @@ class Check extends Command
         }
 
         if (! is_dir($path)) {
+            $parent = $this->nearestExistingParent($path);
+
+            if ($createdOnRender && ! file_exists($path) && is_writable($parent)) {
+                $this->components->twoColumnDetail($label, self::WARN . " {$path} does not exist; the first render creates it if the web server can write to {$parent}");
+
+                return;
+            }
+
             $this->report($label, "{$path} does not exist; create it and make it writable for the web server");
 
             return;
@@ -93,6 +108,40 @@ class Check extends Command
         }
 
         $this->components->twoColumnDetail($label, self::PASS . " {$path}");
+    }
+
+    protected function package(string $function, string $package, string $class, int $major): void
+    {
+        $label = "{$function} ({$package})";
+
+        $installed = InstalledVersions::isInstalled($package);
+
+        if (! class_exists($class) && ! $installed) {
+            $this->components->twoColumnDetail($label, self::INFO . " not installed; run composer require {$package} to use {$function}");
+
+            return;
+        }
+
+        $version = $installed ? InstalledVersions::getPrettyVersion($package) : null;
+
+        if (! class_exists($class) || ($version !== null && preg_match('/^v?(\d+)\./', $version, $match) && (int) $match[1] < $major)) {
+            $this->components->twoColumnDetail($label, self::WARN . ' ' . ($version ?? 'This version') . " is not supported; {$function} needs version {$major} or newer");
+
+            return;
+        }
+
+        $this->components->twoColumnDetail($label, self::PASS . ($version !== null ? " {$version}" : ' installed'));
+    }
+
+    protected function nearestExistingParent(string $path): string
+    {
+        $path = rtrim($path, DIRECTORY_SEPARATOR);
+
+        while ($path !== '' && ! is_dir($path) && dirname($path) !== $path) {
+            $path = dirname($path);
+        }
+
+        return $path;
     }
 
     /**

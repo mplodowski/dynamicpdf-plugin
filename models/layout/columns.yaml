@@ -1,7 +1,3 @@
-# ===================================
-#  Column Definitions
-# ===================================
-
 columns:
 
     name:
@@ -11,22 +7,35 @@ columns:
     code:
         label: renatio.dynamicpdf::lang.templates.code
         searchable: true
+        type: partial
+        path: column_code
 
-    is_locked:
-        label: renatio.dynamicpdf::lang.templates.is_locked
+    is_custom:
+        label: renatio.dynamicpdf::lang.templates.is_custom
         type: switch
 
-    preview:
-        label: renatio.dynamicpdf::lang.templates.preview
-        type: partial
-        path: column_preview_layout
+    templates:
+        label: renatio.dynamicpdf::lang.layout.used_by
+        relation: templates
+        relationCount: true
+        type: number
         sortable: false
-        clickable: false
 
     created_at:
         label: renatio.dynamicpdf::lang.templates.created_at
         type: datetime
+        invisible: true
 
     updated_at:
         label: renatio.dynamicpdf::lang.templates.updated_at
         type: datetime
+
+    preview:
+        label: renatio.dynamicpdf::lang.templates.actions
+        type: partial
+        path: column_actions
+        sortable: false
+        clickable: false
+        align: center
+        cssClass: text-nowrap
+        width: 1%

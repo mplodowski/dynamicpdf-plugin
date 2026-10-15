@@ -6,18 +6,21 @@ use Backend\Behaviors\FormController;
 use Backend\Behaviors\ListController;
 use Backend\Classes\Controller;
 use Backend\Facades\Backend;
-use Backend\Facades\BackendMenu;
+use Backend\Facades\BackendAuth;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
 use October\Rain\Exception\ApplicationException;
+use October\Rain\Exception\ForbiddenException;
 use October\Rain\Support\Facades\Flash;
-use Renatio\DynamicPDF\Classes\PDF;
-use Renatio\DynamicPDF\Classes\SyncTemplates;
+use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
-use System\Classes\SettingsManager;
+use Renatio\DynamicPDF\Traits\ManagesViewRecords;
 
 class Templates extends Controller
 {
+    use ManagesViewRecords;
+
+    protected const LIST_MODELS = ['templates' => Template::class, 'layouts' => Layout::class];
+
     /** @var array<int, string> */
     public $requiredPermissions = ['renatio.dynamicpdf.manage_templates'];
 
@@ -38,81 +41,139 @@ class Templates extends Controller
 
     public function __construct()
     {
+        /** Dropped before parent::__construct() so ListController never builds the layouts list. */
+        if (! self::canManageLayouts()) {
+            unset($this->listConfig['layouts']);
+        }
+
         parent::__construct();
 
-        BackendMenu::setContext('October.System', 'system', 'settings');
-        SettingsManager::setContext('Renatio.DynamicPDF', 'templates');
+        $this->setSettingsContext();
+        $this->addJs('/plugins/renatio/dynamicpdf/assets/js/preview.js?v=3');
+        $this->addJs('/plugins/renatio/dynamicpdf/assets/js/variables.js?v=8');
+        $this->addCss('/plugins/renatio/dynamicpdf/assets/css/revisions.css?v=5');
+        $this->addCss('/plugins/renatio/dynamicpdf/assets/css/editor.css?v=4');
     }
 
-    public function beforeDisplay(): void
+    protected static function canManageLayouts(): bool
     {
-        (new SyncTemplates)->handle();
+        return (bool) BackendAuth::userHasAccess(self::permission('layouts'));
+    }
+
+    protected static function permission(string $definition): string
+    {
+        return "renatio.dynamicpdf.manage_{$definition}";
+    }
+
+    protected static function definitionOf(Template|Layout $record): string
+    {
+        return $record instanceof Layout ? 'layouts' : 'templates';
     }
 
     public function index(?string $tab = null): void
     {
         $this->asExtension('ListController')->index();
 
+        $tab = strtolower((string) $tab);
+
         $this->bodyClass = 'compact-container';
-        $this->vars['activeTab'] = $tab ?: 'templates';
+        $this->vars['canManageLayouts'] = self::canManageLayouts();
+        $this->vars['activeTab'] = array_key_exists($tab, $this->listConfig) ? $tab : 'templates';
+    }
+
+    public function index_onDuplicateRecord(): RedirectResponse
+    {
+        $definition = $this->listDefinition();
+        $this->checkListPermission($definition, 'create');
+        $copy = $this->findListRecord($definition)->duplicate();
+
+        Flash::success(trans('renatio.dynamicpdf::lang.templates.duplicate_success'));
+
+        return Backend::redirect("renatio/dynamicpdf/{$definition}/update/{$copy->id}");
     }
 
     /**
-     * Only a change to what the view file provides detaches the template from the view;
-     * editing the sample data alone keeps it view-driven.
+     * @return array<string, string>
      */
-    public function formBeforeSave(Template $model): void
+    public function index_onResetRecord(): array
     {
-        if ($model->isDirty(['title', 'description', 'content_html', 'layout_id', 'size', 'orientation'])) {
-            $model->is_custom = true;
-        }
+        $definition = $this->listDefinition();
+        $this->checkListPermission($definition, 'update');
+        $this->resetToView($this->findListRecord($definition));
+
+        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.reset_success')));
+
+        return $this->listRefresh($definition);
     }
 
-    public function previewpdf(int|string $id): ?Response
+    /**
+     * @return array<string, string>
+     */
+    public function index_onDeleteRecord(): array
     {
-        $this->pageTitle = e(trans('renatio.dynamicpdf::lang.templates.preview_pdf'));
+        $definition = $this->listDefinition();
+        $this->checkListPermission($definition, 'delete');
+        $model = $this->findListRecord($definition);
 
-        try {
-            $model = $this->formFindModelObject($id);
-        } catch (ApplicationException $e) {
-            $this->handleError($e);
+        if ($model->hasView()) {
+            throw new ApplicationException(trans('renatio.dynamicpdf::lang.templates.delete_view_refused'));
+        }
 
+        $model->delete();
+
+        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.delete_success')));
+
+        return $this->listRefresh($definition);
+    }
+
+    /**
+     * @param  Template|Layout  $record
+     * @param  string|null  $definition
+     * @return string|array<string, bool>|null
+     */
+    public function listOverrideRecordUrl($record, $definition = null): string|array|null
+    {
+        $permission = self::permission((string) $definition);
+
+        if (BackendAuth::userHasAccess("{$permission}.update")) {
             return null;
         }
 
-        return PDF::loadTemplate($model->code, $model->sampleData())
-            ->setLogOutputFile(storage_path('temp/log.htm'))
-            ->allowRemoteApplicationAssets()
-            ->setDpi(300)
-            ->stream();
+        if (BackendAuth::userHasAccess("{$permission}.preview")) {
+            return "renatio/dynamicpdf/{$definition}/preview/{$record->id}";
+        }
+
+        return ['clickable' => false];
     }
 
-    public function html(int|string $id): Response
+    protected function listDefinition(): string
     {
-        $model = $this->formFindModelObject($id);
+        $definition = post('definition');
 
-        return response($model->html)->header('Content-Security-Policy', 'sandbox allow-same-origin');
+        return is_string($definition) && isset(self::LIST_MODELS[$definition]) ? $definition : 'templates';
     }
 
-    public function update_onDuplicate(int|string $recordId): RedirectResponse
+    protected function checkListPermission(string $definition, string $action): void
     {
-        $copy = $this->formFindModelObject($recordId)->duplicate();
-
-        Flash::success(e(trans('renatio.dynamicpdf::lang.templates.duplicate_success')));
-
-        return Backend::redirect('renatio/dynamicpdf/templates/update/' . $copy->id);
+        if (! BackendAuth::userHasAccess(self::permission($definition) . ".{$action}")) {
+            throw new ForbiddenException;
+        }
     }
 
-    public function update_onResetDefault(int|string $recordId): RedirectResponse
+    protected function findListRecord(string $definition): Template|Layout
     {
-        $model = $this->formFindModelObject($recordId);
+        if ($definition === 'layouts' && ! self::canManageLayouts()) {
+            throw new ForbiddenException;
+        }
 
-        $model->fillFromCode();
-        $model->is_custom = false;
-        $model->save();
+        $id = (int) post('id');
+        $class = self::LIST_MODELS[$definition];
+        $model = $class::find($id);
 
-        Flash::success(e(trans('backend::lang.form.reset_success')));
+        if (! $model) {
+            throw new ApplicationException(trans('backend::lang.model.not_found', ['class' => $class, 'id' => $id]));
+        }
 
-        return redirect()->refresh();
+        return $model;
     }
 }

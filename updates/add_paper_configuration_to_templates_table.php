@@ -8,7 +8,7 @@ use Schema;
 
 class AddPaperConfigurationToTemplatesTable extends Migration
 {
-    public function up()
+    public function up(): void
     {
         Schema::table('renatio_dynamicpdf_pdf_templates', function (Blueprint $table) {
             $table->string('size')->nullable();
@@ -16,7 +16,7 @@ class AddPaperConfigurationToTemplatesTable extends Migration
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::table('renatio_dynamicpdf_pdf_templates', function (Blueprint $table) {
             $table->dropColumn(['size', 'orientation']);

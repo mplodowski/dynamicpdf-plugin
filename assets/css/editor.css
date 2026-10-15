@@ -1,0 +1,13 @@
+.control-tabs .form-tab-content > .form-tab-pane.is-stretch.active:has(> .dynamicpdf-editor-hint) {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-tab-pane.is-stretch:has(> .dynamicpdf-editor-hint) > .form-field-stretch {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.form-elements .row.w-100:has(> .span-row) {
+    width: auto !important;
+}

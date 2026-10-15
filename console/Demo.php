@@ -3,11 +3,12 @@
 namespace Renatio\DynamicPDF\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\SyncTemplates;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
-use System\Classes\PluginManager;
+use Renatio\DynamicPDF\Plugin;
 use System\Models\Parameter;
 
 class Demo extends Command
@@ -16,39 +17,70 @@ class Demo extends Command
 
     protected $description = 'Enable/Disable PDF demo templates.';
 
-    public function handle(): void
+    public function handle(): int
     {
-        if ($this->option('disable')) {
-            $this->disableDemo();
-        } else {
-            $this->enableDemo();
-        }
+        return $this->option('disable') ? $this->disableDemo() : $this->enableDemo();
     }
 
-    protected function enableDemo(): void
+    protected function enableDemo(): int
     {
-        Parameter::set('renatio::dynamicpdf.demo', 1);
+        Parameter::set(Plugin::DEMO_PARAMETER, 1);
 
         PDFManager::forgetInstance();
-        (new SyncTemplates)->handle();
 
-        $this->info(e(trans('renatio.dynamicpdf::lang.demo.enabled')));
+        $sync = new SyncTemplates;
+        $sync->handle();
+
+        $failed = $sync->report()['failed'];
+
+        if ($failed === []) {
+            $this->info('The demo templates were enabled.');
+
+            return self::SUCCESS;
+        }
+
+        $this->line('<fg=red;options=bold>Failed (see the application log)</>');
+
+        foreach ($failed as $code) {
+            $this->line("  {$code}");
+        }
+
+        return self::FAILURE;
     }
 
-    protected function disableDemo(): void
+    protected function disableDemo(): int
     {
-        $plugin = PluginManager::instance()->findByNamespace('Renatio.DynamicPDF');
+        Parameter::set(Plugin::DEMO_PARAMETER, 0);
+        PDFManager::forgetInstance();
 
-        foreach ($plugin->registerPDFTemplates() as $template) {
-            Template::where('code', $template)->delete();
+        /** @var Collection<int, Template> $templates */
+        $templates = Template::whereIn('code', Plugin::DEMO_TEMPLATES)->get();
+
+        foreach ($templates as $template) {
+            if ($template->isCustomised()) {
+                $this->warn("Kept {$template->code}, it was customized.");
+
+                continue;
+            }
+
+            $template->delete();
         }
 
-        foreach ($plugin->registerPDFLayouts() as $layout) {
-            Layout::where('code', $layout)->get()->each->delete();
+        /** @var Collection<int, Layout> $layouts */
+        $layouts = Layout::whereIn('code', Plugin::DEMO_LAYOUTS)->get();
+
+        foreach ($layouts as $layout) {
+            if (Template::where('layout_id', $layout->id)->exists()) {
+                $this->warn("Kept {$layout->code}, templates still use it.");
+            } elseif ($layout->isCustomised()) {
+                $this->warn("Kept {$layout->code}, it was customized.");
+            } else {
+                $layout->delete();
+            }
         }
 
-        Parameter::set('renatio::dynamicpdf.demo', 0);
+        $this->info('The demo templates were disabled.');
 
-        $this->info(e(trans('renatio.dynamicpdf::lang.demo.disabled')));
+        return self::SUCCESS;
     }
 }

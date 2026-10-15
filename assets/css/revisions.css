@@ -1,0 +1,197 @@
+.dynamicpdf-revisions {
+    position: relative;
+    overflow-x: auto;
+}
+
+.dynamicpdf-revisions table {
+    border: 1px solid var(--bs-border-color);
+    border-collapse: collapse;
+}
+
+.dynamicpdf-revisions thead th {
+    padding: 6px 12px;
+    border: 1px solid var(--bs-border-color);
+    color: var(--bs-secondary-color);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.dynamicpdf-revisions tbody td {
+    padding: 9px 12px;
+    border: 1px solid var(--bs-border-color);
+    background: transparent;
+}
+
+.dynamicpdf-revisions tbody tr:nth-child(even) td {
+    background: var(--bs-tertiary-bg);
+}
+
+.dynamicpdf-revisions tbody tr:hover td {
+    background: var(--bs-secondary-bg);
+}
+
+.dynamicpdf-revisions .revision-date,
+.dynamicpdf-revisions .revision-author {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.dynamicpdf-revisions .revision-date small {
+    margin-left: 2px;
+    color: var(--bs-secondary-color);
+}
+
+.dynamicpdf-revisions .revision-change {
+    display: inline-block;
+    margin: 2px 8px 2px 0;
+}
+
+.dynamicpdf-revisions .revision-field {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: var(--bs-secondary-bg);
+    color: var(--bs-emphasis-color);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.dynamicpdf-revisions .revision-old {
+    color: var(--bs-danger-text-emphasis);
+    text-decoration: line-through;
+}
+
+.dynamicpdf-revisions .revision-new {
+    color: var(--bs-success-text-emphasis);
+    font-weight: 600;
+}
+
+.dynamicpdf-revisions .revision-action {
+    width: 1%;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.dynamicpdf-revisions .revision-action a {
+    opacity: .75;
+    text-decoration: none;
+    transition: opacity .15s;
+}
+
+.dynamicpdf-revisions tr:hover .revision-action a,
+.dynamicpdf-revisions .revision-action a:focus-visible {
+    opacity: 1;
+}
+
+.dynamicpdf-revisions .revision-current {
+    background: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+    font-weight: 600;
+}
+
+.dynamicpdf-revisions .revision-event {
+    margin-right: 4px;
+    background: var(--bs-info-bg-subtle);
+    color: var(--bs-info-text-emphasis);
+    font-weight: 600;
+}
+
+.dynamicpdf-revisions .revision-action a + a,
+.dynamicpdf-revisions .revision-action a + .badge {
+    margin-left: 10px;
+}
+
+.dynamicpdf-diff + .dynamicpdf-diff {
+    margin-top: 20px;
+}
+
+.dynamicpdf-diff-field {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.dynamicpdf-diff-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 6px;
+}
+
+.dynamicpdf-diff-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--bs-font-monospace);
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.dynamicpdf-diff-table td {
+    padding: 0 8px;
+    vertical-align: top;
+}
+
+.dynamicpdf-diff-table .diff-num {
+    width: 1%;
+    min-width: 40px;
+    color: var(--bs-secondary-color);
+    text-align: right;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.dynamicpdf-diff-table .diff-marker {
+    width: 1%;
+    padding: 0 4px;
+    user-select: none;
+}
+
+.dynamicpdf-diff-table .diff-added .diff-marker::before {
+    content: "+";
+}
+
+.dynamicpdf-diff-table .diff-removed .diff-marker::before {
+    content: "-";
+}
+
+.dynamicpdf-diff-table .diff-text {
+    white-space: pre;
+}
+
+.dynamicpdf-diff-table .diff-added td {
+    background: rgba(46, 160, 67, .15);
+}
+
+.dynamicpdf-diff-table .diff-added .diff-num {
+    background: rgba(46, 160, 67, .25);
+}
+
+.dynamicpdf-diff-table .diff-removed td {
+    background: rgba(248, 81, 73, .15);
+}
+
+.dynamicpdf-diff-table .diff-removed .diff-num {
+    background: rgba(248, 81, 73, .25);
+}
+
+.dynamicpdf-diff-table .diff-gap td {
+    padding: 2px 8px;
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-secondary-color);
+    text-align: center;
+}
+
+.dynamicpdf-revisions-empty {
+    padding: 2.5rem 1rem;
+    border: 1px dashed var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    text-align: center;
+    color: var(--bs-secondary-color);
+}
+
+.dynamicpdf-revisions-empty i {
+    display: block;
+    margin-bottom: .5rem;
+    font-size: 2rem;
+}

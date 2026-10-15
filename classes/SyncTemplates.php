@@ -2,36 +2,28 @@
 
 namespace Renatio\DynamicPDF\Classes;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\Log;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Throwable;
 
 class SyncTemplates
 {
-    /** @var array<string, true> */
-    protected static array $failed = [];
-
     /** @var array<string, array<int, string>> */
-    protected array $report = ['created' => [], 'deleted' => [], 'failed' => []];
+    protected array $report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
-    public function handle(): void
+    public function handle(bool $prune = false): void
     {
-        $this->report = ['created' => [], 'deleted' => [], 'failed' => []];
+        $this->report = ['created' => [], 'updated' => [], 'deleted' => [], 'failed' => []];
 
-        $this->createLayouts();
+        $this->sync(Layout::class, PDFManager::instance()->listRegisteredLayouts());
 
-        $registeredTemplates = PDFManager::instance()->listRegisteredTemplates();
-
-        if (! $registeredTemplates) {
-            return;
+        if ($prune) {
+            $this->deleteOrphanedTemplates();
         }
 
-        $dbTemplates = Template::query()->pluck('is_custom', 'code')->all();
-
-        $this->clearNonCustomizedTemplates($dbTemplates, $registeredTemplates);
-        $this->createTemplates(array_diff_key($registeredTemplates, $dbTemplates));
+        $this->sync(Template::class, PDFManager::instance()->listRegisteredTemplates());
     }
 
     /**
@@ -42,81 +34,108 @@ class SyncTemplates
         return $this->report;
     }
 
-    public static function forgetFailures(): void
+    /**
+     * @return array<int, string>
+     */
+    public function orphanedTemplates(): array
     {
-        self::$failed = [];
+        return Template::followingView()
+            ->whereNotIn('code', array_keys(PDFManager::instance()->listRegisteredTemplates()))
+            ->orderBy('code')
+            ->pluck('code')
+            ->all();
     }
 
-    protected function createLayouts(): void
+    protected function deleteOrphanedTemplates(): void
     {
-        $registeredLayouts = PDFManager::instance()->listRegisteredLayouts();
-
-        if (! $registeredLayouts) {
-            return;
-        }
-
-        $dbLayouts = Layout::query()->pluck('code', 'code')->all();
-
-        foreach (array_diff_key($registeredLayouts, $dbLayouts) as $code) {
-            $this->create($code, function () use ($code): void {
-                $layout = new Layout;
-                $layout->is_locked = true;
-                $layout->fillFromView($code);
-                $layout->forceSave();
-            });
+        foreach (Template::whereIn('code', $this->orphanedTemplates())->get() as $template) {
+            $this->write(Template::class, (string) $template->code, 'deleted', fn (): ?bool => $template->delete());
         }
     }
 
     /**
-     * @param  array<string, bool>  $dbTemplates
-     * @param  array<string, string>  $registeredTemplates
+     * @param  class-string<Layout|Template>  $model
+     * @param  array<string, string>  $views
      */
-    protected function clearNonCustomizedTemplates(array $dbTemplates, array $registeredTemplates): void
+    protected function sync(string $model, array $views): void
     {
-        foreach ($dbTemplates as $code => $isCustom) {
-            if (! $isCustom && ! array_key_exists($code, $registeredTemplates)) {
-                Template::whereCode($code)->delete();
-                $this->report['deleted'][] = $code;
+        if ($views === []) {
+            return;
+        }
+
+        $this->refresh($model, $views);
+        $this->create($model, $views);
+    }
+
+    /**
+     * A view file read mid-deploy can parse to no content or a layout that does not resolve
+     * yet; neither may wipe the stored row.
+     *
+     * @param  class-string<Layout|Template>  $model
+     * @param  array<string, string>  $views
+     */
+    protected function refresh(string $model, array $views): void
+    {
+        /** @var Collection<int, Layout|Template> $records */
+        $records = $model::followingView()
+            ->whereIn('code', array_keys($views))
+            ->get();
+
+        foreach ($records as $record) {
+            if ($record->viewReadFailed()) {
+                $this->report['failed'][] = $record->code;
+
+                continue;
             }
+
+            $this->write($model, $record->code, 'updated', fn (): bool => $record->inDefaultLocale(function () use ($record): bool {
+                if (! $record->content_html || ! $record->isDirty($record::VIEW_FIELDS)) {
+                    return false;
+                }
+
+                if ($record instanceof Template && $record->layout_id === null && $record->getOriginal('layout_id') !== null) {
+                    return false;
+                }
+
+                $record->forceSave();
+
+                return true;
+            }));
         }
     }
 
     /**
-     * @param  array<string, string>  $templates
+     * @param  class-string<Layout|Template>  $model
+     * @param  array<string, string>  $views
      */
-    protected function createTemplates(array $templates): void
+    protected function create(string $model, array $views): void
     {
-        foreach ($templates as $code) {
-            $this->create($code, function () use ($code): void {
-                $template = new Template;
-                $template->fillFromView($code);
-                $template->forceSave();
+        $stored = $model::query()->pluck('code', 'code')->all();
+
+        foreach (array_diff_key($views, $stored) as $code) {
+            $this->write($model, $code, 'created', function () use ($model, $code): void {
+                $record = new $model;
+                $record->markAsFollowingView();
+                $record->fillFromView($code);
+                $record->forceSave();
             });
         }
     }
 
     /**
-     * One registered code without a view file must not stop the others from syncing,
-     * and a code that keeps failing is logged once per process rather than per request.
+     * @param  class-string  $model
      */
-    protected function create(string $code, callable $create): void
+    protected function write(string $model, string $code, string $outcome, callable $write): void
     {
-        if (isset(self::$failed[$code])) {
-            $this->report['failed'][] = $code;
-
-            return;
-        }
-
         try {
-            $create();
-            $this->report['created'][] = $code;
+            if ($write() !== false) {
+                $this->report[$outcome][] = $code;
+            }
         } catch (UniqueConstraintViolationException) {
-            // Another request synced the same code a moment earlier; the row exists.
         } catch (Throwable $e) {
-            self::$failed[$code] = true;
             $this->report['failed'][] = $code;
 
-            Log::error("Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", ['exception' => $e]);
+            FailureLog::instance()->logOnce($model, $code, "Renatio.DynamicPDF could not sync {$code}: {$e->getMessage()}", $e);
         }
     }
 }

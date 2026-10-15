@@ -11,10 +11,11 @@ describe('PDF::fake()', function () {
 
         expect($response->headers->get('Content-Type'))->toBe('application/pdf')
             ->and(PDF::loadTemplate('acme::pdf.invoice')->output())->toBeEmpty()
+            ->and(PDF::loadTemplate('acme::pdf.invoice')->attachment()->as)->toBe('document.pdf')
             ->and(app('dynamicpdf'))->toBe($fake);
 
         $fake->assertRendered('acme::pdf.invoice', fn (array $data, array $render): bool => ($data['order'] ?? null) === 7 && $render['layout'] === 'acme::pdf.layouts.b' && $render['locale'] === 'de');
-        $fake->assertRenderedTimes('acme::pdf.invoice', 2);
+        $fake->assertRenderedTimes('acme::pdf.invoice', 3);
         $fake->assertNotRendered('acme::pdf.other');
     });
 
@@ -31,8 +32,8 @@ describe('PDF::fake()', function () {
     it('matches the real Content-Disposition header', function () {
         PDF::fake();
 
-        expect(PDF::loadTemplate('acme::pdf.invoice')->download('faktura-ą.pdf')->headers->get('Content-Disposition'))
-            ->toBe("attachment; filename=faktura-a.pdf; filename*=utf-8''faktura-%C4%85.pdf");
+        expect(PDF::loadTemplate('acme::pdf.invoice')->download('invoice-ä.pdf')->headers->get('Content-Disposition'))
+            ->toBe("attachment; filename=invoice-a.pdf; filename*=utf-8''invoice-%C3%A4.pdf");
     });
 
     it('fails the assertions the way a test expects', function () {
@@ -44,5 +45,20 @@ describe('PDF::fake()', function () {
 
         expect(fn () => $fake->assertNothingRendered())->toThrow(AssertionFailedError::class)
             ->and(fn () => $fake->assertRendered('acme::pdf.invoice', fn (array $data): bool => isset($data['missing'])))->toThrow(AssertionFailedError::class);
+    });
+
+    it('throws for a method the real wrapper does not have, like production does', function () {
+        $fake = PDF::fake();
+
+        expect($fake->loadTemplate('acme::pdf.invoice')->setDpi(300))->toBe($fake)
+            ->and(fn () => $fake->loadTemplate('acme::pdf.invoice')->__call('setIsRemoteEnabeld', [true]))->toThrow(UnexpectedValueException::class);
+    });
+
+    it('replaces a wrapper the facade has already resolved', function () {
+        PDF::getFacadeRoot();
+
+        $fake = PDF::fake();
+
+        expect(PDF::getFacadeRoot())->toBe($fake);
     });
 });

@@ -12,7 +12,11 @@ use October\Tests\Concerns\PerformsMigrations;
 use October\Tests\Concerns\PerformsRegistrations;
 use PDO;
 use ReflectionClass;
+use Renatio\DynamicPDF\Classes\FailureLog;
+use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Template;
+use System\Classes\SiteManager;
+use System\Models\Parameter;
 use TestCase;
 use Throwable;
 
@@ -47,6 +51,8 @@ abstract class OctoberPestTestCase extends TestCase
             }
         }
 
+        $this->forgetDatabaseCheck();
+        $this->resetStaticState();
         $this->beginDatabaseTransaction();
 
         Model::unguard();
@@ -56,13 +62,52 @@ abstract class OctoberPestTestCase extends TestCase
 
     public function tearDownOctoberPlugin(): void
     {
-        if (class_exists(Mockery::class)) {
-            Mockery::close();
+        $error = null;
+
+        $steps = [
+            function (): void {
+                if (class_exists(Mockery::class)) {
+                    Mockery::close();
+                }
+            },
+            $this->rollbackDatabaseTransaction(...),
+            $this->flushModelEventListeners(...),
+            $this->resetStaticState(...),
+        ];
+
+        foreach ($steps as $step) {
+            try {
+                $step();
+            } catch (Throwable $e) {
+                $error ??= $e;
+            }
         }
 
-        $this->rollbackDatabaseTransaction();
-        $this->flushModelEventListeners();
+        if ($error !== null) {
+            throw $error;
+        }
+    }
+
+    protected function resetStaticState(): void
+    {
         Template::flushLayoutCache();
+        PDFManager::forgetInstance();
+        FailureLog::forgetInstance();
+        Parameter::clearInternalCache();
+        SiteManager::instance()->resetCache();
+    }
+
+    /**
+     * System::hasDatabase() is memoised, and a check made before the migrated PDO
+     * was attached would make Parameter::get() skip the table for the whole test.
+     */
+    protected function forgetDatabaseCheck(): void
+    {
+        $helper = app('system.helper');
+
+        if (property_exists($helper, 'hasDatabaseCache')) {
+            self::setProtectedProperty($helper, 'hasDatabaseCache', null);
+        }
     }
 
     protected function usingInMemoryDatabase(): bool
@@ -74,12 +119,21 @@ abstract class OctoberPestTestCase extends TestCase
     {
         $connection = DB::connection();
 
-        if ($connection->getPdo()->inTransaction()) {
-            return;
-        }
-
         $dispatcher = $connection->getEventDispatcher();
         $connection->unsetEventDispatcher();
+
+        if ($connection->transactionLevel() > 0) {
+            $connection->rollBack(0);
+        }
+
+        /**
+         * A transaction orphaned by an earlier test's application is invisible to this
+         * connection's counter, so only the shared PDO can roll it back.
+         */
+        if ($connection->getPdo()->inTransaction()) {
+            $connection->getPdo()->rollBack();
+        }
+
         $connection->beginTransaction();
         $connection->setEventDispatcher($dispatcher);
     }
@@ -97,6 +151,7 @@ abstract class OctoberPestTestCase extends TestCase
             }
         } catch (Throwable) {
             self::$databaseMigrated = false;
+            self::$inMemoryConnection = null;
         }
 
         $connection->setEventDispatcher($dispatcher);

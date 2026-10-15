@@ -3,9 +3,13 @@ description = "Example invoice with custom font and image embed"
 layout = "renatio.dynamicpdf::pdf.layouts.default"
 ==
 <div class="text-sm text-gray-700 leading-none">
-    <h2 class="text-3xl font-bold leading-none">TablePlus</h2>
+    {% if pdf_qr_available() %}
+        <img style="float: right" src="{{ pdf_qr('https://example.com/invoices/' ~ 'now'|date('Y') ~ '-0001', 192) }}" width="96" height="96" alt="">
+    {% endif %}
 
-    <p class="text-gray-400">via Paddle.com</p>
+    <h2 class="text-3xl font-bold leading-none">Acme Studio</h2>
+
+    <p class="text-gray-400">www.example.com</p>
 
     <div class="my-8">
         <h1 class="text-4xl font-bold leading-none">Invoice</h1>
@@ -18,27 +22,27 @@ layout = "renatio.dynamicpdf::pdf.layouts.default"
 
         <p class="mb-2">
             Example street 16<br>
-            Warsaw, 50-100<br>
+            Warsaw, 00-001<br>
             Poland
         </p>
 
-        <p>VAT Number: PL2332213309</p>
+        <p>VAT Number: PL1234567890</p>
     </div>
 
     <div class="float-right w-1/2 text-right">
         <h4 class="mb-4 text-lg font-bold leading-none">Invoice from</h4>
 
-        <p class="mb-2 font-bold">Paddle.com Market Ltd</p>
+        <p class="mb-2 font-bold">Acme Studio Ltd</p>
 
         <p class="mb-2">
-            Judd House 18-29 Mora Street<br>
-            London, EC1V 8BT<br>
-            United Kingdom
+            221 Sample Street<br>
+            Springfield, 12-345<br>
+            Exampleland
         </p>
 
-        <p class="mb-2">VAT Number: EU372017215</p>
+        <p class="mb-2">VAT Number: GB123456789</p>
 
-        <p>Company Number: 08172165</p>
+        <p>Company Number: 12345678</p>
     </div>
 
     <div class="clear-both"></div>
@@ -47,8 +51,8 @@ layout = "renatio.dynamicpdf::pdf.layouts.default"
 
     <div class="float-left w-1/2">
         <p>Customer: <span class="font-bold">john.doe@example.com</span></p>
-        <p>Order Number / Invoice: <span class="font-bold">#28542217</span></p>
-        <p>Billing date: <span class="font-bold">01 Sep 2020</span></p>
+        <p>Order Number / Invoice: <span class="font-bold">#{{ 'now'|date('Y') }}-0001</span></p>
+        <p>Billing date: <span class="font-bold">{{ 'now'|date('d M Y') }}</span></p>
     </div>
 
     <div class="float-right text-right">
@@ -62,14 +66,14 @@ layout = "renatio.dynamicpdf::pdf.layouts.default"
         <thead>
             <tr class="border-b border-solid border-gray-700">
                 <th class="text-left font-normal border-b border-solid border-gray-700 pb-1">Product</th>
-                <th class="text-left font-normal border-b border-solid border-gray-700 pb-1">Quantity</th>
+                <th class="text-center font-normal border-b border-solid border-gray-700 pb-1">Quantity</th>
                 <th class="text-right font-normal border-b border-solid border-gray-700 pb-1">Price</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td class="font-bold border-b border-solid border-gray-700 py-4">TablePlus License Renewal</td>
-                <td class="border-b border-solid border-gray-700 py-4">1</td>
+                <td class="font-bold border-b border-solid border-gray-700 py-4">Acme Studio License Renewal</td>
+                <td class="text-center border-b border-solid border-gray-700 py-4">1</td>
                 <td class="text-right border-b border-solid border-gray-700 py-4">$39.00</td>
             </tr>
 
@@ -93,12 +97,12 @@ layout = "renatio.dynamicpdf::pdf.layouts.default"
 
     <p class="mt-8 text-center">
         The $39.00 payment will appear on your bank/card statement as:
-        PADDLE.NET* TABLEPLUS
+        ACME* STUDIO
     </p>
 
     <p class="mt-4 text-center">
-        If you have a problem with your order (e.g. don’t recognise the charge, suspect a fraudulent transaction), please visit paddle.net.
+        If you have a problem with your order (e.g. don’t recognise the charge, suspect a fraudulent transaction), please write to billing@example.com.
     </p>
 
-    <p class="text-center mt-8"><img class="w-16" src="{{ 'plugins/renatio/dynamicpdf/assets/img/october.png'|app }}"></p>
+    <p class="text-center mt-8"><img class="w-16" style="display: inline" src="{{ 'plugins/renatio/dynamicpdf/assets/img/october.png'|pdfasset }}"></p>
 </div>

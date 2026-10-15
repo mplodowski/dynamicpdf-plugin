@@ -22,10 +22,14 @@ class PDFManager
     protected bool $loaded = false;
 
     /**
-     * Collects the registrations of every plugin once; direct register*() calls made before
-     * that are kept alongside them.
+     * @deprecated Use loadRegistrations().
      */
     public function loadRegisteredTemplates(): void
+    {
+        $this->loadRegistrations();
+    }
+
+    public function loadRegistrations(): void
     {
         if ($this->loaded) {
             return;
@@ -57,7 +61,7 @@ class PDFManager
      */
     public function listRegisteredLayouts(): array
     {
-        $this->loadRegisteredTemplates();
+        $this->loadRegistrations();
 
         return $this->registeredLayouts;
     }
@@ -67,19 +71,17 @@ class PDFManager
      */
     public function listRegisteredTemplates(): array
     {
-        $this->loadRegisteredTemplates();
+        $this->loadRegistrations();
 
         return $this->registeredTemplates;
     }
 
     /**
-     * Variables every template and layout receives. A closure value is resolved at render time.
-     *
      * @return array<string, mixed>
      */
     public function listRegisteredVariables(): array
     {
-        $this->loadRegisteredTemplates();
+        $this->loadRegistrations();
 
         return $this->registeredVariables;
     }

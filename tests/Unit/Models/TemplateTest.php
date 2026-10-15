@@ -1,30 +1,32 @@
 <?php
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use October\Rain\Exception\ValidationException;
 use Renatio\DynamicPDF\Models\Template;
 
 describe('Template', function () {
-    it('finds a template by code', function () {
-        $template = $this->createTemplate(['code' => 'test.find.template']);
-
-        expect(Template::byCode('test.find.template')->id)->toBe($template->id);
-    });
-
-    it('throws when no template has the code', function () {
-        expect(fn () => Template::byCode('non.existent.template'))
-            ->toThrow(ModelNotFoundException::class);
-    });
-
     it('survives a fetch without the code column', function () {
         $this->createTemplate(['code' => 'partial::pdf.select', 'is_custom' => false]);
 
         expect(Template::whereCode('partial::pdf.select')->value('is_custom'))->toBeFalsy();
     });
 
-    it('belongs to a layout', function () {
-        $layout = $this->createLayout();
-        $template = $this->createTemplate(['layout_id' => $layout->id]);
+    it('rejects a title or code longer than its column', function (string $field) {
+        expect(fn () => $this->createTemplate([$field => str_repeat('a', 256)]))
+            ->toThrow(ValidationException::class, 'greater than 255');
+    })->with(['title', 'code']);
 
-        expect($template->layout?->id)->toBe($layout->id);
+    it('names the HTML field in the required message', function () {
+        expect(fn () => $this->createTemplate(['content_html' => '']))
+            ->toThrow(ValidationException::class, 'The HTML field is required.');
+    });
+
+    it('labels paper sizes the way the default option does', function () {
+        expect(Template::getSizeOptions())->toMatchArray([
+            'a4' => 'A4',
+            '4a0' => '4A0',
+            'sra2' => 'SRA2',
+            'letter' => 'Letter',
+            'commercial #10 envelope' => 'Commercial #10 envelope',
+        ]);
     });
 });
