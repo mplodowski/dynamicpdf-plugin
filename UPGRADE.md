@@ -78,14 +78,25 @@ always on.
 
 - Templates render in a Twig sandbox and receive plain arrays instead of models: eager-load relations or pass arrays.
   `config()`, `env()`, `{% cache %}` and similar calls are rejected. `DYNAMICPDF_SANDBOX=false` turns the sandbox off.
+  A model method or lazy relation renders as empty without an error, so compare your PDFs after upgrading; from 9.0.1
+  each one is logged as a warning.
 - Replace `<script type="text/php">` page numbers with the layout's *Page numbers* option or `->pageNumbers()`.
 - The PDF preview loads remote files only from the application host and `allowed_remote_hosts`; use `|pdfasset` for
   local files.
 - Layout CSS can no longer read server files: remove LESS `(inline)` imports and `data-uri()`.
 - The migration deletes duplicate template and layout codes, keeping the customized one, and marks layouts it cannot
   prove unedited as *Customized*; use **Reset to Default** on those you never changed. Code reading a layout's
-  `is_locked` must read `is_custom`, which holds the opposite value.
+  `is_locked` must read `is_custom`, which holds the opposite value. `dynamicpdf:check` lists the customized ones
+  that match their view apart from whitespace.
+- A registered code without a database row renders from its view instead of throwing `ModelNotFoundException`, and
+  `byCode()` returns an unsaved model. Run `dynamicpdf:sync` after `october:migrate` if your code writes to template
+  rows, and pick another layout with `loadTemplate($code, $data, null, $layoutCode)` instead of saving `layout_id`.
 - Permissions are granular. Existing roles keep their access; narrow it under *Settings → Administrators*.
 - `dynamicpdf:sync` no longer deletes templates whose view is gone; use `--prune`.
 - An unknown `set*()` dompdf option now throws `UnexpectedValueException`.
 - Set `DYNAMICPDF_ALLOW_SELF_SIGNED=true` on a development host with a self-signed certificate.
+
+## Upgrading To 9.0.1
+
+`allowSelfSignedCertificates()` and `DYNAMICPDF_ALLOW_SELF_SIGNED` are ignored in production again, as in 8.x;
+9.0.0 turned off certificate verification there too.

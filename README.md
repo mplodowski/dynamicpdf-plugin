@@ -206,6 +206,9 @@ Both run in October's Twig sandbox regardless of `cms.safe_mode`. Templates rece
   functions and the `{% flash %}` and `{% cache %}` tags are rejected; filters such as `map` take only arrow functions;
   object methods cannot be static or receive PHP function names.
 
+A model method, lazy relation or accessor outside `$appends` renders as empty, and the log gets a warning naming the
+template, line and model.
+
 Set `DYNAMICPDF_SANDBOX=false` (`sandbox` in `config/renatio/dynamicpdf.php`) only when everyone who can edit templates
 may run code on the server.
 
@@ -334,7 +337,7 @@ setter throws `UnexpectedValueException`.
 
 Remote resources are fetched with full TLS verification. On a development host set `DYNAMICPDF_ALLOW_SELF_SIGNED=true`
 (`allow_self_signed_certificates` in `config/renatio/dynamicpdf.php`) for every wrapper, including `loadHTML()` and
-after `setOptions()`, or call `allowSelfSignedCertificates()` for one document.
+after `setOptions()`, or call `allowSelfSignedCertificates()` for one document. Both are ignored in production.
 
 ## Methods
 
@@ -655,6 +658,9 @@ $fake->assertNotRendered('acme::pdf.reminder');
 
 Also `assertNothingRendered()` and `rendered()` (the raw records). `pageNumbers()` still validates its arguments.
 
+To test a failed render, use `$fake->throwOnRender(new RuntimeException('...'))`: every later render is recorded and
+then throws. Do not combine `PDF::fake()` with `PDF::shouldReceive()`, which replaces the fake with a mock.
+
 ## Console commands
 
 Run `dynamicpdf:sync` and `dynamicpdf:check` after `october:migrate` on every deployment.
@@ -665,7 +671,8 @@ non-customized templates are no longer registered. `--prune` deletes those (with
 
 `php artisan dynamicpdf:check` reports silent dompdf misconfiguration: font, cache and temp directories (existence and
 write access), `chroot`, inline PHP, remote resources, registered codes without a view file, and the `pdf_qr()` /
-`pdf_barcode()` packages. Exits with code 1 on a failure.
+`pdf_barcode()` packages. It also lists customized templates and layouts that match their view apart from whitespace,
+candidates for **Reset to Default**. Exits with code 1 on a failure.
 
 ### Render
 

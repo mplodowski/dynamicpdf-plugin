@@ -4,6 +4,7 @@ use Carbon\CarbonImmutable;
 use Cms\Classes\Theme;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use October\Rain\Database\Model;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Classes\TwigRenderer;
@@ -151,6 +152,7 @@ describe('Twig sandbox', function () {
         $changed->title = 'Changed';
         $data = ['victim' => $victim, 'changed' => $changed, 'rows' => Template::all()];
         $count = Template::count();
+        Log::spy();
         DB::enableQueryLog();
 
         $output = rescue(fn () => (new TwigRenderer)->render($markup, $data, 'sandbox'), '', false);

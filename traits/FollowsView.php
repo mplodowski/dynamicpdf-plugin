@@ -78,6 +78,41 @@ trait FollowsView
         return preg_match('/^#[0-9a-f]{6}$/i', $value) ? strtolower($value) : $value;
     }
 
+    /**
+     * HTML and CSS render a run of whitespace as one space, outside <pre> and white-space: pre.
+     */
+    public static function normalizeWhitespace(mixed $value): string
+    {
+        return (string) preg_replace('/\s+/', ' ', static::normalizeViewValue($value));
+    }
+
+    public function matchesViewIgnoringWhitespace(): bool
+    {
+        $view = $this->getView();
+
+        if ($view === null) {
+            return false;
+        }
+
+        return $this->inDefaultLocale(function () use ($view): bool {
+            $fromView = new self;
+
+            try {
+                $fromView->fillFromView($view);
+            } catch (Throwable) {
+                return false;
+            }
+
+            foreach (static::VIEW_FIELDS as $attribute) {
+                if (static::normalizeWhitespace($fromView->getAttribute($attribute)) !== static::normalizeWhitespace($this->getAttribute($attribute))) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }
+
     public function isCustomised(): bool
     {
         return $this->exists && (bool) $this->is_custom;

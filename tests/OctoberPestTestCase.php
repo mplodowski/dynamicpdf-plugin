@@ -14,6 +14,7 @@ use PDO;
 use ReflectionClass;
 use Renatio\DynamicPDF\Classes\FailureLog;
 use Renatio\DynamicPDF\Classes\PDFManager;
+use Renatio\DynamicPDF\Classes\SandboxWarnings;
 use Renatio\DynamicPDF\Models\Template;
 use System\Classes\SiteManager;
 use System\Models\Parameter;
@@ -93,6 +94,7 @@ abstract class OctoberPestTestCase extends TestCase
         Template::flushLayoutCache();
         PDFManager::forgetInstance();
         FailureLog::forgetInstance();
+        SandboxWarnings::forgetInstance();
         Parameter::clearInternalCache();
         SiteManager::instance()->resetCache();
     }

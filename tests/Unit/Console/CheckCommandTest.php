@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Renatio\DynamicPDF\Classes\PDFManager;
+use Renatio\DynamicPDF\Classes\SyncTemplates;
+use Renatio\DynamicPDF\Models\Layout;
+use Renatio\DynamicPDF\Models\Template;
 
 describe('dynamicpdf:check', function () {
     it('passes with the default configuration', function () {
@@ -65,5 +68,23 @@ describe('dynamicpdf:check', function () {
 
         expect(Artisan::call('dynamicpdf:check'))->toBe(1)
             ->and(Artisan::output())->toContain('renatio.dynamicpdf::pdf.nowhere');
+    });
+
+    it('lists customized records whose content matches their view apart from whitespace', function () {
+        $this->registerViewLayouts('checkspaces', ['layouts/letter' => "name = \"Letter\"\n==\n<div>\n<p>Letter</p>\n</div>"]);
+        $this->registerViewTemplates('checkspaces', [
+            'same' => "title = \"Same\"\n==\n<p>Same</p>",
+            'edited' => "title = \"Edited\"\n==\n<p>Edited</p>",
+        ]);
+        (new SyncTemplates)->handle();
+        Layout::whereCode('checkspaces::pdf.layouts.letter')->update(['is_custom' => true, 'content_html' => "<div>    <p>Letter</p> </div>\n"]);
+        Template::whereCode('checkspaces::pdf.same')->update(['is_custom' => true, 'content_html' => "\n  <p>Same</p>  "]);
+        Template::whereCode('checkspaces::pdf.edited')->update(['is_custom' => true, 'content_html' => '<p>Changed</p>']);
+
+        Artisan::call('dynamicpdf:check');
+
+        expect(Artisan::output())->toContain('checkspaces::pdf.layouts.letter')
+            ->toContain('checkspaces::pdf.same')
+            ->not->toContain('checkspaces::pdf.edited');
     });
 });

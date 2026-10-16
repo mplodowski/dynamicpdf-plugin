@@ -34,6 +34,7 @@ class TwigRenderer
         $twig = $this->environment();
 
         if ((new TwigSandbox)->enabled()) {
+            SandboxWarnings::instance()->start($name);
             $data = (new TwigData)->convert($data);
         }
 
