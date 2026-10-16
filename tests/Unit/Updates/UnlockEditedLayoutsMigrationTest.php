@@ -37,6 +37,15 @@ describe('unlock_edited_layouts', function () {
         expect(($this->row)($id)->is_locked)->toBeTruthy();
     });
 
+    it('keeps a layout locked that differs from its view only in indentation and line breaks', function () {
+        $this->registerViewLayouts('unlockspaces', ['layouts/letter' => "name = \"Letter\"\n==\np { color: red; }\n==\n<div class=\"head\">\n<strong>A</strong>\n<strong>B</strong>\n</div>"]);
+        $id = ($this->insertLayout)('unlockspaces::pdf.layouts.letter', 'Letter', "<div class=\"head\">\n        <strong>A</strong><strong>B</strong>\n</div>", 'p {  color: red; }');
+
+        ($this->migrate)();
+
+        expect(($this->row)($id)->is_locked)->toBeTruthy();
+    });
+
     it('keeps an unedited layout of an older plugin release locked and the sync then brings it up to date', function () {
         $id = ($this->insertLayout)('renatio.dynamicpdf::pdf.layouts.header_and_footer', ...$this->shipped);
 

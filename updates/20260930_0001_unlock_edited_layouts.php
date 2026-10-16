@@ -81,9 +81,10 @@ return new class extends Migration
 
         $name = Arr::get($sections, 'settings.name');
         $storedNames = $name ? [$name] : [$row->code, self::PRE_8_1_MISSING_NAME];
+        $looseFingerprint = $this->fingerprint($row->name, $row->content_html, $row->content_css, ignoreWhitespace: true);
 
         foreach ($storedNames as $storedName) {
-            if ($fingerprint === $this->fingerprint($storedName, $sections['html'], $sections['css'])) {
+            if ($looseFingerprint === $this->fingerprint($storedName, $sections['html'], $sections['css'], ignoreWhitespace: true)) {
                 return true;
             }
         }
@@ -91,9 +92,14 @@ return new class extends Migration
         return false;
     }
 
-    protected function fingerprint(mixed $name, mixed $html, mixed $css): string
+    /**
+     * Indentation and line breaks between tags do not change what the layout renders.
+     */
+    protected function fingerprint(mixed $name, mixed $html, mixed $css, bool $ignoreWhitespace = false): string
     {
-        $normalize = fn (mixed $value): string => str_replace("\r\n", "\n", trim((string) $value));
+        $normalize = fn (mixed $value): string => $ignoreWhitespace
+            ? (string) preg_replace(['/\s+/', '/>\s+</'], [' ', '><'], trim((string) $value))
+            : str_replace("\r\n", "\n", trim((string) $value));
 
         return hash('sha256', $normalize($name) . "\0" . $normalize($html) . "\0" . $normalize($css));
     }

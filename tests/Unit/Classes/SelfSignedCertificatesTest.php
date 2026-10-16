@@ -31,4 +31,19 @@ describe('Self-signed certificates', function () {
         expect($options['ssl']['verify_peer'])->toBeFalse()
             ->and($options['http']['follow_location'])->toBeFalse();
     });
+
+    it('never turns off certificate verification in production', function () {
+        config(['renatio.dynamicpdf.allow_self_signed_certificates' => true]);
+        $environment = app()->environment();
+        app()->instance('env', 'production');
+
+        try {
+            $wrapper = app('dynamicpdf')->allowSelfSignedCertificates();
+            $wrapper->loadHTML('<p>Hello</p>');
+
+            expect(stream_context_get_options($wrapper->getDomPDF()->getHttpContext()))->not->toHaveKey('ssl');
+        } finally {
+            app()->instance('env', $environment);
+        }
+    });
 });

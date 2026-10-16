@@ -106,6 +106,8 @@ class TwigData
             $result[$key] = $this->value($relations[$key], $depth + 1);
         }
 
+        SandboxWarnings::instance()->remember($model, $result);
+
         return $result;
     }
 

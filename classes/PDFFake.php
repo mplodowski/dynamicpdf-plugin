@@ -13,12 +13,15 @@ use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use System\Models\File;
+use Throwable;
 use UnexpectedValueException;
 
 class PDFFake extends PDFWrapper implements Fake
 {
     /** @var array<int, array{code: string, kind: string, data: array<string, mixed>, layout: string|null, locale: string|null}> */
     protected array $renders = [];
+
+    protected ?Throwable $renderException = null;
 
     public function __construct(Dompdf $dompdf, ConfigRepository $config, Filesystem $files, ViewFactory $view)
     {
@@ -177,6 +180,13 @@ class PDFFake extends PDFWrapper implements Fake
         return $this;
     }
 
+    public function throwOnRender(?Throwable $exception): self
+    {
+        $this->renderException = $exception;
+
+        return $this;
+    }
+
     public function assertRendered(string $code, ?callable $callback = null): void
     {
         $matches = array_filter($this->renders, fn (array $render): bool => $render['code'] === $code && ($callback === null || $callback($render['data'], $render)));
@@ -216,6 +226,10 @@ class PDFFake extends PDFWrapper implements Fake
     protected function record(string $kind, string $code, array $data, ?string $layout, ?string $locale): self
     {
         $this->renders[] = ['code' => $code, 'kind' => $kind, 'data' => $data, 'layout' => $layout, 'locale' => $locale];
+
+        if ($this->renderException !== null) {
+            throw $this->renderException;
+        }
 
         return $this;
     }

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\View;
 use InvalidArgumentException;
 use Renatio\DynamicPDF\Classes\Codes;
 use Renatio\DynamicPDF\Classes\PDFManager;
+use Renatio\DynamicPDF\Models\Layout;
+use Renatio\DynamicPDF\Models\Template;
 
 class Check extends Command
 {
@@ -44,6 +46,9 @@ class Check extends Command
 
         $this->views('Registered layouts', PDFManager::instance()->listRegisteredLayouts());
         $this->views('Registered templates', PDFManager::instance()->listRegisteredTemplates());
+
+        $this->resettable('Customized layouts', Layout::class);
+        $this->resettable('Customized templates', Template::class);
 
         foreach (Codes::PACKAGES as $function => $package) {
             $this->package($function, $package['package'], $package['class'], $package['major']);
@@ -169,6 +174,26 @@ class Check extends Command
 
         foreach ($missing as $code) {
             $this->line("  <fg=red>{$code}</>");
+        }
+    }
+
+    /**
+     * @param  class-string<Layout|Template>  $model
+     */
+    protected function resettable(string $label, string $model): void
+    {
+        $codes = $model::query()->where('is_custom', true)->get()
+            ->filter(fn ($record): bool => ($record instanceof Layout || $record instanceof Template) && $record->matchesViewIgnoringWhitespace())
+            ->pluck('code');
+
+        if ($codes->isEmpty()) {
+            return;
+        }
+
+        $this->components->twoColumnDetail($label, self::INFO . " {$codes->count()} match their view apart from whitespace; Reset to Default is safe");
+
+        foreach ($codes as $code) {
+            $this->line("  <fg=blue>{$code}</>");
         }
     }
 
