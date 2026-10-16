@@ -10,6 +10,7 @@ use Renatio\DynamicPDF\Classes\Codes;
 use Renatio\DynamicPDF\Classes\PDFManager;
 use Renatio\DynamicPDF\Models\Layout;
 use Renatio\DynamicPDF\Models\Template;
+use Throwable;
 
 class Check extends Command
 {
@@ -182,7 +183,15 @@ class Check extends Command
      */
     protected function resettable(string $label, string $model): void
     {
-        $codes = $model::query()->where('is_custom', true)->get()
+        try {
+            $records = $model::query()->where('is_custom', true)->get();
+        } catch (Throwable $e) {
+            $this->components->twoColumnDetail($label, self::WARN . " could not be read: {$e->getMessage()}");
+
+            return;
+        }
+
+        $codes = $records
             ->filter(fn ($record): bool => ($record instanceof Layout || $record instanceof Template) && $record->matchesViewIgnoringWhitespace())
             ->pluck('code');
 
@@ -190,7 +199,7 @@ class Check extends Command
             return;
         }
 
-        $this->components->twoColumnDetail($label, self::INFO . " {$codes->count()} match their view apart from whitespace; Reset to Default is safe");
+        $this->components->twoColumnDetail($label, self::INFO . " {$codes->count()} match their view apart from whitespace; check them and use Reset to Default");
 
         foreach ($codes as $code) {
             $this->line("  <fg=blue>{$code}</>");

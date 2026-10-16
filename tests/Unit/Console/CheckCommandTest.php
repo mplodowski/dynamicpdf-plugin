@@ -77,7 +77,7 @@ describe('dynamicpdf:check', function () {
             'edited' => "title = \"Edited\"\n==\n<p>Edited</p>",
         ]);
         (new SyncTemplates)->handle();
-        Layout::whereCode('checkspaces::pdf.layouts.letter')->update(['is_custom' => true, 'content_html' => "<div>    <p>Letter</p></div>\n"]);
+        Layout::whereCode('checkspaces::pdf.layouts.letter')->update(['is_custom' => true, 'content_html' => "<div>    <p>Letter</p> </div>\n"]);
         Template::whereCode('checkspaces::pdf.same')->update(['is_custom' => true, 'content_html' => "\n  <p>Same</p>  "]);
         Template::whereCode('checkspaces::pdf.edited')->update(['is_custom' => true, 'content_html' => '<p>Changed</p>']);
 

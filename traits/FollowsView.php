@@ -79,11 +79,11 @@ trait FollowsView
     }
 
     /**
-     * Indentation and line breaks between tags do not change what HTML or CSS render.
+     * HTML and CSS render a run of whitespace as one space, outside <pre> and white-space: pre.
      */
     public static function normalizeWhitespace(mixed $value): string
     {
-        return (string) preg_replace(['/\s+/', '/>\s+</'], [' ', '><'], static::normalizeViewValue($value));
+        return (string) preg_replace('/\s+/', ' ', static::normalizeViewValue($value));
     }
 
     public function matchesViewIgnoringWhitespace(): bool

@@ -33,6 +33,10 @@ class SandboxWarnings
      */
     public function remember(Model $model, array $converted): void
     {
+        if ($converted === []) {
+            return;
+        }
+
         $this->models[$this->signature($converted)] ??= $model;
     }
 
@@ -41,16 +45,16 @@ class SandboxWarnings
      */
     public function missing(array $array, string $item, int $line): void
     {
+        $key = "{$this->template}|{$line}|{$item}";
+
+        if (isset($this->logged[$key])) {
+            return;
+        }
+
         $model = $this->models[$this->signature($array)] ?? null;
         $reason = $model === null ? null : $this->reason($model, $item);
 
         if ($reason === null) {
-            return;
-        }
-
-        $key = "{$this->template}|{$line}|{$item}";
-
-        if (isset($this->logged[$key])) {
             return;
         }
 
@@ -71,9 +75,10 @@ class SandboxWarnings
     protected function reason(Model $model, string $item): ?string
     {
         return match (true) {
+            in_array($item, $model->getHidden(), true) => null,
             method_exists($model, 'hasRelation') && $model->hasRelation($item) => 'a relation that was not eager-loaded',
             $model->hasGetMutator($item) || $model->hasAttributeMutator($item) => 'an accessor missing from $appends',
-            $this->hasMethod($model, $item) => 'a method, which the sandbox does not call',
+            $this->hasMethod($model, $item) => 'a method the sandbox does not call; for a relation method, eager-load it',
             default => null,
         };
     }

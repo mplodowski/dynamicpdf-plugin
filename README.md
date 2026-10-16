@@ -672,7 +672,7 @@ non-customized templates are no longer registered. `--prune` deletes those (with
 `php artisan dynamicpdf:check` reports silent dompdf misconfiguration: font, cache and temp directories (existence and
 write access), `chroot`, inline PHP, remote resources, registered codes without a view file, and the `pdf_qr()` /
 `pdf_barcode()` packages. It also lists customized templates and layouts that match their view apart from whitespace,
-safe to **Reset to Default**. Exits with code 1 on a failure.
+candidates for **Reset to Default**. Exits with code 1 on a failure.
 
 ### Render
 

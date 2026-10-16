@@ -93,12 +93,12 @@ return new class extends Migration
     }
 
     /**
-     * Indentation and line breaks between tags do not change what the layout renders.
+     * HTML and CSS render a run of whitespace as one space, outside <pre> and white-space: pre.
      */
     protected function fingerprint(mixed $name, mixed $html, mixed $css, bool $ignoreWhitespace = false): string
     {
         $normalize = fn (mixed $value): string => $ignoreWhitespace
-            ? (string) preg_replace(['/\s+/', '/>\s+</'], [' ', '><'], trim((string) $value))
+            ? (string) preg_replace('/\s+/', ' ', trim((string) $value))
             : str_replace("\r\n", "\n", trim((string) $value));
 
         return hash('sha256', $normalize($name) . "\0" . $normalize($html) . "\0" . $normalize($css));
