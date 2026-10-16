@@ -59,6 +59,10 @@ class GuardedGetAttrNode extends GetAttrNode
             return static::modelValue($object, (string) $item);
         }
 
+        if (is_array($object) && (is_string($item) || is_int($item)) && ! $isDefinedTest && ! $ignoreStrictCheck && ! array_key_exists($item, $object)) {
+            SandboxWarnings::instance()->missing($object, (string) $item, $lineno);
+        }
+
         if ($type === Template::ARRAY_CALL) {
             return CoreExtension::getAttribute($env, $source, $object, $item, $arguments, $type, $isDefinedTest, $ignoreStrictCheck, $sandboxed, $lineno);
         }

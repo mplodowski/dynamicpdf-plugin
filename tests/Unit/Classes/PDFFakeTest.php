@@ -61,4 +61,12 @@ describe('PDF::fake()', function () {
 
         expect(PDF::getFacadeRoot())->toBe($fake);
     });
+
+    it('throws a given exception on render while still recording it', function () {
+        $fake = PDF::fake()->throwOnRender(new RuntimeException('dompdf failed'));
+
+        expect(fn () => PDF::loadTemplate('acme::pdf.invoice', ['order' => 7]))->toThrow(RuntimeException::class, 'dompdf failed');
+
+        $fake->assertRendered('acme::pdf.invoice', fn (array $data): bool => $data['order'] === 7);
+    });
 });

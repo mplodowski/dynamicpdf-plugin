@@ -70,3 +70,5 @@ v9.0.0:
     - 20261007_0001_add_page_numbers_to_layouts_table.php
     - 20261012_0001_replace_is_locked_with_is_custom_on_layouts.php
     - 20261012_0002_create_revisions_table.php
+v9.0.1:
+    - Keep TLS verification on in production, log sandbox misses, whitespace-tolerant layout detection.

@@ -3,11 +3,14 @@
 namespace Renatio\DynamicPDF\Classes;
 
 use Dompdf\Dompdf;
+use Illuminate\Support\Facades\Log;
 use System\Classes\SiteManager;
 use System\Models\SiteDefinition;
 
 class RemoteAssetPolicy
 {
+    protected static bool $productionWarned = false;
+
     public function allowApplicationAssets(Dompdf $dompdf): void
     {
         $options = $dompdf->getOptions();
@@ -30,6 +33,12 @@ class RemoteAssetPolicy
 
     public function allowSelfSignedCertificates(Dompdf $dompdf): void
     {
+        if (app()->environment('production')) {
+            $this->warnInProduction();
+
+            return;
+        }
+
         $current = $dompdf->getHttpContext();
 
         $context = stream_context_create(array_replace_recursive(
@@ -44,6 +53,14 @@ class RemoteAssetPolicy
         ));
 
         $dompdf->setHttpContext($context);
+    }
+
+    protected function warnInProduction(): void
+    {
+        if (! static::$productionWarned) {
+            static::$productionWarned = true;
+            Log::warning('Renatio.DynamicPDF ignores allowSelfSignedCertificates() in production and keeps verifying TLS certificates.');
+        }
     }
 
     /**
